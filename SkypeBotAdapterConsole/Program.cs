@@ -22,6 +22,7 @@ namespace SkypeBotAdapterConsole
 
         static void Main(string[] args)
         {
+		//test
             bot = new HelloBot();
             bot.OnErrorOccured += BotOnErrorOccured;
             Task.Run(delegate
