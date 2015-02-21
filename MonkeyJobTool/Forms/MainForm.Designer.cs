@@ -1,4 +1,4 @@
-﻿namespace HelloDesktopAssistant
+﻿namespace MonkeyJobTool.Forms
 {
     partial class MainForm
     {

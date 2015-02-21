@@ -1,20 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
-
-using System.Runtime.InteropServices;
-using System.Text;
-
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 using HelloBotCommunication;
 using HelloBotCore;
+using HelloDesktopAssistant;
 using HelloDesktopAssistant.Forms;
 
-namespace HelloDesktopAssistant
+namespace MonkeyJobTool.Forms
 {
     
     public partial class MainForm : Form

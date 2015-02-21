@@ -3,7 +3,6 @@
 
 using HelloBotCommunication;
 using Nigrimmist.Modules.Commands;
-using Nigrimmist.Modules.WindowsCommands;
 
 namespace Nigrimmist.Modules
 {
@@ -28,7 +27,6 @@ namespace Nigrimmist.Modules
                 new OrModule(),
                 new Quote(),
                 new ShortLink(),
-                new SkypeChatSyncModule(),
                 new BrowserUrlsOpenModule()
             };
         }
