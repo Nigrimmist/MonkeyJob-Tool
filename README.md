@@ -1,69 +1,85 @@
-HelloBot
+MonkeyJob Tool
 ========
 
-.NET/C# Personal/group program assistant with any kind of client integration (Skype for example).
+.NET/C# Personal program assistant for improving productivity. Do it faster. Make it better.
 
-!["HelloBot sample"](http://c2n.me/iYkMB2.png "HelloBot work sample")
+!["MonkeyJob Tool screenshot"](http://c2n.me/3cRZZgb.png "MonkeyJob Tool work sample")
 
 #Description
 
-HelloBot is a small code-behind project that contains C# action modules integrated with any kind of client (Skype). One module = one action that will be called by command with output result in text format. Sound simple, right? You can write your own client using HelloBot core and our documentation behind.
+MonkeyJob Tool is a program, that allow you to do any kind of typical things by simply typing short commands.
 
-###Live DEMO
-You can find "mensclubbot" skype name and test it right now! Send him a message "!say Hello, man!" and bot will answer you! For displaying full command list, send "!modules".
+###Samples of usage 1
+For example, if you need to find any place in google maps, in common you should :
 
-#Getting Started
+**put your hands to the mouse, click to the browser, enter maps.google.com, enter your address, for example "221 Baker St London" and waiting for response.** - it will take about... 30-40 seconds.
+
+And let's **compare it** with same task, but using MonkeyJob Tool :
+
+**press "CTRL+M" (configurable hotkey) -> enter "map 221 Baker St London" -> press "enter". PROFIT!** - tool will open google maps in your default browser and it will take 5-10 seconds. Cool, right?
+
+
+###Samples of usage 2
+
+You need to translate "Barak Obama" to russian language. Using MonkeyJob tool you should only press hotkey for open "console" and type "t Barak Obama" and "Translate" module will show you required translation to Russian. (Currently "Translate" module support only two languages (Russian/English), but it can be and it will be extended to others).
+
+###Samples of usage N
+MonkeyJob Tool can be extended by external "modules" for any kind answers and actions. It mean, that you can can write your own modules using our documentation behind.
+
+###Base commands
+You can type "modules" to see all included modules with description notes.
+
+#Getting started
+####Downloads
+You can download stand-alone version (install non-required) using "Releases" link in top of current page. 
+
 ####Adding modules and commands
 
 
 For adding your own command handlers you should implement two interfaces in your dll : **IActionHandler** and **IActionHandlerRegister**. They are placed in HelloBotCommunication.dll (HelloBotCommunication project).
 
-**1.**  Implementing IActionHandler you should define CallCommandList, CommandDescription properties and HandleMessage method. CallCommandList should return List of pre-defined command names. Each defined command name will fire your HandleMessage method.
+**1.**  Implementing IActionHandler you should define CallCommandList, CommandDescription properties and HandleMessage method. CallCommandList should return List of pre-defined command info objects. Each defined command name will fire your HandleMessage method.
 
-Handled message (your answer) should be returned using sendMessageFunc callback. clientData param will contains additional data from client. All possible client interfaces placed in HelloBotCommunication/ClientDataInterfaces folder.
-
+Handled message (your answer) should be returned using sendMessageFunc callback. 
 
 **2.** Implementing IActionHandlerRegister you should define list of your IActionHandler modules.
 
 - **Sample of Calculator command**
 ```C#
 //Calculate command handler
+
+
 public class Calculator : IActionHandler
     {
 
-        public List<string> CallCommandList { get { return new List<string>() { "calc","calculator" }; } }
+        public List<CallCommandInfo> CallCommandList
+        {
+            get
+            {
+                return new List<CallCommandInfo>()
+                {
+                    new CallCommandInfo("calc"),
+                    new CallCommandInfo("калькулятор")
+                };
+            }
+        }
         public string CommandDescription { get { return "Clever calculator using NCalc library"; }  }
         
         //that method will be fired when anybody will call your command from client
-        public void HandleMessage(string args, object clientData, Action<string> sendMessageFunc)
+        public void HandleMessage(string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
         {
             
             //calculate expression passing arguments to Expression NCalc's class constructor.
             //args can be, for example, "1+2/3". You should check it for valid format in context of you command.
             Expression expr = new Expression(args);
-            
             var exprAnswer = expr.Evaluate();
             string messageAuthor = string.Empty;
             string answer = string.Empty;
-            
-            //check for clientData if you require some specific data from client
-            var skypeData = clientData as ISkypeData;
-            if (skypeData!=null)
-            {
-                messageAuthor = skypeData.FromName;
-            }
 
-            if (!string.IsNullOrEmpty(messageAuthor))
-            {
-                answer = string.Format("Mr {0}, answer is : {1}", messageAuthor, exprAnswer);
-            }
-            else
-            {
-                answer = string.Format("Answer is : {0}", exprAnswer);
-            }
-            
+            answer = string.Format("Ответ равен : {0}", exprAnswer);
             //send answer back to client
-            sendMessageFunc(answer);
+            sendMessageFunc(answer, AnswerBehaviourType.Text);
+            
         }
     }
 ```
@@ -87,85 +103,8 @@ And another one class for register your calculator handler :
 
 After that you can simply put your dll to bin folder of client application and it should work.
 
-####Adding client functionality
 
-Client is a program, that will use HelloBot with modules. Let's show example with skype client. 
-
-- **Sample of Skype client integration (console application)**
-```C#
-    class Program
-    {
-        
-        private static Skype skype = new Skype();
-        private static HelloBot bot;
-
-        static void Main(string[] args)
-        {
-            
-            bot = new HelloBot(); //init HelloBot
-            bot.OnErrorOccured += BotOnErrorOccured; //event subscribing for handling any unexpectable exceptions
-            
-            //running in separate thread for unlock ui thread
-            Task.Run(delegate
-            {
-                try
-                {
-                    
-                    skype.MessageStatus += OnMessageReceived; //subscribe to skype message status change
-                    
-                    skype.Attach(5, true); //attach to ui version of skype. Note : now, Microsoft was remove api                                                   support, it's work only with old portable version of skype. 
-                    Console.WriteLine("skype attached");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("top lvl exception : " + ex.ToString());
-                }
-                
-                //freeze thread
-                while (true)
-                {
-                    Thread.Sleep(1000);
-                }
-            });
-            
-            //freeze main thread
-            while (true)
-            {
-                Thread.Sleep(1000);
-            }
-        }
-
-        static void BotOnErrorOccured(Exception ex)
-        {
-            Console.WriteLine(ex.ToString());
-        }
-
-       
-
-        private static void OnMessageReceived(ChatMessage pMessage, TChatMessageStatus status)
-        {
-            Console.WriteLine(status + pMessage.Body);
- 
-            if (status == TChatMessageStatus.cmsReceived)
-            {
-                //get answer from HelloBot. Answer will be received by SendMessage method.
-                bot.HandleMessage(pMessage.Body, answer => SendMessage(answer,pMessage.Chat),
-                    new SkypeData(){FromName = pMessage.FromDisplayName});
-            }
-        }
-        
-
-        public static object _lock = new object();
-        private static void SendMessage(string message, Chat toChat)
-        {
-                lock (_lock)
-                {
-                    toChat.SendMessage(message);
-                }
-        }
-    }
-```
 
 ###Supported system commands
-- {commandPrefix}help - show list of system commands
-- {commandPrefix}modules - show custom module list
+- "help" - show list of system commands
+- "modules" - show custom module list
