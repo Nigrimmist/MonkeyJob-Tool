@@ -27,7 +27,6 @@ namespace Nigrimmist.Modules.Commands
         {
             Expression expr = new Expression(args);
             var exprAnswer = expr.Evaluate();
-            string messageAuthor = string.Empty;
             string answer = string.Empty;
 
             answer = string.Format("Ответ равен : {0}", exprAnswer);

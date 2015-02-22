@@ -20,7 +20,7 @@ namespace Test
         static void Main(string[] args)
         {
 
-            HelloBot bot = new HelloBot();
+            //HelloBot bot = new HelloBot();
             //bot.HandleMessage("!Скажи риновский", s =>
             //{
             //    Console.WriteLine(s);
@@ -34,6 +34,7 @@ namespace Test
             //    new Quote().HandleMessage(v, null, s =>
             //        Console.WriteLine(s));
             //}
+            Console.WriteLine("test");
             Console.ReadLine();
         }
     }
