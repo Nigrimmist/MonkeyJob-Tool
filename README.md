@@ -29,7 +29,7 @@ MonkeyJob Tool can be extended by external "modules" for any kind answers and ac
 ###Base commands
 You can type "modules" to see all included modules with description notes.
 
-#Getting dtarted
+#Getting started
 ####Downloads
 You can download stand-alone version (install non-required) using "Releases" link in top of current page. 
 
