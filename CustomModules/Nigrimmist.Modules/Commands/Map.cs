@@ -60,7 +60,7 @@ namespace Nigrimmist.Modules.Commands
 
                 if (inputProvider == "help")
                 {
-                    sendMessageFunc(helpMsg, AnswerBehaviourType.Text);
+                    sendMessageFunc(helpMsg, AnswerBehaviourType.ShowText);
                 }
                 else if (args.Contains(fromToDelimeter))
                 {
@@ -80,7 +80,7 @@ namespace Nigrimmist.Modules.Commands
                             leftPart = leftPart.Substring(inputProvider.Length).Trim();
                         }
                         string url = string.Format(foundProvider, HttpUtility.UrlEncode(leftPart), HttpUtility.UrlEncode(rightPart));
-                        sendMessageFunc(url.ToShortUrl(), AnswerBehaviourType.Link);
+                        sendMessageFunc(url.ToShortUrl(), AnswerBehaviourType.OpenLink);
                     }
                 }
                 else
@@ -97,7 +97,7 @@ namespace Nigrimmist.Modules.Commands
                         address = args.Substring(inputProvider.Length).Trim();    
                     }
                     string url = string.Format(foundProvider, HttpUtility.UrlEncode(address));
-                    sendMessageFunc(url.ToShortUrl(), AnswerBehaviourType.Link);
+                    sendMessageFunc(url.ToShortUrl(), AnswerBehaviourType.OpenLink);
                 }
             }
         }

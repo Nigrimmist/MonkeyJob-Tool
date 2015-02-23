@@ -27,7 +27,7 @@ namespace Nigrimmist.Modules.Commands
         public string CommandDescription { get { return @"Говорит что прикажете"; } }
         public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
         {
-            sendMessageFunc(args,AnswerBehaviourType.Text);
+            sendMessageFunc(args,AnswerBehaviourType.ShowText);
         }
     }
 }

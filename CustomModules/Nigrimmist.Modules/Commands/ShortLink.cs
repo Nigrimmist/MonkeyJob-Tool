@@ -35,7 +35,7 @@ namespace Nigrimmist.Modules.Commands
         public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
         {
             string answer = args.ToShortUrl();
-            sendMessageFunc(answer, AnswerBehaviourType.Text);
+            sendMessageFunc(answer, AnswerBehaviourType.ShowText);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace SmartAssHandlerLib
         {
             var needLotsOfStuff = !string.IsNullOrEmpty(args) && args.Contains("напалмом");
 
-            sendMessageFunc(RetrieveSmartAssStuff(needLotsOfStuff), AnswerBehaviourType.Text);
+            sendMessageFunc(RetrieveSmartAssStuff(needLotsOfStuff), AnswerBehaviourType.ShowText);
         }
 
         private string RetrieveSmartAssStuff(bool needLotsOfStuff)

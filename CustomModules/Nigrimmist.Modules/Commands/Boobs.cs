@@ -49,7 +49,7 @@ namespace Nigrimmist.Modules.Commands
             int rPos = r.Next(0, Images.Count);
             string url = Images[rPos];
             Images.RemoveAt(rPos);
-            sendMessageFunc(url, AnswerBehaviourType.Link);
+            sendMessageFunc(url, AnswerBehaviourType.OpenLink);
         }
 
 

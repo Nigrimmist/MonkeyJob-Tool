@@ -50,7 +50,7 @@ namespace Nigrimmist.Modules.Commands
             int rPos = r.Next(0, Jokes.Count );
             string joke = Jokes[rPos];
             Jokes.RemoveAt(rPos);
-            sendMessageFunc(joke, AnswerBehaviourType.Text);
+            sendMessageFunc(joke, AnswerBehaviourType.ShowText);
         }
     }
 }

@@ -58,7 +58,7 @@ namespace Yushko.Commands
             string help = "!гороскоп <знак зодиака> [общий/эротический/антигороскоп/бизнес/любовный/здоровья/кулинарный/мобильный] [сегодня/завтра/неделя/месяц/год]";
             if (arg.Length == 0)
             {
-                sendMessageFunc(help, AnswerBehaviourType.Text);
+                sendMessageFunc(help, AnswerBehaviourType.ShowText);
                 return;
             }
 
@@ -69,9 +69,9 @@ namespace Yushko.Commands
             else
             {
                 if (string.IsNullOrEmpty(arg[0])){
-                    sendMessageFunc(help, AnswerBehaviourType.Text);
+                    sendMessageFunc(help, AnswerBehaviourType.ShowText);
                 }else{
-                    sendMessageFunc(arg[0] + " - неверный знак зодиака", AnswerBehaviourType.Text);
+                    sendMessageFunc(arg[0] + " - неверный знак зодиака", AnswerBehaviourType.ShowText);
                 }
                 return;
             }
@@ -133,7 +133,7 @@ namespace Yushko.Commands
             else {
                 result.Append("На запрашиваемый Вами период гороскоп отсутствует");
             }
-            sendMessageFunc(result.ToString(), AnswerBehaviourType.Text);
+            sendMessageFunc(result.ToString(), AnswerBehaviourType.ShowText);
         }
     }
 }

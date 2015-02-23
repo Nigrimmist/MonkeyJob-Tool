@@ -113,7 +113,7 @@ namespace Yushko.Commands
                     break;
             }
 
-            sendMessageFunc(result,AnswerBehaviourType.Text);
+            sendMessageFunc(result,AnswerBehaviourType.ShowText);
         }
 
         //сконвертировать из одной валюты в другую

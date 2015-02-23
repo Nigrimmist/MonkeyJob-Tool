@@ -39,7 +39,7 @@ namespace Nigrimmist.Modules.Commands
                 sb.Append(td.SelectSingleNode(".//./div[@class='fcurrent-descr']").InnerText + " ");
                 sb.Append(Environment.NewLine);
             }
-            sendMessageFunc(sb.ToString().Replace("&deg;", "°"), AnswerBehaviourType.Text);
+            sendMessageFunc(sb.ToString().Replace("&deg;", "°"), AnswerBehaviourType.ShowText);
         }
     }
 }

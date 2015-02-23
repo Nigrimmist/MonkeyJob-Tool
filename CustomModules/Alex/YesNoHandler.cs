@@ -56,7 +56,7 @@ namespace SmartAssHandlerLib
                 answer = _emptyAnswerProvider.Get();
             }
 
-            sendMessageFunc(answer, AnswerBehaviourType.Text);
+            sendMessageFunc(answer, AnswerBehaviourType.ShowText);
         }
 
         private class RandomHelper

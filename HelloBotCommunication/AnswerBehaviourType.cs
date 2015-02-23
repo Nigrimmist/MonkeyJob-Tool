@@ -8,7 +8,7 @@ namespace HelloBotCommunication
 {
     public enum AnswerBehaviourType
     {
-        Text,
-        Link
+        ShowText,
+        OpenLink
     }
 }

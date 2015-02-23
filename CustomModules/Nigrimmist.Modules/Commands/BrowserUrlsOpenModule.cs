@@ -47,7 +47,7 @@ namespace Nigrimmist.Modules.Commands
                             url = uri.Scheme + "://" + uri.Host;
                         }
                     }
-                    sendMessageFunc(string.Format(url, args), AnswerBehaviourType.Link);
+                    sendMessageFunc(string.Format(url, args), AnswerBehaviourType.OpenLink);
                 }
             
         }

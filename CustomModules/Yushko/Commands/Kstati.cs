@@ -51,7 +51,7 @@ namespace Yushko.Commands
             else {
                 result = "Факты кончились... :(";
             }
-            sendMessageFunc(result,AnswerBehaviourType.Text);
+            sendMessageFunc(result,AnswerBehaviourType.ShowText);
         }
     }
 }

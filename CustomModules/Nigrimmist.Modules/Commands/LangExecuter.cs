@@ -37,7 +37,7 @@ namespace Nigrimmist.Modules.Commands
         {
             if (args.StartsWith("help"))
             {
-                sendMessageFunc(GetHelpText(),AnswerBehaviourType.Text);
+                sendMessageFunc(GetHelpText(),AnswerBehaviourType.ShowText);
             }
             else
             {
@@ -75,7 +75,7 @@ namespace Rextester
                 if (!string.IsNullOrEmpty(toReturn))
                 {
                     toReturn = toReturn.Replace(Environment.NewLine," ").Trim();
-                    sendMessageFunc(toReturn.Length > 200 ? toReturn.Substring(0, 50) + "..." : toReturn, AnswerBehaviourType.Text);
+                    sendMessageFunc(toReturn.Length > 200 ? toReturn.Substring(0, 50) + "..." : toReturn, AnswerBehaviourType.ShowText);
                 }
                 
                 

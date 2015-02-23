@@ -86,7 +86,7 @@ namespace Nigrimmist.Modules.Commands
                 answer += ". " + hrm.ResponseUri;
             }
 
-            sendMessageFunc(answer, AnswerBehaviourType.Text);
+            sendMessageFunc(answer, AnswerBehaviourType.ShowText);
         }
     }
 }

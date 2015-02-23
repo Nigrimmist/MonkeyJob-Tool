@@ -46,7 +46,7 @@ namespace Yushko.Commands
                     result.Append(tds[1].InnerText);//.InnerHtml.Replace("<br>", Environment.NewLine).RemoveAllTags().Trim();
                 }
             }
-            sendMessageFunc(result.ToString(), AnswerBehaviourType.Text);
+            sendMessageFunc(result.ToString(), AnswerBehaviourType.ShowText);
         }
     }
 }

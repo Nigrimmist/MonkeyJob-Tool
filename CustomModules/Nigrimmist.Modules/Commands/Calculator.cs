@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Threading;
 using HelloBotCommunication;
 
 using NCalc;
@@ -31,7 +31,7 @@ namespace Nigrimmist.Modules.Commands
 
             answer = string.Format("Ответ равен : {0}", exprAnswer);
 
-            sendMessageFunc(answer, AnswerBehaviourType.Text);
+            sendMessageFunc(answer, AnswerBehaviourType.ShowText);
             
         }
     }

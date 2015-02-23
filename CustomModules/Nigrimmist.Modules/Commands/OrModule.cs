@@ -49,7 +49,7 @@ namespace Nigrimmist.Modules.Commands
             }
             if (r.Next(1, 101) < ChanceOfSpecialAnswer)
                 answer = string.Format(cusstomMessages[r.Next(0, cusstomMessages.Count)], answer);
-            sendMessageFunc(answer, AnswerBehaviourType.Text);
+            sendMessageFunc(answer, AnswerBehaviourType.ShowText);
         }
 
 

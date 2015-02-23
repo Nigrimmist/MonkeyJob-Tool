@@ -62,7 +62,7 @@ namespace MonkeyJobTool.Forms
         }
 
         private string copyToBufferPostFix = " в буфер";
-        [STAThread]
+       
         private void txtCommandSearchField_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -83,12 +83,12 @@ namespace MonkeyJobTool.Forms
                     }
                     else
                     {
-                        if (answerType == AnswerBehaviourType.Link)
+                        if (answerType == AnswerBehaviourType.OpenLink)
                         {
                             if (answer.StartsWith("http://") || answer.StartsWith("https://"))
                                 Process.Start(answer);
                         }
-                        else if (answerType == AnswerBehaviourType.Text)
+                        else if (answerType == AnswerBehaviourType.ShowText)
                         {
                             if (!string.IsNullOrEmpty(answer)) MessageBox.Show(answer);
                         }

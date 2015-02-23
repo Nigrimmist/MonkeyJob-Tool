@@ -103,7 +103,7 @@ namespace Yushko.Commands
             }
             finally
             {
-                sendMessageFunc(result, AnswerBehaviourType.Text);
+                sendMessageFunc(result, AnswerBehaviourType.ShowText);
             }
         }
     }

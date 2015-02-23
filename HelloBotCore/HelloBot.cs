@@ -39,7 +39,7 @@ namespace HelloBotCore
         {
             this.moduleDllmask = moduleDllmask;
             this.botCommandPrefix = botCommandPrefix;
-            this.commandTimeoutSec = 60;
+            this.commandTimeoutSec = 30;
 
             systemCommands = new Dictionary<string, CommandInfo>()
             {
@@ -82,7 +82,7 @@ namespace HelloBotCore
             
             return toReturn;
         }
-
+        
         public void HandleMessage(string incomingMessage, Action<string,AnswerBehaviourType> answerCallback, object data)
         {
             if (incomingMessage.Contains(botCommandPrefix))
@@ -95,59 +95,40 @@ namespace HelloBotCore
                     if (systemCommandList.Any())
                     {
                         var systemComand = systemCommandList.First();
-                        answerCallback(systemComand.Value.Callback(), AnswerBehaviourType.Text);
+                        answerCallback(systemComand.Value.Callback(), AnswerBehaviourType.ShowText);
                     }
                     else
                     {
 
                         IActionHandler handler = FindHandler(command, out command);
-
-                        //if (handler != null)
-                        //{
-                        //    string args = incomingMessage.Substring(incomingMessage.IndexOf(command, StringComparison.InvariantCultureIgnoreCase) + command.Length).Trim();
-
-                        //    IActionHandler hnd = handler;
-                        //    var cts = new CancellationTokenSource(TimeSpan.FromSeconds(commandTimeoutSec));
-                        //    var token = cts.Token;
-
-                        //    Task.Run(() =>
-                        //    {
-                        //        using (cts.Token.Register(Thread.CurrentThread.Abort))
-                        //        {
-                        //            try
-                        //            {
-                        //                hnd.HandleMessage(command,args, data, answerCallback);
-                        //            }
-                        //            catch (Exception ex)
-                        //            {
-                        //                if (OnErrorOccured != null)
-                        //                {
-                        //                    OnErrorOccured(ex);
-                        //                }
-                        //                answerCallback(command + " сломан :(",AnswerBehaviourType.Text);
-                        //            }
-                        //        }
-
-                        //    }, token);
-
-                        //}
-
                         if (handler != null)
                         {
                             string args = incomingMessage.Substring(incomingMessage.IndexOf(command, StringComparison.InvariantCultureIgnoreCase) + command.Length).Trim();
 
                             IActionHandler hnd = handler;
-                            try
+
+                           
+
+                            if (!RunWithTimeout(() =>
                             {
-                                hnd.HandleMessage(command, args, data, answerCallback);
-                            }
-                            catch (Exception ex)
-                            {
-                                if (OnErrorOccured != null)
+                                try
                                 {
-                                    OnErrorOccured(ex);
+                                    hnd.HandleMessage(command, args, data, answerCallback);
                                 }
-                                answerCallback(command + " сломан :(", AnswerBehaviourType.Text);
+                                catch (Exception ex)
+                                {
+                                    if (!(ex is ThreadAbortException))
+                                    {
+                                        if (OnErrorOccured != null)
+                                        {
+                                            OnErrorOccured(ex);
+                                        }
+                                        answerCallback(command + " сломан :(", AnswerBehaviourType.ShowText);
+                                    }
+                                }
+                            }, TimeSpan.FromSeconds(commandTimeoutSec)))
+                            {
+                                answerCallback(command + " сломан (время на выполнение команды истекло)", AnswerBehaviourType.ShowText);
                             }
 
                         }
@@ -155,7 +136,19 @@ namespace HelloBotCore
                 }
             }
         }
+        
+        static bool RunWithTimeout(ThreadStart threadStart, TimeSpan timeout)
+        {
+            Thread workerThread = new Thread(threadStart);
+            workerThread.SetApartmentState(ApartmentState.STA);
+            workerThread.Start();
 
+            bool finished = workerThread.Join(timeout);
+            if (!finished)
+                workerThread.Abort();
+
+            return finished;
+        }
         public delegate void onErrorOccuredDelegate(Exception ex);
         public event onErrorOccuredDelegate OnErrorOccured;
 

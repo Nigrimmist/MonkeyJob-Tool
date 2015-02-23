@@ -33,7 +33,7 @@ namespace SmartAssHandlerLib
             var rawData = GetRawData(request);
             var description = ParseMovieData(rawData);
 
-            sendMessageFunc(description.ToString(), AnswerBehaviourType.Text);
+            sendMessageFunc(description.ToString(), AnswerBehaviourType.ShowText);
         }
 
         private MovieDescription ParseMovieData(string rawData)

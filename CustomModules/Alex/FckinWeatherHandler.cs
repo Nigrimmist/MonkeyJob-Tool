@@ -46,7 +46,7 @@ namespace SmartAssHandlerLib
             }
             catch (Exception ex) { }
 
-            sendMessageFunc(result, AnswerBehaviourType.Text);
+            sendMessageFunc(result, AnswerBehaviourType.ShowText);
         }
 
         private Forecast ParseForecast(string rawWeatherHtml)
