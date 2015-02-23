@@ -5,15 +5,27 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+
 using HelloBotCommunication;
 
 namespace HelloBotCore
 {
+    internal class CommandInfo
+    {
+        public string Description { get; set; }
+        public Func<string> Callback { get; set; }
+
+        public CommandInfo(string description, Func<string> callback)
+        {
+            Description = description;
+            Callback = callback;
+        }
+    }
+
     public class HelloBot
     {
         private  List<IActionHandler> handlers = new List<IActionHandler>();
-        private IDictionary<string, Tuple<string, Func<string>>> systemCommands;
+        private IDictionary<string, CommandInfo> systemCommands;
         private string moduleDllmask { get; set; }
         private string botCommandPrefix;
         private int commandTimeoutSec;
@@ -29,10 +41,10 @@ namespace HelloBotCore
             this.botCommandPrefix = botCommandPrefix;
             this.commandTimeoutSec = 60;
 
-            systemCommands = new Dictionary<string, Tuple<string, Func<string>>>()
+            systemCommands = new Dictionary<string, CommandInfo>()
             {
-                {"help", new Tuple<string, Func<string>>("список системных команд", GetSystemCommands)},
-                {"modules", new Tuple<string, Func<string>>("список кастомных модулей", GetUserDefinedCommands)},
+                {"help", new CommandInfo("список системных команд", GetSystemCommands)},
+                {"modules", new CommandInfo("список кастомных модулей", GetUserDefinedCommands)},
             };
             RegisterModules();
         }
@@ -83,40 +95,60 @@ namespace HelloBotCore
                     if (systemCommandList.Any())
                     {
                         var systemComand = systemCommandList.First();
-                        answerCallback(systemComand.Value.Item2(), AnswerBehaviourType.Text);
+                        answerCallback(systemComand.Value.Callback(), AnswerBehaviourType.Text);
                     }
                     else
                     {
 
                         IActionHandler handler = FindHandler(command, out command);
 
+                        //if (handler != null)
+                        //{
+                        //    string args = incomingMessage.Substring(incomingMessage.IndexOf(command, StringComparison.InvariantCultureIgnoreCase) + command.Length).Trim();
+
+                        //    IActionHandler hnd = handler;
+                        //    var cts = new CancellationTokenSource(TimeSpan.FromSeconds(commandTimeoutSec));
+                        //    var token = cts.Token;
+
+                        //    Task.Run(() =>
+                        //    {
+                        //        using (cts.Token.Register(Thread.CurrentThread.Abort))
+                        //        {
+                        //            try
+                        //            {
+                        //                hnd.HandleMessage(command,args, data, answerCallback);
+                        //            }
+                        //            catch (Exception ex)
+                        //            {
+                        //                if (OnErrorOccured != null)
+                        //                {
+                        //                    OnErrorOccured(ex);
+                        //                }
+                        //                answerCallback(command + " сломан :(",AnswerBehaviourType.Text);
+                        //            }
+                        //        }
+
+                        //    }, token);
+
+                        //}
+
                         if (handler != null)
                         {
                             string args = incomingMessage.Substring(incomingMessage.IndexOf(command, StringComparison.InvariantCultureIgnoreCase) + command.Length).Trim();
 
                             IActionHandler hnd = handler;
-                            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(commandTimeoutSec));
-                            var token = cts.Token;
-
-                            Task.Run(() =>
+                            try
                             {
-                                using (cts.Token.Register(Thread.CurrentThread.Abort))
+                                hnd.HandleMessage(command, args, data, answerCallback);
+                            }
+                            catch (Exception ex)
+                            {
+                                if (OnErrorOccured != null)
                                 {
-                                    try
-                                    {
-                                        hnd.HandleMessage(command,args, data, answerCallback);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        if (OnErrorOccured != null)
-                                        {
-                                            OnErrorOccured(ex);
-                                        }
-                                        answerCallback(command + " сломан :(",AnswerBehaviourType.Text);
-                                    }
+                                    OnErrorOccured(ex);
                                 }
-
-                            }, token);
+                                answerCallback(command + " сломан :(", AnswerBehaviourType.Text);
+                            }
 
                         }
                     }
@@ -160,7 +192,7 @@ namespace HelloBotCore
 
         private string GetSystemCommands()
         {
-            return String.Join(Environment.NewLine, systemCommands.Select(x => String.Format(botCommandPrefix+"{0} - {1}", x.Key, x.Value.Item1)).ToList());
+            return String.Join(Environment.NewLine, systemCommands.Select(x => String.Format(botCommandPrefix+"{0} - {1}", x.Key, x.Value.Description)).ToArray());
         }
 
         public List<string> GetUserDefinedCommandList()
@@ -176,7 +208,7 @@ namespace HelloBotCore
         {
             StringBuilder sb = new StringBuilder();
             
-            sb.Append(String.Join(Environment.NewLine, handlers.Select(x => String.Format("{0} - {1}", string.Join(" / ", x.CallCommandList.Select(y => botCommandPrefix + y.Command)), x.CommandDescription)).ToList()));
+            sb.Append(String.Join(Environment.NewLine, handlers.Select(x => String.Format("{0} - {1}", string.Join(" / ", x.CallCommandList.Select(y => botCommandPrefix + y.Command).ToArray()), x.CommandDescription)).ToArray()));
             sb.AppendLine("");
             sb.AppendLine("Запили свой модуль : https://github.com/Nigrimmist/HelloBot");
 

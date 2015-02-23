@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Yushko</RootNamespace>
     <AssemblyName>Yushko</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -70,6 +71,16 @@
     <None Include="Service References\ExRates\ExRates.wsdl" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\HelloBotCommunication\HelloBotCommunication.csproj">
+      <Project>{53eb844b-b3a7-4397-9db3-84f5d9f30840}</Project>
+      <Name>HelloBotCommunication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\HelloBotModuleHelper\HelloBotModuleHelper.csproj">
+      <Project>{5b94e739-fad8-4a23-ab11-3edd24f57d35}</Project>
+      <Name>HelloBotModuleHelper</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <WCFMetadataStorage Include="Service References\ExRates\" />
   </ItemGroup>
   <ItemGroup>
@@ -86,16 +97,6 @@
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\HelloBotCommunication\HelloBotCommunication.csproj">
-      <Project>{53eb844b-b3a7-4397-9db3-84f5d9f30840}</Project>
-      <Name>HelloBotCommunication</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\HelloBotModuleHelper\HelloBotModuleHelper.csproj">
-      <Project>{5b94e739-fad8-4a23-ab11-3edd24f57d35}</Project>
-      <Name>HelloBotModuleHelper</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

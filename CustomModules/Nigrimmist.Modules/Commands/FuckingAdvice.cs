@@ -18,6 +18,11 @@ namespace Nigrimmist.Modules.Commands
     /// </summary>
     public class Advice : IActionHandler
     {
+        private class textClass
+        {
+            public string text { get; set; }
+        }
+
         public List<CallCommandInfo> CallCommandList
         {
             get
@@ -37,8 +42,8 @@ namespace Nigrimmist.Modules.Commands
             HtmlReaderManager hrm = new HtmlReaderManager();
             hrm.Encoding = Encoding.GetEncoding(1251);
             hrm.Get("http://fucking-great-advice.ru/api/random");
-            var json = JsonConvert.DeserializeObject<dynamic>(hrm.Html);
-            string advice = json.text.ToString();
+            var json = JsonConvert.DeserializeObject<textClass>(hrm.Html);
+            string advice = json.text;
             sendMessageFunc(HttpUtility.HtmlDecode(advice.RemoveAllTags()), AnswerBehaviourType.Text);
         }
     }

@@ -38,9 +38,9 @@ namespace HelloDesktopAssistant
     [Flags]
     public enum ModifierHookKeys : uint
     {
-        Alt = 1,
+        ALT = 1,
         CTRL = 2,
-        Shift = 4,
-        Win = 8
+        SHIFT = 4,
+        WIN = 8
     }
 }

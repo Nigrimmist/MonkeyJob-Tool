@@ -138,11 +138,11 @@ namespace HelloDesktopAssistant
         {
             var valParts = value.Split('+');
             ModifierHookKeys toReturn;
-            Enum.TryParse(valParts.First(), true, out toReturn);
+            TryParse(valParts.First(),  out toReturn);
             if (valParts.Length == 3) //two special + one ordinal
             {
                 ModifierHookKeys tempModifier;
-                if (Enum.TryParse(valParts[1], true, out tempModifier))
+                if (TryParse(valParts[1],  out tempModifier))
                 {
                     toReturn |= tempModifier;
                 }
@@ -153,9 +153,16 @@ namespace HelloDesktopAssistant
         public static Keys ToOrdinalKeys(string value)
         {
             Keys toReturn;
-            Enum.TryParse(value.Split('+').Last(), true, out toReturn);
+            TryParse(value.Split('+').Last(),  out toReturn);
             return toReturn;
-        } 
+        }
+
+        public static bool TryParse<TEnum>(string value, out TEnum result) where TEnum : struct, IConvertible
+        {
+            var retValue = value != null && Enum.IsDefined(typeof(TEnum), value);
+            result = retValue ? (TEnum)Enum.Parse(typeof(TEnum), value) : default(TEnum);
+            return retValue;
+        }
         #endregion
     }
 }

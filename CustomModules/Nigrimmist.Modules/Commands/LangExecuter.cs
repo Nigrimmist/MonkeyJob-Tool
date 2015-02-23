@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using HelloBotCommunication;
 using HelloBotModuleHelper;
@@ -14,7 +13,11 @@ namespace Nigrimmist.Modules.Commands
 {
     public class LangExecuter : IActionHandler
     {
-        
+        private class tempClass
+        {
+            public string Result { get; set; }
+            public string Errors { get; set; }
+        }
 
         public List<CallCommandInfo> CallCommandList
         {
@@ -61,12 +64,12 @@ namespace Rextester
 
                 hrm.Post("http://rextester.com/rundotnet/Run", string.Format("LanguageChoiceWrapper=1&EditorChoiceWrapper=1&Program={0}&Input=&ShowWarnings=false&Title=&SavedOutput=&WholeError=&WholeWarning=&StatsToSave=&CodeGuid=&IsInEditMode=False&IsLive=False"
                     , HttpUtility.UrlEncode(string.Format(templateCode, args))));
-                var response = JsonConvert.DeserializeObject<dynamic>(hrm.Html);
-                string toReturn = response.Result.ToString();
+                var response = JsonConvert.DeserializeObject<tempClass>(hrm.Html);
+                string toReturn = response.Result;
 
                 if (string.IsNullOrEmpty(toReturn))
                 {
-                    toReturn = response.Errors.ToString();
+                    toReturn = response.Errors;
                 }
 
                 if (!string.IsNullOrEmpty(toReturn))

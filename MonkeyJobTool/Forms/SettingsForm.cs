@@ -120,7 +120,7 @@ namespace HelloDesktopAssistant.Forms
             }
 
             ApplicationConfiguration updatedAppConf = App.Instance.AppConf;
-            updatedAppConf.HotKeys.ProgramOpen = string.Join("+", new List<string>() { cmbKey1.Text, cmbKey2.Text, cmbKey3.Text }.Where(x=>!string.IsNullOrEmpty(x)));
+            updatedAppConf.HotKeys.ProgramOpen = string.Join("+", new List<string>() { cmbKey1.Text, cmbKey2.Text, cmbKey3.Text }.Where(x=>!string.IsNullOrEmpty(x)).ToArray());
             App.Instance.AppConf = updatedAppConf;
 
             App.Instance.ReInitHotKeys();
