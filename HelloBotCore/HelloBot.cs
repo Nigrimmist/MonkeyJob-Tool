@@ -107,8 +107,6 @@ namespace HelloBotCore
 
                             IActionHandler hnd = handler;
 
-                           
-
                             if (!RunWithTimeout(() =>
                             {
                                 try
