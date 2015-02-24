@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using HelloBotCommunication;
 using HelloBotCore;
@@ -12,19 +13,25 @@ namespace MonkeyJobTool.Forms
     
     public partial class MainForm : Form
     {
-        private HelloBot bot = new HelloBot(botCommandPrefix:"");
+        private HelloBot bot;
         
 
         public MainForm()
         {
-            
-            InitializeComponent();
-            this.pictureBox1.Image = Properties.Resources.chimp;
-            this.tsExit.Image = Properties.Resources.opened33;
-            this.tsSettings.Image = Properties.Resources.settings49;
+           InitializeComponent();
+           this.pictureBox1.Image = Properties.Resources.chimp;
+           this.tsExit.Image = Properties.Resources.opened33;
+           this.tsSettings.Image = Properties.Resources.settings49;
 
-            App.Init(openFormHotKeyRaised);
-
+           try
+           {
+               bot = new HelloBot(botCommandPrefix: "");
+               App.Init(openFormHotKeyRaised);
+           }
+           catch (Exception ex)
+           {
+               MessageBox.Show(ex.ToString());
+           }
             //Process[] processlist = Process.GetProcesses();
 
             //foreach (Process process in processlist)
@@ -39,6 +46,7 @@ namespace MonkeyJobTool.Forms
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            this.ShowInTaskbar = false;
             bot.OnErrorOccured += BotOnOnErrorOccured;
             var source = new AutoCompleteStringCollection();
             source.AddRange(bot.GetUserDefinedCommandList().ToArray());
@@ -49,6 +57,7 @@ namespace MonkeyJobTool.Forms
 
             var screen = Screen.FromPoint(this.Location);
             this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
+            
         }
 
         void openFormHotKeyRaised(object sender, KeyPressedEventArgs e)
@@ -95,7 +104,7 @@ namespace MonkeyJobTool.Forms
                     }
 
 
-                },null);
+                }, null);
             }
         }
 

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel.Syndication;
+
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
+
 using System.Web;
 using System.Xml;
 using HelloBotCore;
@@ -19,12 +19,17 @@ namespace Test
         public static List<string> Jokes = new List<string>(); 
         static void Main(string[] args)
         {
+            try
+            {
+                HelloBot bot = new HelloBot();
+                bot.HandleMessage("!calc 1+2", (s, type) => { Console.WriteLine(s); }, null);
+            }
+            catch (Exception ex)
+            {
 
-            //HelloBot bot = new HelloBot();
-            //bot.HandleMessage("!Скажи риновский", s =>
-            //{
-            //    Console.WriteLine(s);
-            //},null);
+                Console.WriteLine(ex.ToString());
+            }
+            
             
 
             //List<string> s2 = new List<string>() { "Сиськи" };
