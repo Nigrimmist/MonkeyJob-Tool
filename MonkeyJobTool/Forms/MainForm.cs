@@ -19,6 +19,7 @@ namespace MonkeyJobTool.Forms
     {
         private HelloBot bot;
         private string copyToBufferPostFix = " в буфер";
+        private AutoCompleteControl autocomplete;
 
         public MainForm()
         {
@@ -52,22 +53,17 @@ namespace MonkeyJobTool.Forms
         {
             this.ShowInTaskbar = false;
             bot.OnErrorOccured += BotOnOnErrorOccured;
-            //var source = new AutoCompleteStringCollection();
-            //source.AddRange(bot.GetUserDefinedCommandList().ToArray());
-            //txtCommandSearchField.AutoCompleteCustomSource = source;
-            //txtCommandSearchField.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            //txtCommandSearchField.AutoCompleteSource = AutoCompleteSource.CustomSource;
-            //txtCommandSearchField.Visible = true;
+            
 
             var screen = Screen.FromPoint(this.Location);
             this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
 
-            var autocomplete = new AutoCompleteControl()
+            autocomplete = new AutoCompleteControl()
             {
                 ParentForm = this,
                 DataFilterFunc = GetCommandListByTerm,
                 Left = 43,
-                Top = 12
+                Top = 8
             };
             autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
             this.Controls.Add(autocomplete);
@@ -114,6 +110,10 @@ namespace MonkeyJobTool.Forms
         void openFormHotKeyRaised(object sender, KeyPressedEventArgs e)
         {
             this.ToTop();
+            if (autocomplete != null && autocomplete.IsPopupOpen)
+            {
+                autocomplete.PopupToTop();
+            }
         }
 
         private void BotOnOnErrorOccured(Exception exception)

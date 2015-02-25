@@ -17,12 +17,18 @@ namespace MonkeyJobTool.Controls.Autocomplete
     {
         private AutocompletePopupControl popup = new AutocompletePopupControl();
         public Form ParentForm { get; set; }
-
+        //todo : change to model, add find term
         public delegate List<string> GetItemsFromSource(string term);
         public GetItemsFromSource DataFilterFunc;
+        private bool _isPopupOpen;
 
         public delegate void OnCommandReceivedDelegate(string command);
-        public event OnCommandReceivedDelegate OnCommandReceived;  
+        public event OnCommandReceivedDelegate OnCommandReceived;
+
+        public bool IsPopupOpen
+        {
+            get { return _isPopupOpen; }
+        }
 
         public AutoCompleteControl()
         {
@@ -56,15 +62,18 @@ namespace MonkeyJobTool.Controls.Autocomplete
                     popup.Top = ParentForm.Top-popup.Height;
                     popup.Left = ParentForm.Left;
                     popup.Width = ParentForm.Width;
+                    _isPopupOpen = true;
                 }
                 else
                 {
                     popup.Hide();
+                    _isPopupOpen = false;
                 }
             }
             else
             {
                 popup.Hide();
+                _isPopupOpen = false;
             }
         }
 
@@ -117,6 +126,11 @@ namespace MonkeyJobTool.Controls.Autocomplete
                     OnCommandReceived(txtCommand.Text);
                 }
             }
+        }
+
+        public void PopupToTop()
+        {
+            popup.ToTop();
         }
     }
 }

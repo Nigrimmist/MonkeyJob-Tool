@@ -7,6 +7,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
 {
     public partial class AutocompletePopupControl : Form
     {
+        private bool _isOpened;
         public AutocompletePopupInfo Model { get; set; }
 
         public AutocompletePopupControl()

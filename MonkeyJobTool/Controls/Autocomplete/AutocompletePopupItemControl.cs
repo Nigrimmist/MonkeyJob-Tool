@@ -26,6 +26,7 @@ namespace MonkeyJobTool.Forms.Autocomplete
         {
             RichTextLabel rtl = new RichTextLabel();
             rtl.Font = new Font("MS Reference Sans Serif", 15.57F);
+            //rtl.BackColor = Color.LemonChiffon;            
             StringBuilder sb = new StringBuilder();
             sb.Append(@"{\rtf1\ansi ");
             foreach (var wordPart in wordParts)
@@ -44,7 +45,10 @@ namespace MonkeyJobTool.Forms.Autocomplete
 
             rtl.Rtf = sb.ToString();
             rtl.Width = this.Width;
+            rtl.Left = 5;
+            rtl.Top = 10;
             this.Controls.Add(rtl);
+            
         }
         private string ConvertString2RTF(string input)
         {
