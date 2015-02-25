@@ -7,6 +7,7 @@ using HelloBotCommunication;
 using HelloBotCore;
 using HelloDesktopAssistant;
 using HelloDesktopAssistant.Forms;
+using MonkeyJobTool.Controls.Autocomplete;
 
 namespace MonkeyJobTool.Forms
 {
@@ -58,6 +59,8 @@ namespace MonkeyJobTool.Forms
             var screen = Screen.FromPoint(this.Location);
             this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
             
+
+            this.Controls.Add(new AutoCompleteControl());
         }
 
         void openFormHotKeyRaised(object sender, KeyPressedEventArgs e)

@@ -10,12 +10,12 @@ using HelloBotCommunication;
 
 namespace HelloBotCore
 {
-    internal class CommandInfo
+    internal class SystemCommandInfo
     {
         public string Description { get; set; }
         public Func<string> Callback { get; set; }
 
-        public CommandInfo(string description, Func<string> callback)
+        public SystemCommandInfo(string description, Func<string> callback)
         {
             Description = description;
             Callback = callback;
@@ -25,7 +25,7 @@ namespace HelloBotCore
     public class HelloBot
     {
         private  List<IActionHandler> handlers = new List<IActionHandler>();
-        private IDictionary<string, CommandInfo> systemCommands;
+        private IDictionary<string, SystemCommandInfo> systemCommands;
         private string moduleDllmask { get; set; }
         private string botCommandPrefix;
         private int commandTimeoutSec;
@@ -41,10 +41,10 @@ namespace HelloBotCore
             this.botCommandPrefix = botCommandPrefix;
             this.commandTimeoutSec = 30;
 
-            systemCommands = new Dictionary<string, CommandInfo>()
+            systemCommands = new Dictionary<string, SystemCommandInfo>()
             {
-                {"help", new CommandInfo("список системных команд", GetSystemCommands)},
-                {"modules", new CommandInfo("список кастомных модулей", GetUserDefinedCommands)},
+                {"help", new SystemCommandInfo("список системных команд", GetSystemCommands)},
+                {"modules", new SystemCommandInfo("список кастомных модулей", GetUserDefinedCommands)},
             };
             RegisterModules();
         }

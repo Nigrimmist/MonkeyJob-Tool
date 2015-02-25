@@ -50,8 +50,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\Autocomplete\AutoCompleteControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Autocomplete\AutoCompleteControl.Designer.cs">
+      <DependentUpon>AutoCompleteControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\ApplicationConfiguration.cs" />
+    <Compile Include="Entities\Autocomplete\AutocompletePopupInfo.cs" />
+    <Compile Include="Entities\Autocomplete\AutocompletePopupItem.cs" />
     <Compile Include="Entities\HotKeyType.cs" />
+    <Compile Include="Controls\Autocomplete\AutocompletePopupItemControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Autocomplete\AutocompletePopupItemControl.Designer.cs">
+      <DependentUpon>AutocompletePopupItemControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Autocomplete\AutocompletePopupControl.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\Autocomplete\AutocompletePopupControl.Designer.cs">
+      <DependentUpon>AutocompletePopupControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SelectableWordPart.cs" />
     <Compile Include="Forms\SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -69,6 +90,15 @@
     <Compile Include="Entities\Application.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Controls\Autocomplete\AutoCompleteControl.resx">
+      <DependentUpon>AutoCompleteControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Autocomplete\AutocompletePopupItemControl.resx">
+      <DependentUpon>AutocompletePopupItemControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Autocomplete\AutocompletePopupControl.resx">
+      <DependentUpon>AutocompletePopupControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
