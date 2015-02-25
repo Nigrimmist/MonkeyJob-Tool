@@ -56,6 +56,9 @@
     <Compile Include="Controls\Autocomplete\AutoCompleteControl.Designer.cs">
       <DependentUpon>AutoCompleteControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Autocomplete\RichTextLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Entities\ApplicationConfiguration.cs" />
     <Compile Include="Entities\Autocomplete\AutocompletePopupInfo.cs" />
     <Compile Include="Entities\Autocomplete\AutocompletePopupItem.cs" />
@@ -73,6 +76,7 @@
       <DependentUpon>AutocompletePopupControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Entities\SelectableWordPart.cs" />
+    <Compile Include="Extensions\FormExtensions.cs" />
     <Compile Include="Forms\SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>

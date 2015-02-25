@@ -33,11 +33,15 @@
             // 
             // txtCommand
             // 
+            this.txtCommand.BackColor = System.Drawing.SystemColors.Control;
+            this.txtCommand.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtCommand.Font = new System.Drawing.Font("MS Reference Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtCommand.Location = new System.Drawing.Point(3, 3);
             this.txtCommand.Name = "txtCommand";
-            this.txtCommand.Size = new System.Drawing.Size(154, 20);
+            this.txtCommand.Size = new System.Drawing.Size(202, 26);
             this.txtCommand.TabIndex = 0;
             this.txtCommand.TextChanged += new System.EventHandler(this.txtCommand_TextChanged);
+            this.txtCommand.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCommand_KeyDown);
             // 
             // AutoCompleteControl
             // 
@@ -45,7 +49,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.txtCommand);
             this.Name = "AutoCompleteControl";
-            this.Size = new System.Drawing.Size(167, 29);
+            this.Size = new System.Drawing.Size(209, 33);
             this.Load += new System.EventHandler(this.AutoCompleteControl_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

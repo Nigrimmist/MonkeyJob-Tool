@@ -25,7 +25,7 @@ namespace HelloDesktopAssistant.Forms
         {
             var regVal = rkApp.GetValue(appName);
             chkIsWithWindowsStart.Checked = regVal != null && regVal.ToString() == System.Windows.Forms.Application.ExecutablePath;
-
+            
             HotKeysDatabind();
         }
 

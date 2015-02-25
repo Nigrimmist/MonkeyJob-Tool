@@ -30,27 +30,14 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.txtCommandSearchField = new System.Windows.Forms.TextBox();
             this.trayMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.tsExit = new System.Windows.Forms.ToolStripMenuItem();
             this.tsSettings = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsExit = new System.Windows.Forms.ToolStripMenuItem();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.trayMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // txtCommandSearchField
-            // 
-            this.txtCommandSearchField.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.txtCommandSearchField.BackColor = System.Drawing.SystemColors.Control;
-            this.txtCommandSearchField.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtCommandSearchField.Font = new System.Drawing.Font("MS Reference Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtCommandSearchField.Location = new System.Drawing.Point(43, 12);
-            this.txtCommandSearchField.Name = "txtCommandSearchField";
-            this.txtCommandSearchField.Size = new System.Drawing.Size(202, 26);
-            this.txtCommandSearchField.TabIndex = 0;
-            this.txtCommandSearchField.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCommandSearchField_KeyDown);
             // 
             // trayMenu
             // 
@@ -60,19 +47,19 @@
             this.trayMenu.Name = "trayMenu";
             this.trayMenu.Size = new System.Drawing.Size(135, 48);
             // 
-            // tsExit
-            // 
-            this.tsExit.Name = "tsExit";
-            this.tsExit.Size = new System.Drawing.Size(134, 22);
-            this.tsExit.Text = "Выход";
-            this.tsExit.Click += new System.EventHandler(this.tsExit_Click);
-            // 
             // tsSettings
             // 
             this.tsSettings.Name = "tsSettings";
             this.tsSettings.Size = new System.Drawing.Size(134, 22);
             this.tsSettings.Text = "Настройки";
             this.tsSettings.Click += new System.EventHandler(this.tsSettings_Click);
+            // 
+            // tsExit
+            // 
+            this.tsExit.Name = "tsExit";
+            this.tsExit.Size = new System.Drawing.Size(134, 22);
+            this.tsExit.Text = "Выход";
+            this.tsExit.Click += new System.EventHandler(this.tsExit_Click);
             // 
             // pictureBox1
             // 
@@ -95,7 +82,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(260, 51);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.txtCommandSearchField);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
@@ -105,13 +91,11 @@
             this.trayMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.TextBox txtCommandSearchField;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ContextMenuStrip trayMenu;
         private System.Windows.Forms.ToolStripMenuItem tsExit;

@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using MonkeyJobTool.Entities.Autocomplete;
+using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Forms.Autocomplete;
 
 namespace MonkeyJobTool.Controls.Autocomplete
@@ -28,10 +29,20 @@ namespace MonkeyJobTool.Controls.Autocomplete
                 totalHeght += itemControl.Height;
                 this.Controls.Add(itemControl);
             }
-
+            this.Height = totalHeght;
             this.Show();
+            this.ToTop();
+
         }
 
+        private void AutocompletePopupControl_Load(object sender, System.EventArgs e)
+        {
 
+        }
+
+        protected override bool ShowWithoutActivation
+        {
+            get { return true; }
+        }
     }
 }

@@ -37,6 +37,7 @@
             this.Name = "AutocompletePopupItemControl";
             this.Size = new System.Drawing.Size(262, 39);
             this.Load += new System.EventHandler(this.AutocompleteItemControl_Load);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.AutocompletePopupItemControl_Paint);
             this.ResumeLayout(false);
 
         }

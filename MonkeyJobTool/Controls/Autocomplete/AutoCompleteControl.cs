@@ -8,32 +8,26 @@ using System.Text;
 using System.Windows.Forms;
 using MonkeyJobTool.Entities;
 using MonkeyJobTool.Entities.Autocomplete;
+using MonkeyJobTool.Extensions;
+using MonkeyJobTool.Forms;
 
 namespace MonkeyJobTool.Controls.Autocomplete
 {
     public partial class AutoCompleteControl : UserControl
     {
-
-        public List<string> testCommands = new List<string>()
-        {
-            "test1",
-            "test2",
-            "lala",
-            "blalba"
-        };
+        private AutocompletePopupControl popup = new AutocompletePopupControl();
+        public Form ParentForm { get; set; }
 
         public delegate List<string> GetItemsFromSource(string term);
         public GetItemsFromSource DataFilterFunc;
-        private AutocompletePopupControl popup = new AutocompletePopupControl();
 
+        public delegate void OnCommandReceivedDelegate(string command);
+        public event OnCommandReceivedDelegate OnCommandReceived;  
 
         public AutoCompleteControl()
         {
-            DataFilterFunc = term => testCommands.Where(x => x.StartsWith(term)).ToList();
             InitializeComponent();
         }
-
-        
 
         private void AutoCompleteControl_Load(object sender, EventArgs e)
         {
@@ -42,18 +36,36 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         private void txtCommand_TextChanged(object sender, EventArgs e)
         {
-            string term = "te";
-            var actualItems = DataFilterFunc(term);
-            var popupModel = new AutocompletePopupInfo();
-            foreach (var item in actualItems)
+            string term = txtCommand.Text;
+            if (!string.IsNullOrEmpty(term))
             {
-                popupModel.Items.Add(new AutocompletePopupItem()
+                var actualItems = DataFilterFunc(term);
+                if (actualItems.Any())
                 {
-                    WordParts = GetWordParts(item, term)
-                });
+                    var popupModel = new AutocompletePopupInfo();
+                    foreach (var item in actualItems)
+                    {
+                        popupModel.Items.Add(new AutocompletePopupItem()
+                        {
+                            WordParts = GetWordParts(item, term)
+                        });
+                    }
+                    popup.Model = popupModel;
+                    popup.ShowItems();
+                    ParentForm.ToTop();//restore focus
+                    popup.Top = ParentForm.Top-popup.Height;
+                    popup.Left = ParentForm.Left;
+                    popup.Width = ParentForm.Width;
+                }
+                else
+                {
+                    popup.Hide();
+                }
             }
-            popup.Model = popupModel;
-            popup.ShowItems();
+            else
+            {
+                popup.Hide();
+            }
         }
 
         private List<SelectableWordPart> GetWordParts(string word, string term)
@@ -63,8 +75,18 @@ namespace MonkeyJobTool.Controls.Autocomplete
             int foundIndex = word.IndexOf(term, System.StringComparison.InvariantCultureIgnoreCase);
             if (foundIndex != -1)
             {
-                string foundPart = word.Substring(0, term.Length);
-                string otherPart = word.Substring(foundIndex + foundPart.Length);
+                string foundPart = word.Substring(foundIndex, term.Length);
+
+                if (foundIndex > 0)
+                {
+                    var prefixPart = word.Substring(0, foundIndex);
+                    toReturn.Add(new SelectableWordPart()
+                    {
+                        WordPart = prefixPart
+                    });
+                }
+
+                string postFixPart = word.Substring(foundIndex + foundPart.Length);
                 toReturn.Add(new SelectableWordPart()
                 {
                     WordPart = foundPart,
@@ -72,7 +94,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
                 });
                 toReturn.Add(new SelectableWordPart()
                 {
-                    WordPart = otherPart
+                    WordPart = postFixPart
                 });
             }
             else
@@ -82,9 +104,19 @@ namespace MonkeyJobTool.Controls.Autocomplete
                     WordPart = word
                 });
             }
-
-
+            
             return toReturn;
+        }
+
+        private void txtCommand_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (OnCommandReceived != null)
+                {
+                    OnCommandReceived(txtCommand.Text);
+                }
+            }
         }
     }
 }

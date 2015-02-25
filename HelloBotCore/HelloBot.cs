@@ -198,12 +198,27 @@ namespace HelloBotCore
         private string GetUserDefinedCommands()
         {
             StringBuilder sb = new StringBuilder();
-            
-            sb.Append(String.Join(Environment.NewLine, handlers.Select(x => String.Format("{0} - {1}", string.Join(" / ", x.CallCommandList.Select(y => botCommandPrefix + y.Command).ToArray()), x.CommandDescription)).ToArray()));
+            var modules = handlers.Select(x => String.Format("{0} - {1}", string.Join(" / ", x.CallCommandList.Select(y => botCommandPrefix + y.Command).ToArray()), x.CommandDescription)).ToArray();
+            sb.Append(String.Join(Environment.NewLine,modules));
             sb.AppendLine("");
-            sb.AppendLine("Запили свой модуль : https://github.com/Nigrimmist/HelloBot");
+            sb.AppendLine("Запили свой модуль : https://github.com/Nigrimmist/MonkeyJob-Tool");
 
             return sb.ToString();
+        }
+
+        public List<CallCommandInfo> GetAllCommands()
+        {
+            List<CallCommandInfo> toReturn = new List<CallCommandInfo>();
+            foreach (var callCommandInfo in handlers)
+            {
+                foreach (var info in callCommandInfo.CallCommandList)
+                {
+                    CallCommandInfo cInfo = new CallCommandInfo(info.Command);
+                    cInfo.CommandDescription = !string.IsNullOrEmpty(info.CommandDescription) ? info.CommandDescription : callCommandInfo.CommandDescription;
+                    toReturn.Add(cInfo);
+                }
+            }
+            return toReturn;
         }
     }
 
