@@ -62,6 +62,7 @@
     <Compile Include="Entities\ApplicationConfiguration.cs" />
     <Compile Include="Entities\Autocomplete\AutocompletePopupInfo.cs" />
     <Compile Include="Entities\Autocomplete\AutocompletePopupItem.cs" />
+    <Compile Include="Entities\Autocomplete\DataFilterInfo.cs" />
     <Compile Include="Entities\HotKeyType.cs" />
     <Compile Include="Controls\Autocomplete\AutocompletePopupItemControl.cs">
       <SubType>UserControl</SubType>
@@ -75,8 +76,11 @@
     <Compile Include="Controls\Autocomplete\AutocompletePopupControl.Designer.cs">
       <DependentUpon>AutocompletePopupControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\Language.cs" />
     <Compile Include="Entities\SelectableWordPart.cs" />
+    <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\FormExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Forms\SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>

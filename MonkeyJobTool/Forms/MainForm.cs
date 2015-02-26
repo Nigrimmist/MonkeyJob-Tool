@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -10,6 +11,7 @@ using HelloBotCore;
 using HelloDesktopAssistant;
 using HelloDesktopAssistant.Forms;
 using MonkeyJobTool.Controls.Autocomplete;
+using MonkeyJobTool.Entities.Autocomplete;
 using MonkeyJobTool.Extensions;
 
 namespace MonkeyJobTool.Forms
@@ -27,7 +29,7 @@ namespace MonkeyJobTool.Forms
            this.pictureBox1.Image = Properties.Resources.chimp;
            this.tsExit.Image = Properties.Resources.opened33;
            this.tsSettings.Image = Properties.Resources.settings49;
-           
+          
            try
            {
                bot = new HelloBot(botCommandPrefix: "");
@@ -102,9 +104,21 @@ namespace MonkeyJobTool.Forms
             }, null);
         }
 
-        private List<string> GetCommandListByTerm(string term)
+        private DataFilterInfo GetCommandListByTerm(string term)
         {
-            return bot.GetAllCommands().Select(x => x.Command).Where(x=>x.ToLower().StartsWith(term.ToLower())|| x.ToLower().Contains(term.ToLower())).ToList();
+            
+            Func<List<string>> filterFunc = () => bot.GetAllCommands().Select(x => x.Command).Where(x=>x.ToLower().StartsWith(term.ToLower())|| x.ToLower().Contains(term.ToLower())).ToList();
+            var foundItems = filterFunc();
+            if (!foundItems.Any())
+            {
+                term = term.GetOtherKeyboardLayoutWords().First();
+                foundItems = filterFunc();
+            }
+            return new DataFilterInfo()
+            {
+                FoundByTerm = term,
+                FoundItems = foundItems
+            };
         }
 
         void openFormHotKeyRaised(object sender, KeyPressedEventArgs e)

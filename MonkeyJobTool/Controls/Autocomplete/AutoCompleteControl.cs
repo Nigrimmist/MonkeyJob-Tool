@@ -17,8 +17,8 @@ namespace MonkeyJobTool.Controls.Autocomplete
     {
         private AutocompletePopupControl popup = new AutocompletePopupControl();
         public Form ParentForm { get; set; }
-        //todo : change to model, add find term
-        public delegate List<string> GetItemsFromSource(string term);
+        
+        public delegate DataFilterInfo GetItemsFromSource(string term);
         public GetItemsFromSource DataFilterFunc;
         private bool _isPopupOpen;
 
@@ -45,11 +45,12 @@ namespace MonkeyJobTool.Controls.Autocomplete
             string term = txtCommand.Text;
             if (!string.IsNullOrEmpty(term))
             {
-                var actualItems = DataFilterFunc(term);
-                if (actualItems.Any())
+                var filterResult = DataFilterFunc(term);
+                term = filterResult.FoundByTerm; //incoming and outgoing term can be different
+                if (filterResult.FoundItems.Any())
                 {
                     var popupModel = new AutocompletePopupInfo();
-                    foreach (var item in actualItems)
+                    foreach (var item in filterResult.FoundItems)
                     {
                         popupModel.Items.Add(new AutocompletePopupItem()
                         {

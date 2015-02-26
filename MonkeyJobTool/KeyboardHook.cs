@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using MonkeyJobTool.Extensions;
 
 namespace HelloDesktopAssistant
 {
@@ -138,11 +139,11 @@ namespace HelloDesktopAssistant
         {
             var valParts = value.Split('+');
             ModifierHookKeys toReturn;
-            TryParse(valParts.First(),  out toReturn);
+            EnumExtensions.TryParse(valParts.First(),  out toReturn);
             if (valParts.Length == 3) //two special + one ordinal
             {
                 ModifierHookKeys tempModifier;
-                if (TryParse(valParts[1],  out tempModifier))
+                if (EnumExtensions.TryParse(valParts[1],  out tempModifier))
                 {
                     toReturn |= tempModifier;
                 }
@@ -153,16 +154,11 @@ namespace HelloDesktopAssistant
         public static Keys ToOrdinalKeys(string value)
         {
             Keys toReturn;
-            TryParse(value.Split('+').Last(),  out toReturn);
+            EnumExtensions.TryParse(value.Split('+').Last(),  out toReturn);
             return toReturn;
         }
 
-        public static bool TryParse<TEnum>(string value, out TEnum result) where TEnum : struct, IConvertible
-        {
-            var retValue = value != null && Enum.IsDefined(typeof(TEnum), value);
-            result = retValue ? (TEnum)Enum.Parse(typeof(TEnum), value) : default(TEnum);
-            return retValue;
-        }
+        
         #endregion
     }
 }
