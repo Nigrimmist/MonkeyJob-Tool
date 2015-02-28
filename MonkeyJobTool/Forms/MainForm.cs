@@ -11,8 +11,10 @@ using HelloBotCore;
 using HelloDesktopAssistant;
 using HelloDesktopAssistant.Forms;
 using MonkeyJobTool.Controls.Autocomplete;
+using MonkeyJobTool.Entities;
 using MonkeyJobTool.Entities.Autocomplete;
 using MonkeyJobTool.Extensions;
+using MonkeyJobTool.Utilities;
 
 namespace MonkeyJobTool.Forms
 {
@@ -111,7 +113,13 @@ namespace MonkeyJobTool.Forms
             var foundItems = filterFunc();
             if (!foundItems.Any())
             {
-                term = term.GetOtherKeyboardLayoutWords().First();
+                Language currentKeyboardLang;
+                if (!EnumExtensions.TryParse(InputLanguage.CurrentInputLanguage.Culture.TwoLetterISOLanguageName, out currentKeyboardLang))
+                {
+                    currentKeyboardLang = Language.en;
+                }
+
+                term = term.GetOtherKeyboardLayoutWords(currentKeyboardLang).First();
                 foundItems = filterFunc();
             }
             return new DataFilterInfo()

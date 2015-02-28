@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -12,6 +12,7 @@ using System.Threading;
 using System.Web;
 using System.Xml;
 using HelloBotCore;
+
 using MonkeyJobTool.Extensions;
 using Nigrimmist.Modules.Commands;
 
@@ -23,22 +24,7 @@ namespace Test
         public static List<string> Jokes = new List<string>(); 
         static void Main(string[] args)
         {
-            StringBuilder sb = new StringBuilder();
-            string str = "фшдывофдоырвофрыодлвфолвлфывлфвоырвыфовфырвллфорвлоырвлофырв";
-            for (var i = 0; i <= 20; i++)
-            {
-                str += str;
-            }
-            var ss =str.GetOtherKeyboardLayoutWords()[0];
            
-            Stopwatch sw = new Stopwatch();
-           
-           
-            sw.Start();
-            string s2 = str.GetOtherKeyboardLayoutWords()[0];
-            sw.Stop();
-            Console.WriteLine(sw.Elapsed);
-            
             //Console.WriteLine(s);
             //Console.WriteLine(s2);
             //try
@@ -65,13 +51,7 @@ namespace Test
 
         }
 
-        static string Switch(string s)
-        {
-            foreach (var p in "йцукенгшщзхъфывапролджэячсмитьбю.ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,".Zip("qwertyuiop[]asdfghjkl;'zxcvbnm,./QWERTTYYIOOOP{}ASDFGHJKL:\"ZXCVBNM<>?",
-             (oldC, newC) => new { oldC, newC }))
-                s = s.Replace(p.oldC, p.newC);
-            return s;
-            
-        }
+        
     }
+
 }
