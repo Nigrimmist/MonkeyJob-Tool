@@ -18,13 +18,35 @@ using Nigrimmist.Modules.Commands;
 
 namespace Test
 {
+    public class t
+    {
+        public string n { get; set; }
+        public List<a> a { get; set; }
+
+        public t()
+        {
+            a = new List<a>() {new a() {sss = "sss"}};
+        }
+    }
+
+    public class a
+    {
+        public string sss { get; set; }
+    }
     class Program
     {
-        private static Random r = new Random();
-        public static List<string> Jokes = new List<string>(); 
+        
         static void Main(string[] args)
         {
-           
+
+            List<t> s = new List<t>();
+            s.Add(new t(){n = "sss"});
+
+            foreach (t t in s)
+            {
+                t.n = "lol";
+                t.a.First().sss = "changed";
+            }
             //Console.WriteLine(s);
             //Console.WriteLine(s2);
             //try

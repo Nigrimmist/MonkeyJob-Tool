@@ -101,27 +101,13 @@ namespace MonkeyJobTool.Forms
                         if (!string.IsNullOrEmpty(answer)) MessageBox.Show(answer);
                     }
                 }
-
-
             }, null);
         }
 
         private DataFilterInfo GetCommandListByTerm(string term)
         {
+            var foundItems = bot.FindCommands(term).Select(x => x.Command).ToList();
             
-            Func<List<string>> filterFunc = () => bot.GetAllCommands().Select(x => x.Command).Where(x=>x.ToLower().StartsWith(term.ToLower())|| x.ToLower().Contains(term.ToLower())).ToList();
-            var foundItems = filterFunc();
-            if (!foundItems.Any())
-            {
-                Language currentKeyboardLang;
-                if (!EnumExtensions.TryParse(InputLanguage.CurrentInputLanguage.Culture.TwoLetterISOLanguageName, out currentKeyboardLang))
-                {
-                    currentKeyboardLang = Language.en;
-                }
-
-                term = term.GetOtherKeyboardLayoutWords(currentKeyboardLang).First();
-                foundItems = filterFunc();
-            }
             return new DataFilterInfo()
             {
                 FoundByTerm = term,

@@ -8,18 +8,47 @@ namespace HelloBotCommunication
 {
     public class CallCommandInfo
     {
+        /// <summary>
+        /// Command name. That name will be displayed to user
+        /// </summary>
         public string Command { get; set; }
-        public string CommandDescription { get; set; }
+        /// <summary>
+        /// Command description. You can override General description for handler by filling that field.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Command alias word list. using for command alternative search
+        /// </summary>
+        public List<string> Aliases { get; set; } 
 
         public CallCommandInfo(string command)
         {
             Command = command;
+            Aliases = new List<string>();
         }
 
-        public CallCommandInfo(string command, string commandDescription)
+        public CallCommandInfo(string command, string description)
         {
             Command = command;
-            CommandDescription = commandDescription;
+            Description = description;
+            Aliases = new List<string>();
         }
+
+
+        public CallCommandInfo(string command, string description, List<string> aliases)
+        {
+            Command = command;
+            Description = description;
+            Aliases = aliases;
+        }
+
+        public CallCommandInfo(string command, List<string> aliases)
+        {
+            Command = command;
+            Aliases = aliases;
+        }
+
+        
     }
 }

@@ -15,8 +15,7 @@ namespace Nigrimmist.Modules.Commands
             {
                 return new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("calc"),
-                    new CallCommandInfo("калькулятор")
+                    new CallCommandInfo("калькулятор", new List<string>(){"calculator", "calc"})
                 };
             }
         }

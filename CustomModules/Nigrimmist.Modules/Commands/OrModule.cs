@@ -10,7 +10,7 @@ using HtmlAgilityPack;
 
 namespace Nigrimmist.Modules.Commands
 {
-    public class OrModule : IActionHandler
+    public class Or : IActionHandler
     {
         public List<CallCommandInfo> CallCommandList
         {

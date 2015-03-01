@@ -24,10 +24,10 @@ namespace Nigrimmist.Modules
                 new Map(),
                 new LangExecuter(),
                 new Advice(),
-                new OrModule(),
+                new Or(),
                 new Quote(),
                 new ShortLink(),
-                new BrowserUrlsOpenModule()
+                new BrowserUrlsOpen()
             };
         }
     }

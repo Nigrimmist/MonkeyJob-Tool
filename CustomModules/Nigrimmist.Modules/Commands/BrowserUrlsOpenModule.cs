@@ -6,7 +6,7 @@ using HelloBotCommunication;
 
 namespace Nigrimmist.Modules.Commands
 {
-    public class BrowserUrlsOpenModule: IActionHandler
+    public class BrowserUrlsOpen: IActionHandler
     {
 
         //public List<CallCommandInfo> CallCommandList { get;/*{ return new List<string>(){"open"}; }*/ private set; }
@@ -15,7 +15,7 @@ namespace Nigrimmist.Modules.Commands
 
         public string CommandDescription { get { return "Открывает ссылку в браузере"; } }
         private IDictionary<string, string> _commandUrlDictionary = new Dictionary<string, string>();
-        public BrowserUrlsOpenModule()
+        public BrowserUrlsOpen()
         {
            var configurationData = File.ReadAllText("ModuleConfiguration/BrowserUrlsOpenModule.txt");
             if (!string.IsNullOrEmpty(configurationData))

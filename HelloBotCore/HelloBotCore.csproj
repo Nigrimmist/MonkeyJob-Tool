@@ -47,8 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\ModuleActionHandler.cs" />
     <Compile Include="HelloBot.cs" />
+    <Compile Include="Entities\Language.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\KeyboardLayoutHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
