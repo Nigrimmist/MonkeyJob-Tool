@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using HelloBotCommunication;
 using HelloBotCore;
@@ -71,6 +72,7 @@ namespace MonkeyJobTool.Forms
             };
             autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
             this.Controls.Add(autocomplete);
+            this.ToTop();
         }
 
         void autocomplete_OnCommandReceived(string command)
@@ -87,7 +89,8 @@ namespace MonkeyJobTool.Forms
             {
                 if (toBuffer)
                 {
-                    this.Invoke(new MethodInvoker(() => Clipboard.SetText(answer)));
+                    //copy to buffer in separate thread
+                    new Thread(() => this.Invoke(new MethodInvoker(() => Clipboard.SetText(answer)))).Start();
                 }
                 else
                 {
@@ -106,7 +109,7 @@ namespace MonkeyJobTool.Forms
 
         private DataFilterInfo GetCommandListByTerm(string term)
         {
-            var foundItems = bot.FindCommands(term).Select(x => x.Command).ToList();
+            var foundItems = bot.FindCommands(term).Select(x => x.Command.ToLower()).ToList();
             
             return new DataFilterInfo()
             {
@@ -117,11 +120,11 @@ namespace MonkeyJobTool.Forms
 
         void openFormHotKeyRaised(object sender, KeyPressedEventArgs e)
         {
-            this.ToTop();
             if (autocomplete != null && autocomplete.IsPopupOpen)
             {
                 autocomplete.PopupToTop();
             }
+            this.ToTop();
         }
 
         private void BotOnOnErrorOccured(Exception exception)

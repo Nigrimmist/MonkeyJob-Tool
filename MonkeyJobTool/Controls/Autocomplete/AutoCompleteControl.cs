@@ -21,6 +21,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
         public delegate DataFilterInfo GetItemsFromSource(string term);
         public GetItemsFromSource DataFilterFunc;
         private bool _isPopupOpen;
+        private string _lastPreSelectText = string.Empty;
 
         public delegate void OnCommandReceivedDelegate(string command);
         public event OnCommandReceivedDelegate OnCommandReceived;
@@ -37,13 +38,20 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         private void AutoCompleteControl_Load(object sender, EventArgs e)
         {
-            
+            popup.OnItemHighlighted += popup_OnItemHighlighted;
+        }
+
+        void popup_OnItemHighlighted(string highlightedItem)
+        {
+            txtCommand.Text = highlightedItem+" ";
+            txtCommand.SelectionStart = txtCommand.Text.Length;
         }
 
         private void txtCommand_TextChanged(object sender, EventArgs e)
         {
-            
+            if (popup.IsInSelectMode) return; //no any suggestions if selectMode enabled
             string term = txtCommand.Text;
+            _lastPreSelectText = term;
             if (!string.IsNullOrEmpty(term))
             {
                 var filterResult = DataFilterFunc(term);
@@ -55,7 +63,8 @@ namespace MonkeyJobTool.Controls.Autocomplete
                     {
                         popupModel.Items.Add(new AutocompletePopupItem()
                         {
-                            WordParts = GetWordParts(item, term)
+                            WordParts = GetWordParts(item, term),
+                            Value = item
                         });
                     }
                     popup.Model = popupModel;
@@ -81,7 +90,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         private List<SelectableWordPart> GetWordParts(string word, string term)
         {
-            List<SelectableWordPart> toReturn = new List<SelectableWordPart>();
+            var toReturn = new List<SelectableWordPart>();
 
             int foundIndex = word.IndexOf(term, System.StringComparison.InvariantCultureIgnoreCase);
             if (foundIndex != -1)
@@ -119,25 +128,44 @@ namespace MonkeyJobTool.Controls.Autocomplete
             return toReturn;
         }
 
+        
         private void txtCommand_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
+            switch (e.KeyCode)
             {
-                if (OnCommandReceived != null)
+                case Keys.Enter:
                 {
-                    OnCommandReceived(txtCommand.Text);
+                    if (OnCommandReceived != null)
+                    {
+                        OnCommandReceived(txtCommand.Text);
+                    }
+                    break;
+                }
+                case Keys.Up:
+                {
+                    popup.HighlightUp();
+                    e.Handled = true;
+                    break;
+                }
+                case Keys.Down:
+                {
+                    var tIsInSelectMode = popup.IsInSelectMode;
+                    popup.HighlightDown();
+                    if (!popup.IsInSelectMode && tIsInSelectMode) //from select to non-select
+                    {
+                        txtCommand.Text = _lastPreSelectText;
+                        txtCommand.SelectionStart = txtCommand.Text.Length;
+                    }
+                    e.Handled = true;
+                    break;
+                }
+                default:
+                {
+                    popup.ResetHighlight();
+                    break;
                 }
             }
-            if (e.KeyCode == Keys.Up)
-            {
-                popup.HighlightUp();
-                e.Handled = true;
-            }
-            if (e.KeyCode == Keys.Down)
-            {
-                popup.HighlightDown();
-                e.Handled = true;
-            }
+            
         }
 
         public void PopupToTop()

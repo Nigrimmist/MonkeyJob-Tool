@@ -16,11 +16,12 @@ namespace MonkeyJobTool.Forms.Autocomplete
     {
         private List<SelectableWordPart> _wordParts;
         private RichTextLabel _rtl;
+        public string Value;
 
-
-        public AutocompletePopupItemControl(List<SelectableWordPart> wordParts)
+        public AutocompletePopupItemControl(List<SelectableWordPart> wordParts, string value)
         {
             this._wordParts = wordParts;
+            this.Value = value;
             InitializeComponent();
         }
 
