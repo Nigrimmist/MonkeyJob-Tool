@@ -37,11 +37,12 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         private void AutoCompleteControl_Load(object sender, EventArgs e)
         {
-
+            
         }
 
         private void txtCommand_TextChanged(object sender, EventArgs e)
         {
+            
             string term = txtCommand.Text;
             if (!string.IsNullOrEmpty(term))
             {
@@ -126,6 +127,16 @@ namespace MonkeyJobTool.Controls.Autocomplete
                 {
                     OnCommandReceived(txtCommand.Text);
                 }
+            }
+            if (e.KeyCode == Keys.Up)
+            {
+                popup.HighlightUp();
+                e.Handled = true;
+            }
+            if (e.KeyCode == Keys.Down)
+            {
+                popup.HighlightDown();
+                e.Handled = true;
             }
         }
 

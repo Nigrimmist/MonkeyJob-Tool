@@ -14,11 +14,13 @@ namespace MonkeyJobTool.Forms.Autocomplete
 {
     public partial class AutocompletePopupItemControl : UserControl
     {
-        private List<SelectableWordPart> wordParts;
+        private List<SelectableWordPart> _wordParts;
+        private RichTextLabel _rtl;
+
 
         public AutocompletePopupItemControl(List<SelectableWordPart> wordParts)
         {
-            this.wordParts = wordParts;
+            this._wordParts = wordParts;
             InitializeComponent();
         }
 
@@ -29,7 +31,7 @@ namespace MonkeyJobTool.Forms.Autocomplete
             //rtl.BackColor = Color.LemonChiffon;            
             StringBuilder sb = new StringBuilder();
             sb.Append(@"{\rtf1\ansi ");
-            foreach (var wordPart in wordParts)
+            foreach (var wordPart in _wordParts)
             {
                 if (wordPart.IsSelected)
                 {
@@ -47,6 +49,7 @@ namespace MonkeyJobTool.Forms.Autocomplete
             rtl.Width = this.Width;
             rtl.Left = 5;
             rtl.Top = 10;
+            _rtl = rtl;
             this.Controls.Add(rtl);
             
         }
@@ -71,33 +74,13 @@ namespace MonkeyJobTool.Forms.Autocomplete
         }
         private void AutocompletePopupItemControl_Paint(object sender, PaintEventArgs e)
         {
-            //float x = 10;
-            //float y = 0;
-
-            //using (Graphics formGraphics = e.Graphics)
-            //{
-            //    for (int i = 0; i < wordParts.Count; i++)
-            //    {
-            //        var wordPart = wordParts[i];
-            //        FontStyle fontStyle = wordPart.IsSelected ? FontStyle.Regular : FontStyle.Regular;
-            //        using (Font drawFont = new Font("MS Reference Sans Serif", 15.57F, fontStyle))
-            //        {
-            //            using (SolidBrush drawBrush = new SolidBrush(Color.Black))
-            //            {
-            //                HtmlRenderer.Render(formGraphics, "test <b>sss</b>", new PointF(x, y), 200);
-                            
-            //                //if (wordPart.IsSelected && i!=0) x -= 6; //correction regarding bold
-            //                //formGraphics.DrawString(wordPart.WordPart, drawFont, drawBrush, x, y);
-            //                SizeF size = formGraphics.MeasureString(wordPart.WordPart, drawFont);
-                            
-            //                //if (wordPart.IsSelected) x -= 6; //correction regarding bold
-            //                x += (size.Width); //correction regarding bold
-            //            }
-            //        }
-            //    }
-            //}
+            
         }
 
-        
+        public void SetBackColor(Color color)
+        {
+            this.BackColor = color;
+            this._rtl.BackColor = color;
+        }
     }
 }
