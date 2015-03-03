@@ -23,10 +23,11 @@ namespace HelloDesktopAssistant
         private JsonSerializer _serializer = new JsonSerializer();
         private KeyboardHook _hook = new KeyboardHook();
         private object _hookLock = new object();
+
         /// <summary>
         /// Collection of event delegates for hotkeys. one delegate for one hotkeytype
         /// </summary>
-        private Dictionary<HotKeyType, EventHandler<KeyPressedEventArgs>> _hotKeysHadlers = new Dictionary<HotKeyType, EventHandler<KeyPressedEventArgs>>();
+        private readonly Dictionary<HotKeyType, EventHandler<KeyPressedEventArgs>> _hotKeysHadlers = new Dictionary<HotKeyType, EventHandler<KeyPressedEventArgs>>();
         
 
         public static App Instance

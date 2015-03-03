@@ -144,7 +144,7 @@ namespace HelloBotCore
                                             }
                                             answerCallback(new AnswerInfo()
                                             {
-                                                Answer = command + " сломан :(",
+                                                Answer = command + " сломался",
                                                 Type = AnswerBehaviourType.ShowText
                                             });
                                         }

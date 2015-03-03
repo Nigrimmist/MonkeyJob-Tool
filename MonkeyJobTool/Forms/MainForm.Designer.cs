@@ -90,7 +90,6 @@
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "MonkeyJob Tool";
-            this.TopMost = true;
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.trayMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MainIcon)).EndInit();

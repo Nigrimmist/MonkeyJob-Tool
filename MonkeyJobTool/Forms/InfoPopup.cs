@@ -13,40 +13,48 @@ namespace MonkeyJobTool.Forms
     {
         public string Title { get; set; }
         public string Text { get; set; }
+        private TimeSpan? _timeToClose;
+        private int _timerStep;
+        private int _initialFormWidth ;
 
-        public InfoPopup(string title, string text)
+        public InfoPopup(string title, string text, TimeSpan? displayTime)
         {
             InitializeComponent();
             this.Text = text;
             this.Title = title;
+            _timeToClose = displayTime;
         }
 
-       
-        private void btnClose_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
-        private void btnCopy_Click(object sender, EventArgs e)
-        {
-            Clipboard.SetText(Text);
-        }
-
+        
         private void InfoPopup_Load(object sender, EventArgs e)
         {
             txtMessage.Text = Text;
             lblTitle.Text = Title;
             using (Graphics g = CreateGraphics())
             {
-                txtMessage.Height = (int)g.MeasureString(txtMessage.Text, txtMessage.Font, txtMessage.Width).Height+10;
+                txtMessage.Height = (int)g.MeasureString(txtMessage.Text, txtMessage.Font, txtMessage.Width).Height+40;
             }
-
-            this.Height = txtMessage.Height + 30;
+            
+            pnlTimeRemain.Top = this.Height - pnlTimeRemain.Height;
+            foreach (Control control in Controls)
+            {
+                control.Click += InfoPopup_Click;
+                control.MouseUp += InfoPopup_MouseUp;
+                control.Cursor = Cursors.Hand;
+            }
+            pnlTimeRemain.Width = this.Width;
+            if (_timeToClose.HasValue)
+            {
+                pnlTimeRemain.Width = 0;
+                _timerStep = (int) (this.Width/(_timeToClose.Value.TotalMilliseconds/closeTimer.Interval));
+                _initialFormWidth = this.Width;
+                closeTimer.Start();
+            }
         }
 
         private void InfoPopup_Click(object sender, EventArgs e)
         {
-            
+            Clipboard.SetText(Text);
         }
 
         private void InfoPopup_MouseUp(object sender, MouseEventArgs e)
@@ -57,22 +65,15 @@ namespace MonkeyJobTool.Forms
             }
         }
 
-        private void txtMessage_MouseUp(object sender, MouseEventArgs e)
+        
+        private void closeTimer_Tick(object sender, EventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
+            pnlTimeRemain.Width += _timerStep;
+            if (pnlTimeRemain.Width >= _initialFormWidth)
             {
+                closeTimer.Stop();
                 this.Close();
             }
-        }
-
-        private void InfoPopup_MouseEnter(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void InfoPopup_MouseLeave(object sender, EventArgs e)
-        {
-            
         }
     }
 }

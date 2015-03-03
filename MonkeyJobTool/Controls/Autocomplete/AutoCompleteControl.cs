@@ -15,7 +15,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
 {
     public partial class AutoCompleteControl : UserControl
     {
-        private AutocompletePopupControl popup = new AutocompletePopupControl();
+        private AutocompletePopupControl _popup = new AutocompletePopupControl();
         public Form ParentForm { get; set; }
         
         public delegate DataFilterInfo GetItemsFromSource(string term);
@@ -25,6 +25,9 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         public delegate void OnCommandReceivedDelegate(string command);
         public event OnCommandReceivedDelegate OnCommandReceived;
+
+        public delegate void OnKeyPressedDelegate(Keys key);
+        public event OnKeyPressedDelegate OnKeyPressed;
 
         public bool IsPopupOpen
         {
@@ -38,7 +41,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         private void AutoCompleteControl_Load(object sender, EventArgs e)
         {
-            popup.OnItemHighlighted += popup_OnItemHighlighted;
+            _popup.OnItemHighlighted += popup_OnItemHighlighted;
         }
 
         void popup_OnItemHighlighted(string highlightedItem)
@@ -49,7 +52,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         private void txtCommand_TextChanged(object sender, EventArgs e)
         {
-            if (popup.IsInSelectMode) return; //no any suggestions if selectMode enabled
+            if (_popup.IsInSelectMode) return; //no any suggestions if selectMode enabled
             string term = txtCommand.Text;
             _lastPreSelectText = term;
             if (!string.IsNullOrEmpty(term))
@@ -67,23 +70,23 @@ namespace MonkeyJobTool.Controls.Autocomplete
                             Value = item
                         });
                     }
-                    popup.Model = popupModel;
-                    popup.ShowItems();
+                    _popup.Model = popupModel;
+                    _popup.ShowItems();
                     ParentForm.ToTop();//restore focus
-                    popup.Top = ParentForm.Top-popup.Height;
-                    popup.Left = ParentForm.Left;
-                    popup.Width = ParentForm.Width;
+                    _popup.Top = ParentForm.Top-_popup.Height;
+                    _popup.Left = ParentForm.Left;
+                    _popup.Width = ParentForm.Width;
                     _isPopupOpen = true;
                 }
                 else
                 {
-                    popup.Hide();
+                    _popup.Hide();
                     _isPopupOpen = false;
                 }
             }
             else
             {
-                popup.Hide();
+                _popup.Hide();
                 _isPopupOpen = false;
             }
         }
@@ -143,15 +146,15 @@ namespace MonkeyJobTool.Controls.Autocomplete
                 }
                 case Keys.Up:
                 {
-                    popup.HighlightUp();
+                    _popup.HighlightUp();
                     e.Handled = true;
                     break;
                 }
                 case Keys.Down:
                 {
-                    var tIsInSelectMode = popup.IsInSelectMode;
-                    popup.HighlightDown();
-                    if (!popup.IsInSelectMode && tIsInSelectMode) //from select to non-select
+                    var tIsInSelectMode = _popup.IsInSelectMode;
+                    _popup.HighlightDown();
+                    if (!_popup.IsInSelectMode && tIsInSelectMode) //from select to non-select
                     {
                         txtCommand.Text = _lastPreSelectText;
                         txtCommand.SelectionStart = txtCommand.Text.Length;
@@ -159,29 +162,24 @@ namespace MonkeyJobTool.Controls.Autocomplete
                     e.Handled = true;
                     break;
                 }
-                case Keys.Escape :
-                {
-                    HideForm();
-                    break;
-                }
                 default:
                 {
-                    popup.ResetHighlight();
+                    _popup.ResetHighlight();
                     break;
                 }
             }
-            
+            if (OnKeyPressed != null)
+                OnKeyPressed(e.KeyCode);
         }
 
-        private void HideForm()
+        public void HidePopup()
         {
-            ParentForm.Hide();
-            popup.Hide();
+            _popup.Hide();
         }
 
         public void PopupToTop()
         {
-            popup.ToTop();
+            _popup.ToTop();
         }
     }
 }

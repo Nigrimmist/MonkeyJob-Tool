@@ -28,6 +28,7 @@ namespace MonkeyJobTool.Forms
         private AutoCompleteControl _autocomplete;
         private Bitmap defaultIcon = Properties.Resources.monkey_highres;
         private Bitmap loadingIcon = Properties.Resources.loading;
+        private List<InfoPopup> _openedPopups = new List<InfoPopup>();
 
         public MainForm()
         {
@@ -73,12 +74,13 @@ namespace MonkeyJobTool.Forms
                 Left = 43,
                 Top = 8
             };
+            _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
             _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
             this.Controls.Add(_autocomplete);
             this.ToTop();
-
-            
         }
+
+        
         
         void autocomplete_OnCommandReceived(string command)
         {
@@ -111,18 +113,31 @@ namespace MonkeyJobTool.Forms
                     {
                         if (!string.IsNullOrEmpty(answer))
                         {
-                            this.Invoke((MethodInvoker) delegate()
-                            {
-                                InfoPopup popup = new InfoPopup(answerInfo.Command, answer);
-                                popup.Width = this.Width;
-                                popup.ToTop();
-                                popup.Location = new Point(this.Location.X, this.Location.Y - popup.Height-5);
-                                this.ToTop();
-                            });
+                            this.Invoke((MethodInvoker) (() => ShowPopup(answerInfo.Command, answer,null)));
                         }
                     }
                 }
             }, null);
+        }
+
+        
+        private void ShowPopup(string title, string text,TimeSpan? displayTime)
+        {
+            CloseAllPopups();
+            InfoPopup popup = new InfoPopup(title, text, displayTime);
+            popup.Width = this.Width;
+            popup.ToTop();
+            var totalPopupY = _openedPopups.Sum(x => x.Height);
+            popup.Location = new Point(this.Location.X, this.Location.Y - popup.Height - totalPopupY);
+            popup.FormClosed += popup_FormClosed;
+            this.ToTop();
+            
+            _openedPopups.Add(popup);
+        }
+
+        void popup_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _openedPopups.Remove((InfoPopup) sender);
         }
 
         private DataFilterInfo GetCommandListByTerm(string term)
@@ -141,6 +156,10 @@ namespace MonkeyJobTool.Forms
             if (_autocomplete != null && _autocomplete.IsPopupOpen)
             {
                 _autocomplete.PopupToTop();
+            }
+            if (_openedPopups.Any())
+            {
+                _openedPopups.ForEach(p=>p.ToTop());
             }
             this.ToTop();
         }
@@ -164,6 +183,35 @@ namespace MonkeyJobTool.Forms
         private void SetLoading(bool isLoading)
         {
             MainIcon.Image = isLoading ? loadingIcon : defaultIcon;
+        }
+
+        void _autocomplete_OnKeyPressed(Keys key)
+        {
+            switch (key)
+            {
+                case Keys.Escape:
+                    {
+                        //if (_openedPopups.Any())
+                        //{
+                        //    _openedPopups.Last().Close();
+                        //}
+                        //else
+                        {
+                            this.Hide();
+                            _autocomplete.HidePopup();
+                            CloseAllPopups();
+                        }
+                        break;
+                    }
+            }
+        }
+
+        private void CloseAllPopups()
+        {
+            while (_openedPopups.Any())
+            {
+                _openedPopups.First().Close();
+            }
         }
     }
 }
