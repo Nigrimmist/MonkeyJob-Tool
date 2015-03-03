@@ -33,10 +33,10 @@
             this.trayMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.tsExit = new System.Windows.Forms.ToolStripMenuItem();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.MainIcon = new System.Windows.Forms.PictureBox();
             this.trayMenu.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MainIcon)).BeginInit();
             this.SuspendLayout();
             // 
             // trayMenu
@@ -61,14 +61,6 @@
             this.tsExit.Text = "Выход";
             this.tsExit.Click += new System.EventHandler(this.tsExit_Click);
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Location = new System.Drawing.Point(12, 12);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(25, 26);
-            this.pictureBox1.TabIndex = 1;
-            this.pictureBox1.TabStop = false;
-            // 
             // trayIcon
             // 
             this.trayIcon.ContextMenuStrip = this.trayMenu;
@@ -76,27 +68,39 @@
             this.trayIcon.Text = "MonkeyJob Tool";
             this.trayIcon.Visible = true;
             // 
+            // MainIcon
+            // 
+            this.MainIcon.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.MainIcon.Image = global::MonkeyJobTool.Properties.Resources.monkey_small;
+            this.MainIcon.Location = new System.Drawing.Point(12, 12);
+            this.MainIcon.Name = "MainIcon";
+            this.MainIcon.Size = new System.Drawing.Size(25, 26);
+            this.MainIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.MainIcon.TabIndex = 1;
+            this.MainIcon.TabStop = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(260, 51);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.MainIcon);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "MonkeyJob Tool";
+            this.TopMost = true;
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.trayMenu.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MainIcon)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox MainIcon;
         private System.Windows.Forms.ContextMenuStrip trayMenu;
         private System.Windows.Forms.ToolStripMenuItem tsExit;
         private System.Windows.Forms.ToolStripMenuItem tsSettings;

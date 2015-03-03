@@ -25,8 +25,10 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == 0x204) return; // WM_RBUTTONDOWN
-            if (m.Msg == 0x205) return; // WM_RBUTTONUP
+            //if (m.Msg == 0x204) 
+            //    return; // WM_RBUTTONDOWN
+            //if (m.Msg == 0x205) 
+            //    return; // WM_RBUTTONUP
             base.WndProc(ref m);
         }
     }

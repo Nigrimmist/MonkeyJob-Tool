@@ -14,7 +14,7 @@ namespace MonkeyJobTool.Extensions
             {
                 form.WindowState = FormWindowState.Normal;
             }
-            //form.Show();
+            form.Show();
             form.Activate();
         }
     }

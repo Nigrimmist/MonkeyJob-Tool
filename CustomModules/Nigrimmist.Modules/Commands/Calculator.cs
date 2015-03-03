@@ -9,6 +9,7 @@ namespace Nigrimmist.Modules.Commands
 {
     public class Calculator : IActionHandler
     {
+
         public List<CallCommandInfo> CallCommandList
         {
             get

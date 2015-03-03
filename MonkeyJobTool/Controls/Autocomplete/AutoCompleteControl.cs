@@ -159,6 +159,11 @@ namespace MonkeyJobTool.Controls.Autocomplete
                     e.Handled = true;
                     break;
                 }
+                case Keys.Escape :
+                {
+                    HideForm();
+                    break;
+                }
                 default:
                 {
                     popup.ResetHighlight();
@@ -166,6 +171,12 @@ namespace MonkeyJobTool.Controls.Autocomplete
                 }
             }
             
+        }
+
+        private void HideForm()
+        {
+            ParentForm.Hide();
+            popup.Hide();
         }
 
         public void PopupToTop()

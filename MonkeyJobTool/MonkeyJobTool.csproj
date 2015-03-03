@@ -81,6 +81,12 @@
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\FormExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Forms\InfoPopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InfoPopup.Designer.cs">
+      <DependentUpon>InfoPopup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -107,6 +113,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Autocomplete\AutocompletePopupControl.resx">
       <DependentUpon>AutocompletePopupControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InfoPopup.resx">
+      <DependentUpon>InfoPopup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -171,6 +180,11 @@
     <Content Include="..\CustomModules\Nigrimmist.Modules\ModuleConfiguration\BrowserUrlsOpenModule.txt">
       <Link>ModuleConfiguration\BrowserUrlsOpenModule.txt</Link>
     </Content>
+    <None Include="Resources\copy1.png" />
+    <None Include="Resources\copy22.png" />
+    <None Include="Resources\close15.png" />
+    <None Include="Resources\chimp_highres.png" />
+    <None Include="Resources\2.GIF" />
     <None Include="Resources\settings49.png" />
     <None Include="Resources\opened33.png" />
     <None Include="Resources\chimp.png" />

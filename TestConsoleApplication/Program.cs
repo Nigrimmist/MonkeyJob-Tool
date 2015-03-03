@@ -18,14 +18,24 @@ using Nigrimmist.Modules.Commands;
 
 namespace Test
 {
-    public class t
+    public interface r
+    {
+        List<a> a { get; } 
+    }
+    public class t : r
     {
         public string n { get; set; }
-        public List<a> a { get; set; }
+        private List<a> f;
+        public List<a> a { get { return new List<a>() {new a() {sss = "test"}}; }
+            set
+            {
+                f = value;
+            }
+        }
 
         public t()
         {
-            a = new List<a>() {new a() {sss = "sss"}};
+            
         }
     }
 

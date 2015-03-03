@@ -10,14 +10,16 @@ namespace HelloBotCore.Entities
     {
         public List<CallCommandInfo> CallCommandList { get; set; }
         public string CommandDescription { get; set; }
-        public delegate void HandleMessageFunc(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc);
+        public delegate void HandleMessageFunc(string command, string args, object clientData, Action<AnswerInfo> sendMessageFunc);
         public HandleMessageFunc HandleMessage { get; set; }
 
         public ModuleActionHandler(IActionHandler handler)
         {
             CallCommandList = handler.CallCommandList;
             CommandDescription = handler.CommandDescription;
-            HandleMessage = handler.HandleMessage;
+            HandleMessage = (command, args, data, func) => handler.HandleMessage(command, args, data, (answer, type) => func(
+                new AnswerInfo(){Answer = answer,Type = type,Command = command}
+                ));
         }
     }
 }

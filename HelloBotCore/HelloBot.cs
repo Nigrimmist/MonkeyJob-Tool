@@ -99,7 +99,7 @@ namespace HelloBotCore
             return toReturn;
         }
         
-        public void HandleMessage(string incomingMessage, Action<string,AnswerBehaviourType> answerCallback, object data)
+        public void HandleMessage(string incomingMessage, Action<AnswerInfo> answerCallback, object data)
         {
             if (incomingMessage.Contains(_botCommandPrefix))
             {
@@ -111,7 +111,11 @@ namespace HelloBotCore
                     if (systemCommandList.Any())
                     {
                         var systemComand = systemCommandList.First();
-                        answerCallback(systemComand.Value.Callback(), AnswerBehaviourType.ShowText);
+                        answerCallback(new AnswerInfo()
+                        {
+                            Answer = systemComand.Value.Callback(),
+                            Type = AnswerBehaviourType.ShowText
+                        });
                     }
                     else
                     {
@@ -122,29 +126,38 @@ namespace HelloBotCore
                             string args = incomingMessage.Substring(incomingMessage.IndexOf(command, StringComparison.InvariantCultureIgnoreCase) + command.Length).Trim();
 
                             ModuleActionHandler hnd = handler;
-
-                            if (!RunWithTimeout(() =>
+                            new Thread(() => //running in separate thread
                             {
-                                try
+                                if (!RunWithTimeout(() => //check for timing
                                 {
-                                    hnd.HandleMessage(command, args, data, answerCallback);
-                                }
-                                catch (Exception ex)
-                                {
-                                    if (!(ex is ThreadAbortException))
+                                    try
                                     {
-                                        if (OnErrorOccured != null)
-                                        {
-                                            OnErrorOccured(ex);
-                                        }
-                                        answerCallback(command + " сломан :(", AnswerBehaviourType.ShowText);
+                                        hnd.HandleMessage(command, args, data, answerCallback);
                                     }
+                                    catch (Exception ex)
+                                    {
+                                        if (!(ex is ThreadAbortException))
+                                        {
+                                            if (OnErrorOccured != null)
+                                            {
+                                                OnErrorOccured(ex);
+                                            }
+                                            answerCallback(new AnswerInfo()
+                                            {
+                                                Answer = command + " сломан :(",
+                                                Type = AnswerBehaviourType.ShowText
+                                            });
+                                        }
+                                    }
+                                }, TimeSpan.FromSeconds(_commandTimeoutSec)))
+                                {
+                                    answerCallback(new AnswerInfo()
+                                    {
+                                        Answer = command + " сломан (время на выполнение команды истекло)",
+                                        Type = AnswerBehaviourType.ShowText
+                                    });
                                 }
-                            }, TimeSpan.FromSeconds(_commandTimeoutSec)))
-                            {
-                                answerCallback(command + " сломан (время на выполнение команды истекло)", AnswerBehaviourType.ShowText);
-                            }
-
+                            }).Start();
                         }
                     }
                 }

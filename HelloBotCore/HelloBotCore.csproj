@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\AnswerInfo.cs" />
     <Compile Include="Entities\ModuleActionHandler.cs" />
     <Compile Include="HelloBot.cs" />
     <Compile Include="Entities\Language.cs" />

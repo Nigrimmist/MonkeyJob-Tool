@@ -9,6 +9,7 @@ using System.Threading;
 using System.Windows.Forms;
 using HelloBotCommunication;
 using HelloBotCore;
+using HelloBotCore.Entities;
 using HelloDesktopAssistant;
 using HelloDesktopAssistant.Forms;
 using MonkeyJobTool.Controls.Autocomplete;
@@ -22,20 +23,22 @@ namespace MonkeyJobTool.Forms
     
     public partial class MainForm : Form
     {
-        private HelloBot bot;
-        private string copyToBufferPostFix = " в буфер";
-        private AutoCompleteControl autocomplete;
+        private HelloBot _bot;
+        private const string _copyToBufferPostFix = " в буфер";
+        private AutoCompleteControl _autocomplete;
+        private Bitmap defaultIcon = Properties.Resources.monkey_highres;
+        private Bitmap loadingIcon = Properties.Resources.loading;
 
         public MainForm()
         {
            InitializeComponent();
-           this.pictureBox1.Image = Properties.Resources.chimp;
-           this.tsExit.Image = Properties.Resources.opened33;
-           this.tsSettings.Image = Properties.Resources.settings49;
+           this.MainIcon.Image =
+           this.tsExit.Image = defaultIcon;
+           this.tsSettings.Image = Properties.Resources.settings;
           
            try
            {
-               bot = new HelloBot(botCommandPrefix: "");
+               _bot = new HelloBot(botCommandPrefix: "");
                App.Init(openFormHotKeyRaised);
            }
            catch (Exception ex)
@@ -57,40 +60,45 @@ namespace MonkeyJobTool.Forms
         private void MainForm_Load(object sender, EventArgs e)
         {
             this.ShowInTaskbar = false;
-            bot.OnErrorOccured += BotOnOnErrorOccured;
+            _bot.OnErrorOccured += BotOnOnErrorOccured;
             
 
             var screen = Screen.FromPoint(this.Location);
             this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
 
-            autocomplete = new AutoCompleteControl()
+            _autocomplete = new AutoCompleteControl()
             {
                 ParentForm = this,
                 DataFilterFunc = GetCommandListByTerm,
                 Left = 43,
                 Top = 8
             };
-            autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
-            this.Controls.Add(autocomplete);
+            _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
+            this.Controls.Add(_autocomplete);
             this.ToTop();
-        }
 
+            
+        }
+        
         void autocomplete_OnCommandReceived(string command)
         {
             
             bool toBuffer = false;
-            if (command.Trim().EndsWith(copyToBufferPostFix, StringComparison.InvariantCultureIgnoreCase))
+            if (command.Trim().EndsWith(_copyToBufferPostFix, StringComparison.InvariantCultureIgnoreCase))
             {
-                command = command.Substring(0, command.Length - copyToBufferPostFix.Length);
+                command = command.Substring(0, command.Length - _copyToBufferPostFix.Length);
                 toBuffer = true;
             }
-
-            bot.HandleMessage(command, delegate(string answer, AnswerBehaviourType answerType)
+            SetLoading(true);
+            
+            _bot.HandleMessage(command, delegate(AnswerInfo answerInfo)
             {
+                string answer = answerInfo.Answer;
+                var answerType = answerInfo.Type;
+                SetLoading(false);
                 if (toBuffer)
                 {
-                    //copy to buffer in separate thread
-                    new Thread(() => this.Invoke(new MethodInvoker(() => Clipboard.SetText(answer)))).Start();
+                    this.Invoke(new MethodInvoker(() => Clipboard.SetText(answer)));
                 }
                 else
                 {
@@ -101,7 +109,17 @@ namespace MonkeyJobTool.Forms
                     }
                     else if (answerType == AnswerBehaviourType.ShowText)
                     {
-                        if (!string.IsNullOrEmpty(answer)) MessageBox.Show(answer);
+                        if (!string.IsNullOrEmpty(answer))
+                        {
+                            this.Invoke((MethodInvoker) delegate()
+                            {
+                                InfoPopup popup = new InfoPopup(answerInfo.Command, answer);
+                                popup.Width = this.Width;
+                                popup.ToTop();
+                                popup.Location = new Point(this.Location.X, this.Location.Y - popup.Height-5);
+                                this.ToTop();
+                            });
+                        }
                     }
                 }
             }, null);
@@ -109,7 +127,7 @@ namespace MonkeyJobTool.Forms
 
         private DataFilterInfo GetCommandListByTerm(string term)
         {
-            var foundItems = bot.FindCommands(term).Select(x => x.Command.ToLower()).ToList();
+            var foundItems = _bot.FindCommands(term).Select(x => x.Command.ToLower()).ToList();
             
             return new DataFilterInfo()
             {
@@ -120,9 +138,9 @@ namespace MonkeyJobTool.Forms
 
         void openFormHotKeyRaised(object sender, KeyPressedEventArgs e)
         {
-            if (autocomplete != null && autocomplete.IsPopupOpen)
+            if (_autocomplete != null && _autocomplete.IsPopupOpen)
             {
-                autocomplete.PopupToTop();
+                _autocomplete.PopupToTop();
             }
             this.ToTop();
         }
@@ -143,10 +161,9 @@ namespace MonkeyJobTool.Forms
             new SettingsForm().Show();
         }
 
-        
-
-
-        
-
+        private void SetLoading(bool isLoading)
+        {
+            MainIcon.Image = isLoading ? loadingIcon : defaultIcon;
+        }
     }
 }
