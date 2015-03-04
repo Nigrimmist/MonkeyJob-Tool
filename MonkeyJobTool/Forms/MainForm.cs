@@ -28,7 +28,7 @@ namespace MonkeyJobTool.Forms
         private AutoCompleteControl _autocomplete;
         private Bitmap defaultIcon = Properties.Resources.monkey_highres;
         private Bitmap loadingIcon = Properties.Resources.loading;
-        private List<InfoPopup> _openedPopups = new List<InfoPopup>();
+        
 
         public MainForm()
         {
@@ -40,7 +40,7 @@ namespace MonkeyJobTool.Forms
            try
            {
                _bot = new HelloBot(botCommandPrefix: "");
-               App.Init(openFormHotKeyRaised);
+               App.Init(openFormHotKeyRaised,this);
            }
            catch (Exception ex)
            {
@@ -92,15 +92,20 @@ namespace MonkeyJobTool.Forms
                 toBuffer = true;
             }
             SetLoading(true);
-            
-            _bot.HandleMessage(command, delegate(AnswerInfo answerInfo)
+
+            if (!_bot.HandleMessage(command, delegate(AnswerInfo answerInfo)
             {
                 string answer = answerInfo.Answer;
                 var answerType = answerInfo.Type;
                 SetLoading(false);
                 if (toBuffer)
                 {
-                    this.Invoke(new MethodInvoker(() => Clipboard.SetText(answer)));
+                    this.Invoke(new MethodInvoker(delegate
+                    {
+                        Clipboard.SetText(answer);
+                        App.Instance.ShowPopup("Скопировано в буфер обмена", TimeSpan.FromSeconds(2));
+                    }));
+                    
                 }
                 else
                 {
@@ -113,31 +118,19 @@ namespace MonkeyJobTool.Forms
                     {
                         if (!string.IsNullOrEmpty(answer))
                         {
-                            this.Invoke((MethodInvoker) (() => ShowPopup(answerInfo.Command, answer,null)));
+                            this.Invoke((MethodInvoker) (delegate
+                            {
+                                App.Instance.ShowPopup(answerInfo.Command, answer, null);
+                                this.ToTop();
+                            }));
+
                         }
                     }
                 }
-            }, null);
-        }
-
-        
-        private void ShowPopup(string title, string text,TimeSpan? displayTime)
-        {
-            CloseAllPopups();
-            InfoPopup popup = new InfoPopup(title, text, displayTime);
-            popup.Width = this.Width;
-            popup.ToTop();
-            var totalPopupY = _openedPopups.Sum(x => x.Height);
-            popup.Location = new Point(this.Location.X, this.Location.Y - popup.Height - totalPopupY);
-            popup.FormClosed += popup_FormClosed;
-            this.ToTop();
-            
-            _openedPopups.Add(popup);
-        }
-
-        void popup_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            _openedPopups.Remove((InfoPopup) sender);
+            }, null))
+            {
+                SetLoading(false);
+            }
         }
 
         private DataFilterInfo GetCommandListByTerm(string term)
@@ -157,10 +150,7 @@ namespace MonkeyJobTool.Forms
             {
                 _autocomplete.PopupToTop();
             }
-            if (_openedPopups.Any())
-            {
-                _openedPopups.ForEach(p=>p.ToTop());
-            }
+            App.Instance.AllPopupsToTop();
             this.ToTop();
         }
 
@@ -185,33 +175,30 @@ namespace MonkeyJobTool.Forms
             MainIcon.Image = isLoading ? loadingIcon : defaultIcon;
         }
 
-        void _autocomplete_OnKeyPressed(Keys key)
+        private void _autocomplete_OnKeyPressed(Keys key)
         {
             switch (key)
             {
                 case Keys.Escape:
-                    {
-                        //if (_openedPopups.Any())
-                        //{
-                        //    _openedPopups.Last().Close();
-                        //}
-                        //else
-                        {
-                            this.Hide();
-                            _autocomplete.HidePopup();
-                            CloseAllPopups();
-                        }
-                        break;
-                    }
+                {
+                    this.Hide();
+                    _autocomplete.HidePopup();
+                    App.Instance.CloseAllPopups();
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
             }
         }
 
-        private void CloseAllPopups()
+        
+        private void trayIcon_Click(object sender, EventArgs e)
         {
-            while (_openedPopups.Any())
-            {
-                _openedPopups.First().Close();
-            }
+            this.ToTop();
         }
+
+        
     }
 }

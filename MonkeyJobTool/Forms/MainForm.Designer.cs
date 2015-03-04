@@ -67,6 +67,7 @@
             this.trayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("trayIcon.Icon")));
             this.trayIcon.Text = "MonkeyJob Tool";
             this.trayIcon.Visible = true;
+            this.trayIcon.Click += new System.EventHandler(this.trayIcon_Click);
             // 
             // MainIcon
             // 

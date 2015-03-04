@@ -4,8 +4,10 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using MonkeyJobTool.Entities;
 
 namespace MonkeyJobTool.Forms
 {
@@ -30,11 +32,7 @@ namespace MonkeyJobTool.Forms
         {
             txtMessage.Text = Text;
             lblTitle.Text = Title;
-            using (Graphics g = CreateGraphics())
-            {
-                txtMessage.Height = (int)g.MeasureString(txtMessage.Text, txtMessage.Font, txtMessage.Width).Height+40;
-            }
-            
+
             pnlTimeRemain.Top = this.Height - pnlTimeRemain.Height;
             foreach (Control control in Controls)
             {
@@ -55,6 +53,7 @@ namespace MonkeyJobTool.Forms
         private void InfoPopup_Click(object sender, EventArgs e)
         {
             Clipboard.SetText(Text);
+            App.Instance.ShowPopup("Скопировано в буфер обмена", TimeSpan.FromSeconds(2));
         }
 
         private void InfoPopup_MouseUp(object sender, MouseEventArgs e)
@@ -75,5 +74,22 @@ namespace MonkeyJobTool.Forms
                 this.Close();
             }
         }
+
+        
+        //richtextlabel resize hack
+        //todo:to base class. check other popups
+        private void txtMessage_ContentsResized(object sender, ContentsResizedEventArgs e)
+        {
+            txtMessage.Height = e.NewRectangle.Height+1;
+            
+            int screenHeight = Screen.FromPoint(this.Location).WorkingArea.Height;
+            if (txtMessage.Height > screenHeight/2)
+            {
+                txtMessage.Height = screenHeight / 2;
+            }
+            this.Height = txtMessage.Height + 50;
+        }        
     }
+
+
 }

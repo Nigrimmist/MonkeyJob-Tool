@@ -99,7 +99,7 @@ namespace HelloBotCore
             return toReturn;
         }
         
-        public void HandleMessage(string incomingMessage, Action<AnswerInfo> answerCallback, object data)
+        public bool HandleMessage(string incomingMessage, Action<AnswerInfo> answerCallback, object data)
         {
             if (incomingMessage.Contains(_botCommandPrefix))
             {
@@ -116,6 +116,7 @@ namespace HelloBotCore
                             Answer = systemComand.Value.Callback(),
                             Type = AnswerBehaviourType.ShowText
                         });
+                        return true;
                     }
                     else
                     {
@@ -158,10 +159,14 @@ namespace HelloBotCore
                                     });
                                 }
                             }).Start();
+                            return true;
                         }
+                        return false;
                     }
                 }
+                return false;
             }
+            return false;
         }
         
         static bool RunWithTimeout(ThreadStart threadStart, TimeSpan timeout)

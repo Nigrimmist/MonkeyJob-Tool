@@ -9,6 +9,7 @@ using System.Text;
 using System.Windows.Forms;
 using HelloDesktopAssistant.Entities;
 using Microsoft.Win32;
+using MonkeyJobTool.Entities;
 
 namespace HelloDesktopAssistant.Forms
 {

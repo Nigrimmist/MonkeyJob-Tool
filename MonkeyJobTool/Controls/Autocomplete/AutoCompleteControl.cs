@@ -89,6 +89,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
                 _popup.Hide();
                 _isPopupOpen = false;
             }
+            App.Instance.CloseAllPopups();
         }
 
         private List<SelectableWordPart> GetWordParts(string word, string term)
@@ -165,6 +166,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
                 default:
                 {
                     _popup.ResetHighlight();
+
                     break;
                 }
             }
@@ -181,5 +183,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
         {
             _popup.ToTop();
         }
+
+        
     }
 }

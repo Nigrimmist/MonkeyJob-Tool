@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
-
+using System.Linq;
 using System.Text;
-
 using System.Windows.Forms;
+using HelloDesktopAssistant;
 using HelloDesktopAssistant.Entities;
+using MonkeyJobTool.Extensions;
+using MonkeyJobTool.Forms;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
-namespace HelloDesktopAssistant
+namespace MonkeyJobTool.Entities
 {
     /// <summary>
     /// Main Application class for communication between forms including business logic. GOD CLASS! HAHHAHA!
@@ -23,6 +25,8 @@ namespace HelloDesktopAssistant
         private JsonSerializer _serializer = new JsonSerializer();
         private KeyboardHook _hook = new KeyboardHook();
         private object _hookLock = new object();
+        private List<InfoPopup> _openedPopups = new List<InfoPopup>();
+        private MainForm _mainForm;
 
         /// <summary>
         /// Collection of event delegates for hotkeys. one delegate for one hotkeytype
@@ -49,8 +53,9 @@ namespace HelloDesktopAssistant
             
         }
 
-        public static void Init(EventHandler<KeyPressedEventArgs> mainFormOpenHotKeyRaisedHandler)
+        public static void Init(EventHandler<KeyPressedEventArgs> mainFormOpenHotKeyRaisedHandler, MainForm mainForm)
         {
+            Instance._mainForm = mainForm;
             //register open program hotkey using incoming (main form) delegate
             Instance._hotKeysHadlers.Add(HotKeyType.OpenProgram, mainFormOpenHotKeyRaisedHandler);
 
@@ -100,6 +105,45 @@ namespace HelloDesktopAssistant
                 _serializer.Serialize(new JsonTextWriter(new StringWriter(sb)), value);
                 File.WriteAllText(_confFileName, sb.ToString());
                 _appConf = value;
+            }
+        }
+
+        public void ShowPopup(string message, TimeSpan? timeToShow)
+        {
+            ShowPopup(string.Empty, message, timeToShow);
+        }
+
+        public void ShowPopup(string title, string text, TimeSpan? displayTime)
+        {
+            CloseAllPopups();
+            InfoPopup popup = new InfoPopup(title, text, displayTime);
+            popup.Width = _mainForm.Width;
+            popup.ToTop();
+            var totalPopupY = _openedPopups.Sum(x => x.Height);
+            popup.Location = new Point(_mainForm.Location.X, _mainForm.Location.Y - popup.Height - totalPopupY);
+            popup.FormClosed += popup_FormClosed;
+
+            _openedPopups.Add(popup);
+        }
+
+        void popup_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _openedPopups.Remove((InfoPopup)sender);
+        }
+
+        public void CloseAllPopups()
+        {
+            while (_openedPopups.Any())
+            {
+                _openedPopups.First().Close();
+            }
+        }
+
+        public void AllPopupsToTop()
+        {
+            if (_openedPopups.Any())
+            {
+                _openedPopups.ForEach(p => p.ToTop());
             }
         }
     }

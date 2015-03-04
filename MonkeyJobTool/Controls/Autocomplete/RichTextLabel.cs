@@ -21,6 +21,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
             {
                 this.Cursor = Cursors.Default;
             };
+            
         }
 
         protected override void WndProc(ref Message m)
