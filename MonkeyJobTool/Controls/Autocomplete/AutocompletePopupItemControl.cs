@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-
-using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using MonkeyJobTool.Controls.Autocomplete;
 using MonkeyJobTool.Entities;
 
-namespace MonkeyJobTool.Forms.Autocomplete
+namespace MonkeyJobTool.Controls.Autocomplete
 {
     public partial class AutocompletePopupItemControl : UserControl
     {
@@ -45,9 +40,9 @@ namespace MonkeyJobTool.Forms.Autocomplete
                 }
             }
             sb.Append(@"}");
-
-            rtl.Rtf = sb.ToString();
             rtl.Width = this.Width;
+            rtl.Rtf = sb.ToString();
+            
             rtl.Left = 5;
             rtl.Top = 10;
             _rtl = rtl;

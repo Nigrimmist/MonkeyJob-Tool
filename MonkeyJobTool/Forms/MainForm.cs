@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using HelloBotCommunication;
@@ -78,11 +79,40 @@ namespace MonkeyJobTool.Forms
             this.ToTop();
         }
 
-        
+        private string TryToReplaceCommand(string command)
+        {
+            string toReturn = command;
+            var bestMatchReplace = App.Instance.AppConf.CommandReplaces.Where(x => command.StartsWith(x.From)).OrderByDescending(x=>x.From.Length).FirstOrDefault();
+            if (bestMatchReplace != null)
+            {
+                var args = command.Substring(bestMatchReplace.From.Length);
+                if (args.Length == 0 || args.StartsWith(" ")) //not part of other word
+                {
+                    var commandArgs = args.Trim().Split(new[] {"=>"}, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    var replaceCount = Regex.Matches(bestMatchReplace.To, @"({\d+})").Count;
+
+                    if (commandArgs.Count < replaceCount)
+                    {
+                        commandArgs.AddRange(Enumerable.Repeat("", replaceCount - commandArgs.Count));
+                    }
+
+                    toReturn = string.Format(bestMatchReplace.To, commandArgs.ToArray());
+
+                    if (replaceCount == 0)
+                    {
+                        toReturn = bestMatchReplace.To + args;
+                    }
+                    
+                    
+                }
+            }
+            return toReturn;
+        }
         
         void autocomplete_OnCommandReceived(string command)
         {
-            
+            command = TryToReplaceCommand(command);
+
             bool toBuffer = false;
             if (command.Trim().EndsWith(_copyToBufferPostFix, StringComparison.InvariantCultureIgnoreCase))
             {
@@ -194,7 +224,16 @@ namespace MonkeyJobTool.Forms
         
         private void trayIcon_Click(object sender, EventArgs e)
         {
-            this.ToTop();
+
+            
+        }
+
+        private void trayIcon_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                this.ToTop();
+            }
         }
 
         

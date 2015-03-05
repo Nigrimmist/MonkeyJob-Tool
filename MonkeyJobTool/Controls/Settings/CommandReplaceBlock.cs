@@ -13,7 +13,7 @@ namespace MonkeyJobTool.Controls.Settings
     {
         public delegate void OnOneOfFieldFilledDelegate();
         public event OnOneOfFieldFilledDelegate OnOneOfFieldFilled;
-        public event OnOneOfFieldFilledDelegate OnBothFieldsEmpty;
+        
 
         public string From
         {
@@ -50,12 +50,7 @@ namespace MonkeyJobTool.Controls.Settings
 
         private void CheckEvents()
         {
-            if (string.IsNullOrEmpty(txtTo.Text) && string.IsNullOrEmpty(txtFrom.Text))
-            {
-                if (OnBothFieldsEmpty != null)
-                    OnBothFieldsEmpty();
-            }
-            else if (!string.IsNullOrEmpty(txtTo.Text) && !string.IsNullOrEmpty(txtFrom.Text))
+            if (!string.IsNullOrEmpty(txtTo.Text) && !string.IsNullOrEmpty(txtFrom.Text))
             {
                 if (OnOneOfFieldFilled != null)
                     OnOneOfFieldFilled();

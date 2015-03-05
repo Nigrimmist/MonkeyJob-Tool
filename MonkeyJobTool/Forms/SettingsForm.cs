@@ -112,10 +112,8 @@ namespace MonkeyJobTool.Forms
         private void CommandReplaceDatabind()
         {
             var replaces = App.Instance.AppConf.CommandReplaces;
-            if (!replaces.Any())
-            {
-                replaces = new List<CommandReplace>() {new CommandReplace() {From = "", To = ""}};
-            }
+            replaces.Add(new CommandReplace() { From = "", To = "" });
+            
             foreach (CommandReplace replace in replaces)
             {
                 AddReplaceBlock(replace.From, replace.To);
@@ -126,14 +124,12 @@ namespace MonkeyJobTool.Forms
         private void SubscribeLastReplaceBlock()
         {
             var lastBlock = _replaceBlocks.Last();
-            lastBlock.OnBothFieldsEmpty += OnBlockRemoveRequired;
             lastBlock.OnOneOfFieldFilled += OnNewBlockRequired;
         }
 
         private void UnsubscribeLastReplaceBlock()
         {
             var lastBlock = _replaceBlocks.Last();
-            lastBlock.OnBothFieldsEmpty -= OnBlockRemoveRequired;
             lastBlock.OnOneOfFieldFilled -= OnNewBlockRequired;
         }
 
@@ -144,19 +140,11 @@ namespace MonkeyJobTool.Forms
             SubscribeLastReplaceBlock();
         }
 
-        private void OnBlockRemoveRequired()
-        {
-            var lastBlock = _replaceBlocks.Last();
-            pnlCommandReplaces.Controls.Remove(_replaceBlocks.Last());
-            _replaceBlocks.Remove(lastBlock);
-        }
-
         private void AddReplaceBlock(string from, string to)
         {
             var crBlock = new CommandReplaceBlock();
             crBlock.From = from;
             crBlock.To = to;
-            //crBlock.Top = _replaceBlocks.Sum(x => x.Height);
             pnlCommandReplaces.Controls.Add(crBlock);
             _replaceBlocks.Add(crBlock);
         }
@@ -174,13 +162,21 @@ namespace MonkeyJobTool.Forms
 
             ApplicationConfiguration updatedAppConf = App.Instance.AppConf;
             updatedAppConf.HotKeys.ProgramOpen = string.Join("+", new List<string>() { cmbKey1.Text, cmbKey2.Text, cmbKey3.Text }.Where(x=>!string.IsNullOrEmpty(x)).ToArray());
-
-
+            updatedAppConf.CommandReplaces = GetCommandReplaces();
             App.Instance.AppConf = updatedAppConf;
 
             App.Instance.ReInitHotKeys();
             this.Close();
         }
+
+        private List<CommandReplace> GetCommandReplaces()
+        {
+            return _replaceBlocks.Select(x => new CommandReplace()
+            {
+                From = x.From,
+                To = x.To
+            }).Where(x=>!string.IsNullOrEmpty(x.From.Trim())&&!string.IsNullOrEmpty(x.To.Trim())).ToList();
+        } 
 
         private void btnSaveConfig_Click(object sender, EventArgs e)
         {

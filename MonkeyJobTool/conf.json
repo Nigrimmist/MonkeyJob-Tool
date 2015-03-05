@@ -1,5 +1,6 @@
 ﻿{
 	HotKeys : {
 		ProgramOpen : "CTRL+M"
-	}
+	},	
+    CommandReplaces: []
 }

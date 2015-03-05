@@ -1,4 +1,4 @@
-﻿namespace MonkeyJobTool.Forms.Autocomplete
+﻿namespace MonkeyJobTool.Controls.Autocomplete
 {
     partial class AutocompletePopupItemControl
     {

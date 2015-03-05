@@ -4,7 +4,6 @@ using System.Linq;
 using System.Windows.Forms;
 using MonkeyJobTool.Entities.Autocomplete;
 using MonkeyJobTool.Extensions;
-using MonkeyJobTool.Forms.Autocomplete;
 
 namespace MonkeyJobTool.Controls.Autocomplete
 {
