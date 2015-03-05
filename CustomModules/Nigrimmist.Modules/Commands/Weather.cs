@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 
 using HelloBotCommunication;
@@ -11,14 +12,14 @@ namespace Nigrimmist.Modules.Commands
 {
     public class Weather : IActionHandler
     {
-        public List<CallCommandInfo> CallCommandList
+        public ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
-                return new List<CallCommandInfo>()
+                return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("погода")
-                };
+                    new CallCommandInfo("погода",new List<string>(){"weather"})
+                });
             }
         }
         public string CommandDescription { get { return @"Погода с тутбая для Минска. ""!погода"" = текущая+завтра"; } }

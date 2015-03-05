@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace HelloBotCommunication
 {
@@ -8,7 +9,7 @@ namespace HelloBotCommunication
         /// <summary>
         /// Call command list.
         /// </summary>
-        List<CallCommandInfo> CallCommandList { get; }
+        ReadOnlyCollection<CallCommandInfo> CallCommandList { get; }
 
         /// <summary>
         /// Will be displayed in !modules list

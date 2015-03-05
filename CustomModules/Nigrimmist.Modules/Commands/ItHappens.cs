@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -17,15 +18,14 @@ namespace Nigrimmist.Modules.Commands
         private Random r = new Random();
 
        
-        public List<CallCommandInfo> CallCommandList
+        public ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
-                return new List<CallCommandInfo>()
+                return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    
-                    new CallCommandInfo("ithap" )
-                };
+                    new CallCommandInfo("ithappens.ru", new List<string>(){"ithap","it"} )
+                });
             }
         }
 

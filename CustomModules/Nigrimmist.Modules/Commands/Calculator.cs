@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading;
 using HelloBotCommunication;
 
@@ -10,14 +11,14 @@ namespace Nigrimmist.Modules.Commands
     public class Calculator : IActionHandler
     {
 
-        public List<CallCommandInfo> CallCommandList
+        public ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
-                return new List<CallCommandInfo>()
+                return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
                     new CallCommandInfo("калькулятор", new List<string>(){"calculator", "calc"})
-                };
+                });
             }
         }
 

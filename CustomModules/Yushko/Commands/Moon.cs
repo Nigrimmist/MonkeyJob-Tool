@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using HelloBotCommunication;
 using HelloBotModuleHelper;
@@ -11,16 +12,14 @@ namespace Yushko.Commands
     public class Moon : IActionHandler
     {
        
-        public List<CallCommandInfo> CallCommandList
+        public ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
-                return new List<CallCommandInfo>()
+                return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    
-                    new CallCommandInfo("луна" ),
-                    new CallCommandInfo("moon" )
-                };
+                    new CallCommandInfo("луна", new List<string>(){"moon"} ),
+                });
             }
         }
         public string CommandDescription { get { return @"лунный календарь"; } }

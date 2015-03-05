@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -18,15 +19,14 @@ namespace SmartAssHandlerLib
         private const string FailedResult = "I CAN'T FIND THAT SHIT!";
 
         
-        public List<CallCommandInfo> CallCommandList
+        public ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
-                return new List<CallCommandInfo>()
+                return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    
-                    new CallCommandInfo("weather" )
-                };
+                    new CallCommandInfo("fun weather", new List<string>(){"погода"})
+                });
             }
         }
 

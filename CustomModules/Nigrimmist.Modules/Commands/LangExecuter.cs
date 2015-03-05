@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -19,15 +20,14 @@ namespace Nigrimmist.Modules.Commands
             public string Errors { get; set; }
         }
 
-        public List<CallCommandInfo> CallCommandList
+        public ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
-                return new List<CallCommandInfo>()
+                return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    
-                    new CallCommandInfo("execute" )
-                };
+                    new CallCommandInfo("execute", new List<string>( ){"C#"})
+                });
             }
         }
 

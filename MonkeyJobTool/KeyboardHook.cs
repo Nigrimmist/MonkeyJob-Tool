@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using MonkeyJobTool.Extensions;
 
-namespace HelloDesktopAssistant
+namespace MonkeyJobTool
 {
     public sealed class KeyboardHook : IDisposable
     {

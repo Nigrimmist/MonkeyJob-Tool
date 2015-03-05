@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
@@ -31,14 +32,14 @@ namespace Yushko.Commands
     public class Sorry : IActionHandler
     {
        
-        public List<CallCommandInfo> CallCommandList
+        public ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
-                return new List<CallCommandInfo>()
+                return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("простите" ),
-                };
+                    new CallCommandInfo("простите.com", new List<string>(){"prostite","простите"} ),
+                });
             }
         }
         

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using HelloBotCommunication;
@@ -11,10 +12,10 @@ namespace Nigrimmist.Modules.Commands
 
         //public List<CallCommandInfo> CallCommandList { get;/*{ return new List<string>(){"open"}; }*/ private set; }
 
-        public List<CallCommandInfo> CallCommandList{get; private set;}
+        public ReadOnlyCollection<CallCommandInfo> CallCommandList{get; private set;}
 
         public string CommandDescription { get { return "Открывает ссылку в браузере"; } }
-        private IDictionary<string, string> _commandUrlDictionary = new Dictionary<string, string>();
+        private readonly IDictionary<string, string> _commandUrlDictionary = new Dictionary<string, string>();
         public BrowserUrlsOpen()
         {
            var configurationData = File.ReadAllText("ModuleConfiguration/BrowserUrlsOpenModule.txt");
@@ -27,7 +28,7 @@ namespace Nigrimmist.Modules.Commands
                     _commandUrlDictionary.Add(keyValue);
                 }
 
-                CallCommandList = _commandUrlDictionary.Select(x => new CallCommandInfo(x.Key)).ToList();
+                CallCommandList = new ReadOnlyCollection<CallCommandInfo>(_commandUrlDictionary.Select(x => new CallCommandInfo(x.Key)).ToList());
             }
         }
 

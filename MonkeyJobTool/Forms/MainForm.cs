@@ -10,8 +10,6 @@ using System.Windows.Forms;
 using HelloBotCommunication;
 using HelloBotCore;
 using HelloBotCore.Entities;
-using HelloDesktopAssistant;
-using HelloDesktopAssistant.Forms;
 using MonkeyJobTool.Controls.Autocomplete;
 using MonkeyJobTool.Entities;
 using MonkeyJobTool.Entities.Autocomplete;

@@ -15,7 +15,7 @@ namespace HelloBotCore.Entities
 
         public ModuleActionHandler(IActionHandler handler)
         {
-            CallCommandList = handler.CallCommandList;
+            CallCommandList = handler.CallCommandList.ToList();
             CommandDescription = handler.CommandDescription;
             HandleMessage = (command, args, data, func) => handler.HandleMessage(command, args, data, (answer, type) => func(
                 new AnswerInfo(){Answer = answer,Type = type,Command = command}

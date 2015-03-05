@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -19,18 +20,18 @@ namespace Nigrimmist.Modules.Commands
     public class Quote : IActionHandler
     {
         
-        public List<CallCommandInfo> CallCommandList
+        public ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
-                return new List<CallCommandInfo>()
+                return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("цитата" )
-                };
+                    new CallCommandInfo("цитата", new List<string>(){"quote"})
+                });
             }
         }
 
-        public string CommandDescription { get { return @"Случайная цитата"; } }
+        public string CommandDescription { get { return @"Случайная цитата c http://online-generators.ru"; } }
 
         public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
         {

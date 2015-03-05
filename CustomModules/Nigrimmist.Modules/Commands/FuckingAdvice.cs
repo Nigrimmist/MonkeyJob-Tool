@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -23,17 +24,17 @@ namespace Nigrimmist.Modules.Commands
             public string text { get; set; }
         }
 
-        public List<CallCommandInfo> CallCommandList
+        public ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
-                return new List<CallCommandInfo>()
+                return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("дай совет"),
-                    new CallCommandInfo("advice")
-                };
+                    new CallCommandInfo("дай совет",new List<string>(){"advice", "совет"})
+                });
             }
         }
+
         public string CommandDescription { get { return @"Случайный совет с http://fucking-great-advice.ru/"; } }
 
         public void HandleMessage(string command, string args, object clientData, Action<string,AnswerBehaviourType> sendMessageFunc)

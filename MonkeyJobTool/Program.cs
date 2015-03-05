@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-
-
-using System.Windows.Forms;
 using MonkeyJobTool.Forms;
 
-namespace HelloDesktopAssistant
+namespace MonkeyJobTool
 {
     static class Program
     {

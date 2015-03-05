@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -12,18 +13,18 @@ namespace Nigrimmist.Modules.Commands
 {
     public class Or : IActionHandler
     {
-        public List<CallCommandInfo> CallCommandList
+        public ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
-                return new List<CallCommandInfo>()
+                return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("Выбери" )
-                };
+                    new CallCommandInfo("Выбери")
+                });
             }
         }
 
-        public string CommandDescription { get { return @"Выбирает между чем-то. Использует ""Или"""; } }
+        public string CommandDescription { get { return @"Выбирает между чем-то. Использует ""Или"" в качестве разделителя"; } }
         private Random r = new Random();
         private const int ChanceOfSpecialAnswer = 30;
 

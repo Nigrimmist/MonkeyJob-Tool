@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using HelloBotCommunication;
 using HtmlAgilityPack;
@@ -10,15 +11,14 @@ namespace Yushko.Commands
     public class Kstati : IActionHandler
     {
         
-        public List<CallCommandInfo> CallCommandList
+        public ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
-                return new List<CallCommandInfo>()
+                return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    
-                    new CallCommandInfo("кстати" )
-                };
+                    new CallCommandInfo("факт", new List<string>(){"кстати"} )
+                });
             }
         }
         public string CommandDescription { get { return @"Интересный факт одной строкой"; } }

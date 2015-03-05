@@ -1,34 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-
 using System.Windows.Forms;
-using HelloDesktopAssistant.Entities;
 using Microsoft.Win32;
+using MonkeyJobTool.Controls.Settings;
 using MonkeyJobTool.Entities;
 
-namespace HelloDesktopAssistant.Forms
+namespace MonkeyJobTool.Forms
 {
     public partial class SettingsForm : Form
     {
+        RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+        private string appName = "MonkeyJob tool";
+        private List<CommandReplaceBlock> _replaceBlocks = new List<CommandReplaceBlock>();
+
         public SettingsForm()
         {
             InitializeComponent();
         }
-        RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-        private string appName = "MonkeyJob tool";
-
+        
         private void SettingsForm_Load(object sender, EventArgs e)
         {
             var regVal = rkApp.GetValue(appName);
-            chkIsWithWindowsStart.Checked = regVal != null && regVal.ToString() == System.Windows.Forms.Application.ExecutablePath;
+            chkIsWithWindowsStart.Checked = regVal != null && regVal.ToString() == Application.ExecutablePath;
             
             HotKeysDatabind();
+            CommandReplaceDatabind();
         }
+
+        
 
         private void chkIsWithWindowsStart_CheckedChanged(object sender, EventArgs e)
         {
@@ -108,6 +108,58 @@ namespace HelloDesktopAssistant.Forms
             cmbKey1.SelectedIndex = cmbKey1.FindString(oahkParts.First());
         }
 
+         
+        private void CommandReplaceDatabind()
+        {
+            var replaces = App.Instance.AppConf.CommandReplaces;
+            if (!replaces.Any())
+            {
+                replaces = new List<CommandReplace>() {new CommandReplace() {From = "", To = ""}};
+            }
+            foreach (CommandReplace replace in replaces)
+            {
+                AddReplaceBlock(replace.From, replace.To);
+            }
+            SubscribeLastReplaceBlock();
+        }
+
+        private void SubscribeLastReplaceBlock()
+        {
+            var lastBlock = _replaceBlocks.Last();
+            lastBlock.OnBothFieldsEmpty += OnBlockRemoveRequired;
+            lastBlock.OnOneOfFieldFilled += OnNewBlockRequired;
+        }
+
+        private void UnsubscribeLastReplaceBlock()
+        {
+            var lastBlock = _replaceBlocks.Last();
+            lastBlock.OnBothFieldsEmpty -= OnBlockRemoveRequired;
+            lastBlock.OnOneOfFieldFilled -= OnNewBlockRequired;
+        }
+
+        private void OnNewBlockRequired()
+        {
+            UnsubscribeLastReplaceBlock();
+            AddReplaceBlock(string.Empty, string.Empty);
+            SubscribeLastReplaceBlock();
+        }
+
+        private void OnBlockRemoveRequired()
+        {
+            var lastBlock = _replaceBlocks.Last();
+            pnlCommandReplaces.Controls.Remove(_replaceBlocks.Last());
+            _replaceBlocks.Remove(lastBlock);
+        }
+
+        private void AddReplaceBlock(string from, string to)
+        {
+            var crBlock = new CommandReplaceBlock();
+            crBlock.From = from;
+            crBlock.To = to;
+            //crBlock.Top = _replaceBlocks.Sum(x => x.Height);
+            pnlCommandReplaces.Controls.Add(crBlock);
+            _replaceBlocks.Add(crBlock);
+        }
 
         private void SaveConfiguration()
         {
@@ -122,6 +174,8 @@ namespace HelloDesktopAssistant.Forms
 
             ApplicationConfiguration updatedAppConf = App.Instance.AppConf;
             updatedAppConf.HotKeys.ProgramOpen = string.Join("+", new List<string>() { cmbKey1.Text, cmbKey2.Text, cmbKey3.Text }.Where(x=>!string.IsNullOrEmpty(x)).ToArray());
+
+
             App.Instance.AppConf = updatedAppConf;
 
             App.Instance.ReInitHotKeys();

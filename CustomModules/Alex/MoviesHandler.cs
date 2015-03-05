@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -11,14 +12,14 @@ namespace SmartAssHandlerLib
 {
     public class MoviesHandler : IActionHandler
     {
-        public List<CallCommandInfo> CallCommandList
+        public ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
-                return new List<CallCommandInfo>()
+                return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("кино" )
-                };
+                    new CallCommandInfo("кинопоиск",new List<string>(){"кино"})
+                });
             }
         }
 

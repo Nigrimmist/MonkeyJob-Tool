@@ -80,7 +80,6 @@
             this.txtMessage.TabIndex = 7;
             this.txtMessage.TabStop = false;
             this.txtMessage.Text = "";
-            this.txtMessage.ContentsResized += new System.Windows.Forms.ContentsResizedEventHandler(this.txtMessage_ContentsResized);
             // 
             // InfoPopup
             // 

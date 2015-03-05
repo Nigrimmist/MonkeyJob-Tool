@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 using System.Web;
 
@@ -12,15 +13,15 @@ namespace Nigrimmist.Modules.Commands
     public class Translate : IActionHandler
     {
         
-        public List<CallCommandInfo> CallCommandList
+        public ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
-                return new List<CallCommandInfo>()
+                return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("t" ),
-                    new CallCommandInfo("translate")
-                };
+                    new CallCommandInfo("translate",new List<string>(){"t","перевод","переведи"}),
+                    
+                });
             }
         }
 

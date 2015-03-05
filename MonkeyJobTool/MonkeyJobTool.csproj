@@ -59,6 +59,12 @@
     <Compile Include="Controls\Autocomplete\RichTextLabel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\Settings\CommandReplaceBlock.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Settings\CommandReplaceBlock.Designer.cs">
+      <DependentUpon>CommandReplaceBlock.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\ApplicationConfiguration.cs" />
     <Compile Include="Entities\Autocomplete\AutocompletePopupInfo.cs" />
     <Compile Include="Entities\Autocomplete\AutocompletePopupItem.cs" />
@@ -113,6 +119,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Autocomplete\AutocompletePopupControl.resx">
       <DependentUpon>AutocompletePopupControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Settings\CommandReplaceBlock.resx">
+      <DependentUpon>CommandReplaceBlock.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\InfoPopup.resx">
       <DependentUpon>InfoPopup.cs</DependentUpon>
@@ -180,6 +189,7 @@
     <Content Include="..\CustomModules\Nigrimmist.Modules\ModuleConfiguration\BrowserUrlsOpenModule.txt">
       <Link>ModuleConfiguration\BrowserUrlsOpenModule.txt</Link>
     </Content>
+    <None Include="Resources\rightArrows.png" />
     <None Include="Resources\copy1.png" />
     <None Include="Resources\copy22.png" />
     <None Include="Resources\close15.png" />

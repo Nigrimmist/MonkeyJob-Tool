@@ -31,6 +31,7 @@ namespace MonkeyJobTool.Forms
         private void InfoPopup_Load(object sender, EventArgs e)
         {
             txtMessage.Text = Text;
+            this.Height = txtMessage.Height+ 50;
             lblTitle.Text = Title;
 
             pnlTimeRemain.Top = this.Height - pnlTimeRemain.Height;
@@ -48,6 +49,8 @@ namespace MonkeyJobTool.Forms
                 _initialFormWidth = this.Width;
                 closeTimer.Start();
             }
+
+            
         }
 
         private void InfoPopup_Click(object sender, EventArgs e)
@@ -76,19 +79,7 @@ namespace MonkeyJobTool.Forms
         }
 
         
-        //richtextlabel resize hack
-        //todo:to base class. check other popups
-        private void txtMessage_ContentsResized(object sender, ContentsResizedEventArgs e)
-        {
-            txtMessage.Height = e.NewRectangle.Height+1;
-            
-            int screenHeight = Screen.FromPoint(this.Location).WorkingArea.Height;
-            if (txtMessage.Height > screenHeight/2)
-            {
-                txtMessage.Height = screenHeight / 2;
-            }
-            this.Height = txtMessage.Height + 50;
-        }        
+                
     }
 
 

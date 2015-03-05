@@ -21,6 +21,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
             {
                 this.Cursor = Cursors.Default;
             };
+            base.ContentsResized += cntrl_ContentsResized;
             
         }
 
@@ -31,6 +32,18 @@ namespace MonkeyJobTool.Controls.Autocomplete
             //if (m.Msg == 0x205) 
             //    return; // WM_RBUTTONUP
             base.WndProc(ref m);
+        }
+
+        //richtextlabel resize hack
+        private void cntrl_ContentsResized(object sender, ContentsResizedEventArgs e)
+        {
+            this.Height = e.NewRectangle.Height + 1;
+
+            int screenHeight = Screen.FromPoint(this.Location).WorkingArea.Height;
+            if (this.Height > screenHeight / 2)
+            {
+                this.Height = screenHeight / 2;
+            }
         }
     }
 }

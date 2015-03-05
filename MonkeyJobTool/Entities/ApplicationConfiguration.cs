@@ -1,19 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-using System.Text;
-
-using System.Windows.Forms;
-
-namespace HelloDesktopAssistant.Entities
+namespace MonkeyJobTool.Entities
 {
     public class ApplicationConfiguration
     {
         public AppConfHotkeys HotKeys { get; set; }
+        public List<CommandReplace> CommandReplaces { get; set; }
+
+        public ApplicationConfiguration()
+        {
+            CommandReplaces = new List<CommandReplace>();
+        }
     }
 
     public class AppConfHotkeys
     {
         public string ProgramOpen { get; set; }
+    }
+
+    public class CommandReplace
+    {
+        public string From { get; set; }
+        public string To { get; set; }
     }
 }

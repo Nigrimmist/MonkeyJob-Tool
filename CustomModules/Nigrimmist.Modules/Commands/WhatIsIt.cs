@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -31,15 +32,15 @@ namespace Nigrimmist.Modules.Commands
             "Это... это ... ээээ.... Сосиска! Да, точно. Это сосиска."
         };
 
-        public List<CallCommandInfo> CallCommandList
+        public ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
-                return new List<CallCommandInfo>()
+                return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("Что такое" ),
+                    new CallCommandInfo("Что такое"),
                     new CallCommandInfo("Кто такой")
-                };
+                });
             }
         }
 

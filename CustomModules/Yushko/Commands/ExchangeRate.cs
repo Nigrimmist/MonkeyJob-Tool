@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
 using System.Linq;
@@ -14,15 +15,14 @@ namespace Yushko.Commands
     {
        
 
-        public List<CallCommandInfo> CallCommandList
+        public ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
-                return new List<CallCommandInfo>()
+                return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("курс"),
-                    new CallCommandInfo("exrate" )
-                };
+                    new CallCommandInfo("курс валюты", new List<string>(){"курс","exrate"}),
+                });
             }
         }
 
