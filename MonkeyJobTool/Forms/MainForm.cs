@@ -35,16 +35,7 @@ namespace MonkeyJobTool.Forms
            this.MainIcon.Image =
            this.tsExit.Image = defaultIcon;
            this.tsSettings.Image = Properties.Resources.settings;
-          
-           try
-           {
-               _bot = new HelloBot(botCommandPrefix: "");
-               App.Init(openFormHotKeyRaised,this);
-           }
-           catch (Exception ex)
-           {
-               MessageBox.Show(ex.ToString());
-           }
+           
             //Process[] processlist = Process.GetProcesses();
 
             //foreach (Process process in processlist)
@@ -59,24 +50,36 @@ namespace MonkeyJobTool.Forms
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            this.ShowInTaskbar = false;
-            _bot.OnErrorOccured += BotOnOnErrorOccured;
-            
-
-            var screen = Screen.FromPoint(this.Location);
-            this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
-
-            _autocomplete = new AutoCompleteControl()
+            try
             {
-                ParentForm = this,
-                DataFilterFunc = GetCommandListByTerm,
-                Left = 43,
-                Top = 8
-            };
-            _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
-            _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
-            this.Controls.Add(_autocomplete);
-            this.ToTop();
+                App.Instance.Init(openFormHotKeyRaised, this);
+                _bot = new HelloBot(botCommandPrefix: "",moduleFolderPath : App.Instance.ExecutionFolder);
+
+
+                this.ShowInTaskbar = false;
+                _bot.OnErrorOccured += BotOnOnErrorOccured;
+
+
+                var screen = Screen.FromPoint(this.Location);
+                this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
+
+                _autocomplete = new AutoCompleteControl()
+                {
+                    ParentForm = this,
+                    DataFilterFunc = GetCommandListByTerm,
+                    Left = 43,
+                    Top = 8
+                };
+                _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
+                _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
+                this.Controls.Add(_autocomplete);
+                this.ToTop();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+
         }
 
         private string TryToReplaceCommand(string command)
@@ -102,8 +105,6 @@ namespace MonkeyJobTool.Forms
                     {
                         toReturn = bestMatchReplace.To + args;
                     }
-                    
-                    
                 }
             }
             return toReturn;

@@ -29,6 +29,7 @@ namespace HelloBotCore
         private readonly IDictionary<string, SystemCommandInfo> _systemCommands;
         private readonly string _moduleDllmask;
         private readonly string _botCommandPrefix;
+        private readonly string _moduleFolderPath;
         private readonly int _commandTimeoutSec;
 
         /// <summary>
@@ -36,11 +37,13 @@ namespace HelloBotCore
         /// </summary>
         /// <param name="dllMask">File mask for retrieving client command dlls</param>
         /// <param name="botCommandPrefix">Prefix for bot commands. Only messages with that prefix will be handled</param>
-        public HelloBot(string moduleDllmask = "*.dll", string botCommandPrefix = "!")
+        public HelloBot(string moduleDllmask = "*.dll", string botCommandPrefix = "!", string moduleFolderPath = ".")
         {
             this._moduleDllmask = moduleDllmask;
             this._botCommandPrefix = botCommandPrefix;
+            _moduleFolderPath = moduleFolderPath;
             this._commandTimeoutSec = 30;
+           
 
             _systemCommands = new Dictionary<string, SystemCommandInfo>()
             {
@@ -79,14 +82,14 @@ namespace HelloBotCore
         protected virtual List<ModuleActionHandler> GetHandlers()
         {
             List<ModuleActionHandler> toReturn = new List<ModuleActionHandler>();
-            var dlls = Directory.GetFiles(".", _moduleDllmask);
+            var dlls = Directory.GetFiles(_moduleFolderPath, _moduleDllmask);
             var i = typeof(IActionHandlerRegister);
             foreach (var dll in dlls)
             {
-                var ass = Assembly.LoadFile(Environment.CurrentDirectory + dll);
+                var ass = Assembly.LoadFile(dll);
 
                 //get types from assembly
-                var typesInAssembly = ass.GetTypes().Where(i.IsAssignableFrom).ToList();
+                var typesInAssembly = ass.GetTypes().Where(type => i.IsAssignableFrom(type) && !type.IsInterface).ToList();
 
                 foreach (Type type in typesInAssembly)
                 {

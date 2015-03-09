@@ -6,6 +6,7 @@ namespace MonkeyJobTool.Entities
     {
         public AppConfHotkeys HotKeys { get; set; }
         public List<CommandReplace> CommandReplaces { get; set; }
+        public bool AllowUsingGoogleAnalytics { get; set; }
 
         public ApplicationConfiguration()
         {

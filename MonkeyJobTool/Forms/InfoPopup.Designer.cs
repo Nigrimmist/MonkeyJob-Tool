@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             this.lblTitle = new System.Windows.Forms.Label();
-            this.IconPic = new System.Windows.Forms.PictureBox();
             this.pnlTimeRemain = new System.Windows.Forms.Panel();
             this.closeTimer = new System.Windows.Forms.Timer(this.components);
+            this.IconPic = new System.Windows.Forms.PictureBox();
             this.txtMessage = new MonkeyJobTool.Controls.Autocomplete.RichTextLabel();
             ((System.ComponentModel.ISupportInitialize)(this.IconPic)).BeginInit();
             this.SuspendLayout();
@@ -47,15 +47,6 @@
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "Title";
             // 
-            // IconPic
-            // 
-            this.IconPic.Image = global::MonkeyJobTool.Properties.Resources.monkey_small;
-            this.IconPic.Location = new System.Drawing.Point(4, 2);
-            this.IconPic.Name = "IconPic";
-            this.IconPic.Size = new System.Drawing.Size(27, 26);
-            this.IconPic.TabIndex = 1;
-            this.IconPic.TabStop = false;
-            // 
             // pnlTimeRemain
             // 
             this.pnlTimeRemain.BackColor = System.Drawing.Color.Black;
@@ -69,6 +60,15 @@
             // 
             this.closeTimer.Tick += new System.EventHandler(this.closeTimer_Tick);
             // 
+            // IconPic
+            // 
+            this.IconPic.Image = global::MonkeyJobTool.Properties.Resources.monkey_small;
+            this.IconPic.Location = new System.Drawing.Point(4, 2);
+            this.IconPic.Name = "IconPic";
+            this.IconPic.Size = new System.Drawing.Size(27, 26);
+            this.IconPic.TabIndex = 1;
+            this.IconPic.TabStop = false;
+            // 
             // txtMessage
             // 
             this.txtMessage.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -76,7 +76,7 @@
             this.txtMessage.Location = new System.Drawing.Point(12, 34);
             this.txtMessage.Name = "txtMessage";
             this.txtMessage.ReadOnly = true;
-            this.txtMessage.Size = new System.Drawing.Size(236, 10);
+            this.txtMessage.Size = new System.Drawing.Size(236, 21);
             this.txtMessage.TabIndex = 7;
             this.txtMessage.TabStop = false;
             this.txtMessage.Text = "";
@@ -92,6 +92,7 @@
             this.Controls.Add(this.txtMessage);
             this.Controls.Add(this.IconPic);
             this.Controls.Add(this.lblTitle);
+            this.Cursor = System.Windows.Forms.Cursors.Hand;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "InfoPopup";
             this.ShowIcon = false;

@@ -43,11 +43,11 @@ namespace Nigrimmist.Modules.Commands
             {"y", "https://maps.yandex.ru/?rtext={0}~{1}"},
         };
 
-        private const string defaultProvider = "g";
-        private const string fromToDelimeter = "->";
+        private const string _defaultProvider = "g";
+        private const string _fromToDelimeter = "=>";
 
         private string helpMsg = string.Format(@"""!map <опционально:поисковик> <адрес>"", где поисковик может быть y(yandex) или g(google).
-Проложить маршрут : ""!map <опционально:поисковик> <из>{0}<в>""", fromToDelimeter);
+Проложить маршрут : ""!map <опционально:поисковик> <из>{0}<в>""", _fromToDelimeter);
 
         public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
        {
@@ -61,9 +61,9 @@ namespace Nigrimmist.Modules.Commands
                 {
                     sendMessageFunc(helpMsg, AnswerBehaviourType.ShowText);
                 }
-                else if (args.Contains(fromToDelimeter))
+                else if (args.Contains(_fromToDelimeter))
                 {
-                    var addressParts = args.Split(new []{fromToDelimeter},StringSplitOptions.RemoveEmptyEntries);
+                    var addressParts = args.Split(new []{_fromToDelimeter},StringSplitOptions.RemoveEmptyEntries);
                     if (addressParts.Count() == 2)
                     {
                         var leftPart = addressParts[0];
@@ -71,7 +71,7 @@ namespace Nigrimmist.Modules.Commands
                         string foundProvider;
                         if (!mapDirectionProviders.TryGetValue(inputProvider, out foundProvider))
                         {
-                            inputProvider = defaultProvider;
+                            inputProvider = _defaultProvider;
                             foundProvider = mapDirectionProviders[inputProvider];
                         }
                         else
@@ -88,7 +88,7 @@ namespace Nigrimmist.Modules.Commands
                     string address = args;
                     if (!mapUrlProviders.TryGetValue(inputProvider, out foundProvider))
                     {
-                        inputProvider = defaultProvider;
+                        inputProvider = _defaultProvider;
                         foundProvider = mapUrlProviders[inputProvider];
                     }
                     else

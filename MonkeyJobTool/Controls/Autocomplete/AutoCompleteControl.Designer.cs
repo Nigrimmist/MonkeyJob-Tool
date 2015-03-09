@@ -35,6 +35,7 @@
             // 
             this.txtCommand.BackColor = System.Drawing.SystemColors.Control;
             this.txtCommand.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtCommand.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtCommand.Font = new System.Drawing.Font("MS Reference Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtCommand.Location = new System.Drawing.Point(3, 3);
             this.txtCommand.Name = "txtCommand";

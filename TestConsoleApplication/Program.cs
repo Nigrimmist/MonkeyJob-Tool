@@ -18,45 +18,14 @@ using Nigrimmist.Modules.Commands;
 
 namespace Test
 {
-    public interface r
-    {
-        List<a> a { get; } 
-    }
-    public class t : r
-    {
-        public string n { get; set; }
-        private List<a> f;
-        public List<a> a { get { return new List<a>() {new a() {sss = "test"}}; }
-            set
-            {
-                f = value;
-            }
-        }
-
-        public t()
-        {
-            
-        }
-    }
-
-    public class a
-    {
-        public string sss { get; set; }
-    }
+    
     class Program
     {
         
         static void Main(string[] args)
         {
 
-            List<t> s = new List<t>();
-            s.Add(new t(){n = "sss"});
-
-            foreach (t t in s)
-            {
-                t.n = "lol";
-                t.a.First().sss = "changed";
-            }
+            //Console.WriteLine(Application.ExecutablePath);
             //Console.WriteLine(s);
             //Console.WriteLine(s2);
             //try

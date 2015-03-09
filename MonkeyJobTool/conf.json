@@ -2,5 +2,6 @@
 	HotKeys : {
 		ProgramOpen : "CTRL+M"
 	},	
-    CommandReplaces: []
+    CommandReplaces: [],
+	AllowUsingGoogleAnalytics : true
 }

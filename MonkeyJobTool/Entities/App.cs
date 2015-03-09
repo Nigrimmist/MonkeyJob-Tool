@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Microsoft.Win32;
 using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Forms;
 using Newtonsoft.Json;
@@ -16,7 +17,8 @@ namespace MonkeyJobTool.Entities
     /// </summary>
     public class App
     {
-        private const string _confFileName = "conf.json";
+        private const string _confFileName = @"conf.json";
+        public readonly string AppName = "MonkeyJob Tool";
         private static object _appInstanceLock = new object();
         private static App _instance;
         private ApplicationConfiguration _appConf;
@@ -25,12 +27,19 @@ namespace MonkeyJobTool.Entities
         private object _hookLock = new object();
         private List<InfoPopup> _openedPopups = new List<InfoPopup>();
         private MainForm _mainForm;
+        
+        private string _executionFolder;
+        private string _executionPath;
 
+        public string ExecutionFolder {get { return _executionFolder; }}
+        public string ExecutionPath { get { return _executionPath; } }
         /// <summary>
         /// Collection of event delegates for hotkeys. one delegate for one hotkeytype
         /// </summary>
         private readonly Dictionary<HotKeyType, EventHandler<KeyPressedEventArgs>> _hotKeysHadlers = new Dictionary<HotKeyType, EventHandler<KeyPressedEventArgs>>();
+
         
+
 
         public static App Instance
         {
@@ -51,28 +60,31 @@ namespace MonkeyJobTool.Entities
             
         }
 
-        public static void Init(EventHandler<KeyPressedEventArgs> mainFormOpenHotKeyRaisedHandler, MainForm mainForm)
+        public void Init(EventHandler<KeyPressedEventArgs> mainFormOpenHotKeyRaisedHandler, MainForm mainForm)
         {
-            Instance._mainForm = mainForm;
-            //register open program hotkey using incoming (main form) delegate
-            Instance._hotKeysHadlers.Add(HotKeyType.OpenProgram, mainFormOpenHotKeyRaisedHandler);
+            //read and load config
+            if (!File.Exists(_executionFolder + _confFileName)) throw new Exception("Config missing");
+            var json = File.ReadAllText(_executionFolder + _confFileName);
+            _appConf = _serializer.Deserialize<ApplicationConfiguration>(new JsonTextReader(new StringReader(json)));
+            _mainForm = mainForm;
 
-            Instance.ReInitHotKeys();
+            //register open program hotkey using incoming (main form) delegate
+            _hotKeysHadlers.Add(HotKeyType.OpenProgram, mainFormOpenHotKeyRaisedHandler);
+            ReInitHotKeys();
         }
+
+       
 
         public void ReInitHotKeys()
         {
             var openHotKeys = Instance.AppConf.HotKeys.ProgramOpen;
-            Instance.RegisterHotKey(KeyboardHook.ToSpecialKeys(openHotKeys), KeyboardHook.ToOrdinalKeys(openHotKeys), HotKeyType.OpenProgram);
+            RegisterHotKey(KeyboardHook.ToSpecialKeys(openHotKeys), KeyboardHook.ToOrdinalKeys(openHotKeys), HotKeyType.OpenProgram);
         }
 
         public App()
         {
-            //read config
-            if (!File.Exists(_confFileName)) throw new Exception("Config missing");
-            var json = File.ReadAllText(_confFileName);
-            _appConf = _serializer.Deserialize<ApplicationConfiguration>(new JsonTextReader(new StringReader(json)));
-            
+            _executionFolder = Application.StartupPath+@"\";
+            _executionPath = Application.ExecutablePath;
         }
 
         private void RegisterHotKey(ModifierHookKeys modifierHook, Keys key, HotKeyType hkType)

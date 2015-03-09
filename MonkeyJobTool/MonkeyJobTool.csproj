@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -142,6 +145,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.manifest" />
     <None Include="conf.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -189,6 +193,7 @@
     <Content Include="..\CustomModules\Nigrimmist.Modules\ModuleConfiguration\BrowserUrlsOpenModule.txt">
       <Link>ModuleConfiguration\BrowserUrlsOpenModule.txt</Link>
     </Content>
+    <Content Include="Res\mj.ico" />
     <None Include="Resources\rightArrows.png" />
     <None Include="Resources\copy1.png" />
     <None Include="Resources\copy22.png" />

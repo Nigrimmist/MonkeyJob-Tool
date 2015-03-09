@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Win32;
@@ -10,9 +11,7 @@ namespace MonkeyJobTool.Forms
 {
     public partial class SettingsForm : Form
     {
-        RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-        private string appName = "MonkeyJob tool";
-        private List<CommandReplaceBlock> _replaceBlocks = new List<CommandReplaceBlock>();
+       private List<CommandReplaceBlock> _replaceBlocks = new List<CommandReplaceBlock>();
 
         public SettingsForm()
         {
@@ -21,8 +20,8 @@ namespace MonkeyJobTool.Forms
         
         private void SettingsForm_Load(object sender, EventArgs e)
         {
-            var regVal = rkApp.GetValue(appName);
-            chkIsWithWindowsStart.Checked = regVal != null && regVal.ToString() == Application.ExecutablePath;
+
+            chkIsWithWindowsStart.Checked = IsStartupShortcutExist();
             
             HotKeysDatabind();
             CommandReplaceDatabind();
@@ -153,11 +152,11 @@ namespace MonkeyJobTool.Forms
         {
             if (chkIsWithWindowsStart.Checked)
             {
-                rkApp.SetValue(appName, Application.ExecutablePath);
+                AppShortcutToStartup();
             }
             else
             {
-                rkApp.DeleteValue(appName, false);
+                DelAppShortcutFromStartup();
             }
 
             ApplicationConfiguration updatedAppConf = App.Instance.AppConf;
@@ -167,6 +166,40 @@ namespace MonkeyJobTool.Forms
 
             App.Instance.ReInitHotKeys();
             this.Close();
+        }
+        private void AppShortcutToStartup()
+        {
+            string linkName = App.Instance.AppName;
+            string startDir = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
+            if (!File.Exists(startDir + "\\" + linkName + ".url"))
+            {
+                using (StreamWriter writer = new StreamWriter(startDir + "\\" + linkName + ".url"))
+                {
+                    writer.WriteLine("[InternetShortcut]");
+                    writer.WriteLine("URL=file:///" + App.Instance.ExecutionPath);
+                    writer.WriteLine("IconIndex=0");
+                    string icon = App.Instance.ExecutionFolder + @"Res\mj.ico";
+                    writer.WriteLine("IconFile=" + icon);
+                    writer.Flush();
+                }
+            }
+        }
+
+        private void DelAppShortcutFromStartup()
+        {
+            string linkName = App.Instance.AppName;
+            string startDir = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
+            if (File.Exists(startDir + "\\" + linkName + ".url"))
+            {
+                File.Delete(startDir + "\\" + linkName + ".url");
+            }
+        }
+
+        public bool IsStartupShortcutExist()
+        {
+            string linkName = App.Instance.AppName;
+            string startDir = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
+            return File.Exists(startDir + "\\" + linkName + ".url");
         }
 
         private List<CommandReplace> GetCommandReplaces()
