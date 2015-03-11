@@ -6,13 +6,22 @@ using HelloBotCommunication;
 using HelloBotModuleHelper;
 using HtmlAgilityPack;
 
-
-namespace Yushko.Commands
+namespace Yushko.Modules
 {
-    public class Moon : IActionHandler
+    public class Moon : ModuleBase
     {
-       
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList
+        private IBot _bot;
+
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
@@ -22,10 +31,10 @@ namespace Yushko.Commands
                 });
             }
         }
-        public string CommandDescription { get { return @"лунный календарь"; } }
+        public override string CommandDescription { get { return @"лунный календарь"; } }
 
 
-        public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
+        public override void HandleMessage(string command, string args)
         {
             StringBuilder result = new StringBuilder();
             HtmlReaderManager hrm = new HtmlReaderManager();
@@ -45,7 +54,7 @@ namespace Yushko.Commands
                     result.Append(tds[1].InnerText);//.InnerHtml.Replace("<br>", Environment.NewLine).RemoveAllTags().Trim();
                 }
             }
-            sendMessageFunc(result.ToString(), AnswerBehaviourType.ShowText);
+            _bot.ShowMessage(result.ToString());
         }
     }
 }

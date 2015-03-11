@@ -1,26 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using HelloBotCommunication;
 using HelloBotModuleHelper;
 using HtmlAgilityPack;
-using Nigrimmist.Modules.Helpers;
 
-
-namespace Nigrimmist.Modules.Commands
+namespace Nigrimmist.Modules.Modules
 {
     //https://ru.wikipedia.org/w/index.php?search=%D1%84%D1%8B%D1%88%D0%B2%D0%B3%20%D1%84%D1%8B%20%D0%B2%D1%80%D1%84
     
-    public class WhatIsIt : IActionHandler
+    public class WhatIsIt : ModuleBase
     {
         public List<string> Jokes = new List<string>();
-        private Random r = new Random();
+        private Random _r = new Random();
+        private IBot _bot;
 
-        private List<string> notFoundAnswers = new List<string>()
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
+        private List<string> _notFoundAnswers = new List<string>()
         {
             "Спроси чего полегче",
             "Не знаю",
@@ -32,7 +33,12 @@ namespace Nigrimmist.Modules.Commands
             "Это... это ... ээээ.... Сосиска! Да, точно. Это сосиска."
         };
 
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
@@ -45,8 +51,8 @@ namespace Nigrimmist.Modules.Commands
         }
 
        
-        public string CommandDescription { get { return @"Бот знает всё. Ну или почти всё."; } }
-        public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
+        public override string CommandDescription { get { return @"Бот знает всё. Ну или почти всё."; } }
+        public override void HandleMessage(string command, string args)
         {
             args = args.Replace("?"," ").Trim();
             string answer = string.Empty;
@@ -80,14 +86,14 @@ namespace Nigrimmist.Modules.Commands
 
             if(string.IsNullOrEmpty(answer))
             {
-                answer = notFoundAnswers[r.Next(0,notFoundAnswers.Count)];
+                answer = _notFoundAnswers[_r.Next(0,_notFoundAnswers.Count)];
             }
             else
             {
                 answer += ". " + hrm.ResponseUri;
             }
 
-            sendMessageFunc(answer, AnswerBehaviourType.ShowText);
+            _bot.ShowMessage(answer);
         }
     }
 }

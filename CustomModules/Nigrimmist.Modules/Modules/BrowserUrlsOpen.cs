@@ -5,17 +5,33 @@ using System.IO;
 using System.Linq;
 using HelloBotCommunication;
 
-namespace Nigrimmist.Modules.Commands
+namespace Nigrimmist.Modules.Modules
 {
-    public class BrowserUrlsOpen: IActionHandler
+    public class BrowserUrlsOpen: ModuleBase
     {
 
-        //public List<CallCommandInfo> CallCommandList { get;/*{ return new List<string>(){"open"}; }*/ private set; }
+        private IBot _bot;
 
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList{get; private set;}
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
 
-        public string CommandDescription { get { return "Открывает ссылку в браузере"; } }
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        private readonly ReadOnlyCollection<CallCommandInfo> _callCommandList;
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
+        {
+            get { return _callCommandList; }
+        }
+
+        public override string CommandDescription { get { return "Открывает ссылку в браузере"; } }
         private readonly IDictionary<string, string> _commandUrlDictionary = new Dictionary<string, string>();
+        
+
         public BrowserUrlsOpen()
         {
            var configurationData = File.ReadAllText("ModuleConfiguration/BrowserUrlsOpenModule.txt");
@@ -28,11 +44,11 @@ namespace Nigrimmist.Modules.Commands
                     _commandUrlDictionary.Add(keyValue);
                 }
 
-                CallCommandList = new ReadOnlyCollection<CallCommandInfo>(_commandUrlDictionary.Select(x => new CallCommandInfo(x.Key)).ToList());
+                _callCommandList = new ReadOnlyCollection<CallCommandInfo>(_commandUrlDictionary.Select(x => new CallCommandInfo(x.Key)).ToList());
             }
         }
 
-        public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
+        public override void HandleMessage(string command, string args)
         {
             
                // string subCommand = args.Split(' ').First();
@@ -48,7 +64,7 @@ namespace Nigrimmist.Modules.Commands
                             url = uri.Scheme + "://" + uri.Host;
                         }
                     }
-                    sendMessageFunc(string.Format(url, args), AnswerBehaviourType.OpenLink);
+                    _bot.ShowMessage(string.Format(url, args),answerType:AnswerBehaviourType.OpenLink);
                 }
             
         }

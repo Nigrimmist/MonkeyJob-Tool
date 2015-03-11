@@ -3,19 +3,26 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
-using System.Linq;
 using System.Text;
-
 using HelloBotCommunication;
 using Yushko.ExRates;
 
-namespace Yushko.Commands
+namespace Yushko.Modules
 {
-    class ExchangeRate : IActionHandler
+    class ExchangeRate : ModuleBase
     {
-       
+        private IBot _bot;
 
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
@@ -26,7 +33,7 @@ namespace Yushko.Commands
             }
         }
 
-        public string CommandDescription
+        public override string CommandDescription
         {
             get { return "курсы валют по НацБанку. Для справки добавьте \"помощь\" или \"help\""; }
         }
@@ -81,7 +88,7 @@ namespace Yushko.Commands
             return _exRatesDaily;
         }
 
-        public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
+        public override void HandleMessage(string command, string args)
         {
             string[] arg = args.Split(' ');
             string result = "";
@@ -113,7 +120,7 @@ namespace Yushko.Commands
                     break;
             }
 
-            sendMessageFunc(result,AnswerBehaviourType.ShowText);
+            _bot.ShowMessage(result);
         }
 
         //сконвертировать из одной валюты в другую

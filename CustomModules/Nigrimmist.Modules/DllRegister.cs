@@ -2,16 +2,16 @@
 
 
 using HelloBotCommunication;
-using Nigrimmist.Modules.Commands;
+using Nigrimmist.Modules.Modules;
 
 namespace Nigrimmist.Modules
 {
 
-    public class DllRegister : IActionHandlerRegister
+    public class DllRegister : IModuleRegister
     {
-        public List<IActionHandler> GetHandlers()
+        public List<ModuleBase> GetModules()
         {
-            return new List<IActionHandler>()
+            return new List<ModuleBase>()
             {
                 new Calculator(),
                 new Weather(),
@@ -29,6 +29,11 @@ namespace Nigrimmist.Modules
                 new ShortLink(),
                 new BrowserUrlsOpen()
             };
+        }
+
+        public string ByAuthor
+        {
+            get { throw new System.NotImplementedException(); }
         }
     }
 }

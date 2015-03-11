@@ -2,20 +2,27 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Web;
 using HelloBotCommunication;
 using HelloBotModuleHelper;
-using HtmlAgilityPack;
-using Newtonsoft.Json;
-using Nigrimmist.Modules.Helpers;
 
-namespace Nigrimmist.Modules.Commands
+namespace Nigrimmist.Modules.Modules
 {
-    public class Map : IActionHandler
+    public class Map : ModuleBase
     {
-        
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList
+        private IBot _bot;
+
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
+
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
@@ -25,7 +32,7 @@ namespace Nigrimmist.Modules.Commands
                 });
             }
         }
-        public string CommandDescription
+        public override string CommandDescription
         {
             get { return @"Генерирует ссылку на карту по адресу. Добавьте help для просмотра справки."; }
         }
@@ -49,7 +56,7 @@ namespace Nigrimmist.Modules.Commands
         private string helpMsg = string.Format(@"""!map <опционально:поисковик> <адрес>"", где поисковик может быть y(yandex) или g(google).
 Проложить маршрут : ""!map <опционально:поисковик> <из>{0}<в>""", _fromToDelimeter);
 
-        public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
+        public override void HandleMessage(string command, string args)
        {
            
 
@@ -59,7 +66,7 @@ namespace Nigrimmist.Modules.Commands
 
                 if (inputProvider == "help")
                 {
-                    sendMessageFunc(helpMsg, AnswerBehaviourType.ShowText);
+                    _bot.ShowMessage(helpMsg);
                 }
                 else if (args.Contains(_fromToDelimeter))
                 {
@@ -79,7 +86,7 @@ namespace Nigrimmist.Modules.Commands
                             leftPart = leftPart.Substring(inputProvider.Length).Trim();
                         }
                         string url = string.Format(foundProvider, HttpUtility.UrlEncode(leftPart), HttpUtility.UrlEncode(rightPart));
-                        sendMessageFunc(url.ToShortUrl(), AnswerBehaviourType.OpenLink);
+                        _bot.ShowMessage(url.ToShortUrl(),answerType: AnswerBehaviourType.OpenLink);
                     }
                 }
                 else
@@ -96,7 +103,7 @@ namespace Nigrimmist.Modules.Commands
                         address = args.Substring(inputProvider.Length).Trim();    
                     }
                     string url = string.Format(foundProvider, HttpUtility.UrlEncode(address));
-                    sendMessageFunc(url.ToShortUrl(), AnswerBehaviourType.OpenLink);
+                    _bot.ShowMessage(url.ToShortUrl(),answerType: AnswerBehaviourType.OpenLink);
                 }
             }
         }

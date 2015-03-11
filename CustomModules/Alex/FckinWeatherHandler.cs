@@ -12,14 +12,24 @@ using HelloBotCommunication;
 
 namespace SmartAssHandlerLib
 {
-    public class FckinWeatherHandler : IActionHandler
+    public class FckinWeatherModuleBase : ModuleBase
     {
         private const string DefaultLocation = "minsk";
         private const string QueryTemaplate = "http://thefuckingweather.com/?where={0}";
         private const string FailedResult = "I CAN'T FIND THAT SHIT!";
+        private IBot _bot;
 
-        
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
+
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
@@ -30,9 +40,9 @@ namespace SmartAssHandlerLib
             }
         }
 
-        public string CommandDescription { get { return "Shows fucking WEATHER!"; } }
+        public override string CommandDescription { get { return "Shows fucking WEATHER!"; } }
 
-        public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
+        public override void HandleMessage(string command, string args)
         {
             var result = FailedResult;
 
@@ -46,7 +56,7 @@ namespace SmartAssHandlerLib
             }
             catch (Exception ex) { }
 
-            sendMessageFunc(result, AnswerBehaviourType.ShowText);
+            _bot.ShowMessage(result);
         }
 
         private Forecast ParseForecast(string rawWeatherHtml)

@@ -4,16 +4,21 @@ using HelloBotCommunication;
 
 namespace SmartAssHandlerLib
 {
-    public class VariousHandlersRegister : IActionHandlerRegister
+    public class VariousHandlersRegister : IModuleRegister
     {
-        public List<IActionHandler> GetHandlers()
+        public List<ModuleBase> GetModules()
         {
-            return new List<IActionHandler>()
+            return new List<ModuleBase>()
             {
-                new SmartAssStuffHandler(),
-                new YesNoHandler(),
-                new FckinWeatherHandler()
+                new SmartAssStuffHandlerBase(),
+                new YesNoHandlerBase(),
+                new FckinWeatherModuleBase()
             };
+        }
+
+        public string ByAuthor
+        {
+            get { throw new System.NotImplementedException(); }
         }
     }
 }

@@ -9,7 +9,7 @@ using HelloBotCommunication;
 
 namespace SmartAssHandlerLib
 {
-    public class YesNoHandler : IActionHandler
+    public class YesNoHandlerBase : ModuleBase
     {
         private readonly RandomHelper _decisionMaker = new RandomHelper();
 
@@ -18,16 +18,26 @@ namespace SmartAssHandlerLib
         private EmptyAnswerProvider _emptyAnswerProvider;
 
         private const int CHANCE_OF_SPECIAL_ANSWER = 30;
+        private IBot _bot;
 
-        public YesNoHandler()
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
+        public YesNoHandlerBase()
         {
             _specialAnswersProvider = new SpecialAnswersProvider(_decisionMaker);
             _generalAnswersProvider = new GeneralAnswersProvider(_decisionMaker);
             _emptyAnswerProvider = new EmptyAnswerProvider(_decisionMaker);
         }
 
-        
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList
+
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
@@ -38,12 +48,12 @@ namespace SmartAssHandlerLib
                 });
             }
         }
-        public string CommandDescription
+        public override string CommandDescription
         {
             get { return "Лаконичный ответ на простой вопрос."; }
         }
 
-        public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
+        public override void HandleMessage(string command, string args)
         {
             var answer = string.Empty;
 
@@ -57,7 +67,7 @@ namespace SmartAssHandlerLib
                 answer = _emptyAnswerProvider.Get();
             }
 
-            sendMessageFunc(answer, AnswerBehaviourType.ShowText);
+            _bot.ShowMessage(answer);
         }
 
         private class RandomHelper

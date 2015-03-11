@@ -9,13 +9,23 @@ using HelloBotCommunication;
 
 namespace SmartAssHandlerLib
 {
-    public class SmartAssStuffHandler : IActionHandler
+    public class SmartAssStuffHandlerBase : ModuleBase
     {
         private const string Query =
             "http://referats.yandex.ru/referats/write/?t=astronomy+geology+gyroscope+literature+marketing+mathematics+music+polit+agrobiologia+law+psychology+geography+physics+philosophy+chemistry+estetica";
 
-        
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList
+        private IBot _bot;
+
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
@@ -26,16 +36,15 @@ namespace SmartAssHandlerLib
             }
         }
 
-        public string CommandDescription
+        public override string CommandDescription
         {
             get { return "Безумная заумь небольшими дозами. Добавьте слово \"напалмом\" к команде, чтобы получить порцию зауми побольше. "; }
         }
 
-        public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
+        public override void HandleMessage(string command, string args)
         {
             var needLotsOfStuff = !string.IsNullOrEmpty(args) && args.Contains("напалмом");
-
-            sendMessageFunc(RetrieveSmartAssStuff(needLotsOfStuff), AnswerBehaviourType.ShowText);
+            _bot.ShowMessage(RetrieveSmartAssStuff(needLotsOfStuff));
         }
 
         private string RetrieveSmartAssStuff(bool needLotsOfStuff)

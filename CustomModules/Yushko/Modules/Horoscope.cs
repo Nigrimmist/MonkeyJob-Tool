@@ -6,13 +6,23 @@ using HelloBotCommunication;
 using HelloBotModuleHelper;
 using HtmlAgilityPack;
 
-
-namespace Yushko.Commands
+namespace Yushko.Modules
 {
-    public class Horoscope : IActionHandler
+    public class Horoscope : ModuleBase
     {
-        
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList
+        private IBot _bot;
+
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
+
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
@@ -22,7 +32,7 @@ namespace Yushko.Commands
                 });
             }
         }
-        public string CommandDescription { get { return @"гороскоп <знак зодиака>"; } }
+        public override string CommandDescription { get { return @"гороскоп <знак зодиака>"; } }
 
         private IDictionary<string, string> Signs = new Dictionary<string, string>()
         {
@@ -49,7 +59,7 @@ namespace Yushko.Commands
             {"ГОД", "year"}
         };
 
-        public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
+        public override void HandleMessage(string command, string args)
         {
             string[] arg = args.Split(' ');
             string url = "http://goroskop.open.by/pda/";
@@ -58,7 +68,7 @@ namespace Yushko.Commands
             string help = "!гороскоп <знак зодиака> [общий/эротический/антигороскоп/бизнес/любовный/здоровья/кулинарный/мобильный] [сегодня/завтра/неделя/месяц/год]";
             if (arg.Length == 0)
             {
-                sendMessageFunc(help, AnswerBehaviourType.ShowText);
+                _bot.ShowMessage(help);
                 return;
             }
 
@@ -69,9 +79,9 @@ namespace Yushko.Commands
             else
             {
                 if (string.IsNullOrEmpty(arg[0])){
-                    sendMessageFunc(help, AnswerBehaviourType.ShowText);
+                    _bot.ShowMessage(help);
                 }else{
-                    sendMessageFunc(arg[0] + " - неверный знак зодиака", AnswerBehaviourType.ShowText);
+                    _bot.ShowMessage(arg[0] + " - неверный знак зодиака");
                 }
                 return;
             }
@@ -133,7 +143,7 @@ namespace Yushko.Commands
             else {
                 result.Append("На запрашиваемый Вами период гороскоп отсутствует");
             }
-            sendMessageFunc(result.ToString(), AnswerBehaviourType.ShowText);
+            _bot.ShowMessage(result.ToString());
         }
     }
 }

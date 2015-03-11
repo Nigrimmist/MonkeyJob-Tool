@@ -1,26 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Web;
-
 using HelloBotCommunication;
 using HelloBotModuleHelper;
-using HtmlAgilityPack;
-using Newtonsoft.Json;
-using Nigrimmist.Modules.Helpers;
 
-namespace Nigrimmist.Modules.Commands
+namespace Nigrimmist.Modules.Modules
 {
     /// <summary>
     /// Quote from http://online-generators.ru/
     /// </summary>
-    public class Quote : IActionHandler
+    public class Quote : ModuleBase
     {
-        
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList
+        private IBot _bot;
+
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
+
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
@@ -31,18 +34,17 @@ namespace Nigrimmist.Modules.Commands
             }
         }
 
-        public string CommandDescription { get { return @"Случайная цитата c http://online-generators.ru"; } }
+        public override string CommandDescription { get { return @"Случайная цитата c http://online-generators.ru"; } }
 
-        public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
+        public override void HandleMessage(string command, string args)
         {
-
             HtmlReaderManager hrm = new HtmlReaderManager();
             
             hrm.Post("http://online-generators.ru/ajax.php", "processor=quotes");
             var answerParts = hrm.Html.Split(new string[]{"##"},StringSplitOptions.RemoveEmptyEntries);
             string quote = answerParts[0];
             string author = answerParts[1];
-            sendMessageFunc(string.Format("{0} ©{1}", quote, author), AnswerBehaviourType.ShowText);
+            _bot.ShowMessage(string.Format("{0} ©{1}", quote, author));
         }
     }
 }

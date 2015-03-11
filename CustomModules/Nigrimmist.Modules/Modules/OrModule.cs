@@ -2,18 +2,25 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-
 using HelloBotCommunication;
-using HelloBotModuleHelper;
-using HtmlAgilityPack;
 
-namespace Nigrimmist.Modules.Commands
+namespace Nigrimmist.Modules.Modules
 {
-    public class Or : IActionHandler
+    public class Or : ModuleBase
     {
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList
+        private IBot _bot;
+
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
@@ -24,11 +31,11 @@ namespace Nigrimmist.Modules.Commands
             }
         }
 
-        public string CommandDescription { get { return @"Выбирает между чем-то. Использует ""Или"" в качестве разделителя"; } }
-        private Random r = new Random();
+        public override string CommandDescription { get { return @"Выбирает между чем-то. Использует ""Или"" в качестве разделителя"; } }
+        private Random _r = new Random();
         private const int ChanceOfSpecialAnswer = 30;
 
-        public List<string> cusstomMessages = new List<string>()
+        private List<string> _customMessages = new List<string>()
         {
             "Думаю {0}",
             "Определенно {0}",
@@ -40,17 +47,17 @@ namespace Nigrimmist.Modules.Commands
             "Эники бэники... {0}!"
         };
 
-        public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
+        public override void HandleMessage(string command, string args)
         {
             var variants = Regex.Split(args, "или", RegexOptions.IgnoreCase);
             string answer = "А что, есть выбор?";
             if (variants.Any())
             {
-                answer = variants[r.Next(0, variants.Count())];
+                answer = variants[_r.Next(0, variants.Count())];
             }
-            if (r.Next(1, 101) < ChanceOfSpecialAnswer)
-                answer = string.Format(cusstomMessages[r.Next(0, cusstomMessages.Count)], answer);
-            sendMessageFunc(answer, AnswerBehaviourType.ShowText);
+            if (_r.Next(1, 101) < ChanceOfSpecialAnswer)
+                answer = string.Format(_customMessages[_r.Next(0, _customMessages.Count)], answer);
+            _bot.ShowMessage(answer);
         }
 
 

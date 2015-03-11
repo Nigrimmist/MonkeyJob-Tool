@@ -156,7 +156,7 @@ namespace MonkeyJobTool.Forms
                         }
                     }
                 }
-            }, null))
+            }))
             {
                 SetLoading(false);
             }

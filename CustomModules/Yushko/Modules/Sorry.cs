@@ -4,11 +4,10 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
-using System.Text;
 using System.Web.Script.Serialization;
 using HelloBotCommunication;
 
-namespace Yushko.Commands
+namespace Yushko.Modules
 {
     class SlugPost {
         public SlugPost() {}
@@ -29,10 +28,20 @@ namespace Yushko.Commands
         public String nextSlug { get; set; }
     }
 
-    public class Sorry : IActionHandler
+    public class Sorry : ModuleBase
     {
-       
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList
+        private IBot _bot;
+
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
@@ -85,9 +94,9 @@ namespace Yushko.Commands
             return result;
         }
 
-        public string CommandDescription { get { return @"казнить нельзя помиловать"; } }
+        public override string CommandDescription { get { return @"казнить нельзя помиловать"; } }
 
-        public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
+        public override void HandleMessage(string command, string args)
         {
             string result = String.Empty;
             NameValueCollection headers = new NameValueCollection();
@@ -104,7 +113,7 @@ namespace Yushko.Commands
             }
             finally
             {
-                sendMessageFunc(result, AnswerBehaviourType.ShowText);
+                _bot.ShowMessage(result);
             }
         }
     }

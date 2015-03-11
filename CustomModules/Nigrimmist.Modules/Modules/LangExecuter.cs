@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Text;
 using System.Web;
 using HelloBotCommunication;
 using HelloBotModuleHelper;
-using HtmlAgilityPack;
 using Newtonsoft.Json;
-using Nigrimmist.Modules.Helpers;
 
-namespace Nigrimmist.Modules.Commands
+namespace Nigrimmist.Modules.Modules
 {
-    public class LangExecuter : IActionHandler
+    public class LangExecuter : ModuleBase
     {
         private class tempClass
         {
@@ -20,7 +17,19 @@ namespace Nigrimmist.Modules.Commands
             public string Errors { get; set; }
         }
 
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList
+        private IBot _bot;
+
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
+
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
@@ -31,13 +40,13 @@ namespace Nigrimmist.Modules.Commands
             }
         }
 
-        public string CommandDescription { get { return "Выполняет код на C#. Добавьте help для вызова справки."; } }
+        public override string CommandDescription { get { return "Выполняет код на C#. Добавьте help для вызова справки."; } }
 
-        public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
+        public override void HandleMessage(string command, string args)
         {
             if (args.StartsWith("help"))
             {
-                sendMessageFunc(GetHelpText(),AnswerBehaviourType.ShowText);
+                _bot.ShowMessage(GetHelpText());
             }
             else
             {
@@ -75,7 +84,7 @@ namespace Rextester
                 if (!string.IsNullOrEmpty(toReturn))
                 {
                     toReturn = toReturn.Replace(Environment.NewLine," ").Trim();
-                    sendMessageFunc(toReturn.Length > 200 ? toReturn.Substring(0, 50) + "..." : toReturn, AnswerBehaviourType.ShowText);
+                    _bot.ShowMessage(toReturn.Length > 200 ? toReturn.Substring(0, 50) + "..." : toReturn);
                 }
                 
                 

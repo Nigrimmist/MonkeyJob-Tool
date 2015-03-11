@@ -4,21 +4,29 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Web;
-
 using HelloBotCommunication;
 using HelloBotModuleHelper;
 using HtmlAgilityPack;
-using Nigrimmist.Modules.Helpers;
 
-namespace Nigrimmist.Modules.Commands
+namespace Nigrimmist.Modules.Modules
 {
-    public class Bash : IActionHandler
+    public class Bash : ModuleBase
     {
-        public List<string> Jokes = new List<string>();
-        private Random r = new Random();
+        private List<string> _jokes = new List<string>();
+        private Random _r = new Random();
 
-       
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList
+        private IBot _bot;
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
+
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
@@ -29,10 +37,12 @@ namespace Nigrimmist.Modules.Commands
             }
         }
 
-        public string CommandDescription { get { return @"Случайная цитата с башорга"; } }
-        public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
+        
+
+        public override string CommandDescription { get { return @"Случайная цитата с башорга"; } }
+        public override void HandleMessage(string command, string args)
         {
-            if (!Jokes.Any())
+            if (!_jokes.Any())
             {
                 HtmlReaderManager hrm = new HtmlReaderManager();
                 hrm.Encoding = Encoding.GetEncoding(1251);
@@ -44,13 +54,14 @@ namespace Nigrimmist.Modules.Commands
 
                 foreach (var div in divs)
                 {
-                    Jokes.Add(HttpUtility.HtmlDecode(div.InnerHtml.Replace("<br>", Environment.NewLine)));
+                    _jokes.Add(HttpUtility.HtmlDecode(div.InnerHtml.Replace("<br>", Environment.NewLine)));
                 }
             }
-            int rPos = r.Next(0, Jokes.Count );
-            string joke = Jokes[rPos];
-            Jokes.RemoveAt(rPos);
-            sendMessageFunc(joke, AnswerBehaviourType.ShowText);
+            int rPos = _r.Next(0, _jokes.Count );
+            string joke = _jokes[rPos];
+            _jokes.RemoveAt(rPos);
+
+            _bot.ShowMessage(joke); ;
         }
     }
 }

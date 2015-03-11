@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using HelloBotCommunication;
-using Yushko.Commands;
+using Yushko.Modules;
 
 namespace Yushko
 {
-    public class HandlerRegister: IActionHandlerRegister
+    public class HandlerRegister: IModuleRegister
     {
-        public List<IActionHandler> GetHandlers()
+        public List<ModuleBase> GetModules()
         {
-            return new List<IActionHandler>()
+            return new List<ModuleBase>()
             {
                 new ExchangeRate(),
                 new Sorry(),
@@ -16,6 +16,11 @@ namespace Yushko
                 new Moon(),
                 new Kstati()
             };
+        }
+
+        public string ByAuthor
+        {
+            get { throw new System.NotImplementedException(); }
         }
     }
 }

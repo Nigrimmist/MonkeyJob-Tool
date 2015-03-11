@@ -55,24 +55,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\Boobs.cs" />
-    <Compile Include="Commands\Calculator.cs" />
-    <Compile Include="Commands\Bash.cs" />
-    <Compile Include="Commands\ShortLink.cs" />
-    <Compile Include="Commands\Quote.cs" />
-    <Compile Include="Commands\FuckingAdvice.cs" />
-    <Compile Include="Commands\ItHappens.cs" />
-    <Compile Include="Commands\LangExecuter.cs" />
-    <Compile Include="Commands\Map.cs" />
-    <Compile Include="Commands\OrModule.cs" />
-    <Compile Include="Commands\WhatIsIt.cs" />
+    <Compile Include="Modules\BoobsModule.cs" />
+    <Compile Include="Modules\Calculator.cs" />
+    <Compile Include="Modules\Bash.cs" />
+    <Compile Include="Modules\ShortLink.cs" />
+    <Compile Include="Modules\Quote.cs" />
+    <Compile Include="Modules\Advice.cs" />
+    <Compile Include="Modules\ItHappens.cs" />
+    <Compile Include="Modules\LangExecuter.cs" />
+    <Compile Include="Modules\Map.cs" />
+    <Compile Include="Modules\OrModule.cs" />
+    <Compile Include="Modules\WhatIsIt.cs" />
     <Compile Include="DllRegister.cs" />
     <Compile Include="Helpers\NigrimmistUtilityExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Commands\Say.cs" />
-    <Compile Include="Commands\Translate.cs" />
-    <Compile Include="Commands\Weather.cs" />
-    <Compile Include="Commands\BrowserUrlsOpenModule.cs" />
+    <Compile Include="Modules\Say.cs" />
+    <Compile Include="Modules\Translate.cs" />
+    <Compile Include="Modules\Weather.cs" />
+    <Compile Include="Modules\BrowserUrlsOpen.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\HelloBotCommunication\HelloBotCommunication.csproj">

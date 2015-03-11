@@ -2,23 +2,31 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Web;
-
 using HelloBotCommunication;
 using HelloBotModuleHelper;
 using HtmlAgilityPack;
 using Nigrimmist.Modules.Helpers;
 
-namespace Nigrimmist.Modules.Commands
+namespace Nigrimmist.Modules.Modules
 {
-    public class ItHappens : IActionHandler
+    public class ItHappens : ModuleBase
     {
-        public List<string> Jokes = new List<string>();
-        private Random r = new Random();
+        public List<string> _jokes = new List<string>();
+        private Random _r = new Random();
+        private IBot _bot;
 
-       
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
+
+
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
@@ -29,10 +37,10 @@ namespace Nigrimmist.Modules.Commands
             }
         }
 
-        public string CommandDescription { get { return @"Случайная IT история с ithappens.me"; } }
-        public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
+        public override string CommandDescription { get { return @"Случайная IT история с ithappens.me"; } }
+        public override void HandleMessage(string command, string args)
         {
-            if (!Jokes.Any())
+            if (!_jokes.Any())
             {
                 HtmlReaderManager hrm = new HtmlReaderManager();
                 
@@ -44,13 +52,13 @@ namespace Nigrimmist.Modules.Commands
 
                 foreach (var div in divs)
                 {
-                    Jokes.Add(div.InnerHtml.Replace("<p>", "").Replace("</p>", Environment.NewLine + Environment.NewLine).RemoveAllTags().Trim());
+                    _jokes.Add(div.InnerHtml.Replace("<p>", "").Replace("</p>", Environment.NewLine + Environment.NewLine).RemoveAllTags().Trim());
                 }
             }
-            int rPos = r.Next(0, Jokes.Count );
-            string joke = Jokes[rPos];
-            Jokes.RemoveAt(rPos);
-            sendMessageFunc(joke, AnswerBehaviourType.ShowText);
+            int rPos = _r.Next(0, _jokes.Count );
+            string joke = _jokes[rPos];
+            _jokes.RemoveAt(rPos);
+            _bot.ShowMessage(joke);
         }
     }
 }

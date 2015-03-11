@@ -10,9 +10,21 @@ using HelloBotCommunication;
 
 namespace SmartAssHandlerLib
 {
-    public class MoviesHandler : IActionHandler
+    public class MoviesHandlerBase : ModuleBase
     {
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList
+        private IBot _bot;
+
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
+
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
@@ -23,18 +35,18 @@ namespace SmartAssHandlerLib
             }
         }
 
-        public string CommandDescription
+        public override string CommandDescription
         {
             get { return string.Empty; }
         }
 
-        public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
+        public override void HandleMessage(string command, string args)
         {
             var request = BuildRequestUrl(args);
             var rawData = GetRawData(request);
             var description = ParseMovieData(rawData);
 
-            sendMessageFunc(description.ToString(), AnswerBehaviourType.ShowText);
+            _bot.ShowMessage(description.ToString());
         }
 
         private MovieDescription ParseMovieData(string rawData)

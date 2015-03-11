@@ -2,17 +2,27 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
-
 using HelloBotCommunication;
 using HelloBotModuleHelper;
 using HtmlAgilityPack;
-using Nigrimmist.Modules.Helpers;
 
-namespace Nigrimmist.Modules.Commands
+namespace Nigrimmist.Modules.Modules
 {
-    public class Weather : IActionHandler
+    public class Weather : ModuleBase
     {
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList
+        private IBot _bot;
+
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
+
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
@@ -22,8 +32,8 @@ namespace Nigrimmist.Modules.Commands
                 });
             }
         }
-        public string CommandDescription { get { return @"Погода с тутбая для Минска. ""!погода"" = текущая+завтра"; } }
-        public void HandleMessage(string command, string args, object clientData, Action<string,AnswerBehaviourType> sendMessageFunc)
+        public override string CommandDescription { get { return @"Погода с тутбая для Минска. ""!погода"" = текущая+завтра"; } }
+        public override void HandleMessage(string command, string args)
         {
             HtmlReaderManager hrm = new HtmlReaderManager();
             hrm.Get("http://pogoda.tut.by/");
@@ -40,7 +50,7 @@ namespace Nigrimmist.Modules.Commands
                 sb.Append(td.SelectSingleNode(".//./div[@class='fcurrent-descr']").InnerText + " ");
                 sb.Append(Environment.NewLine);
             }
-            sendMessageFunc(sb.ToString().Replace("&deg;", "°"), AnswerBehaviourType.ShowText);
+            _bot.ShowMessage(sb.ToString().Replace("&deg;", "°"));
         }
     }
 }

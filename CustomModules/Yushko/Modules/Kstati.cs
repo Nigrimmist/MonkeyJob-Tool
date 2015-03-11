@@ -3,15 +3,25 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using HelloBotCommunication;
-using HtmlAgilityPack;
 using HelloBotModuleHelper;
+using HtmlAgilityPack;
 
-namespace Yushko.Commands
+namespace Yushko.Modules
 {
-    public class Kstati : IActionHandler
+    public class Kstati : ModuleBase
     {
-        
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList
+        private IBot _bot;
+
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
@@ -21,10 +31,10 @@ namespace Yushko.Commands
                 });
             }
         }
-        public string CommandDescription { get { return @"Интересный факт одной строкой"; } }
+        public override string CommandDescription { get { return @"Интересный факт одной строкой"; } }
 
 
-        public void HandleMessage(string command, string args, object clientData, Action<string, AnswerBehaviourType> sendMessageFunc)
+        public override void HandleMessage(string command, string args)
         {
             string url = "http://know-that.ru/randomizer.php";
             string result = string.Empty;
@@ -51,7 +61,7 @@ namespace Yushko.Commands
             else {
                 result = "Факты кончились... :(";
             }
-            sendMessageFunc(result,AnswerBehaviourType.ShowText);
+            _bot.ShowMessage(result);
         }
     }
 }

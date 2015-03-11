@@ -1,30 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Web;
-
 using HelloBotCommunication;
 using HelloBotModuleHelper;
-using HtmlAgilityPack;
 using Newtonsoft.Json;
 using Nigrimmist.Modules.Helpers;
 
-namespace Nigrimmist.Modules.Commands
+namespace Nigrimmist.Modules.Modules
 {
     /// <summary>
     /// Fun advices from http://fucking-great-advice.ru/
     /// </summary>
-    public class Advice : IActionHandler
+    public class Advice : ModuleBase
     {
         private class textClass
         {
             public string text { get; set; }
         }
 
-        public ReadOnlyCollection<CallCommandInfo> CallCommandList
+        private IBot _bot;
+
+        public override void Init(IBot bot)
+        {
+            _bot = bot;
+        }
+
+        public override double ModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
             {
@@ -35,17 +42,16 @@ namespace Nigrimmist.Modules.Commands
             }
         }
 
-        public string CommandDescription { get { return @"Случайный совет с http://fucking-great-advice.ru/"; } }
+        public override string CommandDescription { get { return @"Случайный совет с http://fucking-great-advice.ru/"; } }
 
-        public void HandleMessage(string command, string args, object clientData, Action<string,AnswerBehaviourType> sendMessageFunc)
+        public override void HandleMessage(string command, string args)
         {
-
             HtmlReaderManager hrm = new HtmlReaderManager();
             hrm.Encoding = Encoding.GetEncoding(1251);
             hrm.Get("http://fucking-great-advice.ru/api/random");
             var json = JsonConvert.DeserializeObject<textClass>(hrm.Html);
             string advice = json.text;
-            sendMessageFunc(HttpUtility.HtmlDecode(advice.RemoveAllTags()), AnswerBehaviourType.ShowText);
+            _bot.ShowMessage(HttpUtility.HtmlDecode(advice.RemoveAllTags()));
         }
     }
 }

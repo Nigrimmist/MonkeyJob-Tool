@@ -48,7 +48,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\AnswerInfo.cs" />
-    <Compile Include="Entities\ModuleActionHandler.cs" />
+    <Compile Include="Entities\BotClient.cs" />
+    <Compile Include="Entities\IModuleClientHandler.cs" />
+    <Compile Include="Entities\ModuleCommandInfo.cs" />
     <Compile Include="HelloBot.cs" />
     <Compile Include="Entities\Language.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

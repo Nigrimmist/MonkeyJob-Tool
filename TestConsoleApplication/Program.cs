@@ -14,7 +14,6 @@ using System.Xml;
 using HelloBotCore;
 
 using MonkeyJobTool.Extensions;
-using Nigrimmist.Modules.Commands;
 
 namespace Test
 {

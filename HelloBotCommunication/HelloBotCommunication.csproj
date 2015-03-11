@@ -42,13 +42,13 @@
   <ItemGroup>
     <Compile Include="AnswerBehaviourType.cs" />
     <Compile Include="CallCommandInfo.cs" />
-    <Compile Include="IActionHandlerRegister.cs" />
+    <Compile Include="IBot.cs" />
+    <Compile Include="IModuleRegister.cs" />
+    <Compile Include="MessageType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="IActionHandler.cs" />
+    <Compile Include="ModuleBase.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ClientDataInterfaces\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
