@@ -183,10 +183,6 @@
       <Project>{f9500b18-085e-4a3d-b215-75ec409e05da}</Project>
       <Name>HelloBotCore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HelloBotModuleHelper\HelloBotModuleHelper.csproj">
-      <Project>{5b94e739-fad8-4a23-ab11-3edd24f57d35}</Project>
-      <Name>HelloBotModuleHelper</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

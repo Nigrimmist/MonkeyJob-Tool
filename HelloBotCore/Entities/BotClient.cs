@@ -18,22 +18,22 @@ namespace HelloBotCore.Entities
 
         public void SaveSettings(object serializableSettingObject)
         {
-            _moduleClientHandler.SaveSettings(serializableSettingObject);
+            _moduleClientHandler.SaveSettings(_moduleCommandInfo,serializableSettingObject);
         }
 
         public T GetSettings<T>()
         {
-            return _moduleClientHandler.GetSettings<T>();
+            return _moduleClientHandler.GetSettings<T>(_moduleCommandInfo);
         }
 
         public void ShowMessage(string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
         {
-            _moduleClientHandler.ShowMessage(content,title,answerType,messageType);
+            _moduleClientHandler.ShowMessage(_moduleCommandInfo, content, title, answerType, messageType);
         }
 
         public void RegisterTimerEvent(TimeSpan period, Action callback)
         {
-            _moduleClientHandler.RegisterTimerEvent(period,callback);
+            _moduleClientHandler.RegisterTimerEvent(_moduleCommandInfo, period, callback);
         }
     }
 }

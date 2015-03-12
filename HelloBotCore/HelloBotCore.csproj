@@ -38,11 +38,13 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Dependencies\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -51,6 +53,7 @@
     <Compile Include="Entities\BotClient.cs" />
     <Compile Include="Entities\IModuleClientHandler.cs" />
     <Compile Include="Entities\ModuleCommandInfo.cs" />
+    <Compile Include="Entities\ModuleSettings.cs" />
     <Compile Include="HelloBot.cs" />
     <Compile Include="Entities\Language.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -63,6 +66,10 @@
     <ProjectReference Include="..\HelloBotCommunication\HelloBotCommunication.csproj">
       <Project>{53eb844b-b3a7-4397-9db3-84f5d9f30840}</Project>
       <Name>HelloBotCommunication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HelloBotModuleHelper\HelloBotModuleHelper.csproj">
+      <Project>{5b94e739-fad8-4a23-ab11-3edd24f57d35}</Project>
+      <Name>HelloBotModuleHelper</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

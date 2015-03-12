@@ -53,8 +53,7 @@ namespace MonkeyJobTool.Forms
             try
             {
                 App.Instance.Init(openFormHotKeyRaised, this);
-                _bot = new HelloBot(botCommandPrefix: "",moduleFolderPath : App.Instance.ExecutionFolder);
-
+                _bot = new HelloBot(App.Instance.ExecutionFolder+"ModuleSettings",botCommandPrefix: "",moduleFolderPath : App.Instance.ExecutionFolder);
 
                 this.ShowInTaskbar = false;
                 _bot.OnErrorOccured += BotOnOnErrorOccured;
