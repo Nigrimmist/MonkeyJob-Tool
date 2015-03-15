@@ -88,7 +88,7 @@ namespace Yushko.Modules
             return _exRatesDaily;
         }
 
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             string[] arg = args.Split(' ');
             string result = "";
@@ -120,7 +120,7 @@ namespace Yushko.Modules
                     break;
             }
 
-            _bot.ShowMessage(result);
+            _bot.ShowMessage(commandToken,result);
         }
 
         //сконвертировать из одной валюты в другую

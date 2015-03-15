@@ -35,6 +35,7 @@ namespace HelloBotCommunication
         /// </summary>
         /// <param name="command">Incoming command</param>
         /// <param name="args">Command arguments, can be empty</param>
-        public abstract void HandleMessage(string command,string args);
+        /// <param name="commandToken">Command token</param>
+        public abstract void HandleMessage(string command,string args, Guid commandToken);
     }
 }

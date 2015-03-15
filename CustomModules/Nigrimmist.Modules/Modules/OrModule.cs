@@ -47,7 +47,7 @@ namespace Nigrimmist.Modules.Modules
             "Эники бэники... {0}!"
         };
 
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             var variants = Regex.Split(args, "или", RegexOptions.IgnoreCase);
             string answer = "А что, есть выбор?";
@@ -57,7 +57,7 @@ namespace Nigrimmist.Modules.Modules
             }
             if (_r.Next(1, 101) < ChanceOfSpecialAnswer)
                 answer = string.Format(_customMessages[_r.Next(0, _customMessages.Count)], answer);
-            _bot.ShowMessage(answer);
+            _bot.ShowMessage(commandToken,answer);
         }
 
 

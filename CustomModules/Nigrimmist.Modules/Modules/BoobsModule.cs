@@ -38,7 +38,7 @@ namespace Nigrimmist.Modules.Modules
         private Random _r = new Random();
         private List<string> _images = new List<string>();
 
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             if (!_images.Any())
             {
@@ -57,7 +57,7 @@ namespace Nigrimmist.Modules.Modules
             int rPos = _r.Next(0, _images.Count);
             string url = _images[rPos];
             _images.RemoveAt(rPos);
-            _bot.ShowMessage(url,answerType: AnswerBehaviourType.OpenLink);
+            _bot.ShowMessage(commandToken,url,answerType: AnswerBehaviourType.OpenLink);
         }
 
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using System.Web;
@@ -44,14 +45,14 @@ namespace Nigrimmist.Modules.Modules
 
         public override string CommandDescription { get { return @"Случайный совет с http://fucking-great-advice.ru/"; } }
 
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             HtmlReaderManager hrm = new HtmlReaderManager();
             hrm.Encoding = Encoding.GetEncoding(1251);
             hrm.Get("http://fucking-great-advice.ru/api/random");
             var json = JsonConvert.DeserializeObject<textClass>(hrm.Html);
             string advice = json.text;
-            _bot.ShowMessage(HttpUtility.HtmlDecode(advice.RemoveAllTags()));
+            _bot.ShowMessage(commandToken,HttpUtility.HtmlDecode(advice.RemoveAllTags()));
         }
     }
 }

@@ -34,7 +34,7 @@ namespace Yushko.Modules
         public override string CommandDescription { get { return @"лунный календарь"; } }
 
 
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             StringBuilder result = new StringBuilder();
             HtmlReaderManager hrm = new HtmlReaderManager();
@@ -54,7 +54,7 @@ namespace Yushko.Modules
                     result.Append(tds[1].InnerText);//.InnerHtml.Replace("<br>", Environment.NewLine).RemoveAllTags().Trim();
                 }
             }
-            _bot.ShowMessage(result.ToString());
+            _bot.ShowMessage(commandToken,result.ToString());
         }
     }
 }

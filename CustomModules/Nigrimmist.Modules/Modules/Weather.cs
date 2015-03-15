@@ -33,7 +33,7 @@ namespace Nigrimmist.Modules.Modules
             }
         }
         public override string CommandDescription { get { return @"Погода с тутбая для Минска. ""!погода"" = текущая+завтра"; } }
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             HtmlReaderManager hrm = new HtmlReaderManager();
             hrm.Get("http://pogoda.tut.by/");
@@ -50,7 +50,7 @@ namespace Nigrimmist.Modules.Modules
                 sb.Append(td.SelectSingleNode(".//./div[@class='fcurrent-descr']").InnerText + " ");
                 sb.Append(Environment.NewLine);
             }
-            _bot.ShowMessage(sb.ToString().Replace("&deg;", "°"));
+            _bot.ShowMessage(commandToken,sb.ToString().Replace("&deg;", "°"));
         }
     }
 }

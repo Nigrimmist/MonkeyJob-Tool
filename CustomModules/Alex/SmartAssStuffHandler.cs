@@ -41,10 +41,10 @@ namespace SmartAssHandlerLib
             get { return "Безумная заумь небольшими дозами. Добавьте слово \"напалмом\" к команде, чтобы получить порцию зауми побольше. "; }
         }
 
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             var needLotsOfStuff = !string.IsNullOrEmpty(args) && args.Contains("напалмом");
-            _bot.ShowMessage(RetrieveSmartAssStuff(needLotsOfStuff));
+            _bot.ShowMessage(commandToken,RetrieveSmartAssStuff(needLotsOfStuff));
         }
 
         private string RetrieveSmartAssStuff(bool needLotsOfStuff)

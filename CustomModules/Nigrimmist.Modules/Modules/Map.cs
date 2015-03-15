@@ -56,7 +56,7 @@ namespace Nigrimmist.Modules.Modules
         private string helpMsg = string.Format(@"""!map <опционально:поисковик> <адрес>"", где поисковик может быть y(yandex) или g(google).
 Проложить маршрут : ""!map <опционально:поисковик> <из>{0}<в>""", _fromToDelimeter);
 
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
        {
            
 
@@ -66,7 +66,7 @@ namespace Nigrimmist.Modules.Modules
 
                 if (inputProvider == "help")
                 {
-                    _bot.ShowMessage(helpMsg);
+                    _bot.ShowMessage(commandToken,helpMsg);
                 }
                 else if (args.Contains(_fromToDelimeter))
                 {
@@ -86,7 +86,7 @@ namespace Nigrimmist.Modules.Modules
                             leftPart = leftPart.Substring(inputProvider.Length).Trim();
                         }
                         string url = string.Format(foundProvider, HttpUtility.UrlEncode(leftPart), HttpUtility.UrlEncode(rightPart));
-                        _bot.ShowMessage(url.ToShortUrl(),answerType: AnswerBehaviourType.OpenLink);
+                        _bot.ShowMessage(commandToken,url.ToShortUrl(),answerType: AnswerBehaviourType.OpenLink);
                     }
                 }
                 else
@@ -103,7 +103,7 @@ namespace Nigrimmist.Modules.Modules
                         address = args.Substring(inputProvider.Length).Trim();    
                     }
                     string url = string.Format(foundProvider, HttpUtility.UrlEncode(address));
-                    _bot.ShowMessage(url.ToShortUrl(),answerType: AnswerBehaviourType.OpenLink);
+                    _bot.ShowMessage(commandToken,url.ToShortUrl(),answerType: AnswerBehaviourType.OpenLink);
                 }
             }
         }

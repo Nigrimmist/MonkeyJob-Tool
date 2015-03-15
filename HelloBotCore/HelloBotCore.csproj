@@ -51,6 +51,8 @@
   <ItemGroup>
     <Compile Include="Entities\AnswerInfo.cs" />
     <Compile Include="Entities\BotClient.cs" />
+    <Compile Include="Entities\BotCommandContext.cs" />
+    <Compile Include="Entities\ClientCommandContext.cs" />
     <Compile Include="Entities\IModuleClientHandler.cs" />
     <Compile Include="Entities\ModuleCommandInfo.cs" />
     <Compile Include="Entities\ModuleSettings.cs" />

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using HelloBotCommunication;
 using NCalc;
@@ -32,7 +33,7 @@ namespace Nigrimmist.Modules.Modules
 
         public override string CommandDescription { get { return "Умный калькулятор. Реализация NCalc библиотеки"; }  }
 
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             Expression expr = new Expression(args);
             var exprAnswer = expr.Evaluate();
@@ -40,7 +41,7 @@ namespace Nigrimmist.Modules.Modules
 
             answer = string.Format("Ответ равен : {0}", exprAnswer);
 
-            _bot.ShowMessage(answer);
+            _bot.ShowMessage(commandToken,answer);
         }
     }
 }

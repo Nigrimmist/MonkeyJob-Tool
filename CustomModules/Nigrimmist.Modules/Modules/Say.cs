@@ -33,9 +33,9 @@ namespace Nigrimmist.Modules.Modules
 
 
         public override string CommandDescription { get { return @"Говорит что прикажете"; } }
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
-            _bot.ShowMessage(args);
+            _bot.ShowMessage(commandToken,args);
         }
     }
 }

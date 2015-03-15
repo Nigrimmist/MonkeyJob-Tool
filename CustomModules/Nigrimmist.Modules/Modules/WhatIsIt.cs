@@ -52,7 +52,7 @@ namespace Nigrimmist.Modules.Modules
 
        
         public override string CommandDescription { get { return @"Бот знает всё. Ну или почти всё."; } }
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             args = args.Replace("?"," ").Trim();
             string answer = string.Empty;
@@ -93,7 +93,7 @@ namespace Nigrimmist.Modules.Modules
                 answer += ". " + hrm.ResponseUri;
             }
 
-            _bot.ShowMessage(answer);
+            _bot.ShowMessage(commandToken,answer);
         }
     }
 }

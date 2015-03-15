@@ -42,11 +42,11 @@ namespace Nigrimmist.Modules.Modules
 
         public override string CommandDescription { get { return "Выполняет код на C#. Добавьте help для вызова справки."; } }
 
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             if (args.StartsWith("help"))
             {
-                _bot.ShowMessage(GetHelpText());
+                _bot.ShowMessage(commandToken,GetHelpText());
             }
             else
             {
@@ -84,7 +84,7 @@ namespace Rextester
                 if (!string.IsNullOrEmpty(toReturn))
                 {
                     toReturn = toReturn.Replace(Environment.NewLine," ").Trim();
-                    _bot.ShowMessage(toReturn.Length > 200 ? toReturn.Substring(0, 50) + "..." : toReturn);
+                    _bot.ShowMessage(commandToken,toReturn.Length > 200 ? toReturn.Substring(0, 50) + "..." : toReturn);
                 }
                 
                 

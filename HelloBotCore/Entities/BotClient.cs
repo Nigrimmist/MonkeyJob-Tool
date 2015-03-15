@@ -21,14 +21,14 @@ namespace HelloBotCore.Entities
             _moduleClientHandler.SaveSettings(_moduleCommandInfo,serializableSettingObject);
         }
 
-        public T GetSettings<T>()
+        public T GetSettings<T>() where T : class 
         {
             return _moduleClientHandler.GetSettings<T>(_moduleCommandInfo);
         }
 
-        public void ShowMessage(string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
+        public void ShowMessage(Guid commandToken,string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
         {
-            _moduleClientHandler.ShowMessage(_moduleCommandInfo, content, title, answerType, messageType);
+            _moduleClientHandler.ShowMessage(commandToken,_moduleCommandInfo, content, title, answerType, messageType);
         }
 
         public void RegisterTimerEvent(TimeSpan period, Action callback)

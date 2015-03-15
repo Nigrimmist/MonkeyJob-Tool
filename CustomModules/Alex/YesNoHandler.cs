@@ -53,7 +53,7 @@ namespace SmartAssHandlerLib
             get { return "Лаконичный ответ на простой вопрос."; }
         }
 
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             var answer = string.Empty;
 
@@ -67,7 +67,7 @@ namespace SmartAssHandlerLib
                 answer = _emptyAnswerProvider.Get();
             }
 
-            _bot.ShowMessage(answer);
+            _bot.ShowMessage(commandToken,answer);
         }
 
         private class RandomHelper

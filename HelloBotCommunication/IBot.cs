@@ -17,16 +17,17 @@ namespace HelloBotCommunication
         /// Return your settings if exist.
         /// </summary>
         /// <typeparam name="T">Type of your settings</typeparam>
-        T GetSettings<T>();
+        T GetSettings<T>() where T : class ;
 
         /// <summary>
         /// Show notification with text to user
         /// </summary>
+        /// <param name="commandToken">Command token. Should be recieved later from client.</param>
         /// <param name="content">Text content</param>
         /// <param name="title">Message title. if null, command name will be displayed instead</param>
         /// <param name="answerType">Answer type</param>
         /// <param name="messageType">Message type</param>
-        void ShowMessage(string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default);
+        void ShowMessage(Guid commandToken,string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default);
 
         /// <summary>
         /// Will register a timer for you module, that will exist while client is alive. Callback will be called every "period" time.

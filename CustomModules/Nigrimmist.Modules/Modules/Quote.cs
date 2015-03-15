@@ -36,7 +36,7 @@ namespace Nigrimmist.Modules.Modules
 
         public override string CommandDescription { get { return @"Случайная цитата c http://online-generators.ru"; } }
 
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             HtmlReaderManager hrm = new HtmlReaderManager();
             
@@ -44,7 +44,7 @@ namespace Nigrimmist.Modules.Modules
             var answerParts = hrm.Html.Split(new string[]{"##"},StringSplitOptions.RemoveEmptyEntries);
             string quote = answerParts[0];
             string author = answerParts[1];
-            _bot.ShowMessage(string.Format("{0} ©{1}", quote, author));
+            _bot.ShowMessage(commandToken,string.Format("{0} ©{1}", quote, author));
         }
     }
 }

@@ -34,7 +34,7 @@ namespace Yushko.Modules
         public override string CommandDescription { get { return @"Интересный факт одной строкой"; } }
 
 
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             string url = "http://know-that.ru/randomizer.php";
             string result = string.Empty;
@@ -61,7 +61,7 @@ namespace Yushko.Modules
             else {
                 result = "Факты кончились... :(";
             }
-            _bot.ShowMessage(result);
+            _bot.ShowMessage(commandToken,result);
         }
     }
 }

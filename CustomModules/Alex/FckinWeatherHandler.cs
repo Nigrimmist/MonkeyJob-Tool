@@ -42,7 +42,7 @@ namespace SmartAssHandlerLib
 
         public override string CommandDescription { get { return "Shows fucking WEATHER!"; } }
 
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             var result = FailedResult;
 
@@ -56,7 +56,7 @@ namespace SmartAssHandlerLib
             }
             catch (Exception ex) { }
 
-            _bot.ShowMessage(result);
+            _bot.ShowMessage(commandToken,result);
         }
 
         private Forecast ParseForecast(string rawWeatherHtml)

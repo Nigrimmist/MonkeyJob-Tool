@@ -59,7 +59,7 @@ namespace Yushko.Modules
             {"ГОД", "year"}
         };
 
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             string[] arg = args.Split(' ');
             string url = "http://goroskop.open.by/pda/";
@@ -68,7 +68,7 @@ namespace Yushko.Modules
             string help = "!гороскоп <знак зодиака> [общий/эротический/антигороскоп/бизнес/любовный/здоровья/кулинарный/мобильный] [сегодня/завтра/неделя/месяц/год]";
             if (arg.Length == 0)
             {
-                _bot.ShowMessage(help);
+                _bot.ShowMessage(commandToken,help);
                 return;
             }
 
@@ -79,9 +79,9 @@ namespace Yushko.Modules
             else
             {
                 if (string.IsNullOrEmpty(arg[0])){
-                    _bot.ShowMessage(help);
+                    _bot.ShowMessage(commandToken,help);
                 }else{
-                    _bot.ShowMessage(arg[0] + " - неверный знак зодиака");
+                    _bot.ShowMessage(commandToken,arg[0] + " - неверный знак зодиака");
                 }
                 return;
             }
@@ -143,7 +143,7 @@ namespace Yushko.Modules
             else {
                 result.Append("На запрашиваемый Вами период гороскоп отсутствует");
             }
-            _bot.ShowMessage(result.ToString());
+            _bot.ShowMessage(commandToken,result.ToString());
         }
     }
 }

@@ -57,7 +57,7 @@ namespace MonkeyJobTool.Forms
 
                 this.ShowInTaskbar = false;
                 _bot.OnErrorOccured += BotOnOnErrorOccured;
-
+                _bot.OnMessageRecieved += BotOnMessageRecieved;
 
                 var screen = Screen.FromPoint(this.Location);
                 this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
@@ -79,6 +79,41 @@ namespace MonkeyJobTool.Forms
                 MessageBox.Show(ex.ToString());
             }
 
+        }
+
+        void BotOnMessageRecieved(AnswerInfo answerInfo, ClientCommandContext clientCommandContext)
+        {
+                string answer = answerInfo.Answer;
+                var answerType = answerInfo.AnswerType;
+                SetLoading(false);
+                if (clientCommandContext != null && clientCommandContext.IsToBuffer)
+                {
+                    this.Invoke(new MethodInvoker(delegate
+                    {
+                        Clipboard.SetText(answer);
+                        App.Instance.ShowPopup("Скопировано в буфер обмена", TimeSpan.FromSeconds(2));
+                    }));
+                }
+                else
+                {
+                    if (answerType == AnswerBehaviourType.OpenLink)
+                    {
+                        if (answer.StartsWith("http://") || answer.StartsWith("https://"))
+                            Process.Start(answer);
+                    }
+                    else if (answerType == AnswerBehaviourType.ShowText)
+                    {
+                        if (!string.IsNullOrEmpty(answer))
+                        {
+                            this.Invoke((MethodInvoker) (delegate
+                            {
+                                App.Instance.ShowPopup(answerInfo.CommandName, answer, null);
+                                this.ToTop();
+                            }));
+
+                        }
+                    }
+                }
         }
 
         private string TryToReplaceCommand(string command)
@@ -121,41 +156,7 @@ namespace MonkeyJobTool.Forms
             }
             SetLoading(true);
 
-            if (!_bot.HandleMessage(command, delegate(AnswerInfo answerInfo)
-            {
-                string answer = answerInfo.Answer;
-                var answerType = answerInfo.Type;
-                SetLoading(false);
-                if (toBuffer)
-                {
-                    this.Invoke(new MethodInvoker(delegate
-                    {
-                        Clipboard.SetText(answer);
-                        App.Instance.ShowPopup("Скопировано в буфер обмена", TimeSpan.FromSeconds(2));
-                    }));
-                    
-                }
-                else
-                {
-                    if (answerType == AnswerBehaviourType.OpenLink)
-                    {
-                        if (answer.StartsWith("http://") || answer.StartsWith("https://"))
-                            Process.Start(answer);
-                    }
-                    else if (answerType == AnswerBehaviourType.ShowText)
-                    {
-                        if (!string.IsNullOrEmpty(answer))
-                        {
-                            this.Invoke((MethodInvoker) (delegate
-                            {
-                                App.Instance.ShowPopup(answerInfo.Command, answer, null);
-                                this.ToTop();
-                            }));
-
-                        }
-                    }
-                }
-            }))
+            if (!_bot.HandleMessage(command, new ClientCommandContext(){IsToBuffer = toBuffer}))
             {
                 SetLoading(false);
             }

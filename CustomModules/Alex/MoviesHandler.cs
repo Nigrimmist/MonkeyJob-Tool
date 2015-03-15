@@ -40,13 +40,13 @@ namespace SmartAssHandlerLib
             get { return string.Empty; }
         }
 
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             var request = BuildRequestUrl(args);
             var rawData = GetRawData(request);
             var description = ParseMovieData(rawData);
 
-            _bot.ShowMessage(description.ToString());
+            _bot.ShowMessage(commandToken,description.ToString());
         }
 
         private MovieDescription ParseMovieData(string rawData)

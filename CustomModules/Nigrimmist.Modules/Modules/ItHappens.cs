@@ -38,7 +38,7 @@ namespace Nigrimmist.Modules.Modules
         }
 
         public override string CommandDescription { get { return @"Случайная IT история с ithappens.me"; } }
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             if (!_jokes.Any())
             {
@@ -58,7 +58,7 @@ namespace Nigrimmist.Modules.Modules
             int rPos = _r.Next(0, _jokes.Count );
             string joke = _jokes[rPos];
             _jokes.RemoveAt(rPos);
-            _bot.ShowMessage(joke);
+            _bot.ShowMessage(commandToken,joke);
         }
     }
 }

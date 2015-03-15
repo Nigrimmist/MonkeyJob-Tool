@@ -5,12 +5,12 @@ using System.Text;
 
 namespace HelloBotCore.Entities
 {
-    public class ModuleSettings
+    public class ModuleSettings<T> where T : class
     {
         public double ModuleVersion { get; set; }
-        public object ModuleData { get; set; }
+        public T ModuleData { get; set; }
 
-        public ModuleSettings(double moduleVersion, object moduleData)
+        public ModuleSettings(double moduleVersion, T moduleData)
         {
             ModuleVersion = moduleVersion;
             ModuleData = moduleData;

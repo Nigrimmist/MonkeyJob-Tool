@@ -96,7 +96,7 @@ namespace Yushko.Modules
 
         public override string CommandDescription { get { return @"казнить нельзя помиловать"; } }
 
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             string result = String.Empty;
             NameValueCollection headers = new NameValueCollection();
@@ -113,7 +113,7 @@ namespace Yushko.Modules
             }
             finally
             {
-                _bot.ShowMessage(result);
+                _bot.ShowMessage(commandToken,result);
             }
         }
     }

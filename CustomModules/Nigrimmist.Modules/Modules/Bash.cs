@@ -40,7 +40,7 @@ namespace Nigrimmist.Modules.Modules
         
 
         public override string CommandDescription { get { return @"Случайная цитата с башорга"; } }
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             if (!_jokes.Any())
             {
@@ -61,7 +61,7 @@ namespace Nigrimmist.Modules.Modules
             string joke = _jokes[rPos];
             _jokes.RemoveAt(rPos);
 
-            _bot.ShowMessage(joke); ;
+            _bot.ShowMessage(commandToken,joke); ;
         }
     }
 }

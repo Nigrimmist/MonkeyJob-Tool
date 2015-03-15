@@ -35,7 +35,16 @@ namespace HelloBotCore
         private Dictionary<Guid, object> _commandDictLocks;
         private string _settingsFolderAbsolutePath;
         private JsonSerializer _serializer;
+        private Dictionary<Guid, BotCommandContext> _commandContexts;
+        private object _commandContextLock = new object();
+        public delegate void OnErrorOccuredDelegate(Exception ex);
         
+        /// <param name="clientCommandContext">Can be null</param>
+        public delegate void OnMessageRecievedDelegate(AnswerInfo answer,ClientCommandContext clientCommandContext);
+        public event OnErrorOccuredDelegate OnErrorOccured;
+        public event OnMessageRecievedDelegate OnMessageRecieved;
+
+
         /// <summary>
         /// Bot costructor
         /// </summary>
@@ -44,7 +53,7 @@ namespace HelloBotCore
         /// <param name="botCommandPrefix">Prefix for bot commands. Only messages with that prefix will be handled</param>
         public HelloBot(string settingsFolderAbsolutePath,string moduleDllmask = "*.dll", string botCommandPrefix = "!", string moduleFolderPath = ".")
         {
-            _settingsFolderAbsolutePath = moduleFolderPath;
+            _settingsFolderAbsolutePath = settingsFolderAbsolutePath;
             if (!Directory.Exists(settingsFolderAbsolutePath))
                 Directory.CreateDirectory(settingsFolderAbsolutePath);
 
@@ -56,9 +65,10 @@ namespace HelloBotCore
             _serializer = new JsonSerializer();
             _systemCommands = new Dictionary<string, SystemCommandInfo>()
             {
-                {"help", new SystemCommandInfo("список системных команд", GetSystemCommands)},
-                {"modules", new SystemCommandInfo("список кастомных модулей", GetUserDefinedCommands)},
+                {"?", new SystemCommandInfo("список системных команд", GetSystemCommands)},
+                {"modules", new SystemCommandInfo("список модулей", GetUserDefinedCommands)},
             };
+            _commandContexts = new Dictionary<Guid, BotCommandContext>();
             RegisterModules();
         }
 
@@ -96,26 +106,29 @@ namespace HelloBotCore
             foreach (var dll in dlls)
             {
                 var ass = Assembly.LoadFile(dll);
-
+                var fi = new FileInfo(dll);
                 //get types from assembly
                 var typesInAssembly = ass.GetTypes().Where(type => i.IsAssignableFrom(type) && !type.IsInterface).ToList();
 
                 foreach (Type type in typesInAssembly)
                 {
                     object obj = Activator.CreateInstance(type);
-                    var modules = ((IModuleRegister)obj).GetModules();
-                    toReturn.AddRange(modules.Where(module => module.CallCommandList.Any()).Select(module =>
+                    var modules = ((IModuleRegister)obj).GetModules().Select(module =>
                     {
-                        var tModule = new ModuleCommandInfo(module, this);
-                        _commandDictLocks.Add(tModule.Id,new object());
+                        var tModule = new ModuleCommandInfo();
+                        _commandDictLocks.Add(tModule.Id, new object());
+                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this);
                         return tModule;
-                    }));
+                    });
+
+                    toReturn.AddRange(modules.Where(x=>x.CallCommandList.Any()));
                 }
             }
+            
             return toReturn;
         }
         
-        public bool HandleMessage(string incomingMessage)
+        public bool HandleMessage(string incomingMessage, ClientCommandContext clientCommandContext)
         {
             if (incomingMessage.Contains(_botCommandPrefix))
             {
@@ -127,7 +140,7 @@ namespace HelloBotCore
                     if (systemCommandList.Any())
                     {
                         var systemComand = systemCommandList.First();
-                        ShowMessage(null, systemComand.Value.Callback(), systemComand.Key);
+                        ShowMessage(systemComand.Value.Callback(), systemComand.Key);
                         return true;
                     }
                     else
@@ -145,7 +158,16 @@ namespace HelloBotCore
                                 {
                                     try
                                     {
-                                        hnd.HandleMessage(command, args);
+                                        var commandTempGuid = Guid.NewGuid();
+                                        lock (_commandContextLock)
+                                        {
+                                            _commandContexts.Add(commandTempGuid, new BotCommandContext()
+                                            {
+                                                ClientCommandContext = clientCommandContext,
+                                                CommandName = command
+                                            });
+                                        }
+                                        hnd.HandleMessage(command, args, commandTempGuid);
                                     }
                                     catch (Exception ex)
                                     {
@@ -155,12 +177,12 @@ namespace HelloBotCore
                                             {
                                                 OnErrorOccured(ex);
                                             }
-                                            ShowMessage(null,"модуль сломался", command);
+                                            ShowMessage("модуль сломался", command);
                                         }
                                     }
                                 }, TimeSpan.FromSeconds(_commandTimeoutSec)))
                                 {
-                                    ShowMessage(null, "модуль сломался. Причина : время на выполнение команды истекло", command);
+                                    ShowMessage("модуль сломался. Причина : время на выполнение команды истекло", command);
                                 }
                             }).Start();
                             return true;
@@ -185,8 +207,7 @@ namespace HelloBotCore
 
             return finished;
         }
-        public delegate void OnErrorOccuredDelegate(Exception ex);
-        public event OnErrorOccuredDelegate OnErrorOccured;
+        
 
         private ModuleCommandInfo FindModule(string phrase, out string command)
         {
@@ -256,36 +277,66 @@ namespace HelloBotCore
 
         #region methods for modules
         
-        public void SaveSettings(ModuleCommandInfo commandInfo, object serializableSettingObject)
+        public void SaveSettings<T>(ModuleCommandInfo commandInfo, T serializableSettingObject) where T : class
         {
             lock (_commandDictLocks[commandInfo.Id])
             {
-                var settings = new ModuleSettings(commandInfo.Version, serializableSettingObject);
+                var settings = new ModuleSettings<T>(commandInfo.Version, serializableSettingObject);
                 StringBuilder sb = new StringBuilder();
                 _serializer.Serialize(new JsonTextWriter(new StringWriter(sb)), settings);
                 string moduleFileName = commandInfo.ModuleName + ".json";
-                File.WriteAllText(_settingsFolderAbsolutePath+moduleFileName, sb.ToString());
+                File.WriteAllText(_settingsFolderAbsolutePath + "/" + moduleFileName, sb.ToString());
             }
         }
 
-        public T GetSettings<T>(ModuleCommandInfo commandInfo)
+        public T GetSettings<T>(ModuleCommandInfo commandInfo) where T : class
         {
             lock (_commandDictLocks[commandInfo.Id])
             {
                 string moduleFileName = commandInfo.ModuleName + ".json";
-                string fullPath = _settingsFolderAbsolutePath + moduleFileName;
-                //todo:check that case
+                string fullPath = _settingsFolderAbsolutePath+"/" + moduleFileName;
                 if (!File.Exists(fullPath)) return default(T);
-                var settings = _serializer.Deserialize<ModuleSettings>(new JsonTextReader(new StringReader(fullPath)));
-                return (T)settings.ModuleData;
+                string data = File.ReadAllText(fullPath);
+                var settings = _serializer.Deserialize<ModuleSettings<T>>(new JsonTextReader(new StringReader(data)));
+                return settings.ModuleData;
             }
         }
 
-        public void ShowMessage(ModuleCommandInfo commandInfo, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
+        public void ShowMessage(Guid commandToken, ModuleCommandInfo commandInfo, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
         {
-            throw new NotImplementedException();
+            BotCommandContext commandContext = null;
+            lock (_commandContexts)
+            {
+                if (_commandContexts.TryGetValue(commandToken, out commandContext))
+                {
+                    _commandContexts.Remove(commandToken);
+                }
+            }
+            //one command = one answer for now
+            if (commandContext != null)
+            {
+                if (OnMessageRecieved != null)
+                    OnMessageRecieved(new AnswerInfo()
+                    {
+                        Answer = content,
+                        Title = title,
+                        CommandName = commandContext.CommandName,
+                        AnswerType = answerType
+                    },  commandContext.ClientCommandContext );
+            }
         }
+        private void ShowMessage(string commandname, string content, string title = null, ClientCommandContext clientCommandContext=null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
+        {
+            if (OnMessageRecieved != null)
+                OnMessageRecieved(new AnswerInfo()
+                {
+                    Answer = content,
+                    Title = title,
+                    AnswerType = answerType,
+                    CommandName = commandname
+                },clientCommandContext);
 
+        }
         public void RegisterTimerEvent(ModuleCommandInfo commandInfo, TimeSpan period, Action callback)
         {
             throw new NotImplementedException();

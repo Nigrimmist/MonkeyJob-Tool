@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -35,7 +36,7 @@ namespace Nigrimmist.Modules.Modules
 
         public override string CommandDescription { get { return "Переводчик. Язык определяет автоматически, поддерживаются только русский/английский"; } }
 
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             
             HtmlReaderManager hrm = new HtmlReaderManager();
@@ -48,7 +49,7 @@ namespace Nigrimmist.Modules.Modules
             hrm.Get(string.Format("https://translate.google.ru/translate_a/single?client=t&sl={0}&tl={1}&hl=ru&dt=bd&dt=ex&dt=ld&dt=md&dt=qc&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=sw&ie=UTF-8&oe=UTF-8&oc=1&otf=2&ssel=0&tsel=0&q=", fromLang, toLang) + HttpUtility.UrlEncode(args));
             string html = hrm.Html;
             string anwser = html.Substring(4, html.IndexOf(@""",""") - 4);
-            _bot.ShowMessage(anwser);
+            _bot.ShowMessage(commandToken,anwser);
         }
 
        

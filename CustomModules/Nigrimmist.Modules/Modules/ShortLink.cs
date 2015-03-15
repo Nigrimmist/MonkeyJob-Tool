@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using HelloBotCommunication;
 using HelloBotModuleHelper;
@@ -35,10 +36,10 @@ namespace Nigrimmist.Modules.Modules
        
         public override string CommandDescription { get { return @"Сокращалка ссылок"; } }
 
-        public override void HandleMessage(string command, string args)
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             string answer = args.ToShortUrl();
-            _bot.ShowMessage(answer);
+            _bot.ShowMessage(commandToken,answer);
         }
     }
 }

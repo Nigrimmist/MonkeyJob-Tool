@@ -9,64 +9,70 @@ namespace Nigrimmist.Modules.Modules
 {
     public class BrowserUrlsOpen: ModuleBase
     {
-
         private IBot _bot;
+        private List<CommandKeyValue> _commandUrls;
+
+        private ReadOnlyCollection<CallCommandInfo> _callCommandList;
+        public override ReadOnlyCollection<CallCommandInfo> CallCommandList{get { return _callCommandList; }}
+        public override string CommandDescription { get { return "Открывает ссылку в браузере"; } }
+        public override double ModuleVersion { get { return 1.0; } }
 
         public override void Init(IBot bot)
         {
             _bot = bot;
-        }
-
-        public override double ModuleVersion
-        {
-            get { return 1.0; }
-        }
-
-        private readonly ReadOnlyCollection<CallCommandInfo> _callCommandList;
-        public override ReadOnlyCollection<CallCommandInfo> CallCommandList
-        {
-            get { return _callCommandList; }
-        }
-
-        public override string CommandDescription { get { return "Открывает ссылку в браузере"; } }
-        private readonly IDictionary<string, string> _commandUrlDictionary = new Dictionary<string, string>();
-        
-
-        public BrowserUrlsOpen()
-        {
-           var configurationData = File.ReadAllText("ModuleConfiguration/BrowserUrlsOpenModule.txt");
-            if (!string.IsNullOrEmpty(configurationData))
+            var existSettings = _bot.GetSettings<BrowserUrlsOpenSettings>();
+            if (existSettings == null)
             {
-                var keyValues = configurationData.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries).Select(line => line.Split(';')).Select(x => new KeyValuePair<string, string>(x[0], x[1]));
-
-                foreach (KeyValuePair<string, string> keyValue in keyValues)
+                //let's save default settings
+                existSettings = new BrowserUrlsOpenSettings()
                 {
-                    _commandUrlDictionary.Add(keyValue);
-                }
+                    Commands = new List<CommandKeyValue>()
+                    {
+                        new CommandKeyValue() {Command = "g", Url = "https://www.google.by/search?q={0}"},
+                        new CommandKeyValue() {Command = "y", Url = "http://yandex.ru/yandsearch?text={0}"},
+                        new CommandKeyValue() {Command = "кино", Url = "http://www.kinopoisk.ru/index.php?first=yes&what=&kp_query={0}"},
+                        new CommandKeyValue() {Command = "you", Url = "https://www.youtube.com/results?search_query={0}"},
+                        new CommandKeyValue() {Command = "so", Url = "http://stackoverflow.com/search?q={0}"}
+                    }
+                };
+                _bot.SaveSettings(existSettings);
+            }
+            _commandUrls = existSettings.Commands;
+            _callCommandList = new ReadOnlyCollection<CallCommandInfo>(existSettings.Commands.Select(x=> new CallCommandInfo(x.Command)).ToList());
+        }
 
-                _callCommandList = new ReadOnlyCollection<CallCommandInfo>(_commandUrlDictionary.Select(x => new CallCommandInfo(x.Key)).ToList());
+        public override void HandleMessage(string command, string args, Guid commandToken)
+        {
+            var foundCommand = _commandUrls.SingleOrDefault(x => x.Command == command);
+            if (foundCommand!=null)
+            {
+                var url = foundCommand.Url;
+                if (string.IsNullOrEmpty(args.Trim()))
+                {
+                    Uri uri;
+                    if (Uri.TryCreate(url, UriKind.Absolute, out uri))
+                    {
+                        url = uri.Scheme + "://" + uri.Host;
+                    }
+                }
+                _bot.ShowMessage(commandToken, string.Format(url, args), answerType: AnswerBehaviourType.OpenLink);
             }
         }
+    }
 
-        public override void HandleMessage(string command, string args)
+    public class BrowserUrlsOpenSettings
+    {
+        public List<CommandKeyValue> Commands = new List<CommandKeyValue>();
+
+        public BrowserUrlsOpenSettings()
         {
-            
-               // string subCommand = args.Split(' ').First();
-                //args = args.Substring(subCommand.Length).TrimStart();
-                if (_commandUrlDictionary.ContainsKey(command))
-                {
-                    var url = _commandUrlDictionary[command];
-                    if (string.IsNullOrEmpty(args.Trim()))
-                    {
-                        Uri uri;
-                        if (Uri.TryCreate(url, UriKind.Absolute, out uri))
-                        {
-                            url = uri.Scheme + "://" + uri.Host;
-                        }
-                    }
-                    _bot.ShowMessage(string.Format(url, args),answerType:AnswerBehaviourType.OpenLink);
-                }
-            
+            Commands = new List<CommandKeyValue>();
         }
+    }
+
+    public class CommandKeyValue
+    {
+        public string Command { get; set; }
+        public string Url { get; set; }
     }
 }
