@@ -44,6 +44,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
@@ -102,6 +103,7 @@
     <Compile Include="Forms\SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\GoogleAnalytics.cs" />
     <Compile Include="HotKeyRegister.cs" />
     <Compile Include="KeyboardHook.cs" />
     <Compile Include="Forms\MainForm.cs">
@@ -186,9 +188,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="..\CustomModules\Nigrimmist.Modules\ModuleConfiguration\BrowserUrlsOpenModule.txt">
-      <Link>ModuleConfiguration\BrowserUrlsOpenModule.txt</Link>
-    </Content>
     <Content Include="Res\mj.ico" />
     <None Include="Resources\rightArrows.png" />
     <None Include="Resources\copy1.png" />

@@ -184,6 +184,9 @@ namespace MonkeyJobTool.Controls.Autocomplete
             _popup.ToTop();
         }
 
-        
+        public void SelectAllText()
+        {
+            txtCommand.SelectAll();
+        }
     }
 }

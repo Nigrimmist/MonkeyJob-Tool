@@ -5,16 +5,19 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using HelloBotCommunication;
 using HelloBotCore;
 using HelloBotCore.Entities;
+using Microsoft.Win32;
 using MonkeyJobTool.Controls.Autocomplete;
 using MonkeyJobTool.Entities;
 using MonkeyJobTool.Entities.Autocomplete;
 using MonkeyJobTool.Extensions;
+using MonkeyJobTool.Helpers;
 using MonkeyJobTool.Utilities;
 
 namespace MonkeyJobTool.Forms
@@ -47,11 +50,13 @@ namespace MonkeyJobTool.Forms
             //}
 
         }
-
+        
         private void MainForm_Load(object sender, EventArgs e)
         {
+            
             try
             {
+
                 App.Instance.Init(openFormHotKeyRaised, this);
                 _bot = new HelloBot(App.Instance.ExecutionFolder+"ModuleSettings",botCommandPrefix: "",moduleFolderPath : App.Instance.ExecutionFolder);
 
@@ -73,6 +78,8 @@ namespace MonkeyJobTool.Forms
                 _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
                 this.Controls.Add(_autocomplete);
                 this.ToTop();
+
+                LogAnalytic();
             }
             catch (Exception ex)
             {
@@ -80,6 +87,7 @@ namespace MonkeyJobTool.Forms
             }
 
         }
+
 
         void BotOnMessageRecieved(AnswerInfo answerInfo, ClientCommandContext clientCommandContext)
         {
@@ -133,7 +141,7 @@ namespace MonkeyJobTool.Forms
                         commandArgs.AddRange(Enumerable.Repeat("", replaceCount - commandArgs.Count));
                     }
 
-                    toReturn = string.Format(bestMatchReplace.To, commandArgs.ToArray());
+                    toReturn = string.Format(bestMatchReplace.To, commandArgs);
 
                     if (replaceCount == 0)
                     {
@@ -181,6 +189,8 @@ namespace MonkeyJobTool.Forms
             }
             App.Instance.AllPopupsToTop();
             this.ToTop();
+            if (_autocomplete != null)
+                _autocomplete.SelectAllText();
         }
 
         private void BotOnOnErrorOccured(Exception exception)
@@ -225,7 +235,6 @@ namespace MonkeyJobTool.Forms
         
         private void trayIcon_Click(object sender, EventArgs e)
         {
-
             
         }
 
@@ -237,6 +246,35 @@ namespace MonkeyJobTool.Forms
             }
         }
 
-        
+        private void LogAnalytic()
+        {
+            if (App.Instance.AppConf.AllowUsingGoogleAnalytics)
+            {
+                new Thread(() =>
+                {
+                    const string lastStatsCollectedDateKey = "LastStatsDate";
+                    DateTime lastLogDate = DateTime.Today;
+
+                    RegistryKey appRegistry = Registry.CurrentUser.CreateSubKey(App.Instance.AppName);
+                    var lastStatsCollectedKey = appRegistry.GetValue(lastStatsCollectedDateKey);
+                    bool isFirstRun = lastStatsCollectedKey == null;
+                    if (isFirstRun)
+                    {
+                        GoogleAnalytics.LogFirstUse();
+                        GoogleAnalytics.LogRun();
+                    }
+                    if (lastStatsCollectedKey != null)
+                    {
+                        lastLogDate = DateTime.ParseExact(lastStatsCollectedKey.ToString(), "dd-MM-yyyy", null);
+                    }
+
+                    if (DateTime.Today > lastLogDate)
+                        GoogleAnalytics.LogRun();
+
+                    appRegistry.SetValue(lastStatsCollectedDateKey, lastLogDate.ToString("dd-MM-yyyy"));
+
+                }).Start();
+            }
+        }
     }
 }

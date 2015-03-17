@@ -39,8 +39,6 @@ namespace MonkeyJobTool.Entities
         private readonly Dictionary<HotKeyType, EventHandler<KeyPressedEventArgs>> _hotKeysHadlers = new Dictionary<HotKeyType, EventHandler<KeyPressedEventArgs>>();
 
         
-
-
         public static App Instance
         {
             get
