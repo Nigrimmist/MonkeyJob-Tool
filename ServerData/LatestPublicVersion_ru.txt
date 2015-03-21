@@ -2,7 +2,9 @@
 	Versions : [
 		{
 			Version : 0.1,
-			WhatsNew : 'test '
+			WhatsNew : 'test
+			test2
+			'
 		}
 	]
 }
