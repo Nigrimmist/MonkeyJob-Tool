@@ -56,10 +56,9 @@ namespace MonkeyJobTool.Forms
             
             try
             {
-
                 App.Instance.Init(openFormHotKeyRaised, this);
                 _bot = new HelloBot(App.Instance.ExecutionFolder+"ModuleSettings",botCommandPrefix: "",moduleFolderPath : App.Instance.ExecutionFolder);
-
+                MessageBox.Show(App.Instance.AppConf.SystemData.LastUpdateCheckDate.ToString());
                 this.ShowInTaskbar = false;
                 _bot.OnErrorOccured += BotOnOnErrorOccured;
                 _bot.OnMessageRecieved += BotOnMessageRecieved;
@@ -141,7 +140,7 @@ namespace MonkeyJobTool.Forms
                         commandArgs.AddRange(Enumerable.Repeat("", replaceCount - commandArgs.Count));
                     }
 
-                    toReturn = string.Format(bestMatchReplace.To, commandArgs);
+                    toReturn = string.Format(bestMatchReplace.To, commandArgs.ToArray());
 
                     if (replaceCount == 0)
                     {
@@ -246,17 +245,49 @@ namespace MonkeyJobTool.Forms
             }
         }
 
+        private void CheckNewVersion()
+        {
+            if (App.Instance.AppConf.SystemData.LastUpdateCheckDate.AddDays(7) <= DateTime.Now)
+            {
+                
+            }
+            //new Thread(() =>
+            //{
+                
+            //    DateTime lastLogDate = DateTime.Today;
+
+            //    RegistryKey appRegistry = Registry.CurrentUser.CreateSubKey(AppConstants.AppName);
+            //    var lastStatsCollectedKey = appRegistry.GetValue(AppConstants.Registry.LastStatsCollectedDateKey);
+            //    bool isFirstRun = lastStatsCollectedKey == null;
+            //    if (isFirstRun)
+            //    {
+            //        GoogleAnalytics.LogFirstUse();
+            //        GoogleAnalytics.LogRun();
+            //    }
+            //    if (lastStatsCollectedKey != null)
+            //    {
+            //        lastLogDate = DateTime.ParseExact(lastStatsCollectedKey.ToString(), AppConstants.DateTimeFormat, null);
+            //    }
+
+            //    if (DateTime.Today > lastLogDate)
+            //        GoogleAnalytics.LogRun();
+
+            //    appRegistry.SetValue(AppConstants.Registry.LastStatsCollectedDateKey, lastLogDate.ToString(AppConstants.DateTimeFormat));
+
+            //}).Start();
+        }
+
         private void LogAnalytic()
         {
             if (App.Instance.AppConf.AllowUsingGoogleAnalytics)
             {
                 new Thread(() =>
                 {
-                    const string lastStatsCollectedDateKey = "LastStatsDate";
+                   
                     DateTime lastLogDate = DateTime.Today;
 
-                    RegistryKey appRegistry = Registry.CurrentUser.CreateSubKey(App.Instance.AppName);
-                    var lastStatsCollectedKey = appRegistry.GetValue(lastStatsCollectedDateKey);
+                    RegistryKey appRegistry = Registry.CurrentUser.CreateSubKey(AppConstants.AppName);
+                    var lastStatsCollectedKey = appRegistry.GetValue(AppConstants.Registry.LastStatsCollectedDateKey);
                     bool isFirstRun = lastStatsCollectedKey == null;
                     if (isFirstRun)
                     {
@@ -265,13 +296,13 @@ namespace MonkeyJobTool.Forms
                     }
                     if (lastStatsCollectedKey != null)
                     {
-                        lastLogDate = DateTime.ParseExact(lastStatsCollectedKey.ToString(), "dd-MM-yyyy", null);
+                        lastLogDate = DateTime.ParseExact(lastStatsCollectedKey.ToString(), AppConstants.DateTimeFormat, null);
                     }
 
                     if (DateTime.Today > lastLogDate)
                         GoogleAnalytics.LogRun();
 
-                    appRegistry.SetValue(lastStatsCollectedDateKey, lastLogDate.ToString("dd-MM-yyyy"));
+                    appRegistry.SetValue(AppConstants.Registry.LastStatsCollectedDateKey, lastLogDate.ToString(AppConstants.DateTimeFormat));
 
                 }).Start();
             }

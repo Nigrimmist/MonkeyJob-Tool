@@ -169,7 +169,7 @@ namespace MonkeyJobTool.Forms
         }
         private void AppShortcutToStartup()
         {
-            string linkName = App.Instance.AppName;
+            string linkName = AppConstants.AppName;
             string startDir = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
             if (!File.Exists(startDir + "\\" + linkName + ".url"))
             {
@@ -187,7 +187,7 @@ namespace MonkeyJobTool.Forms
 
         private void DelAppShortcutFromStartup()
         {
-            string linkName = App.Instance.AppName;
+            string linkName = AppConstants.AppName;
             string startDir = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
             if (File.Exists(startDir + "\\" + linkName + ".url"))
             {
@@ -197,7 +197,7 @@ namespace MonkeyJobTool.Forms
 
         public bool IsStartupShortcutExist()
         {
-            string linkName = App.Instance.AppName;
+            string linkName = AppConstants.AppName;
             string startDir = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
             return File.Exists(startDir + "\\" + linkName + ".url");
         }

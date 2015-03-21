@@ -145,12 +145,10 @@ namespace HelloBotCore
                     }
                     else
                     {
-
-                        ModuleCommandInfo foundModule = FindModule(command, out command);
+                        string args;
+                        ModuleCommandInfo foundModule = FindModule(command, out command, out args);
                         if (foundModule != null)
                         {
-                            string args = incomingMessage.Substring(incomingMessage.IndexOf(command, StringComparison.InvariantCultureIgnoreCase) + command.Length).Trim();
-
                             ModuleCommandInfo hnd = foundModule;
                             new Thread(() => //running in separate thread
                             {
@@ -209,24 +207,43 @@ namespace HelloBotCore
         }
         
 
-        private ModuleCommandInfo FindModule(string phrase, out string command)
+        private ModuleCommandInfo FindModule(string phrase, out string command, out string args)
         {
             ModuleCommandInfo toReturn = null;
             command = string.Empty;
             List<string> foundCommands = new List<string>();
+            args = string.Empty;
             foreach (var module in _modules)
             {
                 foreach (var com in module.CallCommandList)
                 {
                     if (phrase.StartsWith(com.Command, StringComparison.OrdinalIgnoreCase))
                     {
-                        var args = phrase.Substring(com.Command.Length);
+                        args = phrase.Substring(com.Command.Length);
                         if (string.IsNullOrEmpty(args) || args.StartsWith(" "))
                         foundCommands.Add(com.Command);
                     }
                 }
             }
-
+            if (!foundCommands.Any())
+            {
+                //trying search by aliases
+                foreach (var module in _modules)
+                {
+                    foreach (var com in module.CallCommandList)
+                    {
+                        foreach (var alias in com.Aliases)
+                        {
+                            if (phrase.StartsWith(alias, StringComparison.OrdinalIgnoreCase))
+                            {
+                                args = phrase.Substring(alias.Length);
+                                if (string.IsNullOrEmpty(args) || args.StartsWith(" "))
+                                    foundCommands.Add(com.Command);
+                            }
+                        }
+                    }
+                }
+            }
             if (foundCommands.Any())
             {
                 string foundCommand = foundCommands.OrderByDescending(x => x).First();
@@ -236,7 +253,7 @@ namespace HelloBotCore
                     command = foundCommand;
                 }
             }
-            
+            args = args.Trim();
             return toReturn;
         }
 

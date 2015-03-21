@@ -9,6 +9,7 @@ using Microsoft.Win32;
 using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Forms;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace MonkeyJobTool.Entities
 {
@@ -18,7 +19,6 @@ namespace MonkeyJobTool.Entities
     public class App
     {
         private const string _confFileName = @"conf.json";
-        public readonly string AppName = "MonkeyJob Tool";
         private static object _appInstanceLock = new object();
         private static App _instance;
         private ApplicationConfiguration _appConf;
@@ -33,6 +33,7 @@ namespace MonkeyJobTool.Entities
 
         public string ExecutionFolder {get { return _executionFolder; }}
         public string ExecutionPath { get { return _executionPath; } }
+        
         /// <summary>
         /// Collection of event delegates for hotkeys. one delegate for one hotkeytype
         /// </summary>
@@ -63,7 +64,8 @@ namespace MonkeyJobTool.Entities
             //read and load config
             if (!File.Exists(_executionFolder + _confFileName)) throw new Exception("Config missing");
             var json = File.ReadAllText(_executionFolder + _confFileName);
-            _appConf = _serializer.Deserialize<ApplicationConfiguration>(new JsonTextReader(new StringReader(json)));
+            var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = AppConstants.DateTimeFormat };
+            _appConf = JsonConvert.DeserializeObject<ApplicationConfiguration>(json, dateTimeConverter);
             _mainForm = mainForm;
 
             //register open program hotkey using incoming (main form) delegate

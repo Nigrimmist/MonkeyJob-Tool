@@ -1,7 +1,11 @@
-﻿{
+﻿{	
 	HotKeys : {
 		ProgramOpen : "CTRL+M"
 	},	
     CommandReplaces: [],
-	AllowUsingGoogleAnalytics : true
+	AllowUsingGoogleAnalytics : true,
+	SystemData : {
+		CurrentVersion : 0.1,
+		LastUpdateCheckDate : '22-06-1988'
+	}
 }
