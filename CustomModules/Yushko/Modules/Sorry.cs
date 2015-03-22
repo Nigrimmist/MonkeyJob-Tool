@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using System.Web.Script.Serialization;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 
 namespace Yushko.Modules
 {
@@ -30,11 +31,11 @@ namespace Yushko.Modules
 
     public class Sorry : ModuleBase
     {
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
         public override double ModuleVersion
         {
@@ -113,7 +114,7 @@ namespace Yushko.Modules
             }
             finally
             {
-                _bot.ShowMessage(commandToken,result);
+                _client.ShowMessage(commandToken,result);
             }
         }
     }

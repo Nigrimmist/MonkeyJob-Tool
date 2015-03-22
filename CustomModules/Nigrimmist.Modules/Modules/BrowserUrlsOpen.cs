@@ -4,12 +4,13 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 
 namespace Nigrimmist.Modules.Modules
 {
     public class BrowserUrlsOpen: ModuleBase
     {
-        private IBot _bot;
+        private IClient _client;
         private List<CommandKeyValue> _commandUrls;
 
         private ReadOnlyCollection<CallCommandInfo> _callCommandList;
@@ -17,10 +18,10 @@ namespace Nigrimmist.Modules.Modules
         public override string CommandDescription { get { return "Открывает ссылку в браузере"; } }
         public override double ModuleVersion { get { return 1.0; } }
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
-            var existSettings = _bot.GetSettings<BrowserUrlsOpenSettings>();
+            _client = client;
+            var existSettings = _client.GetSettings<BrowserUrlsOpenSettings>();
             if (existSettings == null)
             {
                 //let's save default settings
@@ -35,7 +36,7 @@ namespace Nigrimmist.Modules.Modules
                         new CommandKeyValue() {Command = "so", Url = "http://stackoverflow.com/search?q={0}"}
                     }
                 };
-                _bot.SaveSettings(existSettings);
+                _client.SaveSettings(existSettings);
             }
             _commandUrls = existSettings.Commands;
             _callCommandList = new ReadOnlyCollection<CallCommandInfo>(existSettings.Commands.Select(x=> new CallCommandInfo(x.Command)).ToList());
@@ -55,7 +56,7 @@ namespace Nigrimmist.Modules.Modules
                         url = uri.Scheme + "://" + uri.Host;
                     }
                 }
-                _bot.ShowMessage(commandToken, string.Format(url, args), answerType: AnswerBehaviourType.OpenLink);
+                _client.ShowMessage(commandToken, string.Format(url, args), answerType: AnswerBehaviourType.OpenLink);
             }
         }
     }

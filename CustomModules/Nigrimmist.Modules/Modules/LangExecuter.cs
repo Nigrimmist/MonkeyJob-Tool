@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using System.Web;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 using HelloBotModuleHelper;
 using Newtonsoft.Json;
 
@@ -17,11 +18,11 @@ namespace Nigrimmist.Modules.Modules
             public string Errors { get; set; }
         }
 
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
 
         public override double ModuleVersion
@@ -46,7 +47,7 @@ namespace Nigrimmist.Modules.Modules
         {
             if (args.StartsWith("help"))
             {
-                _bot.ShowMessage(commandToken,GetHelpText());
+                _client.ShowMessage(commandToken,GetHelpText());
             }
             else
             {
@@ -84,7 +85,7 @@ namespace Rextester
                 if (!string.IsNullOrEmpty(toReturn))
                 {
                     toReturn = toReturn.Replace(Environment.NewLine," ").Trim();
-                    _bot.ShowMessage(commandToken,toReturn.Length > 200 ? toReturn.Substring(0, 50) + "..." : toReturn);
+                    _client.ShowMessage(commandToken,toReturn.Length > 200 ? toReturn.Substring(0, 50) + "..." : toReturn);
                 }
                 
                 

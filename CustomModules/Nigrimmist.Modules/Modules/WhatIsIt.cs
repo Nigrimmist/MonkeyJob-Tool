@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 using System.Web;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 using HelloBotModuleHelper;
 using HtmlAgilityPack;
 
@@ -15,11 +16,11 @@ namespace Nigrimmist.Modules.Modules
     {
         public List<string> Jokes = new List<string>();
         private Random _r = new Random();
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
         private List<string> _notFoundAnswers = new List<string>()
         {
@@ -93,7 +94,7 @@ namespace Nigrimmist.Modules.Modules
                 answer += ". " + hrm.ResponseUri;
             }
 
-            _bot.ShowMessage(commandToken,answer);
+            _client.ShowMessage(commandToken,answer);
         }
     }
 }

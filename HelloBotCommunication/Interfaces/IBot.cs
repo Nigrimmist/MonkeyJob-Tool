@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace HelloBotCommunication
+namespace HelloBotCommunication.Interfaces
 {
-    public interface IBot
+    public interface IClient
     {
         /// <summary>
         /// Save you custom setting object to storage
@@ -27,7 +24,9 @@ namespace HelloBotCommunication
         /// <param name="title">Message title. if null, command name will be displayed instead</param>
         /// <param name="answerType">Answer type</param>
         /// <param name="messageType">Message type</param>
-        void ShowMessage(Guid commandToken,string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default);
+        IBotCallback ShowMessage(Guid commandToken, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default);
+
+        
 
         /// <summary>
         /// Will register a timer for you module, that will exist while client is alive. Callback will be called every "period" time.

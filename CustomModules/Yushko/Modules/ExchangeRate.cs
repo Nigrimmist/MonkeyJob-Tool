@@ -5,17 +5,18 @@ using System.Data;
 using System.Globalization;
 using System.Text;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 using Yushko.ExRates;
 
 namespace Yushko.Modules
 {
     class ExchangeRate : ModuleBase
     {
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
         public override double ModuleVersion
         {
@@ -120,7 +121,7 @@ namespace Yushko.Modules
                     break;
             }
 
-            _bot.ShowMessage(commandToken,result);
+            _client.ShowMessage(commandToken,result);
         }
 
         //сконвертировать из одной валюты в другую

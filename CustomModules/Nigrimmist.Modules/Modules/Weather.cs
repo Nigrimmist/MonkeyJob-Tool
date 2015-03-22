@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 using HelloBotModuleHelper;
 using HtmlAgilityPack;
 
@@ -10,11 +11,11 @@ namespace Nigrimmist.Modules.Modules
 {
     public class Weather : ModuleBase
     {
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
 
         public override double ModuleVersion
@@ -50,7 +51,7 @@ namespace Nigrimmist.Modules.Modules
                 sb.Append(td.SelectSingleNode(".//./div[@class='fcurrent-descr']").InnerText + " ");
                 sb.Append(Environment.NewLine);
             }
-            _bot.ShowMessage(commandToken,sb.ToString().Replace("&deg;", "°"));
+            _client.ShowMessage(commandToken,sb.ToString().Replace("&deg;", "°"));
         }
     }
 }

@@ -4,8 +4,9 @@
 	},	
     CommandReplaces: [],
 	AllowUsingGoogleAnalytics : true,
+	Language : 2,
 	SystemData : {
-		CurrentVersion : 0.1,
-		LastUpdateCheckDate : '22-06-1988'
+		Version : 0.05,
+		LastUpdateCheckDate : '22-06-1988'		
 	}
 }

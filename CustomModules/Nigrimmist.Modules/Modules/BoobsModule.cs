@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 using HelloBotModuleHelper;
 using HtmlAgilityPack;
 
@@ -11,11 +12,11 @@ namespace Nigrimmist.Modules.Modules
 {
     public class Boobs : ModuleBase
     {
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
 
         public override double ModuleVersion
@@ -57,7 +58,7 @@ namespace Nigrimmist.Modules.Modules
             int rPos = _r.Next(0, _images.Count);
             string url = _images[rPos];
             _images.RemoveAt(rPos);
-            _bot.ShowMessage(commandToken,url,answerType: AnswerBehaviourType.OpenLink);
+            _client.ShowMessage(commandToken,url,answerType: AnswerBehaviourType.OpenLink);
         }
 
 

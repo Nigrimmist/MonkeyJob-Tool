@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 
 namespace HelloBotCore.Entities
 {
@@ -28,8 +29,8 @@ namespace HelloBotCore.Entities
             HandleMessage = handlerBase.HandleMessage;
             var handType = handlerBase.GetType();
             ModuleName = dllName + "." + handType.Name;
-            IBot bot = new ModuleToBotAdapter(moduleClientHandler, this);
-            handlerBase.Init(bot);
+            IClient client = new ModuleToClientAdapter(moduleClientHandler, this);
+            handlerBase.Init(client);
             CallCommandList = handlerBase.CallCommandList.ToList();
         }
     }

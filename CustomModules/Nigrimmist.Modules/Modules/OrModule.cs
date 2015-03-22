@@ -4,16 +4,17 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 
 namespace Nigrimmist.Modules.Modules
 {
     public class Or : ModuleBase
     {
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
         public override double ModuleVersion
         {
@@ -57,7 +58,7 @@ namespace Nigrimmist.Modules.Modules
             }
             if (_r.Next(1, 101) < ChanceOfSpecialAnswer)
                 answer = string.Format(_customMessages[_r.Next(0, _customMessages.Count)], answer);
-            _bot.ShowMessage(commandToken,answer);
+            _client.ShowMessage(commandToken,answer);
         }
 
 

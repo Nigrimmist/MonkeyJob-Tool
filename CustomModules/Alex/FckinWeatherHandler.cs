@@ -8,6 +8,7 @@ using System.Web;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 
 
 namespace SmartAssHandlerLib
@@ -17,11 +18,11 @@ namespace SmartAssHandlerLib
         private const string DefaultLocation = "minsk";
         private const string QueryTemaplate = "http://thefuckingweather.com/?where={0}";
         private const string FailedResult = "I CAN'T FIND THAT SHIT!";
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
 
         public override double ModuleVersion
@@ -56,7 +57,7 @@ namespace SmartAssHandlerLib
             }
             catch (Exception ex) { }
 
-            _bot.ShowMessage(commandToken,result);
+            _client.ShowMessage(commandToken,result);
         }
 
         private Forecast ParseForecast(string rawWeatherHtml)

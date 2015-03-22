@@ -74,6 +74,7 @@
     <Compile Include="Entities\Autocomplete\AutocompletePopupInfo.cs" />
     <Compile Include="Entities\Autocomplete\AutocompletePopupItem.cs" />
     <Compile Include="Entities\Autocomplete\DataFilterInfo.cs" />
+    <Compile Include="Entities\ClosePopupReasonType.cs" />
     <Compile Include="Entities\HotKeyType.cs" />
     <Compile Include="Controls\Autocomplete\AutocompletePopupItemControl.cs">
       <SubType>UserControl</SubType>
@@ -87,6 +88,7 @@
     <Compile Include="Controls\Autocomplete\AutocompletePopupControl.Designer.cs">
       <DependentUpon>AutocompletePopupControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\Json\AppVersionInfo.cs" />
     <Compile Include="Entities\Language.cs" />
     <Compile Include="Entities\SelectableWordPart.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
@@ -105,6 +107,7 @@
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers\GoogleAnalytics.cs" />
+    <Compile Include="Helpers\HtmlReaderManager.cs" />
     <Compile Include="HotKeyRegister.cs" />
     <Compile Include="KeyboardHook.cs" />
     <Compile Include="Forms\MainForm.cs">

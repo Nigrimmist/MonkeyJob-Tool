@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using HelloBotCommunication.Interfaces;
 
 namespace HelloBotCommunication
 {
@@ -25,7 +26,7 @@ namespace HelloBotCommunication
         public virtual string CommandDescription {
             get { return string.Empty; } }
 
-        public virtual void Init(IBot bot)
+        public virtual void Init(IClient client)
         {
             
         }

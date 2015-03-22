@@ -8,6 +8,7 @@ using System.Threading;
 using HelloBotCore.Entities;
 using HelloBotCore.Utilities;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 using Newtonsoft.Json;
 
 namespace HelloBotCore
@@ -40,7 +41,7 @@ namespace HelloBotCore
         public delegate void OnErrorOccuredDelegate(Exception ex);
         
         /// <param name="clientCommandContext">Can be null</param>
-        public delegate void OnMessageRecievedDelegate(AnswerInfo answer,ClientCommandContext clientCommandContext);
+        public delegate void OnMessageRecievedDelegate(Guid commandToken,AnswerInfo answer,ClientCommandContext clientCommandContext);
         public event OnErrorOccuredDelegate OnErrorOccured;
         public event OnMessageRecievedDelegate OnMessageRecieved;
 
@@ -320,19 +321,20 @@ namespace HelloBotCore
 
         public void ShowMessage(Guid commandToken, ModuleCommandInfo commandInfo, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
         {
-            BotCommandContext commandContext = null;
+            BotCommandContext commandContext;
+            //todo:check
             lock (_commandContexts)
             {
                 if (_commandContexts.TryGetValue(commandToken, out commandContext))
                 {
-                    _commandContexts.Remove(commandToken);
+                    //_commandContexts.Remove(commandToken);
                 }
             }
             //one command = one answer for now
             if (commandContext != null)
             {
                 if (OnMessageRecieved != null)
-                    OnMessageRecieved(new AnswerInfo()
+                    OnMessageRecieved(commandToken,new AnswerInfo()
                     {
                         Answer = content,
                         Title = title,
@@ -343,8 +345,9 @@ namespace HelloBotCore
         }
         private void ShowMessage(string commandname, string content, string title = null, ClientCommandContext clientCommandContext=null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
         {
+            Guid systemGuid = Guid.Empty;
             if (OnMessageRecieved != null)
-                OnMessageRecieved(new AnswerInfo()
+                OnMessageRecieved(systemGuid, new AnswerInfo()
                 {
                     Answer = content,
                     Title = title,
@@ -355,9 +358,81 @@ namespace HelloBotCore
         }
         public void RegisterTimerEvent(ModuleCommandInfo commandInfo, TimeSpan period, Action callback)
         {
-            throw new NotImplementedException();
-        } 
+            
+        }
+
+        public void RegisterUserReactionCallback(Guid commandToken,UserReactionToCommandType reactionType, Action reactionCallback)
+        {
+            BotCommandContext commandContext = GetCommandContextByToken(commandToken);
+
+            if (commandContext != null)
+            {
+                switch (reactionType)
+                {
+                    case UserReactionToCommandType.Notified:
+                        commandContext.OnNotifiedAction = reactionCallback;
+                        break;
+                    case UserReactionToCommandType.Ignored:
+                        commandContext.OnIgnoreAction = reactionCallback;
+                        break;
+                    case UserReactionToCommandType.Clicked:
+                        commandContext.OnClickAction = reactionCallback;
+                        break;
+                    
+                }
+                
+            }
+        }
+
+        
+
+        
         #endregion
+
+        private BotCommandContext GetCommandContextByToken(Guid commandToken)
+        {
+            BotCommandContext commandContext;
+            lock (_commandContexts)
+            {
+                _commandContexts.TryGetValue(commandToken, out commandContext);
+            }
+            return commandContext;
+        }
+
+        public void HandleUserReactionToCommand(Guid commandToken, UserReactionToCommandType reactionType)
+        {
+            BotCommandContext commandContext = GetCommandContextByToken(commandToken);
+
+            if (commandContext != null)
+            {
+                switch (reactionType)
+                {
+                    case UserReactionToCommandType.Ignored:
+                        if (commandContext.OnIgnoreAction != null)
+                        {
+                            commandContext.OnIgnoreAction();
+                            commandContext.OnIgnoreAction = null;
+                        }
+                        break;
+                    case UserReactionToCommandType.Clicked:
+                        if (commandContext.OnClickAction != null)
+                        {
+                            commandContext.OnClickAction();
+                            commandContext.OnClickAction = null;
+                        }
+                        break;
+                    case UserReactionToCommandType.Notified:
+                        if (commandContext.OnNotifiedAction != null)
+                        {
+                            commandContext.OnNotifiedAction();
+                            commandContext.OnNotifiedAction = null;
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException("reactionType");
+                }
+            }
+        }
     }
 
    

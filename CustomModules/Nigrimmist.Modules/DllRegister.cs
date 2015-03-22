@@ -2,6 +2,7 @@
 
 
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 using Nigrimmist.Modules.Modules;
 
 namespace Nigrimmist.Modules

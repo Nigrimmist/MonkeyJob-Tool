@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 using NCalc;
 
 namespace Nigrimmist.Modules.Modules
 {
     public class Calculator : ModuleBase
     {
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
 
         public override double ModuleVersion
@@ -41,7 +42,18 @@ namespace Nigrimmist.Modules.Modules
 
             answer = string.Format("Ответ равен : {0}", exprAnswer);
 
-            _bot.ShowMessage(commandToken,answer);
+            _client.ShowMessage(commandToken, answer).OnClick(() =>
+            {
+                _client.ShowMessage(commandToken, "Не надо сюда кликать");
+            }).OnIgnore(() =>
+            {
+                _client.ShowMessage(commandToken, "Ignore event fired");
+            }).OnNotified(
+                () =>
+                {
+                    _client.ShowMessage(commandToken, "Notified event fired");
+                }
+            );
         }
     }
 }

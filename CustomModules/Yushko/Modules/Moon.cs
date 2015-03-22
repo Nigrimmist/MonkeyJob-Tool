@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 using HelloBotModuleHelper;
 using HtmlAgilityPack;
 
@@ -10,11 +11,11 @@ namespace Yushko.Modules
 {
     public class Moon : ModuleBase
     {
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
         public override double ModuleVersion
         {
@@ -54,7 +55,7 @@ namespace Yushko.Modules
                     result.Append(tds[1].InnerText);//.InnerHtml.Replace("<br>", Environment.NewLine).RemoveAllTags().Trim();
                 }
             }
-            _bot.ShowMessage(commandToken,result.ToString());
+            _client.ShowMessage(commandToken,result.ToString());
         }
     }
 }

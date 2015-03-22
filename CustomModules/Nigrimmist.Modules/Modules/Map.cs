@@ -4,17 +4,18 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Web;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 using HelloBotModuleHelper;
 
 namespace Nigrimmist.Modules.Modules
 {
     public class Map : ModuleBase
     {
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
 
         public override double ModuleVersion
@@ -66,7 +67,7 @@ namespace Nigrimmist.Modules.Modules
 
                 if (inputProvider == "help")
                 {
-                    _bot.ShowMessage(commandToken,helpMsg);
+                    _client.ShowMessage(commandToken,helpMsg);
                 }
                 else if (args.Contains(_fromToDelimeter))
                 {
@@ -86,7 +87,7 @@ namespace Nigrimmist.Modules.Modules
                             leftPart = leftPart.Substring(inputProvider.Length).Trim();
                         }
                         string url = string.Format(foundProvider, HttpUtility.UrlEncode(leftPart), HttpUtility.UrlEncode(rightPart));
-                        _bot.ShowMessage(commandToken,url.ToShortUrl(),answerType: AnswerBehaviourType.OpenLink);
+                        _client.ShowMessage(commandToken,url.ToShortUrl(),answerType: AnswerBehaviourType.OpenLink);
                     }
                 }
                 else
@@ -103,7 +104,7 @@ namespace Nigrimmist.Modules.Modules
                         address = args.Substring(inputProvider.Length).Trim();    
                     }
                     string url = string.Format(foundProvider, HttpUtility.UrlEncode(address));
-                    _bot.ShowMessage(commandToken,url.ToShortUrl(),answerType: AnswerBehaviourType.OpenLink);
+                    _client.ShowMessage(commandToken,url.ToShortUrl(),answerType: AnswerBehaviourType.OpenLink);
                 }
             }
         }

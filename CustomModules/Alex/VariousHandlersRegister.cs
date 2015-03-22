@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 
 
 namespace SmartAssHandlerLib

@@ -16,9 +16,11 @@ using Microsoft.Win32;
 using MonkeyJobTool.Controls.Autocomplete;
 using MonkeyJobTool.Entities;
 using MonkeyJobTool.Entities.Autocomplete;
+using MonkeyJobTool.Entities.Json;
 using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Helpers;
 using MonkeyJobTool.Utilities;
+using Newtonsoft.Json;
 
 namespace MonkeyJobTool.Forms
 {
@@ -58,7 +60,7 @@ namespace MonkeyJobTool.Forms
             {
                 App.Instance.Init(openFormHotKeyRaised, this);
                 _bot = new HelloBot(App.Instance.ExecutionFolder+"ModuleSettings",botCommandPrefix: "",moduleFolderPath : App.Instance.ExecutionFolder);
-                MessageBox.Show(App.Instance.AppConf.SystemData.LastUpdateCheckDate.ToString());
+                //MessageBox.Show(App.Instance.AppConf.SystemData.LastUpdateCheckDate.ToString());
                 this.ShowInTaskbar = false;
                 _bot.OnErrorOccured += BotOnOnErrorOccured;
                 _bot.OnMessageRecieved += BotOnMessageRecieved;
@@ -78,6 +80,7 @@ namespace MonkeyJobTool.Forms
                 this.Controls.Add(_autocomplete);
                 this.ToTop();
 
+                CheckNewVersion();
                 LogAnalytic();
             }
             catch (Exception ex)
@@ -88,7 +91,7 @@ namespace MonkeyJobTool.Forms
         }
 
 
-        void BotOnMessageRecieved(AnswerInfo answerInfo, ClientCommandContext clientCommandContext)
+        void BotOnMessageRecieved(Guid commandToken,AnswerInfo answerInfo, ClientCommandContext clientCommandContext)
         {
                 string answer = answerInfo.Answer;
                 var answerType = answerInfo.AnswerType;
@@ -114,7 +117,7 @@ namespace MonkeyJobTool.Forms
                         {
                             this.Invoke((MethodInvoker) (delegate
                             {
-                                App.Instance.ShowPopup(answerInfo.CommandName, answer, null);
+                                App.Instance.ShowPopup(answerInfo.CommandName, answer, null, commandToken);
                                 this.ToTop();
                             }));
 
@@ -245,36 +248,32 @@ namespace MonkeyJobTool.Forms
             }
         }
 
+        //todo : rewrite to module
         private void CheckNewVersion()
         {
-            if (App.Instance.AppConf.SystemData.LastUpdateCheckDate.AddDays(7) <= DateTime.Now)
+            if (App.Instance.AppConf.SystemData.LastUpdateCheckDate.AddDays(3) <= DateTime.Now)
             {
-                
+                App.Instance.AppConf.SystemData.LastUpdateCheckDate = DateTime.Now.Date;
+                App.Instance.AppConf.Save();
+
+                HtmlReaderManager hrm = new HtmlReaderManager();
+                hrm.Get(string.Format(AppConstants.Urls.LatestVersionFileUrlFormat, App.Instance.AppConf.Language));
+                string versionJson = hrm.Html;
+                AppVersionInfo info = JsonConvert.DeserializeObject<AppVersionInfo>(versionJson);
+                var versions = info.Versions.OrderBy(x => x.Version);
+                var latestVersion = versions.Last();
+                if (latestVersion.Version > App.Instance.AppConf.SystemData.Version)
+                {
+                    App.Instance.ShowPopup("Вышла новая версия!", "Версия v" + latestVersion.Version + " доступна для скачивания. В новой версии :" + Environment.NewLine + Environment.NewLine + latestVersion.WhatsNew, null);
+                }
+
+                new Thread(() =>
+                {
+                    
+
+                }).Start();
             }
-            //new Thread(() =>
-            //{
-                
-            //    DateTime lastLogDate = DateTime.Today;
 
-            //    RegistryKey appRegistry = Registry.CurrentUser.CreateSubKey(AppConstants.AppName);
-            //    var lastStatsCollectedKey = appRegistry.GetValue(AppConstants.Registry.LastStatsCollectedDateKey);
-            //    bool isFirstRun = lastStatsCollectedKey == null;
-            //    if (isFirstRun)
-            //    {
-            //        GoogleAnalytics.LogFirstUse();
-            //        GoogleAnalytics.LogRun();
-            //    }
-            //    if (lastStatsCollectedKey != null)
-            //    {
-            //        lastLogDate = DateTime.ParseExact(lastStatsCollectedKey.ToString(), AppConstants.DateTimeFormat, null);
-            //    }
-
-            //    if (DateTime.Today > lastLogDate)
-            //        GoogleAnalytics.LogRun();
-
-            //    appRegistry.SetValue(AppConstants.Registry.LastStatsCollectedDateKey, lastLogDate.ToString(AppConstants.DateTimeFormat));
-
-            //}).Start();
         }
 
         private void LogAnalytic()
@@ -306,6 +305,12 @@ namespace MonkeyJobTool.Forms
 
                 }).Start();
             }
+        }
+
+        public void HandleCommandInfoPopupClose(Guid? commandToken, ClosePopupReasonType closeReason)
+        {
+            if(commandToken!=null)
+                _bot.HandleUserReactionToCommand(commandToken.Value, (UserReactionToCommandType)((int)closeReason));
         }
     }
 }

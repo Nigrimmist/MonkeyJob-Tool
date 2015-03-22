@@ -16,15 +16,20 @@ namespace MonkeyJobTool.Forms
         public string Title { get; set; }
         public string Text { get; set; }
         private TimeSpan? _timeToClose;
+        private readonly object _sessionData;
         private int _timerStep;
-        private int _initialFormWidth ;
+        private int _initialFormWidth;
 
-        public InfoPopup(string title, string text, TimeSpan? displayTime)
+        public delegate void OnPopupCloseDelegate(ClosePopupReasonType reason, object sessionData);
+        public event OnPopupCloseDelegate OnPopupClosed;
+
+        public InfoPopup(string title, string text, TimeSpan? displayTime, object sessionData = null)
         {
             InitializeComponent();
             this.Text = text;
             this.Title = title;
             _timeToClose = displayTime;
+            _sessionData = sessionData;
         }
 
         
@@ -57,6 +62,10 @@ namespace MonkeyJobTool.Forms
         {
             Clipboard.SetText(Text);
             App.Instance.ShowPopup("Скопировано в буфер обмена", TimeSpan.FromSeconds(2));
+            if (OnPopupClosed != null)
+            {
+                OnPopupClosed(ClosePopupReasonType.LeftClick, _sessionData);
+            }
         }
 
         private void InfoPopup_MouseUp(object sender, MouseEventArgs e)
@@ -64,6 +73,10 @@ namespace MonkeyJobTool.Forms
             if (e.Button == MouseButtons.Right)
             {
                 this.Close();
+                if (OnPopupClosed != null)
+                {
+                    OnPopupClosed(ClosePopupReasonType.RightClick, _sessionData);
+                }
             }
         }
 
@@ -75,6 +88,10 @@ namespace MonkeyJobTool.Forms
             {
                 closeTimer.Stop();
                 this.Close();
+                if (OnPopupClosed != null)
+                {
+                    OnPopupClosed(ClosePopupReasonType.Auto, _sessionData);
+                }
             }
         }
 

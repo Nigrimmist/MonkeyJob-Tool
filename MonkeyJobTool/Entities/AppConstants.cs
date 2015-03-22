@@ -14,5 +14,15 @@ namespace MonkeyJobTool.Entities
         {
             public const string LastStatsCollectedDateKey = "LastStatsDate";
         }
+
+        public class Paths
+        {
+            public const string MainConfFileName = @"conf.json";
+        }
+
+        public class Urls
+        {
+            public const string LatestVersionFileUrlFormat = "https://raw.githubusercontent.com/Nigrimmist/MonkeyJob-Tool/master/ServerData/LatestPublicVersion_{0}.txt";
+        }
     }
 }

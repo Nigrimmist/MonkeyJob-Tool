@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 using HelloBotModuleHelper;
 
 namespace Nigrimmist.Modules.Modules
@@ -11,11 +12,11 @@ namespace Nigrimmist.Modules.Modules
     /// </summary>
     public class ShortLink : ModuleBase
     {
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
 
         public override double ModuleVersion
@@ -39,7 +40,7 @@ namespace Nigrimmist.Modules.Modules
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
             string answer = args.ToShortUrl();
-            _bot.ShowMessage(commandToken,answer);
+            _client.ShowMessage(commandToken,answer);
         }
     }
 }

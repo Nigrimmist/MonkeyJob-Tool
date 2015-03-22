@@ -4,17 +4,18 @@ using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 using System.Web;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 using HelloBotModuleHelper;
 
 namespace Nigrimmist.Modules.Modules
 {
     public class Translate : ModuleBase
     {
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
 
         public override double ModuleVersion
@@ -49,7 +50,7 @@ namespace Nigrimmist.Modules.Modules
             hrm.Get(string.Format("https://translate.google.ru/translate_a/single?client=t&sl={0}&tl={1}&hl=ru&dt=bd&dt=ex&dt=ld&dt=md&dt=qc&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=sw&ie=UTF-8&oe=UTF-8&oc=1&otf=2&ssel=0&tsel=0&q=", fromLang, toLang) + HttpUtility.UrlEncode(args));
             string html = hrm.Html;
             string anwser = html.Substring(4, html.IndexOf(@""",""") - 4);
-            _bot.ShowMessage(commandToken,anwser);
+            _client.ShowMessage(commandToken,anwser);
         }
 
        

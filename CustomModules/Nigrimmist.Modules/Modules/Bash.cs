@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 using HelloBotModuleHelper;
 using HtmlAgilityPack;
 
@@ -15,10 +16,10 @@ namespace Nigrimmist.Modules.Modules
         private List<string> _jokes = new List<string>();
         private Random _r = new Random();
 
-        private IBot _bot;
-        public override void Init(IBot bot)
+        private IClient _client;
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
 
         public override double ModuleVersion
@@ -61,7 +62,7 @@ namespace Nigrimmist.Modules.Modules
             string joke = _jokes[rPos];
             _jokes.RemoveAt(rPos);
 
-            _bot.ShowMessage(commandToken,joke); ;
+            _client.ShowMessage(commandToken,joke); ;
         }
     }
 }

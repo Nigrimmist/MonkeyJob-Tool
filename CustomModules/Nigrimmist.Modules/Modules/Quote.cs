@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 using HelloBotModuleHelper;
 
 namespace Nigrimmist.Modules.Modules
@@ -11,11 +12,11 @@ namespace Nigrimmist.Modules.Modules
     /// </summary>
     public class Quote : ModuleBase
     {
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
 
         public override double ModuleVersion
@@ -44,7 +45,7 @@ namespace Nigrimmist.Modules.Modules
             var answerParts = hrm.Html.Split(new string[]{"##"},StringSplitOptions.RemoveEmptyEntries);
             string quote = answerParts[0];
             string author = answerParts[1];
-            _bot.ShowMessage(commandToken,string.Format("{0} ©{1}", quote, author));
+            _client.ShowMessage(commandToken,string.Format("{0} ©{1}", quote, author));
         }
     }
 }

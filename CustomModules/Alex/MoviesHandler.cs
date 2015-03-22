@@ -6,17 +6,18 @@ using System.Net;
 using System.Text;
 
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 
 
 namespace SmartAssHandlerLib
 {
     public class MoviesHandlerBase : ModuleBase
     {
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
 
         public override double ModuleVersion
@@ -46,7 +47,7 @@ namespace SmartAssHandlerLib
             var rawData = GetRawData(request);
             var description = ParseMovieData(rawData);
 
-            _bot.ShowMessage(commandToken,description.ToString());
+            _client.ShowMessage(commandToken,description.ToString());
         }
 
         private MovieDescription ParseMovieData(string rawData)

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 
-
-namespace HelloBotCommunication
+namespace HelloBotCommunication.Interfaces
 {
     public interface IModuleRegister
     {

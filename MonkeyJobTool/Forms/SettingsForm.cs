@@ -159,10 +159,10 @@ namespace MonkeyJobTool.Forms
                 DelAppShortcutFromStartup();
             }
 
-            ApplicationConfiguration updatedAppConf = App.Instance.AppConf;
-            updatedAppConf.HotKeys.ProgramOpen = string.Join("+", new List<string>() { cmbKey1.Text, cmbKey2.Text, cmbKey3.Text }.Where(x=>!string.IsNullOrEmpty(x)).ToArray());
-            updatedAppConf.CommandReplaces = GetCommandReplaces();
-            App.Instance.AppConf = updatedAppConf;
+            
+            App.Instance.AppConf.HotKeys.ProgramOpen = string.Join("+", new List<string>() { cmbKey1.Text, cmbKey2.Text, cmbKey3.Text }.Where(x=>!string.IsNullOrEmpty(x)).ToArray());
+            App.Instance.AppConf.CommandReplaces = GetCommandReplaces();
+            App.Instance.AppConf.Save();
 
             App.Instance.ReInitHotKeys();
             this.Close();

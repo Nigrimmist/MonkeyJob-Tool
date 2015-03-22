@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace MonkeyJobTool.Entities
 {
@@ -9,13 +12,20 @@ namespace MonkeyJobTool.Entities
         public List<CommandReplace> CommandReplaces { get; set; }
         public bool AllowUsingGoogleAnalytics { get; set; }
         public SystemData SystemData { get; set; }
-        
+        public Language Language { get; set; }
+
         public ApplicationConfiguration()
         {
             CommandReplaces = new List<CommandReplace>();
         }
-    }
 
+        public void Save()
+        {
+            string json = JsonConvert.SerializeObject(this, Formatting.Indented);
+            File.WriteAllText(AppConstants.Paths.MainConfFileName, json);
+        }
+    }
+    
     public class AppConfHotkeys
     {
         public string ProgramOpen { get; set; }
@@ -30,11 +40,6 @@ namespace MonkeyJobTool.Entities
     public class SystemData
     {
         public DateTime LastUpdateCheckDate { get; set; }
-        public double CurrentVersion { get; set; }
-        //private double? _currentVersion { get; set; }
-        //public double GetCurrentVersion()
-        //{
-        //    return _currentVersion ?? (double)(_currentVersion = Convert.ToDouble(CurrentVersion));
-        //}
+        public double Version { get; set; }
     }
 }

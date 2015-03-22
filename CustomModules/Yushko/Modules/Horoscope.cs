@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 using HelloBotModuleHelper;
 using HtmlAgilityPack;
 
@@ -10,11 +11,11 @@ namespace Yushko.Modules
 {
     public class Horoscope : ModuleBase
     {
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
 
         public override double ModuleVersion
@@ -68,7 +69,7 @@ namespace Yushko.Modules
             string help = "!гороскоп <знак зодиака> [общий/эротический/антигороскоп/бизнес/любовный/здоровья/кулинарный/мобильный] [сегодня/завтра/неделя/месяц/год]";
             if (arg.Length == 0)
             {
-                _bot.ShowMessage(commandToken,help);
+                _client.ShowMessage(commandToken,help);
                 return;
             }
 
@@ -79,9 +80,9 @@ namespace Yushko.Modules
             else
             {
                 if (string.IsNullOrEmpty(arg[0])){
-                    _bot.ShowMessage(commandToken,help);
+                    _client.ShowMessage(commandToken,help);
                 }else{
-                    _bot.ShowMessage(commandToken,arg[0] + " - неверный знак зодиака");
+                    _client.ShowMessage(commandToken,arg[0] + " - неверный знак зодиака");
                 }
                 return;
             }
@@ -143,7 +144,7 @@ namespace Yushko.Modules
             else {
                 result.Append("На запрашиваемый Вами период гороскоп отсутствует");
             }
-            _bot.ShowMessage(commandToken,result.ToString());
+            _client.ShowMessage(commandToken,result.ToString());
         }
     }
 }

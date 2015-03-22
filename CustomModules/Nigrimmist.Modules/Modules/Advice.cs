@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using System.Web;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 using HelloBotModuleHelper;
 using Newtonsoft.Json;
 using Nigrimmist.Modules.Helpers;
@@ -20,11 +21,11 @@ namespace Nigrimmist.Modules.Modules
             public string text { get; set; }
         }
 
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
 
         public override double ModuleVersion
@@ -52,7 +53,7 @@ namespace Nigrimmist.Modules.Modules
             hrm.Get("http://fucking-great-advice.ru/api/random");
             var json = JsonConvert.DeserializeObject<textClass>(hrm.Html);
             string advice = json.text;
-            _bot.ShowMessage(commandToken,HttpUtility.HtmlDecode(advice.RemoveAllTags()));
+            _client.ShowMessage(commandToken,HttpUtility.HtmlDecode(advice.RemoveAllTags()));
         }
     }
 }

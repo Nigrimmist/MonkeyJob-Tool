@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 
 namespace Nigrimmist.Modules.Modules
 {
     public class Say : ModuleBase
     {
         private Random _r = new Random();
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
 
         public override double ModuleVersion
@@ -35,7 +36,7 @@ namespace Nigrimmist.Modules.Modules
         public override string CommandDescription { get { return @"Говорит что прикажете"; } }
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
-            _bot.ShowMessage(commandToken,args);
+            _client.ShowMessage(commandToken,args);
         }
     }
 }

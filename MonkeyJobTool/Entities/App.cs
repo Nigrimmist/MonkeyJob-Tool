@@ -18,11 +18,10 @@ namespace MonkeyJobTool.Entities
     /// </summary>
     public class App
     {
-        private const string _confFileName = @"conf.json";
         private static object _appInstanceLock = new object();
         private static App _instance;
         private ApplicationConfiguration _appConf;
-        private JsonSerializer _serializer = new JsonSerializer();
+        
         private KeyboardHook _hook = new KeyboardHook();
         private object _hookLock = new object();
         private List<InfoPopup> _openedPopups = new List<InfoPopup>();
@@ -33,7 +32,7 @@ namespace MonkeyJobTool.Entities
 
         public string ExecutionFolder {get { return _executionFolder; }}
         public string ExecutionPath { get { return _executionPath; } }
-        
+
         /// <summary>
         /// Collection of event delegates for hotkeys. one delegate for one hotkeytype
         /// </summary>
@@ -62,8 +61,8 @@ namespace MonkeyJobTool.Entities
         public void Init(EventHandler<KeyPressedEventArgs> mainFormOpenHotKeyRaisedHandler, MainForm mainForm)
         {
             //read and load config
-            if (!File.Exists(_executionFolder + _confFileName)) throw new Exception("Config missing");
-            var json = File.ReadAllText(_executionFolder + _confFileName);
+            if (!File.Exists(_executionFolder + AppConstants.Paths.MainConfFileName)) throw new Exception("Config missing");
+            var json = File.ReadAllText(_executionFolder + AppConstants.Paths.MainConfFileName);
             var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = AppConstants.DateTimeFormat };
             _appConf = JsonConvert.DeserializeObject<ApplicationConfiguration>(json, dateTimeConverter);
             _mainForm = mainForm;
@@ -109,13 +108,6 @@ namespace MonkeyJobTool.Entities
         public ApplicationConfiguration AppConf
         {
             get { return _appConf; }
-            set
-            {
-                StringBuilder sb = new StringBuilder();
-                _serializer.Serialize(new JsonTextWriter(new StringWriter(sb)), value);
-                File.WriteAllText(_confFileName, sb.ToString());
-                _appConf = value;
-            }
         }
 
         public void ShowPopup(string message, TimeSpan? timeToShow)
@@ -123,17 +115,23 @@ namespace MonkeyJobTool.Entities
             ShowPopup(string.Empty, message, timeToShow);
         }
 
-        public void ShowPopup(string title, string text, TimeSpan? displayTime)
+        public void ShowPopup(string title, string text, TimeSpan? displayTime, Guid? commandToken=null)
         {
             CloseAllPopups();
-            InfoPopup popup = new InfoPopup(title, text, displayTime);
+            InfoPopup popup = new InfoPopup(title, text, displayTime,commandToken);
             popup.Width = _mainForm.Width;
             popup.ToTop();
             var totalPopupY = _openedPopups.Sum(x => x.Height);
             popup.Location = new Point(_mainForm.Location.X, _mainForm.Location.Y - popup.Height - totalPopupY);
             popup.FormClosed += popup_FormClosed;
-
+            popup.OnPopupClosed += popup_OnPopupClosed;
             _openedPopups.Add(popup);
+        }
+
+        void popup_OnPopupClosed(ClosePopupReasonType reason, object sessionData)
+        {
+            if(sessionData!=null)
+                _mainForm.HandleCommandInfoPopupClose((Guid?)sessionData,reason);
         }
 
         void popup_FormClosed(object sender, FormClosedEventArgs e)

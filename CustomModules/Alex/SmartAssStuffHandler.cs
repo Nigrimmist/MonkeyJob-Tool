@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 
 
 namespace SmartAssHandlerLib
@@ -14,11 +15,11 @@ namespace SmartAssHandlerLib
         private const string Query =
             "http://referats.yandex.ru/referats/write/?t=astronomy+geology+gyroscope+literature+marketing+mathematics+music+polit+agrobiologia+law+psychology+geography+physics+philosophy+chemistry+estetica";
 
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
         public override double ModuleVersion
         {
@@ -44,7 +45,7 @@ namespace SmartAssHandlerLib
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
             var needLotsOfStuff = !string.IsNullOrEmpty(args) && args.Contains("напалмом");
-            _bot.ShowMessage(commandToken,RetrieveSmartAssStuff(needLotsOfStuff));
+            _client.ShowMessage(commandToken,RetrieveSmartAssStuff(needLotsOfStuff));
         }
 
         private string RetrieveSmartAssStuff(bool needLotsOfStuff)

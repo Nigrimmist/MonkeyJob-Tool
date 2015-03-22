@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using HelloBotCommunication;
+using HelloBotCommunication.Interfaces;
 using HelloBotModuleHelper;
 using HtmlAgilityPack;
 
@@ -10,11 +11,11 @@ namespace Yushko.Modules
 {
     public class Kstati : ModuleBase
     {
-        private IBot _bot;
+        private IClient _client;
 
-        public override void Init(IBot bot)
+        public override void Init(IClient client)
         {
-            _bot = bot;
+            _client = client;
         }
         public override double ModuleVersion
         {
@@ -61,7 +62,7 @@ namespace Yushko.Modules
             else {
                 result = "Факты кончились... :(";
             }
-            _bot.ShowMessage(commandToken,result);
+            _client.ShowMessage(commandToken,result);
         }
     }
 }
