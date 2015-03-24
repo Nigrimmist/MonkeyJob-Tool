@@ -13,7 +13,7 @@ using HelloBotCommunication.Interfaces;
 
 namespace SmartAssHandlerLib
 {
-    public class FckinWeatherModuleBase : ModuleBase
+    public class FckinWeatherModuleHandlerBase : ModuleHandlerBase
     {
         private const string DefaultLocation = "minsk";
         private const string QueryTemaplate = "http://thefuckingweather.com/?where={0}";
@@ -41,7 +41,7 @@ namespace SmartAssHandlerLib
             }
         }
 
-        public override string CommandDescription { get { return "Shows fucking WEATHER!"; } }
+        public override string ModuleDescription { get { return "Shows fucking WEATHER!"; } }
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

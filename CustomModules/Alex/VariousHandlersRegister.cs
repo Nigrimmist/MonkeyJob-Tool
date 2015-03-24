@@ -5,19 +5,19 @@ using HelloBotCommunication.Interfaces;
 
 namespace SmartAssHandlerLib
 {
-    public class VariousHandlersRegister : IModuleRegister
+    public class VariousHandlersRegister : ModuleRegister
     {
-        public List<ModuleBase> GetModules()
+        public List<ModuleHandlerBase> GetModules()
         {
-            return new List<ModuleBase>()
+            return new List<ModuleHandlerBase>()
             {
-                new SmartAssStuffHandlerBase(),
-                new YesNoHandlerBase(),
-                new FckinWeatherModuleBase()
+                new SmartAssStuffHandlerHandlerBase(),
+                new YesNoHandlerHandlerBase(),
+                new FckinWeatherModuleHandlerBase()
             };
         }
 
-        public string ByAuthor
+        public override string ByAuthor
         {
             get { throw new System.NotImplementedException(); }
         }

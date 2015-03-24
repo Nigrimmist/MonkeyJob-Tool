@@ -6,7 +6,7 @@ using HelloBotCommunication.Interfaces;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class Say : ModuleBase
+    public class Say : ModuleHandlerBase
     {
         private Random _r = new Random();
         private IClient _client;
@@ -33,7 +33,7 @@ namespace Nigrimmist.Modules.Modules
         }
 
 
-        public override string CommandDescription { get { return @"Говорит что прикажете"; } }
+        public override string ModuleDescription { get { return @"Говорит что прикажете"; } }
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
             _client.ShowMessage(commandToken,args);

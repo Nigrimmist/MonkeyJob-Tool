@@ -10,7 +10,7 @@ namespace Nigrimmist.Modules.Modules
     /// <summary>
     /// Generate short link for argument url
     /// </summary>
-    public class ShortLink : ModuleBase
+    public class ShortLink : ModuleHandlerBase
     {
         private IClient _client;
 
@@ -35,7 +35,7 @@ namespace Nigrimmist.Modules.Modules
             }
         }
        
-        public override string CommandDescription { get { return @"Сокращалка ссылок"; } }
+        public override string ModuleDescription { get { return @"Сокращалка ссылок"; } }
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

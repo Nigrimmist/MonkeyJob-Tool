@@ -10,7 +10,7 @@ namespace Nigrimmist.Modules.Modules
     /// <summary>
     /// Quote from http://online-generators.ru/
     /// </summary>
-    public class Quote : ModuleBase
+    public class Quote : ModuleHandlerBase
     {
         private IClient _client;
 
@@ -35,7 +35,7 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override string CommandDescription { get { return @"Случайная цитата c http://online-generators.ru"; } }
+        public override string ModuleDescription { get { return @"Случайная цитата c http://online-generators.ru"; } }
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

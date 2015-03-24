@@ -9,7 +9,7 @@ using HtmlAgilityPack;
 
 namespace Yushko.Modules
 {
-    public class Horoscope : ModuleBase
+    public class Horoscope : ModuleHandlerBase
     {
         private IClient _client;
 
@@ -33,7 +33,7 @@ namespace Yushko.Modules
                 });
             }
         }
-        public override string CommandDescription { get { return @"гороскоп <знак зодиака>"; } }
+        public override string ModuleDescription { get { return @"гороскоп <знак зодиака>"; } }
 
         private IDictionary<string, string> Signs = new Dictionary<string, string>()
         {

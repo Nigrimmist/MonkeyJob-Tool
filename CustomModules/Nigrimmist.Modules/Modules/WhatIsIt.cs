@@ -12,7 +12,7 @@ namespace Nigrimmist.Modules.Modules
 {
     //https://ru.wikipedia.org/w/index.php?search=%D1%84%D1%8B%D1%88%D0%B2%D0%B3%20%D1%84%D1%8B%20%D0%B2%D1%80%D1%84
     
-    public class WhatIsIt : ModuleBase
+    public class WhatIsIt : ModuleHandlerBase
     {
         public List<string> Jokes = new List<string>();
         private Random _r = new Random();
@@ -52,7 +52,7 @@ namespace Nigrimmist.Modules.Modules
         }
 
        
-        public override string CommandDescription { get { return @"Бот знает всё. Ну или почти всё."; } }
+        public override string ModuleDescription { get { return @"Бот знает всё. Ну или почти всё."; } }
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
             args = args.Replace("?"," ").Trim();

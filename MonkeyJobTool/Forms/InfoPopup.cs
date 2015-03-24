@@ -60,8 +60,8 @@ namespace MonkeyJobTool.Forms
 
         private void InfoPopup_Click(object sender, EventArgs e)
         {
-            Clipboard.SetText(Text);
-            App.Instance.ShowPopup("Скопировано в буфер обмена", TimeSpan.FromSeconds(2));
+            //Clipboard.SetText(Text);
+            //App.Instance.ShowPopup("Скопировано в буфер обмена", TimeSpan.FromSeconds(2));
             if (OnPopupClosed != null)
             {
                 OnPopupClosed(ClosePopupReasonType.LeftClick, _sessionData);

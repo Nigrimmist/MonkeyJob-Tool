@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class LangExecuter : ModuleBase
+    public class LangExecuter : ModuleHandlerBase
     {
         private class tempClass
         {
@@ -41,7 +41,7 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override string CommandDescription { get { return "Выполняет код на C#. Добавьте help для вызова справки."; } }
+        public override string ModuleDescription { get { return "Выполняет код на C#. Добавьте help для вызова справки."; } }
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

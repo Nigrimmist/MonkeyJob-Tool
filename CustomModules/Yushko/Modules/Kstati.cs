@@ -9,7 +9,7 @@ using HtmlAgilityPack;
 
 namespace Yushko.Modules
 {
-    public class Kstati : ModuleBase
+    public class Kstati : ModuleHandlerBase
     {
         private IClient _client;
 
@@ -32,7 +32,7 @@ namespace Yushko.Modules
                 });
             }
         }
-        public override string CommandDescription { get { return @"Интересный факт одной строкой"; } }
+        public override string ModuleDescription { get { return @"Интересный факт одной строкой"; } }
 
 
         public override void HandleMessage(string command, string args, Guid commandToken)

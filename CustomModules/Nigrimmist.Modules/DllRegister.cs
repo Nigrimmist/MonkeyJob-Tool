@@ -8,11 +8,11 @@ using Nigrimmist.Modules.Modules;
 namespace Nigrimmist.Modules
 {
 
-    public class DllRegister : IModuleRegister
+    public class DllRegister : ModuleRegister
     {
-        public List<ModuleBase> GetModules()
+        public override List<ModuleHandlerBase> GetModules()
         {
-            return new List<ModuleBase>()
+            return new List<ModuleHandlerBase>()
             {
                 new Calculator(),
                 new Weather(),
@@ -32,7 +32,15 @@ namespace Nigrimmist.Modules
             };
         }
 
-        public string ByAuthor
+        public override List<ModuleEventBase> GetEvents()
+        {
+            return new List<ModuleEventBase>()
+            {
+                new Diary()
+            };
+        }
+
+        public override string ByAuthor
         {
             get { throw new System.NotImplementedException(); }
         }

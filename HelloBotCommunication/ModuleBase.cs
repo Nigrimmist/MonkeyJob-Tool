@@ -5,31 +5,13 @@ using HelloBotCommunication.Interfaces;
 
 namespace HelloBotCommunication
 {
-    public abstract class ModuleBase
+    public abstract class ModuleHandlerBase : ModuleBase
     {
-
-        /// <summary>
-        /// Using for settings version tracking.
-        /// </summary>
-        public virtual double ModuleVersion {
-            get { return 1.0; }
-        }
-
         /// <summary>
         /// Call command list.
         /// </summary>
         public abstract ReadOnlyCollection<CallCommandInfo> CallCommandList { get; }
-
-        /// <summary>
-        /// Your command description
-        /// </summary>
-        public virtual string CommandDescription {
-            get { return string.Empty; } }
-
-        public virtual void Init(IClient client)
-        {
-            
-        }
+        
 
         /// <summary>
         /// Event will be fired for your Command

@@ -10,7 +10,7 @@ using HelloBotCommunication.Interfaces;
 
 namespace SmartAssHandlerLib
 {
-    public class SmartAssStuffHandlerBase : ModuleBase
+    public class SmartAssStuffHandlerHandlerBase : ModuleHandlerBase
     {
         private const string Query =
             "http://referats.yandex.ru/referats/write/?t=astronomy+geology+gyroscope+literature+marketing+mathematics+music+polit+agrobiologia+law+psychology+geography+physics+philosophy+chemistry+estetica";
@@ -37,7 +37,7 @@ namespace SmartAssHandlerLib
             }
         }
 
-        public override string CommandDescription
+        public override string ModuleDescription
         {
             get { return "Безумная заумь небольшими дозами. Добавьте слово \"напалмом\" к команде, чтобы получить порцию зауми побольше. "; }
         }

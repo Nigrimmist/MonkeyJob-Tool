@@ -9,7 +9,7 @@ using HelloBotModuleHelper;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class Translate : ModuleBase
+    public class Translate : ModuleHandlerBase
     {
         private IClient _client;
 
@@ -35,7 +35,7 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override string CommandDescription { get { return "Переводчик. Язык определяет автоматически, поддерживаются только русский/английский"; } }
+        public override string ModuleDescription { get { return "Переводчик. Язык определяет автоматически, поддерживаются только русский/английский"; } }
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

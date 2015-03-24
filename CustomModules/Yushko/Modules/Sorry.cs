@@ -29,7 +29,7 @@ namespace Yushko.Modules
         public String nextSlug { get; set; }
     }
 
-    public class Sorry : ModuleBase
+    public class Sorry : ModuleHandlerBase
     {
         private IClient _client;
 
@@ -95,7 +95,7 @@ namespace Yushko.Modules
             return result;
         }
 
-        public override string CommandDescription { get { return @"казнить нельзя помиловать"; } }
+        public override string ModuleDescription { get { return @"казнить нельзя помиловать"; } }
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

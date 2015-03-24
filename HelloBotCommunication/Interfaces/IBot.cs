@@ -19,20 +19,11 @@ namespace HelloBotCommunication.Interfaces
         /// <summary>
         /// Show notification with text to user
         /// </summary>
-        /// <param name="commandToken">Command token. Should be recieved later from client.</param>
+        /// <param name="token">Command token. Should be recieved later from client.</param>
         /// <param name="content">Text content</param>
         /// <param name="title">Message title. if null, command name will be displayed instead</param>
         /// <param name="answerType">Answer type</param>
         /// <param name="messageType">Message type</param>
-        IBotCallback ShowMessage(Guid commandToken, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default);
-
-        
-
-        /// <summary>
-        /// Will register a timer for you module, that will exist while client is alive. Callback will be called every "period" time.
-        /// </summary>
-        /// <param name="period">Timer's timeout</param>
-        /// <param name="callback">That callback will be fired every "period" time</param>
-        void RegisterTimerEvent(TimeSpan period, Action callback);
+        IBotCallback ShowMessage(Guid token, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default);
     }
 }

@@ -14,7 +14,7 @@ namespace Nigrimmist.Modules.Modules
     /// <summary>
     /// Fun advices from http://fucking-great-advice.ru/
     /// </summary>
-    public class Advice : ModuleBase
+    public class Advice : ModuleHandlerBase
     {
         private class textClass
         {
@@ -44,7 +44,7 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override string CommandDescription { get { return @"Случайный совет с http://fucking-great-advice.ru/"; } }
+        public override string ModuleDescription { get { return @"Случайный совет с http://fucking-great-advice.ru/"; } }
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

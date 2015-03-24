@@ -10,7 +10,7 @@ using Nigrimmist.Modules.Helpers;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class ItHappens : ModuleBase
+    public class ItHappens : ModuleHandlerBase
     {
         public List<string> _jokes = new List<string>();
         private Random _r = new Random();
@@ -38,7 +38,7 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override string CommandDescription { get { return @"Случайная IT история с ithappens.me"; } }
+        public override string ModuleDescription { get { return @"Случайная IT история с ithappens.me"; } }
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
             if (!_jokes.Any())

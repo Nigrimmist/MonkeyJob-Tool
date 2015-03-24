@@ -8,7 +8,7 @@ using HelloBotCommunication.Interfaces;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class Or : ModuleBase
+    public class Or : ModuleHandlerBase
     {
         private IClient _client;
 
@@ -32,7 +32,7 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override string CommandDescription { get { return @"Выбирает между чем-то. Использует ""Или"" в качестве разделителя"; } }
+        public override string ModuleDescription { get { return @"Выбирает между чем-то. Использует ""Или"" в качестве разделителя"; } }
         private Random _r = new Random();
         private const int ChanceOfSpecialAnswer = 30;
 

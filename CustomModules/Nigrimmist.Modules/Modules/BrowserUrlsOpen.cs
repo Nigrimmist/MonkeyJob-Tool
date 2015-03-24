@@ -8,14 +8,14 @@ using HelloBotCommunication.Interfaces;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class BrowserUrlsOpen: ModuleBase
+    public class BrowserUrlsOpen: ModuleHandlerBase
     {
         private IClient _client;
         private List<CommandKeyValue> _commandUrls;
 
         private ReadOnlyCollection<CallCommandInfo> _callCommandList;
         public override ReadOnlyCollection<CallCommandInfo> CallCommandList{get { return _callCommandList; }}
-        public override string CommandDescription { get { return "Открывает ссылку в браузере"; } }
+        public override string ModuleDescription { get { return "Открывает ссылку в браузере"; } }
         public override double ModuleVersion { get { return 1.0; } }
 
         public override void Init(IClient client)

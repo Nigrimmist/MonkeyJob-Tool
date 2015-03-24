@@ -9,7 +9,7 @@ using HelloBotModuleHelper;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class Map : ModuleBase
+    public class Map : ModuleHandlerBase
     {
         private IClient _client;
 
@@ -33,7 +33,7 @@ namespace Nigrimmist.Modules.Modules
                 });
             }
         }
-        public override string CommandDescription
+        public override string ModuleDescription
         {
             get { return @"Генерирует ссылку на карту по адресу. Добавьте help для просмотра справки."; }
         }

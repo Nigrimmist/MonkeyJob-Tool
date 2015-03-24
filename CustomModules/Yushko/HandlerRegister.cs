@@ -5,11 +5,11 @@ using Yushko.Modules;
 
 namespace Yushko
 {
-    public class HandlerRegister: IModuleRegister
+    public class HandlerRegister: ModuleRegister
     {
-        public List<ModuleBase> GetModules()
+        public List<ModuleHandlerBase> GetModules()
         {
-            return new List<ModuleBase>()
+            return new List<ModuleHandlerBase>()
             {
                 new ExchangeRate(),
                 new Sorry(),
@@ -19,7 +19,7 @@ namespace Yushko
             };
         }
 
-        public string ByAuthor
+        public override string ByAuthor
         {
             get { throw new System.NotImplementedException(); }
         }

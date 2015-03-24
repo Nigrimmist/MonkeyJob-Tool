@@ -11,7 +11,7 @@ using HtmlAgilityPack;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class Bash : ModuleBase
+    public class Bash : ModuleHandlerBase
     {
         private List<string> _jokes = new List<string>();
         private Random _r = new Random();
@@ -40,7 +40,7 @@ namespace Nigrimmist.Modules.Modules
 
         
 
-        public override string CommandDescription { get { return @"Случайная цитата с башорга"; } }
+        public override string ModuleDescription { get { return @"Случайная цитата с башорга"; } }
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
             if (!_jokes.Any())

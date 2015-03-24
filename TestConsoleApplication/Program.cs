@@ -24,34 +24,33 @@ namespace Test
         static void Main(string[] args)
         {
 
-            //Console.WriteLine(Application.ExecutablePath);
-            //Console.WriteLine(s);
-            //Console.WriteLine(s2);
-            //try
-            //{
-            //    HelloBot bot = new HelloBot();
-            //    bot.HandleMessage("!calc 1+2", (s, type) => { Console.WriteLine(s); }, null);
-            //}
-            //catch (Exception ex)
-            //{
-
-            //    Console.WriteLine(ex.ToString());
-            //}
-
+            Guid commandToken = Guid.NewGuid();
             
-            //List<string> s2 = new List<string>() { "Сиськи" };
 
-            //foreach (var v in s2)
-            //{
-            //    new Quote().HandleMessage(v, null, s =>
-            //        Console.WriteLine(s));
-            //}
+            AutoResetEvent autoEvent = new AutoResetEvent(false);
+            TimerCallback tcb = state =>
+            {
+                Test();
+            };
+            
+            Timer stateTimer = new Timer(tcb, autoEvent, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
+            while (true)
+            {
+                autoEvent.WaitOne();
+            }
+
+
             Console.WriteLine("test");
             Console.ReadLine();
 
         }
-
-        
+        public static int s= 0;
+        public static void Test()
+        {
+            Console.WriteLine(s+" "+DateTime.Now);
+            Thread.Sleep(10000);
+            Console.WriteLine(s++ + " " + DateTime.Now);
+        }
     }
 
 }

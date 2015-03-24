@@ -10,7 +10,7 @@ using Yushko.ExRates;
 
 namespace Yushko.Modules
 {
-    class ExchangeRate : ModuleBase
+    class ExchangeRate : ModuleHandlerBase
     {
         private IClient _client;
 
@@ -34,7 +34,7 @@ namespace Yushko.Modules
             }
         }
 
-        public override string CommandDescription
+        public override string ModuleDescription
         {
             get { return "курсы валют по НацБанку. Для справки добавьте \"помощь\" или \"help\""; }
         }

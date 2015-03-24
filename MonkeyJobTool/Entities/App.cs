@@ -71,8 +71,7 @@ namespace MonkeyJobTool.Entities
             _hotKeysHadlers.Add(HotKeyType.OpenProgram, mainFormOpenHotKeyRaisedHandler);
             ReInitHotKeys();
         }
-
-       
+        
 
         public void ReInitHotKeys()
         {

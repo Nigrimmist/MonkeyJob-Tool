@@ -10,7 +10,7 @@ using HtmlAgilityPack;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class Boobs : ModuleBase
+    public class Boobs : ModuleHandlerBase
     {
         private IClient _client;
 
@@ -35,7 +35,7 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override string CommandDescription { get { return "Ну а что тут объяснять. Сиськи."; } }
+        public override string ModuleDescription { get { return "Ну а что тут объяснять. Сиськи."; } }
         private Random _r = new Random();
         private List<string> _images = new List<string>();
 

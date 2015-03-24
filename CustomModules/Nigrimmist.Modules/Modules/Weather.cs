@@ -9,7 +9,7 @@ using HtmlAgilityPack;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class Weather : ModuleBase
+    public class Weather : ModuleHandlerBase
     {
         private IClient _client;
 
@@ -33,7 +33,7 @@ namespace Nigrimmist.Modules.Modules
                 });
             }
         }
-        public override string CommandDescription { get { return @"Погода с тутбая для Минска. ""!погода"" = текущая+завтра"; } }
+        public override string ModuleDescription { get { return @"Погода с тутбая для Минска. ""!погода"" = текущая+завтра"; } }
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
             HtmlReaderManager hrm = new HtmlReaderManager();

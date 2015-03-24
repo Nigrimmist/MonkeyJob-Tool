@@ -9,7 +9,7 @@ using HtmlAgilityPack;
 
 namespace Yushko.Modules
 {
-    public class Moon : ModuleBase
+    public class Moon : ModuleHandlerBase
     {
         private IClient _client;
 
@@ -32,7 +32,7 @@ namespace Yushko.Modules
                 });
             }
         }
-        public override string CommandDescription { get { return @"лунный календарь"; } }
+        public override string ModuleDescription { get { return @"лунный календарь"; } }
 
 
         public override void HandleMessage(string command, string args, Guid commandToken)

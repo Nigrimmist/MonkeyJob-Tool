@@ -9,7 +9,7 @@ using HelloBotCommunication.Interfaces;
 
 namespace SmartAssHandlerLib
 {
-    public class YesNoHandlerBase : ModuleBase
+    public class YesNoHandlerHandlerBase : ModuleHandlerBase
     {
         private readonly RandomHelper _decisionMaker = new RandomHelper();
 
@@ -24,7 +24,7 @@ namespace SmartAssHandlerLib
         {
             _client = client;
         }
-        public YesNoHandlerBase()
+        public YesNoHandlerHandlerBase()
         {
             _specialAnswersProvider = new SpecialAnswersProvider(_decisionMaker);
             _generalAnswersProvider = new GeneralAnswersProvider(_decisionMaker);
@@ -48,7 +48,7 @@ namespace SmartAssHandlerLib
                 });
             }
         }
-        public override string CommandDescription
+        public override string ModuleDescription
         {
             get { return "Лаконичный ответ на простой вопрос."; }
         }

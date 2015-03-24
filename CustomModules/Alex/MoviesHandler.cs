@@ -11,7 +11,7 @@ using HelloBotCommunication.Interfaces;
 
 namespace SmartAssHandlerLib
 {
-    public class MoviesHandlerBase : ModuleBase
+    public class MoviesHandlerHandlerBase : ModuleHandlerBase
     {
         private IClient _client;
 
@@ -36,7 +36,7 @@ namespace SmartAssHandlerLib
             }
         }
 
-        public override string CommandDescription
+        public override string ModuleDescription
         {
             get { return string.Empty; }
         }

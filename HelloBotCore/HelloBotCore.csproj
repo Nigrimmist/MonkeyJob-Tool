@@ -56,6 +56,7 @@
     <Compile Include="Entities\IModuleClientHandler.cs" />
     <Compile Include="Entities\ModuleCommandInfo.cs" />
     <Compile Include="Entities\ModuleSettings.cs" />
+    <Compile Include="Entities\ModuleType.cs" />
     <Compile Include="Entities\UserReactionToCommandType.cs" />
     <Compile Include="HelloBot.cs" />
     <Compile Include="Entities\Language.cs" />

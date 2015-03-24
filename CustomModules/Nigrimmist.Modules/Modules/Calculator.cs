@@ -7,7 +7,7 @@ using NCalc;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class Calculator : ModuleBase
+    public class Calculator : ModuleHandlerBase
     {
         private IClient _client;
 
@@ -32,7 +32,7 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override string CommandDescription { get { return "Умный калькулятор. Реализация NCalc библиотеки"; }  }
+        public override string ModuleDescription { get { return "Умный калькулятор. Реализация NCalc библиотеки"; }  }
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

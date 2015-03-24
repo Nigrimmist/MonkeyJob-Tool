@@ -203,7 +203,8 @@ namespace MonkeyJobTool.Forms
         private void tsExit_Click(object sender, EventArgs e)
         {
             trayIcon.Visible = false;
-            Application.Exit();
+            Environment.Exit(Environment.ExitCode);
+            //Application.Exit();
         }
 
         private void tsSettings_Click(object sender, EventArgs e)

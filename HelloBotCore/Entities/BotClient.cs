@@ -11,7 +11,7 @@ namespace HelloBotCore.Entities
     {
         private IModuleClientHandler _moduleClientHandler;
         private ModuleCommandInfo _moduleCommandInfo;
-        private Guid _lastToken = new Guid();
+        private Guid _lastToken;
         public ModuleToClientAdapter(IModuleClientHandler moduleClientHandler, ModuleCommandInfo moduleCommandInfo)
         {
             _moduleClientHandler = moduleClientHandler;
@@ -28,16 +28,11 @@ namespace HelloBotCore.Entities
             return _moduleClientHandler.GetSettings<T>(_moduleCommandInfo);
         }
 
-        public IBotCallback ShowMessage(Guid commandToken, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
+        public IBotCallback ShowMessage(Guid token, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
         {
-            _lastToken = commandToken;
-            _moduleClientHandler.ShowMessage(commandToken,_moduleCommandInfo, content, title, answerType, messageType);
+            _lastToken = token;
+            _moduleClientHandler.ShowMessage(token,_moduleCommandInfo, content, title, answerType, messageType);
             return this;
-        }
-
-        public void RegisterTimerEvent(TimeSpan period, Action callback)
-        {
-            _moduleClientHandler.RegisterTimerEvent(_moduleCommandInfo, period, callback);
         }
 
         public IBotCallback OnClick(Action onClickCallback)
