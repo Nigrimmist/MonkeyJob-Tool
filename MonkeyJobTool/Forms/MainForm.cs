@@ -204,7 +204,7 @@ namespace MonkeyJobTool.Forms
         {
             trayIcon.Visible = false;
             Environment.Exit(Environment.ExitCode);
-            //Application.Exit();
+            //todo : do not terminate all child threads. think about how to wait about few secs after notify them and emulate programm close
         }
 
         private void tsSettings_Click(object sender, EventArgs e)

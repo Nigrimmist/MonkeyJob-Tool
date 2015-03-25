@@ -55,6 +55,7 @@ namespace Nigrimmist.Modules.Modules
                 if (hrm == null)
                 {
                     hrm = new HtmlReaderManager();
+                    hrm.Encoding = Encoding.GetEncoding(1251);
                     if (!Login(eventToken))
                     {
                         return;

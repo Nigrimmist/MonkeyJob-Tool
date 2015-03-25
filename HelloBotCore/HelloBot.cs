@@ -27,7 +27,8 @@ namespace HelloBotCore
 
     public class HelloBot : IModuleClientHandler
     {
-        private List<ModuleCommandInfo> _modules = new List<ModuleCommandInfo>();
+        private List<ModuleCommandInfo> _handlerModules = new List<ModuleCommandInfo>();
+        private List<ModuleEventInfo> _eventModules = new List<ModuleEventInfo>();
         private readonly IDictionary<string, SystemCommandInfo> _systemCommands;
         private readonly string _moduleDllmask;
         private readonly string _botCommandPrefix;
@@ -35,7 +36,7 @@ namespace HelloBotCore
         private readonly int _commandTimeoutSec;
         private Dictionary<Guid, object> _commandDictLocks;
         private string _settingsFolderAbsolutePath;
-        private JsonSerializer _serializer;
+        
         private Dictionary<Guid, BotCommandContext> _commandContexts;
         private object _commandContextLock = new object();
         public delegate void OnErrorOccuredDelegate(Exception ex);
@@ -63,7 +64,6 @@ namespace HelloBotCore
             _moduleFolderPath = moduleFolderPath;
             _commandTimeoutSec = 30;
             _commandDictLocks = new Dictionary<Guid, object>();
-            _serializer = new JsonSerializer();
             _systemCommands = new Dictionary<string, SystemCommandInfo>()
             {
                 {"?", new SystemCommandInfo("список системных команд", GetSystemCommands)},
@@ -76,8 +76,7 @@ namespace HelloBotCore
 
         private void RunEventModuleTimers()
         {
-            var events = _modules.Where(x => x.ModuleType == ModuleType.Event).ToList();
-            foreach (var ev in events)
+            foreach (var ev in _eventModules)
             {
                 var tEv = ev;
                 new Thread(() =>
@@ -96,12 +95,11 @@ namespace HelloBotCore
                         }
                         catch (Exception ex)
                         {
-                            //todo:log module exception
+                            //todo:log module exception to module exception file
                         }
                         
                         Thread.Sleep(tEv.EventRunEvery);
                     }
-                    
 
                 }).Start();
             }
@@ -117,36 +115,35 @@ namespace HelloBotCore
 
         private void RegisterModules()
         {
-            var modules = GetModules();
-            modules = ExtendAliases(modules).ToList();//extend aliases for autocomplete wrong keyboard layout search
-            _modules = modules;
+            var allModules = GetModules();
+            
+            _handlerModules = allModules.OfType<ModuleCommandInfo>().Where(x=>x.CallCommandList.Any()).ToList();
+            _handlerModules = ExtendAliases(_handlerModules);//extend aliases for autocomplete wrong keyboard layout search
+            _eventModules = allModules.OfType<ModuleEventInfo>().ToList();
         }
 
         private List<ModuleCommandInfo> ExtendAliases(List<ModuleCommandInfo> modules)
         {
             foreach (var module in modules)
             {
-                if (module.ModuleType == ModuleType.Handler)
+                foreach (var command in module.CallCommandList)
                 {
-                    foreach (var command in module.CallCommandList)
+                    List<string> tAliases = new List<string>();
+                    foreach (string tAlias in command.Aliases)
                     {
-                        List<string> tAliases = new List<string>();
-                        foreach (string tAlias in command.Aliases)
-                        {
-                            tAliases.AddRange(tAlias.GetOtherKeyboardLayoutWords(tAlias.DetectLanguage()));
-                        }
-                        command.Aliases.AddRange(tAliases);
-                        command.Aliases.AddRange(command.Command.GetOtherKeyboardLayoutWords(command.Command.DetectLanguage()));
+                        tAliases.AddRange(tAlias.GetOtherKeyboardLayoutWords(tAlias.DetectLanguage()));
                     }
+                    command.Aliases.AddRange(tAliases);
+                    command.Aliases.AddRange(command.Command.GetOtherKeyboardLayoutWords(command.Command.DetectLanguage()));
                 }
             }
             
             return modules;
         }
 
-        protected virtual List<ModuleCommandInfo> GetModules()
+        protected virtual List<ModuleCommandInfoBase> GetModules()
         {
-            List<ModuleCommandInfo> toReturn = new List<ModuleCommandInfo>();
+            List<ModuleCommandInfoBase> toReturn = new List<ModuleCommandInfoBase>();
             var dlls = Directory.GetFiles(_moduleFolderPath, _moduleDllmask);
             var i = typeof(ModuleRegister);
             foreach (var dll in dlls)
@@ -163,19 +160,19 @@ namespace HelloBotCore
                     {
                         var tModule = new ModuleCommandInfo();
                         _commandDictLocks.Add(tModule.Id, new object());
-                        tModule.InitModule(Path.GetFileNameWithoutExtension(fi.Name), module, this);
-                        return tModule;
+                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this);
+                        return (ModuleCommandInfoBase)tModule;
                     });
 
                     var events = ((ModuleRegister)obj).GetEvents().Select(ev =>
                     {
-                        var tModule = new ModuleCommandInfo();
+                        var tModule = new ModuleEventInfo();
                         _commandDictLocks.Add(tModule.Id, new object());
-                        tModule.InitEvent(Path.GetFileNameWithoutExtension(fi.Name), ev, this);
-                        return tModule;
+                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this);
+                        return (ModuleCommandInfoBase)tModule;
                     });
 
-                    toReturn.AddRange(modules.Where(x=>x.CallCommandList.Any()));
+                    toReturn.AddRange(modules);
                     toReturn.AddRange(events);
                 }
             }
@@ -267,7 +264,7 @@ namespace HelloBotCore
             command = string.Empty;
             List<string> foundCommands = new List<string>();
             args = string.Empty;
-            foreach (var module in _modules)
+            foreach (var module in _handlerModules)
             {
                 foreach (var com in module.CallCommandList)
                 {
@@ -282,7 +279,7 @@ namespace HelloBotCore
             if (!foundCommands.Any())
             {
                 //trying search by aliases
-                foreach (var module in _modules)
+                foreach (var module in _handlerModules)
                 {
                     foreach (var com in module.CallCommandList)
                     {
@@ -301,7 +298,7 @@ namespace HelloBotCore
             if (foundCommands.Any())
             {
                 string foundCommand = foundCommands.OrderByDescending(x => x).First();
-                toReturn = _modules.FirstOrDefault(x => x.CallCommandList.Select(y=>y.Command).Contains(foundCommand,StringComparer.OrdinalIgnoreCase));
+                toReturn = _handlerModules.FirstOrDefault(x => x.CallCommandList.Select(y=>y.Command).Contains(foundCommand,StringComparer.OrdinalIgnoreCase));
                 if (toReturn != null)
                 {
                     command = foundCommand;
@@ -319,7 +316,7 @@ namespace HelloBotCore
         public List<string> GetUserDefinedCommandList()
         {
             List<string> toReturn = new List<string>();
-            foreach (var commandList in _modules.Select(x=>x.CallCommandList))
+            foreach (var commandList in _handlerModules.Select(x=>x.CallCommandList))
             {
                 toReturn.AddRange(commandList.Select(x=>x.Command));
             }
@@ -328,7 +325,7 @@ namespace HelloBotCore
         private string GetUserDefinedCommands()
         {
             StringBuilder sb = new StringBuilder();
-            var modules = _modules.Select(x => String.Format("{0} - {1}", string.Join(" / ", x.CallCommandList.Select(y => _botCommandPrefix + y.Command).ToArray()), x.CommandDescription)).ToArray();
+            var modules = _handlerModules.Select(x => String.Format("{0} - {1}", string.Join(" / ", x.CallCommandList.Select(y => _botCommandPrefix + y.Command).ToArray()), x.CommandDescription)).ToArray();
             sb.Append(String.Join(Environment.NewLine,modules));
             sb.AppendLine("");
             sb.AppendLine("Запили свой модуль : https://github.com/Nigrimmist/MonkeyJob-Tool");
@@ -339,8 +336,9 @@ namespace HelloBotCore
         public List<CallCommandInfo> FindCommands(string incCommand)
         {
             return (
-                from module in _modules from cmd in module.CallCommandList
-                where cmd.Command.StartsWith(incCommand, StringComparison.InvariantCultureIgnoreCase) ||
+                from module in _handlerModules
+                from cmd in module.CallCommandList where
+                cmd.Command.StartsWith(incCommand, StringComparison.InvariantCultureIgnoreCase) ||
                 cmd.Aliases.Any(y => y.StartsWith(incCommand, StringComparison.InvariantCultureIgnoreCase))
                 let descr = !string.IsNullOrEmpty(cmd.Description) ? cmd.Description : module.CommandDescription
                 select new CallCommandInfo(cmd.Command, descr)).ToList();
@@ -348,7 +346,7 @@ namespace HelloBotCore
 
         #region methods for modules
         
-        public void SaveSettings<T>(ModuleCommandInfo commandInfo, T serializableSettingObject) where T : class
+        public void SaveSettings<T>(ModuleCommandInfoBase commandInfo, T serializableSettingObject) where T : class
         {
             lock (_commandDictLocks[commandInfo.Id])
             {
@@ -359,7 +357,7 @@ namespace HelloBotCore
             }
         }
 
-        public T GetSettings<T>(ModuleCommandInfo commandInfo) where T : class
+        public T GetSettings<T>(ModuleCommandInfoBase commandInfo) where T : class
         {
             lock (_commandDictLocks[commandInfo.Id])
             {
@@ -372,7 +370,7 @@ namespace HelloBotCore
             }
         }
 
-        public void ShowMessage(Guid commandToken, ModuleCommandInfo commandInfo, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
+        public void ShowMessage(Guid commandToken, ModuleCommandInfoBase commandInfo, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
         {
             BotCommandContext commandContext;
             //todo:refactoring required (should be cleared time to time)

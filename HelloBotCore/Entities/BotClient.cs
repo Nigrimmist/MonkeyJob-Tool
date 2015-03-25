@@ -10,9 +10,9 @@ namespace HelloBotCore.Entities
     public class ModuleToClientAdapter : IClient, IBotCallback
     {
         private IModuleClientHandler _moduleClientHandler;
-        private ModuleCommandInfo _moduleCommandInfo;
+        private ModuleCommandInfoBase _moduleCommandInfo;
         private Guid _lastToken;
-        public ModuleToClientAdapter(IModuleClientHandler moduleClientHandler, ModuleCommandInfo moduleCommandInfo)
+        public ModuleToClientAdapter(IModuleClientHandler moduleClientHandler, ModuleCommandInfoBase moduleCommandInfo)
         {
             _moduleClientHandler = moduleClientHandler;
             _moduleCommandInfo = moduleCommandInfo;
