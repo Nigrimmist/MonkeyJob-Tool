@@ -2,9 +2,7 @@
 	Versions : [
 		{
 			Version : 0.1,
-			WhatsNew : 'test
-			test2
-			'
+			WhatsNew : 'test\r\nblabla!'
 		}
 	]
 }
