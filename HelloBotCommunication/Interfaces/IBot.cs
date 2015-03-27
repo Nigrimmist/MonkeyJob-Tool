@@ -25,5 +25,20 @@ namespace HelloBotCommunication.Interfaces
         /// <param name="answerType">Answer type</param>
         /// <param name="messageType">Message type</param>
         IBotCallback ShowMessage(Guid token, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default);
+
+        /// <summary>
+        /// Determine client ui language
+        /// </summary>
+        ClientLanguage ClientLanguage { get; }
+
+        /// <summary>
+        /// Determine bot version
+        /// </summary>
+        double BotVersion { get; }
+
+        /// <summary>
+        /// Determine ui app version
+        /// </summary>
+        double UiClientVersion { get; }
     }
 }

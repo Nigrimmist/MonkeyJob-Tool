@@ -9,6 +9,7 @@ namespace MonkeyJobTool.Entities
     {
         public const string DateTimeFormat = "dd-MM-yyyy";
         public const string AppName = "MonkeyJob Tool";
+        public const double AppVersion = 0.1;
 
         public class Registry
         {
@@ -20,9 +21,9 @@ namespace MonkeyJobTool.Entities
             public const string MainConfFileName = @"conf.json";
         }
 
-        public class Urls
-        {
-            public const string LatestVersionFileUrlFormat = "https://raw.githubusercontent.com/Nigrimmist/MonkeyJob-Tool/master/ServerData/LatestPublicVersion_{0}.txt";
-        }
+        //public class Urls
+        //{
+        //    public const string LatestVersionFileUrlFormat = "https://raw.githubusercontent.com/Nigrimmist/MonkeyJob-Tool/master/ServerData/LatestPublicVersion_{0}.txt";
+        //}
     }
 }

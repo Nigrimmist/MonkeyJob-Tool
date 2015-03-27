@@ -36,7 +36,8 @@ namespace Nigrimmist.Modules
         {
             return new List<ModuleEventBase>()
             {
-                new Diary()
+                new Diary(),
+                new ToolUpdate()
             };
         }
 

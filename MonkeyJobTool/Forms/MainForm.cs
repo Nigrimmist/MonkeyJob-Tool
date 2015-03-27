@@ -16,11 +16,11 @@ using Microsoft.Win32;
 using MonkeyJobTool.Controls.Autocomplete;
 using MonkeyJobTool.Entities;
 using MonkeyJobTool.Entities.Autocomplete;
-using MonkeyJobTool.Entities.Json;
 using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Helpers;
 using MonkeyJobTool.Utilities;
 using Newtonsoft.Json;
+using Language = HelloBotCore.Entities.Language;
 
 namespace MonkeyJobTool.Forms
 {
@@ -59,11 +59,12 @@ namespace MonkeyJobTool.Forms
             try
             {
                 App.Instance.Init(openFormHotKeyRaised, this);
-                _bot = new HelloBot(App.Instance.ExecutionFolder+"ModuleSettings",botCommandPrefix: "",moduleFolderPath : App.Instance.ExecutionFolder);
-                //MessageBox.Show(App.Instance.AppConf.SystemData.LastUpdateCheckDate.ToString());
+                _bot = new HelloBot(App.Instance.ExecutionFolder + "ModuleSettings", AppConstants.AppVersion, botCommandPrefix: "", moduleFolderPath: App.Instance.ExecutionFolder);
+                
                 this.ShowInTaskbar = false;
                 _bot.OnErrorOccured += BotOnOnErrorOccured;
                 _bot.OnMessageRecieved += BotOnMessageRecieved;
+                _bot.SetCurrentLanguage((Language)(int)App.Instance.AppConf.Language);
 
                 var screen = Screen.FromPoint(this.Location);
                 this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
@@ -80,7 +81,7 @@ namespace MonkeyJobTool.Forms
                 this.Controls.Add(_autocomplete);
                 this.ToTop();
 
-                CheckNewVersion();
+                
                 LogAnalytic();
             }
             catch (Exception ex)
@@ -236,45 +237,15 @@ namespace MonkeyJobTool.Forms
         }
 
         
-        private void trayIcon_Click(object sender, EventArgs e)
-        {
-            
-        }
+        
 
         private void trayIcon_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
                 this.ToTop();
+                App.Instance.AllPopupsToTop();
             }
-        }
-
-        //todo : rewrite to module
-        private void CheckNewVersion()
-        {
-            if (App.Instance.AppConf.SystemData.LastUpdateCheckDate.AddDays(3) <= DateTime.Now)
-            {
-                App.Instance.AppConf.SystemData.LastUpdateCheckDate = DateTime.Now.Date;
-                App.Instance.AppConf.Save();
-
-                HtmlReaderManager hrm = new HtmlReaderManager();
-                hrm.Get(string.Format(AppConstants.Urls.LatestVersionFileUrlFormat, App.Instance.AppConf.Language));
-                string versionJson = hrm.Html;
-                AppVersionInfo info = JsonConvert.DeserializeObject<AppVersionInfo>(versionJson);
-                var versions = info.Versions.OrderBy(x => x.Version);
-                var latestVersion = versions.Last();
-                if (latestVersion.Version > App.Instance.AppConf.SystemData.Version)
-                {
-                    App.Instance.ShowPopup("Вышла новая версия!", "Версия v" + latestVersion.Version + " доступна для скачивания. В новой версии :" + Environment.NewLine + Environment.NewLine + latestVersion.WhatsNew, null);
-                }
-
-                new Thread(() =>
-                {
-                    
-
-                }).Start();
-            }
-
         }
 
         private void LogAnalytic()

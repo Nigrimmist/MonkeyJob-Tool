@@ -36,7 +36,8 @@ namespace HelloBotCore
         private readonly int _commandTimeoutSec;
         private Dictionary<Guid, object> _commandDictLocks;
         private string _settingsFolderAbsolutePath;
-        
+        private Language _currentLanguage = Language.English;
+
         private Dictionary<Guid, BotCommandContext> _commandContexts;
         private object _commandContextLock = new object();
         public delegate void OnErrorOccuredDelegate(Exception ex);
@@ -45,7 +46,8 @@ namespace HelloBotCore
         public delegate void OnMessageRecievedDelegate(Guid commandToken,AnswerInfo answer,ClientCommandContext clientCommandContext);
         public event OnErrorOccuredDelegate OnErrorOccured;
         public event OnMessageRecievedDelegate OnMessageRecieved;
-
+        public readonly double Version = 0.1;
+        private readonly double _currentUIClientVersion;
 
         /// <summary>
         /// Bot costructor
@@ -53,8 +55,9 @@ namespace HelloBotCore
         /// <param name="settingsFolderAbsolutePath">folder for module settings, will be created if not exist</param>
         /// <param name="moduleDllmask">File mask for retrieving client command dlls</param>
         /// <param name="botCommandPrefix">Prefix for bot commands. Only messages with that prefix will be handled</param>
-        public HelloBot(string settingsFolderAbsolutePath,string moduleDllmask = "*.dll", string botCommandPrefix = "!", string moduleFolderPath = ".")
+        public HelloBot(string settingsFolderAbsolutePath,double currentUIClientVersion,string moduleDllmask = "*.dll", string botCommandPrefix = "!", string moduleFolderPath = "." )
         {
+            _currentUIClientVersion = currentUIClientVersion;
             _settingsFolderAbsolutePath = settingsFolderAbsolutePath;
             if (!Directory.Exists(settingsFolderAbsolutePath))
                 Directory.CreateDirectory(settingsFolderAbsolutePath);
@@ -476,6 +479,27 @@ namespace HelloBotCore
                         throw new ArgumentOutOfRangeException("reactionType");
                 }
             }
+        }
+
+        
+        public void SetCurrentLanguage(Language lang)
+        {
+            _currentLanguage = lang;
+        }
+
+        public Language GetCurrentLanguage()
+        {
+            return _currentLanguage;
+        }
+
+        public double GetCurrentVersion()
+        {
+            return Version;
+        }
+
+        public double GetUIClientVersion()
+        {
+            return _currentUIClientVersion;
         }
     }
 

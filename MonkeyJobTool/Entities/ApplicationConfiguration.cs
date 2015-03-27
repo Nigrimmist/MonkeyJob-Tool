@@ -39,7 +39,6 @@ namespace MonkeyJobTool.Entities
 
     public class SystemData
     {
-        public DateTime LastUpdateCheckDate { get; set; }
-        public double Version { get; set; }
+        //public double Version { get; set; }
     }
 }

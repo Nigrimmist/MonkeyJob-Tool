@@ -51,7 +51,6 @@ namespace Nigrimmist.Modules.Modules
         {
             if (_settings != null && !string.IsNullOrEmpty(_settings.UserName) && !string.IsNullOrEmpty(_settings.Password))
             {
-                //
                 if (hrm == null)
                 {
                     hrm = new HtmlReaderManager();
@@ -148,7 +147,7 @@ namespace Nigrimmist.Modules.Modules
             newDiscussions = 0;
 
 
-            HtmlAgilityPack.HtmlDocument htmlDoc = new HtmlAgilityPack.HtmlDocument();
+            HtmlDocument htmlDoc = new HtmlDocument();
             htmlDoc.OptionFixNestedTags = true;
             htmlDoc.LoadHtml(html);
 

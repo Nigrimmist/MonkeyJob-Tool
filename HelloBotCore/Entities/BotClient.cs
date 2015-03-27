@@ -12,6 +12,8 @@ namespace HelloBotCore.Entities
         private IModuleClientHandler _moduleClientHandler;
         private ModuleCommandInfoBase _moduleCommandInfo;
         private Guid _lastToken;
+        private ClientLanguage _clientLanguage;
+
         public ModuleToClientAdapter(IModuleClientHandler moduleClientHandler, ModuleCommandInfoBase moduleCommandInfo)
         {
             _moduleClientHandler = moduleClientHandler;
@@ -51,6 +53,21 @@ namespace HelloBotCore.Entities
         {
             _moduleClientHandler.RegisterUserReactionCallback(_lastToken, UserReactionToCommandType.Notified, onNotifiedCallback);
             return this;
+        }
+
+        public ClientLanguage ClientLanguage
+        {
+            get { return (ClientLanguage)(int)_moduleClientHandler.GetCurrentLanguage(); }
+        }
+
+        public double BotVersion
+        {
+            get { return _moduleClientHandler.GetCurrentVersion(); }
+        }
+
+        public double UiClientVersion
+        {
+            get { return _moduleClientHandler.GetUIClientVersion(); }
         }
     }
 }

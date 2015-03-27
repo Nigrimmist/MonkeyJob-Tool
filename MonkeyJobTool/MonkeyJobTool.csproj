@@ -88,7 +88,6 @@
     <Compile Include="Controls\Autocomplete\AutocompletePopupControl.Designer.cs">
       <DependentUpon>AutocompletePopupControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Entities\Json\AppVersionInfo.cs" />
     <Compile Include="Entities\Language.cs" />
     <Compile Include="Entities\SelectableWordPart.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
@@ -190,7 +189,9 @@
       <Name>HelloBotCore</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Entities\Json\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Res\mj.ico" />
     <None Include="Resources\rightArrows.png" />

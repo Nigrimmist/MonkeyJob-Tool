@@ -10,8 +10,8 @@ namespace HelloBotCore.Utilities
         private static readonly object _dictLocker = new object();
 
         private static readonly Dictionary<Language, char[]> langKeyBoardDictionary = new Dictionary<Language, char[]> {
-            { Language.ru, "йцукенгшщзхъфывапролджэячсмитьбю.ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,".ToCharArray() },
-            { Language.en, "qwertyuiop[]asdfghjkl;'zxcvbnm,./QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>?".ToCharArray() }
+            { Language.Russian, "йцукенгшщзхъфывапролджэячсмитьбю.ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,".ToCharArray() },
+            { Language.English, "qwertyuiop[]asdfghjkl;'zxcvbnm,./QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>?".ToCharArray() }
         };
 
         private static Dictionary<Language, KeyValuePair<Language, char[]>[]> Switches

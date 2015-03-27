@@ -13,5 +13,8 @@ namespace HelloBotCore.Entities
         T GetSettings<T>(ModuleCommandInfoBase commandInfo) where T : class;
         void ShowMessage(Guid commandToken, ModuleCommandInfoBase commandInfo, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default);
         void RegisterUserReactionCallback(Guid commandToken, UserReactionToCommandType userCallbackType, Action callback);
+        Language GetCurrentLanguage();
+        double GetCurrentVersion();
+        double GetUIClientVersion();
     }
 }

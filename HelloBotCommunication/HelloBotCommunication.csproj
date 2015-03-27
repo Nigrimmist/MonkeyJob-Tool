@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="AnswerBehaviourType.cs" />
     <Compile Include="CallCommandInfo.cs" />
+    <Compile Include="ClientLanguage.cs" />
     <Compile Include="Interfaces\IBot.cs" />
     <Compile Include="Interfaces\IBotCallback.cs" />
     <Compile Include="Interfaces\IClientInit.cs" />

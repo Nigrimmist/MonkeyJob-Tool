@@ -66,6 +66,7 @@ namespace MonkeyJobTool.Forms
             {
                 OnPopupClosed(ClosePopupReasonType.LeftClick, _sessionData);
             }
+            this.Close();
         }
 
         private void InfoPopup_MouseUp(object sender, MouseEventArgs e)
