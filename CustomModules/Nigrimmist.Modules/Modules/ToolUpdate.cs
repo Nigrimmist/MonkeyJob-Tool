@@ -76,8 +76,6 @@ namespace Nigrimmist.Modules.Modules
                         _client.ShowMessage(eventToken, "https://github.com/Nigrimmist/MonkeyJob-Tool/releases", answerType: AnswerBehaviourType.OpenLink);
                     });
                 }
-
-                
             }
         }
     }

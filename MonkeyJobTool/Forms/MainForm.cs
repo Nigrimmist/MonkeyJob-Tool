@@ -79,7 +79,7 @@ namespace MonkeyJobTool.Forms
                 _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
                 _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
                 this.Controls.Add(_autocomplete);
-                this.ToTop();
+                this.ToTop(true);
 
                 
                 LogAnalytic();
@@ -102,7 +102,7 @@ namespace MonkeyJobTool.Forms
                     this.Invoke(new MethodInvoker(delegate
                     {
                         Clipboard.SetText(answer);
-                        App.Instance.ShowPopup("Скопировано в буфер обмена", TimeSpan.FromSeconds(2));
+                        App.Instance.ShowPopup("Результат команды скопирован в буфер обмена", TimeSpan.FromSeconds(2));
                     }));
                 }
                 else
@@ -118,8 +118,8 @@ namespace MonkeyJobTool.Forms
                         {
                             this.Invoke((MethodInvoker) (delegate
                             {
-                                App.Instance.ShowPopup(answerInfo.CommandName, answer, null, commandToken);
-                                this.ToTop();
+                                App.Instance.ShowPopup(answerInfo.CommandName, answer, null, commandToken,answerInfo.MessageSourceType==ModuleType.Handler);
+                                //this.ToTop();
                             }));
 
                         }
@@ -186,14 +186,7 @@ namespace MonkeyJobTool.Forms
 
         void openFormHotKeyRaised(object sender, KeyPressedEventArgs e)
         {
-            if (_autocomplete != null && _autocomplete.IsPopupOpen)
-            {
-                _autocomplete.PopupToTop();
-            }
-            App.Instance.AllPopupsToTop();
-            this.ToTop();
-            if (_autocomplete != null)
-                _autocomplete.SelectAllText();
+            ShowAllWindows();
         }
 
         private void BotOnOnErrorOccured(Exception exception)
@@ -243,9 +236,21 @@ namespace MonkeyJobTool.Forms
         {
             if (e.Button == MouseButtons.Left)
             {
-                this.ToTop();
-                App.Instance.AllPopupsToTop();
+                ShowAllWindows();
             }
+        }
+
+        void ShowAllWindows()
+        {
+            if (_autocomplete != null && _autocomplete.IsPopupOpen)
+            {
+                _autocomplete.PopupToTop();
+            }
+            App.Instance.AllPopupsToTop();
+            this.ToTop(true);
+
+            if (_autocomplete != null)
+                _autocomplete.SelectAllText();
         }
 
         private void LogAnalytic()

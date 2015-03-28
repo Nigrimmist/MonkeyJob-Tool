@@ -96,7 +96,10 @@ namespace MonkeyJobTool.Forms
             }
         }
 
-        
+        protected override bool ShowWithoutActivation
+        {
+            get { return true; }
+        }
                 
     }
 

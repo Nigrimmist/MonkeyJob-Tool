@@ -87,7 +87,8 @@ namespace HelloBotCore
                     Guid commandToken = Guid.NewGuid();
                     AddNewCommandContext(commandToken, new BotCommandContext()
                     {
-                        CommandName = tEv.ModuleName
+                        CommandName = tEv.ModuleName,
+                        CommandType = ModuleType.Event
                     });
 
                     while (true)
@@ -216,7 +217,8 @@ namespace HelloBotCore
                                         AddNewCommandContext(commandTempGuid, new BotCommandContext()
                                         {
                                             ClientCommandContext = clientCommandContext,
-                                            CommandName = command
+                                            CommandName = command,
+                                            CommandType = ModuleType.Handler
                                         });
                                         
                                         hnd.HandleMessage(command, args, commandTempGuid);
@@ -393,7 +395,8 @@ namespace HelloBotCore
                         Answer = content,
                         Title = title,
                         CommandName = commandContext.CommandName,
-                        AnswerType = answerType
+                        AnswerType = answerType,
+                        MessageSourceType = commandContext.CommandType
                     },  commandContext.ClientCommandContext );
             }
         }

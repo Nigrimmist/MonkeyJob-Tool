@@ -65,6 +65,7 @@
     <Compile Include="Modules\LangExecuter.cs" />
     <Compile Include="Modules\Map.cs" />
     <Compile Include="Modules\OrModule.cs" />
+    <Compile Include="Modules\TestEvent.cs" />
     <Compile Include="Modules\ToolUpdate.cs" />
     <Compile Include="Modules\WhatIsIt.cs" />
     <Compile Include="DllRegister.cs" />

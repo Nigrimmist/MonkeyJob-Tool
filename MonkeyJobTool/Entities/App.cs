@@ -109,17 +109,23 @@ namespace MonkeyJobTool.Entities
             get { return _appConf; }
         }
 
-        public void ShowPopup(string message, TimeSpan? timeToShow)
+        public void ShowFixedPopup(string message, TimeSpan? timeToShow)
         {
             ShowPopup(string.Empty, message, timeToShow);
         }
 
-        public void ShowPopup(string title, string text, TimeSpan? displayTime, Guid? commandToken=null)
+        public void ShowPopup(string message, TimeSpan? timeToShow)
         {
-            CloseAllPopups();
+            ShowPopup(string.Empty, message, timeToShow,isFixed:false);
+        }
+
+        public void ShowPopup(string title, string text, TimeSpan? displayTime, Guid? commandToken=null, bool isFixed = true)
+        {
+            //CloseAllPopups();
             InfoPopup popup = new InfoPopup(title, text, displayTime,commandToken);
             popup.Width = _mainForm.Width;
             popup.ToTop();
+            //popup.TopMost = true;
             var totalPopupY = _openedPopups.Sum(x => x.Height);
             popup.Location = new Point(_mainForm.Location.X, _mainForm.Location.Y - popup.Height - totalPopupY);
             popup.FormClosed += popup_FormClosed;

@@ -57,9 +57,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
                 this.Controls.Add(itemControl);
             }
             this.Height = totalHeght;
-            this.Show();
             this.ToTop();
-
         }
 
         private void HighlightCurrentItem(int prevSelectedIndex)

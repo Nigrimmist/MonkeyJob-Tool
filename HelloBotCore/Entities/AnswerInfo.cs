@@ -8,6 +8,6 @@ namespace HelloBotCore.Entities
         public string Title { get; set; }
         public AnswerBehaviourType AnswerType { get; set; }
         public string CommandName { get; set; }
-        
+        public ModuleType MessageSourceType { get; set; }
     }
 }

@@ -72,7 +72,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
                     }
                     _popup.Model = popupModel;
                     _popup.ShowItems();
-                    ParentForm.ToTop();//restore focus
+                    //ParentForm.ToTop();//restore focus
                     _popup.Top = ParentForm.Top-_popup.Height;
                     _popup.Left = ParentForm.Left;
                     _popup.Width = ParentForm.Width;
