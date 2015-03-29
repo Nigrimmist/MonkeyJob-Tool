@@ -24,22 +24,8 @@ namespace Test
         static void Main(string[] args)
         {
 
-            Guid commandToken = Guid.NewGuid();
+            object s = new object();
             
-
-            AutoResetEvent autoEvent = new AutoResetEvent(false);
-            TimerCallback tcb = state =>
-            {
-                Test();
-            };
-            
-            Timer stateTimer = new Timer(tcb, autoEvent, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
-            while (true)
-            {
-                autoEvent.WaitOne();
-            }
-
-
             Console.WriteLine("test");
             Console.ReadLine();
 

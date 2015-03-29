@@ -19,7 +19,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
             base.MouseEnter += delegate(object sender, EventArgs e)
             {
-                this.Cursor = Cursors.Default;
+                this.Cursor = Cursors.Hand;
             };
             base.ContentsResized += cntrl_ContentsResized;
             

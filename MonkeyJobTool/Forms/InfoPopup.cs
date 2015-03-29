@@ -22,14 +22,15 @@ namespace MonkeyJobTool.Forms
 
         public delegate void OnPopupCloseDelegate(ClosePopupReasonType reason, object sessionData);
         public event OnPopupCloseDelegate OnPopupClosed;
-
-        public InfoPopup(string title, string text, TimeSpan? displayTime, object sessionData = null)
+        public bool IsFixed { get; set; }
+        public InfoPopup(bool isFixed,string title, string text, TimeSpan? displayTime, object sessionData = null)
         {
             InitializeComponent();
             this.Text = text;
             this.Title = title;
             _timeToClose = displayTime;
             _sessionData = sessionData;
+            IsFixed = isFixed;
         }
 
         

@@ -40,17 +40,6 @@ namespace MonkeyJobTool.Forms
            this.MainIcon.Image =
            this.tsExit.Image = defaultIcon;
            this.tsSettings.Image = Properties.Resources.settings;
-           
-            //Process[] processlist = Process.GetProcesses();
-
-            //foreach (Process process in processlist)
-            //{
-            //    if (!String.IsNullOrEmpty(process.MainWindowTitle))
-            //    {
-            //        Console.WriteLine("Process: {0} ID: {1} Window title: {2}", process.ProcessName, process.Id, process.MainWindowTitle);
-            //    }
-            //}
-
         }
         
         private void MainForm_Load(object sender, EventArgs e)
@@ -68,7 +57,7 @@ namespace MonkeyJobTool.Forms
 
                 var screen = Screen.FromPoint(this.Location);
                 this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
-
+                this.Deactivate += MainForm_Deactivate;
                 _autocomplete = new AutoCompleteControl()
                 {
                     ParentForm = this,
@@ -91,6 +80,16 @@ namespace MonkeyJobTool.Forms
 
         }
 
+        void MainForm_Deactivate(object sender, EventArgs e)
+        {
+            //hack check. Required in case when user click right click to popup to close it. We not hide main form. But hide if another application get focus.
+            if (!App.ApplicationIsActivated())
+            {
+                this.Hide();
+                App.Instance.ReorderPopupsPositions();
+            }
+        }
+
 
         void BotOnMessageRecieved(Guid commandToken,AnswerInfo answerInfo, ClientCommandContext clientCommandContext)
         {
@@ -110,7 +109,11 @@ namespace MonkeyJobTool.Forms
                     if (answerType == AnswerBehaviourType.OpenLink)
                     {
                         if (answer.StartsWith("http://") || answer.StartsWith("https://"))
+                        {
                             Process.Start(answer);
+                            //close fixed popup with previous answer if exist
+                            App.Instance.CloseFixedPopup();
+                        }
                     }
                     else if (answerType == AnswerBehaviourType.ShowText)
                     {
@@ -119,7 +122,6 @@ namespace MonkeyJobTool.Forms
                             this.Invoke((MethodInvoker) (delegate
                             {
                                 App.Instance.ShowPopup(answerInfo.CommandName, answer, null, commandToken,answerInfo.MessageSourceType==ModuleType.Handler);
-                                //this.ToTop();
                             }));
 
                         }
@@ -219,7 +221,8 @@ namespace MonkeyJobTool.Forms
                 {
                     this.Hide();
                     _autocomplete.HidePopup();
-                    App.Instance.CloseAllPopups();
+                    //todo : hide all popups?
+                    //App.Instance.CloseAllPopups();
                     break;
                 }
                 default:
@@ -228,9 +231,6 @@ namespace MonkeyJobTool.Forms
                 }
             }
         }
-
-        
-        
 
         private void trayIcon_MouseDown(object sender, MouseEventArgs e)
         {
@@ -251,6 +251,8 @@ namespace MonkeyJobTool.Forms
 
             if (_autocomplete != null)
                 _autocomplete.SelectAllText();
+
+            App.Instance.ReorderPopupsPositions();
         }
 
         private void LogAnalytic()
@@ -259,8 +261,7 @@ namespace MonkeyJobTool.Forms
             {
                 new Thread(() =>
                 {
-                   
-                    DateTime lastLogDate = DateTime.Today;
+                   DateTime lastLogDate = DateTime.Today;
 
                     RegistryKey appRegistry = Registry.CurrentUser.CreateSubKey(AppConstants.AppName);
                     var lastStatsCollectedKey = appRegistry.GetValue(AppConstants.Registry.LastStatsCollectedDateKey);

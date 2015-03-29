@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using Microsoft.Win32;
@@ -25,6 +27,7 @@ namespace MonkeyJobTool.Entities
         private KeyboardHook _hook = new KeyboardHook();
         private object _hookLock = new object();
         private List<InfoPopup> _openedPopups = new List<InfoPopup>();
+        private object _openedPopupsLock = new object();
         private MainForm _mainForm;
         
         private string _executionFolder;
@@ -121,16 +124,67 @@ namespace MonkeyJobTool.Entities
 
         public void ShowPopup(string title, string text, TimeSpan? displayTime, Guid? commandToken=null, bool isFixed = true)
         {
-            //CloseAllPopups();
-            InfoPopup popup = new InfoPopup(title, text, displayTime,commandToken);
+            
+            InfoPopup popup = new InfoPopup(isFixed,title, text, displayTime,commandToken);
             popup.Width = _mainForm.Width;
-            popup.ToTop();
-            //popup.TopMost = true;
+            
+            
             var totalPopupY = _openedPopups.Sum(x => x.Height);
+            popup.ToTop();
             popup.Location = new Point(_mainForm.Location.X, _mainForm.Location.Y - popup.Height - totalPopupY);
             popup.FormClosed += popup_FormClosed;
             popup.OnPopupClosed += popup_OnPopupClosed;
-            _openedPopups.Add(popup);
+            
+            lock (_openedPopups)
+            {
+                if (isFixed)
+                {
+                    //close previous fixed popup
+                    CloseFixedPopup();
+                }
+                _openedPopups.Add(popup);
+            }
+
+            ReorderPopupsPositions();
+        }
+
+
+        public void CloseFixedPopup()
+        {
+            lock (_openedPopups)
+            {
+                var fixedPopup = _openedPopups.SingleOrDefault(x => x.IsFixed);
+                if (fixedPopup != null)
+                {
+                    fixedPopup.Close();
+                }
+            }
+        }
+
+        public void ReorderPopupsPositions()
+        {
+            lock (_openedPopups)
+            {
+                int xPos = _mainForm.Location.X;
+                int yPos = Screen.PrimaryScreen.WorkingArea.Bottom;
+                if (_mainForm.Visible)
+                {
+                    yPos -= _mainForm.Height;
+                }
+
+                var fixedPopup = _openedPopups.SingleOrDefault(x => x.IsFixed);
+                if (fixedPopup != null)
+                {
+                    yPos -= fixedPopup.Height;
+                    fixedPopup.Location = new Point(xPos, yPos);
+                }
+
+                foreach (var popup in _openedPopups.Where(x => !x.IsFixed))
+                {
+                    yPos -= popup.Height;
+                    popup.Location = new Point(xPos, yPos);
+                }
+            }
         }
 
         void popup_OnPopupClosed(ClosePopupReasonType reason, object sessionData)
@@ -141,23 +195,57 @@ namespace MonkeyJobTool.Entities
 
         void popup_FormClosed(object sender, FormClosedEventArgs e)
         {
-            _openedPopups.Remove((InfoPopup)sender);
+            lock (_openedPopupsLock)
+            {
+                _openedPopups.Remove((InfoPopup) sender);
+            }
+            ReorderPopupsPositions();
         }
 
         public void CloseAllPopups()
         {
-            while (_openedPopups.Any())
+            lock (_openedPopupsLock)
             {
-                _openedPopups.First().Close();
+                while (_openedPopups.Any())
+                {
+                    _openedPopups.First().Close();
+                }
             }
         }
 
         public void AllPopupsToTop()
         {
-            if (_openedPopups.Any())
+            lock (_openedPopupsLock)
             {
-                _openedPopups.ForEach(p => p.ToTop());
+                if (_openedPopups.Any())
+                {
+                    _openedPopups.ForEach(p => p.ToTop());
+                }
             }
         }
+
+        /// <summary>Returns true if the current application has focus, false otherwise</summary>
+        public static bool ApplicationIsActivated()
+        {
+            
+            var activatedHandle = GetForegroundWindow();
+            if (activatedHandle == IntPtr.Zero)
+            {
+                return false;       // No window is currently activated
+            }
+
+            var procId = Process.GetCurrentProcess().Id;
+            int activeProcId;
+            GetWindowThreadProcessId(activatedHandle, out activeProcId);
+
+            return activeProcId == procId;
+        }
+
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+        private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern int GetWindowThreadProcessId(IntPtr handle, out int processId);
     }
 }

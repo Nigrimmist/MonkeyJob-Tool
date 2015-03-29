@@ -72,7 +72,6 @@ namespace MonkeyJobTool.Controls.Autocomplete
                     }
                     _popup.Model = popupModel;
                     _popup.ShowItems();
-                    //ParentForm.ToTop();//restore focus
                     _popup.Top = ParentForm.Top-_popup.Height;
                     _popup.Left = ParentForm.Left;
                     _popup.Width = ParentForm.Width;
@@ -89,7 +88,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
                 _popup.Hide();
                 _isPopupOpen = false;
             }
-            App.Instance.CloseAllPopups();
+            //App.Instance.CloseAllPopups();
         }
 
         private List<SelectableWordPart> GetWordParts(string word, string term)
