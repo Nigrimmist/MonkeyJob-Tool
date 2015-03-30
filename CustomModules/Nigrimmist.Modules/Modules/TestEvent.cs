@@ -24,7 +24,7 @@ namespace Nigrimmist.Modules.Modules
 
         public override void OnFire(Guid eventToken)
         {
-            _client.ShowMessage(eventToken, "Any content " + DateTime.Now,"test title");
+            //_client.ShowMessage(eventToken, "Any content " + DateTime.Now,"test title");
         }
     }
 }

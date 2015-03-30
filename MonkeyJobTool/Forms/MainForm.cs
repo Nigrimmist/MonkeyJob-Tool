@@ -32,7 +32,7 @@ namespace MonkeyJobTool.Forms
         private AutoCompleteControl _autocomplete;
         private Bitmap defaultIcon = Properties.Resources.monkey_highres;
         private Bitmap loadingIcon = Properties.Resources.loading;
-        
+        private bool _isFirstRun;
 
         public MainForm()
         {
@@ -47,6 +47,13 @@ namespace MonkeyJobTool.Forms
             
             try
             {
+                RegistryKey appRegistry = Registry.CurrentUser.CreateSubKey(AppConstants.AppName);
+                if (appRegistry != null)
+                {
+                    var lastStatsCollectedKey = appRegistry.GetValue(AppConstants.Registry.LastStatsCollectedDateKey);
+                    _isFirstRun = lastStatsCollectedKey == null;
+                }
+                
                 App.Instance.Init(openFormHotKeyRaised, this);
                 _bot = new HelloBot(App.Instance.ExecutionFolder + "ModuleSettings", AppConstants.AppVersion, botCommandPrefix: "", moduleFolderPath: App.Instance.ExecutionFolder);
                 
@@ -69,8 +76,6 @@ namespace MonkeyJobTool.Forms
                 _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
                 this.Controls.Add(_autocomplete);
                 this.ToTop(true);
-
-                
                 LogAnalytic();
             }
             catch (Exception ex)
@@ -80,13 +85,21 @@ namespace MonkeyJobTool.Forms
 
         }
 
+        private bool _isHelpBalloonDisplayed = false;
         void MainForm_Deactivate(object sender, EventArgs e)
         {
             //hack check. Required in case when user click right click to popup to close it. We not hide main form. But hide if another application get focus.
             if (!App.ApplicationIsActivated())
             {
                 this.Hide();
+                App.Instance.CloseFixedPopup();
                 App.Instance.ReorderPopupsPositions();
+            }
+
+            if (_isFirstRun && !_isHelpBalloonDisplayed)
+            {
+                _isHelpBalloonDisplayed = true;
+                ShowBalloon(string.Format("{0} рядом.", AppConstants.AppName), string.Format("Как только захочешь увидеть меня, нажми {0} или кликни по иконке в трее.", App.Instance.AppConf.HotKeys.ProgramOpen));
             }
         }
 
@@ -265,8 +278,7 @@ namespace MonkeyJobTool.Forms
 
                     RegistryKey appRegistry = Registry.CurrentUser.CreateSubKey(AppConstants.AppName);
                     var lastStatsCollectedKey = appRegistry.GetValue(AppConstants.Registry.LastStatsCollectedDateKey);
-                    bool isFirstRun = lastStatsCollectedKey == null;
-                    if (isFirstRun)
+                    if (_isFirstRun)
                     {
                         GoogleAnalytics.LogFirstUse();
                         GoogleAnalytics.LogRun();
@@ -279,7 +291,7 @@ namespace MonkeyJobTool.Forms
                     if (DateTime.Today > lastLogDate)
                         GoogleAnalytics.LogRun();
 
-                    appRegistry.SetValue(AppConstants.Registry.LastStatsCollectedDateKey, lastLogDate.ToString(AppConstants.DateTimeFormat));
+                    appRegistry.SetValue(AppConstants.Registry.LastStatsCollectedDateKey, DateTime.Now.Date.ToString(AppConstants.DateTimeFormat));
 
                 }).Start();
             }
@@ -289,6 +301,22 @@ namespace MonkeyJobTool.Forms
         {
             if(commandToken!=null)
                 _bot.HandleUserReactionToCommand(commandToken.Value, (UserReactionToCommandType)((int)closeReason));
+        }
+
+
+        private void ShowBalloon(string title, string body)
+        {
+            if (title != null)
+            {
+                trayIcon.BalloonTipTitle = title;
+            }
+
+            if (body != null)
+            {
+                trayIcon.BalloonTipText = body;
+            }
+
+            trayIcon.ShowBalloonTip(30000);
         }
     }
 }
