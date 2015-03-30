@@ -37,9 +37,6 @@ namespace MonkeyJobTool.Forms
         public MainForm()
         {
            InitializeComponent();
-           this.MainIcon.Image =
-           this.tsExit.Image = defaultIcon;
-           this.tsSettings.Image = Properties.Resources.settings;
         }
         
         private void MainForm_Load(object sender, EventArgs e)
@@ -70,12 +67,15 @@ namespace MonkeyJobTool.Forms
                     ParentForm = this,
                     DataFilterFunc = GetCommandListByTerm,
                     Left = 43,
-                    Top = 8
+                    Top = 9
                 };
                 _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
                 _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
                 this.Controls.Add(_autocomplete);
                 this.ToTop(true);
+
+                App.Instance.OnSettingsChanged += Instance_OnSettingsChanged;
+                tsDonate.Visible = App.Instance.AppConf.ShowDonateButton;
                 LogAnalytic();
             }
             catch (Exception ex)
@@ -85,7 +85,12 @@ namespace MonkeyJobTool.Forms
 
         }
 
-        private bool _isHelpBalloonDisplayed = false;
+        void Instance_OnSettingsChanged()
+        {
+            tsDonate.Visible = App.Instance.AppConf.ShowDonateButton;
+        }
+
+        private bool _isHelpBalloonDisplayed;
         void MainForm_Deactivate(object sender, EventArgs e)
         {
             //hack check. Required in case when user click right click to popup to close it. We not hide main form. But hide if another application get focus.
@@ -234,8 +239,6 @@ namespace MonkeyJobTool.Forms
                 {
                     this.Hide();
                     _autocomplete.HidePopup();
-                    //todo : hide all popups?
-                    //App.Instance.CloseAllPopups();
                     break;
                 }
                 default:

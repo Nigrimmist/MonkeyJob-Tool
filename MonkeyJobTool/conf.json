@@ -4,6 +4,7 @@
 	},	
     CommandReplaces: [],
 	AllowUsingGoogleAnalytics : true,
+	ShowDonateButton : true,
 	Language : 2,
 	SystemData : {
 		Version : 0.05			

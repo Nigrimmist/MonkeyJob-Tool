@@ -31,10 +31,11 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.trayMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.tsSettings = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsExit = new System.Windows.Forms.ToolStripMenuItem();
             this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.MainIcon = new System.Windows.Forms.PictureBox();
+            this.tsDonate = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsSettings = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsExit = new System.Windows.Forms.ToolStripMenuItem();
             this.trayMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainIcon)).BeginInit();
             this.SuspendLayout();
@@ -42,24 +43,11 @@
             // trayMenu
             // 
             this.trayMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsDonate,
             this.tsSettings,
             this.tsExit});
             this.trayMenu.Name = "trayMenu";
-            this.trayMenu.Size = new System.Drawing.Size(135, 48);
-            // 
-            // tsSettings
-            // 
-            this.tsSettings.Name = "tsSettings";
-            this.tsSettings.Size = new System.Drawing.Size(134, 22);
-            this.tsSettings.Text = "Настройки";
-            this.tsSettings.Click += new System.EventHandler(this.tsSettings_Click);
-            // 
-            // tsExit
-            // 
-            this.tsExit.Name = "tsExit";
-            this.tsExit.Size = new System.Drawing.Size(134, 22);
-            this.tsExit.Text = "Выход";
-            this.tsExit.Click += new System.EventHandler(this.tsExit_Click);
+            this.trayMenu.Size = new System.Drawing.Size(166, 70);
             // 
             // trayIcon
             // 
@@ -72,13 +60,36 @@
             // MainIcon
             // 
             this.MainIcon.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.MainIcon.Image = global::MonkeyJobTool.Properties.Resources.monkey_small;
+            this.MainIcon.Image = global::MonkeyJobTool.Properties.Resources.monkey_highres;
             this.MainIcon.Location = new System.Drawing.Point(12, 12);
             this.MainIcon.Name = "MainIcon";
             this.MainIcon.Size = new System.Drawing.Size(25, 26);
             this.MainIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.MainIcon.TabIndex = 1;
             this.MainIcon.TabStop = false;
+            // 
+            // tsDonate
+            // 
+            this.tsDonate.Image = global::MonkeyJobTool.Properties.Resources.heart72;
+            this.tsDonate.Name = "tsDonate";
+            this.tsDonate.Size = new System.Drawing.Size(165, 22);
+            this.tsDonate.Text = "Сказать спасибо";
+            // 
+            // tsSettings
+            // 
+            this.tsSettings.Image = global::MonkeyJobTool.Properties.Resources.settings;
+            this.tsSettings.Name = "tsSettings";
+            this.tsSettings.Size = new System.Drawing.Size(165, 22);
+            this.tsSettings.Text = "Настройки";
+            this.tsSettings.Click += new System.EventHandler(this.tsSettings_Click);
+            // 
+            // tsExit
+            // 
+            this.tsExit.Image = global::MonkeyJobTool.Properties.Resources.exit;
+            this.tsExit.Name = "tsExit";
+            this.tsExit.Size = new System.Drawing.Size(165, 22);
+            this.tsExit.Text = "Выход";
+            this.tsExit.Click += new System.EventHandler(this.tsExit_Click);
             // 
             // MainForm
             // 
@@ -105,6 +116,7 @@
         private System.Windows.Forms.ToolStripMenuItem tsExit;
         private System.Windows.Forms.ToolStripMenuItem tsSettings;
         private System.Windows.Forms.NotifyIcon trayIcon;
+        private System.Windows.Forms.ToolStripMenuItem tsDonate;
     }
 }
 

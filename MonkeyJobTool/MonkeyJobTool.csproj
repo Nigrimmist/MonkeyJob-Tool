@@ -193,6 +193,9 @@
     <Folder Include="Entities\Json\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\ice-cream.png" />
+    <None Include="Resources\heart292.png" />
+    <None Include="Resources\heart72.png" />
     <Content Include="Res\mj.ico" />
     <None Include="Resources\rightArrows.png" />
     <None Include="Resources\copy1.png" />

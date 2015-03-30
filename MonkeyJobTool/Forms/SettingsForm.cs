@@ -20,9 +20,8 @@ namespace MonkeyJobTool.Forms
         
         private void SettingsForm_Load(object sender, EventArgs e)
         {
-
             chkIsWithWindowsStart.Checked = IsStartupShortcutExist();
-            
+            chkIsHideDonateBtn.Checked = !App.Instance.AppConf.ShowDonateButton;
             HotKeysDatabind();
             CommandReplaceDatabind();
         }
@@ -159,12 +158,12 @@ namespace MonkeyJobTool.Forms
                 DelAppShortcutFromStartup();
             }
 
-            
+            App.Instance.AppConf.ShowDonateButton = !chkIsHideDonateBtn.Checked;
             App.Instance.AppConf.HotKeys.ProgramOpen = string.Join("+", new List<string>() { cmbKey1.Text, cmbKey2.Text, cmbKey3.Text }.Where(x=>!string.IsNullOrEmpty(x)).ToArray());
             App.Instance.AppConf.CommandReplaces = GetCommandReplaces();
             App.Instance.AppConf.Save();
-
             App.Instance.ReInitHotKeys();
+            App.Instance.NotifyAboutSettingsChanged();
             this.Close();
         }
         private void AppShortcutToStartup()

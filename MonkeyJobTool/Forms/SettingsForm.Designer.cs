@@ -38,8 +38,9 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.btnSaveConfig = new System.Windows.Forms.Button();
             this.pnlCommandReplaces = new System.Windows.Forms.FlowLayoutPanel();
+            this.btnSaveConfig = new System.Windows.Forms.Button();
+            this.chkIsHideDonateBtn = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -97,6 +98,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.chkIsHideDonateBtn);
             this.tabPage1.Controls.Add(this.chkIsWithWindowsStart);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
@@ -140,6 +142,16 @@
             this.tabPage3.Text = "Сокращения команд";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // pnlCommandReplaces
+            // 
+            this.pnlCommandReplaces.AutoScroll = true;
+            this.pnlCommandReplaces.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.pnlCommandReplaces.Location = new System.Drawing.Point(6, 6);
+            this.pnlCommandReplaces.Name = "pnlCommandReplaces";
+            this.pnlCommandReplaces.Size = new System.Drawing.Size(424, 223);
+            this.pnlCommandReplaces.TabIndex = 0;
+            this.pnlCommandReplaces.WrapContents = false;
+            // 
             // btnSaveConfig
             // 
             this.btnSaveConfig.BackColor = System.Drawing.Color.Moccasin;
@@ -153,15 +165,15 @@
             this.btnSaveConfig.UseVisualStyleBackColor = false;
             this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
             // 
-            // pnlCommandReplaces
+            // chkIsHideDonateBtn
             // 
-            this.pnlCommandReplaces.AutoScroll = true;
-            this.pnlCommandReplaces.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.pnlCommandReplaces.Location = new System.Drawing.Point(6, 6);
-            this.pnlCommandReplaces.Name = "pnlCommandReplaces";
-            this.pnlCommandReplaces.Size = new System.Drawing.Size(424, 223);
-            this.pnlCommandReplaces.TabIndex = 0;
-            this.pnlCommandReplaces.WrapContents = false;
+            this.chkIsHideDonateBtn.AutoSize = true;
+            this.chkIsHideDonateBtn.Location = new System.Drawing.Point(6, 38);
+            this.chkIsHideDonateBtn.Name = "chkIsHideDonateBtn";
+            this.chkIsHideDonateBtn.Size = new System.Drawing.Size(201, 17);
+            this.chkIsHideDonateBtn.TabIndex = 1;
+            this.chkIsHideDonateBtn.Text = "Убрать кнопку \"Сказать спасибо\"";
+            this.chkIsHideDonateBtn.UseVisualStyleBackColor = true;
             // 
             // SettingsForm
             // 
@@ -198,5 +210,6 @@
         private System.Windows.Forms.Button btnSaveConfig;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.FlowLayoutPanel pnlCommandReplaces;
+        private System.Windows.Forms.CheckBox chkIsHideDonateBtn;
     }
 }

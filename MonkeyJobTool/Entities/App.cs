@@ -29,7 +29,10 @@ namespace MonkeyJobTool.Entities
         private List<InfoPopup> _openedPopups = new List<InfoPopup>();
         private object _openedPopupsLock = new object();
         private MainForm _mainForm;
-        
+
+        public delegate void OnSettingsChangedDelegate();
+        public event OnSettingsChangedDelegate OnSettingsChanged;
+
         private string _executionFolder;
         private string _executionPath;
 
@@ -73,6 +76,7 @@ namespace MonkeyJobTool.Entities
             //register open program hotkey using incoming (main form) delegate
             _hotKeysHadlers.Add(HotKeyType.OpenProgram, mainFormOpenHotKeyRaisedHandler);
             ReInitHotKeys();
+            
         }
         
 
@@ -148,6 +152,7 @@ namespace MonkeyJobTool.Entities
             ReorderPopupsPositions();
         }
 
+        
 
         public void CloseFixedPopup()
         {
@@ -224,6 +229,15 @@ namespace MonkeyJobTool.Entities
             }
         }
 
+
+        public void NotifyAboutSettingsChanged()
+        {
+            if (OnSettingsChanged != null)
+            {
+                OnSettingsChanged();
+            }
+        }
+
         /// <summary>Returns true if the current application has focus, false otherwise</summary>
         public static bool ApplicationIsActivated()
         {
@@ -241,6 +255,7 @@ namespace MonkeyJobTool.Entities
             return activeProcId == procId;
         }
 
+        
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         private static extern IntPtr GetForegroundWindow();
