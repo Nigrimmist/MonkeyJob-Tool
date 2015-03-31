@@ -35,12 +35,12 @@
             this.cmbKey3 = new System.Windows.Forms.ComboBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.chkIsHideDonateBtn = new System.Windows.Forms.CheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.pnlCommandReplaces = new System.Windows.Forms.FlowLayoutPanel();
             this.btnSaveConfig = new System.Windows.Forms.Button();
-            this.chkIsHideDonateBtn = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -108,6 +108,16 @@
             this.tabPage1.Text = "Общие";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // chkIsHideDonateBtn
+            // 
+            this.chkIsHideDonateBtn.AutoSize = true;
+            this.chkIsHideDonateBtn.Location = new System.Drawing.Point(6, 38);
+            this.chkIsHideDonateBtn.Name = "chkIsHideDonateBtn";
+            this.chkIsHideDonateBtn.Size = new System.Drawing.Size(243, 17);
+            this.chkIsHideDonateBtn.TabIndex = 1;
+            this.chkIsHideDonateBtn.Text = "Скрыть кнопку \"Сказать спасибо\" из трея";
+            this.chkIsHideDonateBtn.UseVisualStyleBackColor = true;
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.label1);
@@ -164,16 +174,6 @@
             this.btnSaveConfig.Text = "Сохранить";
             this.btnSaveConfig.UseVisualStyleBackColor = false;
             this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
-            // 
-            // chkIsHideDonateBtn
-            // 
-            this.chkIsHideDonateBtn.AutoSize = true;
-            this.chkIsHideDonateBtn.Location = new System.Drawing.Point(6, 38);
-            this.chkIsHideDonateBtn.Name = "chkIsHideDonateBtn";
-            this.chkIsHideDonateBtn.Size = new System.Drawing.Size(201, 17);
-            this.chkIsHideDonateBtn.TabIndex = 1;
-            this.chkIsHideDonateBtn.Text = "Убрать кнопку \"Сказать спасибо\"";
-            this.chkIsHideDonateBtn.UseVisualStyleBackColor = true;
             // 
             // SettingsForm
             // 

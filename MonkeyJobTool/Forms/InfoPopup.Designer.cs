@@ -62,7 +62,8 @@
             // 
             // IconPic
             // 
-            this.IconPic.Image = global::MonkeyJobTool.Properties.Resources.monkey_small;
+            this.IconPic.BackgroundImage = global::MonkeyJobTool.Properties.Resources.monkey_highres_img;
+            this.IconPic.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.IconPic.Location = new System.Drawing.Point(4, 2);
             this.IconPic.Name = "IconPic";
             this.IconPic.Size = new System.Drawing.Size(27, 26);

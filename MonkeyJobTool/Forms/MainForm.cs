@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -18,6 +19,7 @@ using MonkeyJobTool.Entities;
 using MonkeyJobTool.Entities.Autocomplete;
 using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Helpers;
+using MonkeyJobTool.Properties;
 using MonkeyJobTool.Utilities;
 using Newtonsoft.Json;
 using Language = HelloBotCore.Entities.Language;
@@ -30,8 +32,8 @@ namespace MonkeyJobTool.Forms
         private HelloBot _bot;
         private const string _copyToBufferPostFix = " в буфер";
         private AutoCompleteControl _autocomplete;
-        private Bitmap defaultIcon = Properties.Resources.monkey_highres;
-        private Bitmap loadingIcon = Properties.Resources.loading;
+        private readonly Bitmap _defaultIcon = Resources.monkey_highres_img;
+        private readonly Bitmap _loadingIcon = Resources.loading;
         private bool _isFirstRun;
 
         public MainForm()
@@ -75,6 +77,7 @@ namespace MonkeyJobTool.Forms
                 this.ToTop(true);
 
                 App.Instance.OnSettingsChanged += Instance_OnSettingsChanged;
+                App.Instance.OnNotificationCountChanged += Instance_OnNotificationCountChanged;
                 tsDonate.Visible = App.Instance.AppConf.ShowDonateButton;
                 LogAnalytic();
             }
@@ -83,6 +86,11 @@ namespace MonkeyJobTool.Forms
                 MessageBox.Show(ex.ToString());
             }
 
+        }
+
+        void Instance_OnNotificationCountChanged(int notificationCount)
+        {
+            trayIcon.Icon = notificationCount > 0 ? GetIconWithNotificationCount(notificationCount) : Resources.MonkeyJob_ico;
         }
 
         void Instance_OnSettingsChanged()
@@ -96,7 +104,7 @@ namespace MonkeyJobTool.Forms
             //hack check. Required in case when user click right click to popup to close it. We not hide main form. But hide if another application get focus.
             if (!App.ApplicationIsActivated())
             {
-                this.Hide();
+                HideMain();
                 App.Instance.CloseFixedPopup();
                 App.Instance.ReorderPopupsPositions();
             }
@@ -119,7 +127,7 @@ namespace MonkeyJobTool.Forms
                     this.Invoke(new MethodInvoker(delegate
                     {
                         Clipboard.SetText(answer);
-                        App.Instance.ShowPopup("Результат команды скопирован в буфер обмена", TimeSpan.FromSeconds(2));
+                        App.Instance.ShowInternalPopup("Результат команды скопирован в буфер обмена", TimeSpan.FromSeconds(2));
                     }));
                 }
                 else
@@ -139,7 +147,17 @@ namespace MonkeyJobTool.Forms
                         {
                             this.Invoke((MethodInvoker) (delegate
                             {
-                                App.Instance.ShowPopup(answerInfo.CommandName, answer, null, commandToken,answerInfo.MessageSourceType==ModuleType.Handler);
+                                switch (answerInfo.MessageSourceType)
+                                {
+                                    case ModuleType.Handler:
+                                        App.Instance.ShowFixedPopup(answerInfo.CommandName, answer, commandToken);
+                                        break;
+                                    case ModuleType.Event:
+                                        App.Instance.ShowNotification(answerInfo.CommandName, answer,commandToken);
+                                        break;
+                                    default:
+                                        throw new ArgumentOutOfRangeException();
+                                }
                             }));
 
                         }
@@ -206,7 +224,7 @@ namespace MonkeyJobTool.Forms
 
         void openFormHotKeyRaised(object sender, KeyPressedEventArgs e)
         {
-            ShowAllWindows();
+            ShowMain();
         }
 
         private void BotOnOnErrorOccured(Exception exception)
@@ -228,7 +246,7 @@ namespace MonkeyJobTool.Forms
 
         private void SetLoading(bool isLoading)
         {
-            MainIcon.Image = isLoading ? loadingIcon : defaultIcon;
+            MainIcon.Image = isLoading ? _loadingIcon : _defaultIcon;
         }
 
         private void _autocomplete_OnKeyPressed(Keys key)
@@ -237,8 +255,8 @@ namespace MonkeyJobTool.Forms
             {
                 case Keys.Escape:
                 {
-                    this.Hide();
-                    _autocomplete.HidePopup();
+                    HideMain();
+                    App.Instance.ReorderPopupsPositions();
                     break;
                 }
                 default:
@@ -248,15 +266,21 @@ namespace MonkeyJobTool.Forms
             }
         }
 
+        private void HideMain()
+        {
+            this.Hide();
+            _autocomplete.HidePopup();
+            App.Instance.HideAllPopupsAvailableForHiding();
+        }
         private void trayIcon_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
-                ShowAllWindows();
+                ShowMain();
             }
         }
 
-        void ShowAllWindows()
+        void ShowMain()
         {
             if (_autocomplete != null && _autocomplete.IsPopupOpen)
             {
@@ -321,5 +345,31 @@ namespace MonkeyJobTool.Forms
 
             trayIcon.ShowBalloonTip(30000);
         }
+
+        public static Icon GetIconWithNotificationCount(int notificationCount)
+        {
+            Icon createdIcon;
+
+            using (Bitmap bitmap = new Bitmap(32, 32))
+            {
+                Icon icon = Resources.MonkeyJob_ico;
+                using (Graphics graphics = Graphics.FromImage(bitmap))
+                {
+                    using (SolidBrush drawBrush = new SolidBrush(Color.White))
+                    {
+                        using (Font drawFont = new Font("Comic Sans MS", 14, FontStyle.Regular))
+                        {
+                            graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixel;
+                            graphics.DrawIcon(icon, 0, 0);
+                            graphics.FillEllipse(new SolidBrush(Color.OrangeRed), 10,12,22,21);
+                            graphics.DrawString(notificationCount.ToString(), drawFont, drawBrush, 14, 10);
+                            createdIcon = Icon.FromHandle(bitmap.GetHicon());
+                        }
+                    }
+                }
+            }
+
+            return createdIcon;
+        } 
     }
 }

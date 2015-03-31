@@ -43,15 +43,9 @@ namespace HelloBotCore.Entities
             return this;
         }
 
-        public IBotCallback OnIgnore(Action onIgnoreCallback)
+        public IBotCallback OnClosed(Action onNotifiedCallback)
         {
-            _moduleClientHandler.RegisterUserReactionCallback(_lastToken, UserReactionToCommandType.Ignored, onIgnoreCallback);
-            return this;
-        }
-
-        public IBotCallback OnNotified(Action onNotifiedCallback)
-        {
-            _moduleClientHandler.RegisterUserReactionCallback(_lastToken, UserReactionToCommandType.Notified, onNotifiedCallback);
+            _moduleClientHandler.RegisterUserReactionCallback(_lastToken, UserReactionToCommandType.Closed, onNotifiedCallback);
             return this;
         }
 

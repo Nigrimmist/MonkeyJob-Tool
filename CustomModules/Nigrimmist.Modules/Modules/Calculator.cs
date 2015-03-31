@@ -45,15 +45,12 @@ namespace Nigrimmist.Modules.Modules
             _client.ShowMessage(commandToken, answer).OnClick(() =>
             {
                 _client.ShowMessage(commandToken, "Не надо сюда кликать");
-            }).OnIgnore(() =>
-            {
-                _client.ShowMessage(commandToken, "Ignore event fired");
-            }).OnNotified(
+            }).OnClosed(
                 () =>
                 {
                     _client.ShowMessage(commandToken, "Notified event fired");
                 }
-            );
+                );
         }
     }
 }

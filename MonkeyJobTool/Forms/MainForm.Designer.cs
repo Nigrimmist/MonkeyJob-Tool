@@ -1,4 +1,6 @@
-﻿namespace MonkeyJobTool.Forms
+﻿using MonkeyJobTool.Properties;
+
+namespace MonkeyJobTool.Forms
 {
     partial class MainForm
     {
@@ -31,11 +33,11 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.trayMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.MainIcon = new System.Windows.Forms.PictureBox();
             this.tsDonate = new System.Windows.Forms.ToolStripMenuItem();
             this.tsSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.tsExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.MainIcon = new System.Windows.Forms.PictureBox();
             this.trayMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainIcon)).BeginInit();
             this.SuspendLayout();
@@ -48,25 +50,6 @@
             this.tsExit});
             this.trayMenu.Name = "trayMenu";
             this.trayMenu.Size = new System.Drawing.Size(166, 70);
-            // 
-            // trayIcon
-            // 
-            this.trayIcon.ContextMenuStrip = this.trayMenu;
-            this.trayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("trayIcon.Icon")));
-            this.trayIcon.Text = "MonkeyJob Tool";
-            this.trayIcon.Visible = true;
-            this.trayIcon.MouseDown += new System.Windows.Forms.MouseEventHandler(this.trayIcon_MouseDown);
-            // 
-            // MainIcon
-            // 
-            this.MainIcon.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.MainIcon.Image = global::MonkeyJobTool.Properties.Resources.monkey_highres;
-            this.MainIcon.Location = new System.Drawing.Point(12, 12);
-            this.MainIcon.Name = "MainIcon";
-            this.MainIcon.Size = new System.Drawing.Size(25, 26);
-            this.MainIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.MainIcon.TabIndex = 1;
-            this.MainIcon.TabStop = false;
             // 
             // tsDonate
             // 
@@ -90,6 +73,25 @@
             this.tsExit.Size = new System.Drawing.Size(165, 22);
             this.tsExit.Text = "Выход";
             this.tsExit.Click += new System.EventHandler(this.tsExit_Click);
+            // 
+            // trayIcon
+            // 
+            this.trayIcon.ContextMenuStrip = this.trayMenu;
+            this.trayIcon.Icon = Resources.MonkeyJob_ico;
+            this.trayIcon.Text = "MonkeyJob Tool";
+            this.trayIcon.Visible = true;
+            this.trayIcon.MouseDown += new System.Windows.Forms.MouseEventHandler(this.trayIcon_MouseDown);
+            // 
+            // MainIcon
+            // 
+            this.MainIcon.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.MainIcon.Image = global::MonkeyJobTool.Properties.Resources.monkey_highres_img;
+            this.MainIcon.Location = new System.Drawing.Point(12, 12);
+            this.MainIcon.Name = "MainIcon";
+            this.MainIcon.Size = new System.Drawing.Size(25, 26);
+            this.MainIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.MainIcon.TabIndex = 1;
+            this.MainIcon.TabStop = false;
             // 
             // MainForm
             // 

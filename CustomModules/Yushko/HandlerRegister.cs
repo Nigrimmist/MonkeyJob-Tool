@@ -7,7 +7,7 @@ namespace Yushko
 {
     public class HandlerRegister: ModuleRegister
     {
-        public List<ModuleHandlerBase> GetModules()
+        public override List<ModuleHandlerBase> GetModules()
         {
             return new List<ModuleHandlerBase>()
             {

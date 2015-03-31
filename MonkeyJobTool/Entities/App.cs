@@ -29,15 +29,22 @@ namespace MonkeyJobTool.Entities
         private List<InfoPopup> _openedPopups = new List<InfoPopup>();
         private object _openedPopupsLock = new object();
         private MainForm _mainForm;
+        private int _notificationCount = 0;
+        private object _notificationLock = new object();
 
         public delegate void OnSettingsChangedDelegate();
         public event OnSettingsChangedDelegate OnSettingsChanged;
+
+        public delegate void OnNotificationCountChangedDelegate(int notificationCount);
+        public event OnNotificationCountChangedDelegate OnNotificationCountChanged;
 
         private string _executionFolder;
         private string _executionPath;
 
         public string ExecutionFolder {get { return _executionFolder; }}
         public string ExecutionPath { get { return _executionPath; } }
+
+
 
         /// <summary>
         /// Collection of event delegates for hotkeys. one delegate for one hotkeytype
@@ -116,20 +123,29 @@ namespace MonkeyJobTool.Entities
             get { return _appConf; }
         }
 
-        public void ShowFixedPopup(string message, TimeSpan? timeToShow)
+        public void ShowNotification(string title, string text,Guid? commandToken)
         {
-            ShowPopup(string.Empty, message, timeToShow);
+            ShowPopup(title, text, PopupType.Notification, null, commandToken);
         }
 
-        public void ShowPopup(string message, TimeSpan? timeToShow)
+        public void ShowFixedPopup(string title, string text,  Guid? commandToken)
         {
-            ShowPopup(string.Empty, message, timeToShow,isFixed:false);
+            ShowPopup(title, text, PopupType.Fixed,commandToken:commandToken);
         }
 
-        public void ShowPopup(string title, string text, TimeSpan? displayTime, Guid? commandToken=null, bool isFixed = true)
+        public void ShowInternalPopup(string message, TimeSpan? timeToShow)
         {
-            
-            InfoPopup popup = new InfoPopup(isFixed,title, text, displayTime,commandToken);
+            ShowPopup(string.Empty, message, PopupType.InternalMessage , timeToShow);
+        }
+
+        private void ShowPopup(string title, string text, PopupType popupType, TimeSpan? displayTime = null, Guid? commandToken = null)
+        {
+            if (popupType == PopupType.Notification)
+            {
+                displayTime = TimeSpan.FromSeconds(10);
+            }
+
+            InfoPopup popup = new InfoPopup(popupType, title, text, displayTime, commandToken);
             popup.Width = _mainForm.Width;
             
             
@@ -137,28 +153,39 @@ namespace MonkeyJobTool.Entities
             popup.ToTop();
             popup.Location = new Point(_mainForm.Location.X, _mainForm.Location.Y - popup.Height - totalPopupY);
             popup.FormClosed += popup_FormClosed;
-            popup.OnPopupClosed += popup_OnPopupClosed;
-            
+            popup.OnPopupClosedBy += PopupOnPopupClosedBy;
+            popup.OnPopupHided += popup_OnPopupHided;
             lock (_openedPopups)
             {
-                if (isFixed)
+                if (popupType==PopupType.Fixed)
                 {
                     //close previous fixed popup
                     CloseFixedPopup();
                 }
                 _openedPopups.Add(popup);
             }
-
+            if (popupType==PopupType.Notification)
+            {
+                lock (_notificationLock)
+                {
+                    _notificationCount++;
+                }
+                if (OnNotificationCountChanged != null) 
+                    OnNotificationCountChanged(_notificationCount);
+            }
             ReorderPopupsPositions();
         }
 
-        
+        void popup_OnPopupHided()
+        {
+            ReorderPopupsPositions();
+        }
 
         public void CloseFixedPopup()
         {
             lock (_openedPopups)
             {
-                var fixedPopup = _openedPopups.SingleOrDefault(x => x.IsFixed);
+                var fixedPopup = _openedPopups.SingleOrDefault(x => x.PopupType==PopupType.Fixed);
                 if (fixedPopup != null)
                 {
                     fixedPopup.Close();
@@ -177,14 +204,14 @@ namespace MonkeyJobTool.Entities
                     yPos -= _mainForm.Height;
                 }
 
-                var fixedPopup = _openedPopups.SingleOrDefault(x => x.IsFixed);
-                if (fixedPopup != null)
+                var fixedPopup = _openedPopups.SingleOrDefault(x => x.PopupType == PopupType.Fixed);
+                if (fixedPopup != null && fixedPopup.Visible)
                 {
                     yPos -= fixedPopup.Height;
                     fixedPopup.Location = new Point(xPos, yPos);
                 }
 
-                foreach (var popup in _openedPopups.Where(x => !x.IsFixed))
+                foreach (var popup in _openedPopups.Where(x => x.PopupType != PopupType.Fixed && x.Visible))
                 {
                     yPos -= popup.Height;
                     popup.Location = new Point(xPos, yPos);
@@ -192,7 +219,7 @@ namespace MonkeyJobTool.Entities
             }
         }
 
-        void popup_OnPopupClosed(ClosePopupReasonType reason, object sessionData)
+        void PopupOnPopupClosedBy(ClosePopupReasonType reason, object sessionData)
         {
             if(sessionData!=null)
                 _mainForm.HandleCommandInfoPopupClose((Guid?)sessionData,reason);
@@ -205,6 +232,14 @@ namespace MonkeyJobTool.Entities
                 _openedPopups.Remove((InfoPopup) sender);
             }
             ReorderPopupsPositions();
+
+            lock (_notificationLock)
+            {
+                _notificationCount--;
+            }
+
+            if (OnNotificationCountChanged != null)
+                OnNotificationCountChanged(_notificationCount);
         }
 
         public void CloseAllPopups()
@@ -229,6 +264,16 @@ namespace MonkeyJobTool.Entities
             }
         }
 
+        public void HideAllPopupsAvailableForHiding()
+        {
+            lock (_openedPopupsLock)
+            {
+                if (_openedPopups.Any())
+                {
+                    _openedPopups.Where(x=>x.AlreadyNotified).ToList().ForEach(p => p.Hide());
+                }
+            }
+        }
 
         public void NotifyAboutSettingsChanged()
         {
@@ -237,6 +282,8 @@ namespace MonkeyJobTool.Entities
                 OnSettingsChanged();
             }
         }
+
+
 
         /// <summary>Returns true if the current application has focus, false otherwise</summary>
         public static bool ApplicationIsActivated()

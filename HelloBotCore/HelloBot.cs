@@ -423,16 +423,12 @@ namespace HelloBotCore
             {
                 switch (reactionType)
                 {
-                    case UserReactionToCommandType.Notified:
-                        commandContext.OnNotifiedAction = reactionCallback;
-                        break;
-                    case UserReactionToCommandType.Ignored:
-                        commandContext.OnIgnoreAction = reactionCallback;
+                    case UserReactionToCommandType.Closed:
+                        commandContext.OnClosedAction = reactionCallback;
                         break;
                     case UserReactionToCommandType.Clicked:
                         commandContext.OnClickAction = reactionCallback;
                         break;
-                    
                 }
                 
             }
@@ -457,13 +453,11 @@ namespace HelloBotCore
             {
                 switch (reactionType)
                 {
-                    case UserReactionToCommandType.Ignored:
-                        if (commandContext.OnIgnoreAction != null)
-                        {
-                            commandContext.OnIgnoreAction();
-                            commandContext.OnIgnoreAction = null;
-                        }
+                    case UserReactionToCommandType.HidedByTimeout:
+                    {
+
                         break;
+                    }
                     case UserReactionToCommandType.Clicked:
                         if (commandContext.OnClickAction != null)
                         {
@@ -471,11 +465,11 @@ namespace HelloBotCore
                             commandContext.OnClickAction = null;
                         }
                         break;
-                    case UserReactionToCommandType.Notified:
-                        if (commandContext.OnNotifiedAction != null)
+                    case UserReactionToCommandType.Closed:
+                        if (commandContext.OnClosedAction != null)
                         {
-                            commandContext.OnNotifiedAction();
-                            commandContext.OnNotifiedAction = null;
+                            commandContext.OnClosedAction();
+                            commandContext.OnClosedAction = null;
                         }
                         break;
                     default:

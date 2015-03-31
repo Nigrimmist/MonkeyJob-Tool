@@ -143,20 +143,20 @@ namespace MonkeyJobTool.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap monkey_highres {
+        public static System.Drawing.Bitmap monkey_highres_img {
             get {
-                object obj = ResourceManager.GetObject("monkey_highres", resourceCulture);
+                object obj = ResourceManager.GetObject("monkey_highres_img", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Bitmap monkey_small {
+        public static System.Drawing.Icon MonkeyJob_ico {
             get {
-                object obj = ResourceManager.GetObject("monkey_small", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                object obj = ResourceManager.GetObject("MonkeyJob_ico", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         

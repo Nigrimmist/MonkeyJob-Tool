@@ -9,9 +9,8 @@ namespace HelloBotCore.Entities
     {
         public string CommandName { get; set; }
         public ClientCommandContext ClientCommandContext { get; set; }
-        public Action OnNotifiedAction { get; set; }
+        public Action OnClosedAction { get; set; }
         public Action OnClickAction { get; set; }
-        public Action OnIgnoreAction { get; set; }
         public ModuleType CommandType { get; set; }
     }
 }

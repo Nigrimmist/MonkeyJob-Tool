@@ -15,17 +15,10 @@ namespace HelloBotCommunication.Interfaces
         IBotCallback OnClick(Action onClickCallback);
 
         /// <summary>
-        /// Specify that callback for register on ignore event callback. It will be fired when user was notified, but popup has been closed by timeout.
-        /// </summary>
-        /// <param name="onIgnoreCallback"></param>
-        /// <returns></returns>
-        IBotCallback OnIgnore(Action onIgnoreCallback);
-
-        /// <summary>
-        /// Specify that callback for register Notified callback. It will be fired when user was notified and close popup manually.
+        /// Specify that callback for register Notified callback. It will be fired when user was notified about event (close popup for example)
         /// </summary>
         /// <param name="onNotifiedCallback"></param>
         /// <returns></returns>
-        IBotCallback OnNotified(Action onNotifiedCallback);
+        IBotCallback OnClosed(Action onNotifiedCallback);
     }
 }

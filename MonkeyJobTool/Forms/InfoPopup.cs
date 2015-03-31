@@ -15,22 +15,28 @@ namespace MonkeyJobTool.Forms
     {
         public string Title { get; set; }
         public string Text { get; set; }
+        public PopupType PopupType;
         private TimeSpan? _timeToClose;
         private readonly object _sessionData;
         private int _timerStep;
         private int _initialFormWidth;
+        public bool AlreadyNotified { get; private set; }
 
         public delegate void OnPopupCloseDelegate(ClosePopupReasonType reason, object sessionData);
-        public event OnPopupCloseDelegate OnPopupClosed;
-        public bool IsFixed { get; set; }
-        public InfoPopup(bool isFixed,string title, string text, TimeSpan? displayTime, object sessionData = null)
+        public event OnPopupCloseDelegate OnPopupClosedBy;
+
+        public delegate void OnPopupHidedDelegate();
+        public event OnPopupHidedDelegate OnPopupHided;
+
+
+        public InfoPopup(PopupType popupType,string title, string text, TimeSpan? displayTime, object sessionData = null)
         {
             InitializeComponent();
             this.Text = text;
             this.Title = title;
+            PopupType = popupType;
             _timeToClose = displayTime;
             _sessionData = sessionData;
-            IsFixed = isFixed;
         }
 
         
@@ -55,19 +61,15 @@ namespace MonkeyJobTool.Forms
                 _initialFormWidth = this.Width;
                 closeTimer.Start();
             }
-
-            
         }
 
         private void InfoPopup_Click(object sender, EventArgs e)
         {
-            //Clipboard.SetText(Text);
-            //App.Instance.ShowPopup("Скопировано в буфер обмена", TimeSpan.FromSeconds(2));
-            if (OnPopupClosed != null)
-            {
-                OnPopupClosed(ClosePopupReasonType.LeftClick, _sessionData);
-            }
             this.Close();
+            if (OnPopupClosedBy != null)
+            {
+                OnPopupClosedBy(ClosePopupReasonType.LeftClick, _sessionData);
+            }
         }
 
         private void InfoPopup_MouseUp(object sender, MouseEventArgs e)
@@ -75,9 +77,9 @@ namespace MonkeyJobTool.Forms
             if (e.Button == MouseButtons.Right)
             {
                 this.Close();
-                if (OnPopupClosed != null)
+                if (OnPopupClosedBy != null)
                 {
-                    OnPopupClosed(ClosePopupReasonType.RightClick, _sessionData);
+                    OnPopupClosedBy(ClosePopupReasonType.RightClick, _sessionData);
                 }
             }
         }
@@ -89,10 +91,20 @@ namespace MonkeyJobTool.Forms
             if (pnlTimeRemain.Width >= _initialFormWidth)
             {
                 closeTimer.Stop();
-                this.Close();
-                if (OnPopupClosed != null)
+                AlreadyNotified = true;
+                if (PopupType != PopupType.Notification)
                 {
-                    OnPopupClosed(ClosePopupReasonType.Auto, _sessionData);
+                    this.Close();
+                    if (OnPopupClosedBy != null)
+                    {
+                        OnPopupClosedBy(ClosePopupReasonType.Auto, _sessionData);
+                    }
+                }
+                else
+                {
+                    this.Hide();
+                    if (OnPopupHided != null)
+                        OnPopupHided();
                 }
             }
         }

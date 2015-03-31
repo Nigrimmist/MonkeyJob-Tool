@@ -8,8 +8,8 @@ namespace HelloBotCore.Entities
     public enum UserReactionToCommandType
     {
         //don't change places
-        Ignored=1,
+        HidedByTimeout=1,
         Clicked,
-        Notified
+        Closed
     }
 }
