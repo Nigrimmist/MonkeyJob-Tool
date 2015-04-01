@@ -210,6 +210,7 @@
     <None Include="Resources\opened33.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\eye109.png" />
     <Content Include="Res\mj.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -46,6 +46,17 @@ namespace MonkeyJobTool.Forms
             
             try
             {
+                App.Instance.Init(openFormHotKeyRaised, this);
+                App.Instance.OnSettingsChanged += Instance_OnSettingsChanged;
+                App.Instance.OnNotificationCountChanged += Instance_OnNotificationCountChanged;
+
+                var screen = Screen.FromPoint(this.Location);
+                this.tsCheckAllAsDisplayed.Visible = false;
+                this.ShowInTaskbar = false;
+                this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
+                this.Deactivate += MainForm_Deactivate;
+                this.tsDonate.Visible = App.Instance.AppConf.ShowDonateButton;
+
                 RegistryKey appRegistry = Registry.CurrentUser.CreateSubKey(AppConstants.AppName);
                 if (appRegistry != null)
                 {
@@ -53,17 +64,11 @@ namespace MonkeyJobTool.Forms
                     _isFirstRun = lastStatsCollectedKey == null;
                 }
                 
-                App.Instance.Init(openFormHotKeyRaised, this);
                 _bot = new HelloBot(App.Instance.ExecutionFolder + "ModuleSettings", AppConstants.AppVersion, botCommandPrefix: "", moduleFolderPath: App.Instance.ExecutionFolder);
-                
-                this.ShowInTaskbar = false;
                 _bot.OnErrorOccured += BotOnOnErrorOccured;
                 _bot.OnMessageRecieved += BotOnMessageRecieved;
                 _bot.SetCurrentLanguage((Language)(int)App.Instance.AppConf.Language);
 
-                var screen = Screen.FromPoint(this.Location);
-                this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
-                this.Deactivate += MainForm_Deactivate;
                 _autocomplete = new AutoCompleteControl()
                 {
                     ParentForm = this,
@@ -73,12 +78,10 @@ namespace MonkeyJobTool.Forms
                 };
                 _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
                 _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
+
                 this.Controls.Add(_autocomplete);
                 this.ToTop(true);
-
-                App.Instance.OnSettingsChanged += Instance_OnSettingsChanged;
-                App.Instance.OnNotificationCountChanged += Instance_OnNotificationCountChanged;
-                tsDonate.Visible = App.Instance.AppConf.ShowDonateButton;
+                
                 LogAnalytic();
             }
             catch (Exception ex)
@@ -91,6 +94,7 @@ namespace MonkeyJobTool.Forms
         void Instance_OnNotificationCountChanged(int notificationCount)
         {
             trayIcon.Icon = notificationCount > 0 ? GetIconWithNotificationCount(notificationCount) : Resources.MonkeyJob_ico;
+            tsCheckAllAsDisplayed.Visible = notificationCount > 0;
         }
 
         void Instance_OnSettingsChanged()
@@ -370,6 +374,11 @@ namespace MonkeyJobTool.Forms
             }
 
             return createdIcon;
+        }
+
+        private void tsCheckAllAsDisplayed_Click(object sender, EventArgs e)
+        {
+            App.Instance.CheckAllNotificationAsRead();
         } 
     }
 }

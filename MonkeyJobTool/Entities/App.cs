@@ -29,7 +29,19 @@ namespace MonkeyJobTool.Entities
         private List<InfoPopup> _openedPopups = new List<InfoPopup>();
         private object _openedPopupsLock = new object();
         private MainForm _mainForm;
-        private int _notificationCount = 0;
+        private int _notificationCount;
+        private int NotificationCount
+        {
+            get { return _notificationCount; }
+            set
+            {
+                _notificationCount = value;
+                if (OnNotificationCountChanged != null)
+                    OnNotificationCountChanged(_notificationCount);
+            }
+        }
+
+    
         private object _notificationLock = new object();
 
         public delegate void OnSettingsChangedDelegate();
@@ -51,7 +63,9 @@ namespace MonkeyJobTool.Entities
         /// </summary>
         private readonly Dictionary<HotKeyType, EventHandler<KeyPressedEventArgs>> _hotKeysHadlers = new Dictionary<HotKeyType, EventHandler<KeyPressedEventArgs>>();
 
-        
+       
+
+
         public static App Instance
         {
             get
@@ -168,10 +182,8 @@ namespace MonkeyJobTool.Entities
             {
                 lock (_notificationLock)
                 {
-                    _notificationCount++;
+                    ++NotificationCount;
                 }
-                if (OnNotificationCountChanged != null) 
-                    OnNotificationCountChanged(_notificationCount);
             }
             ReorderPopupsPositions();
         }
@@ -227,31 +239,21 @@ namespace MonkeyJobTool.Entities
 
         void popup_FormClosed(object sender, FormClosedEventArgs e)
         {
+            var popup = (InfoPopup) sender;
             lock (_openedPopupsLock)
             {
                 _openedPopups.Remove((InfoPopup) sender);
             }
-            ReorderPopupsPositions();
-
-            lock (_notificationLock)
+            if (popup.PopupType == PopupType.Notification)
             {
-                _notificationCount--;
-            }
-
-            if (OnNotificationCountChanged != null)
-                OnNotificationCountChanged(_notificationCount);
-        }
-
-        public void CloseAllPopups()
-        {
-            lock (_openedPopupsLock)
-            {
-                while (_openedPopups.Any())
+                lock (_notificationLock)
                 {
-                    _openedPopups.First().Close();
+                    --NotificationCount;
                 }
             }
+            ReorderPopupsPositions();
         }
+        
 
         public void AllPopupsToTop()
         {
@@ -283,8 +285,6 @@ namespace MonkeyJobTool.Entities
             }
         }
 
-
-
         /// <summary>Returns true if the current application has focus, false otherwise</summary>
         public static bool ApplicationIsActivated()
         {
@@ -309,5 +309,13 @@ namespace MonkeyJobTool.Entities
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern int GetWindowThreadProcessId(IntPtr handle, out int processId);
+
+        public void CheckAllNotificationAsRead()
+        {
+                lock (_openedPopupsLock)
+                {
+                    _openedPopups.Where(x => x.PopupType == PopupType.Notification).ToList().ForEach(x=>x.Close());
+                }
+        }
     }
 }
