@@ -34,12 +34,12 @@ namespace HelloBotCore
         private readonly string _botCommandPrefix;
         private readonly string _moduleFolderPath;
         private readonly int _commandTimeoutSec;
-        private Dictionary<Guid, object> _commandDictLocks;
-        private string _settingsFolderAbsolutePath;
+        private readonly Dictionary<Guid, object> _commandDictLocks;
+        private readonly string _settingsFolderAbsolutePath;
         private Language _currentLanguage = Language.English;
 
-        private Dictionary<Guid, BotCommandContext> _commandContexts;
-        private object _commandContextLock = new object();
+        private readonly Dictionary<Guid, BotCommandContext> _commandContexts;
+        private readonly object _commandContextLock = new object();
         public delegate void OnErrorOccuredDelegate(Exception ex);
         
         /// <param name="clientCommandContext">Can be null</param>
@@ -73,6 +73,11 @@ namespace HelloBotCore
                 {"modules", new SystemCommandInfo("список модулей", GetUserDefinedCommands)},
             };
             _commandContexts = new Dictionary<Guid, BotCommandContext>();
+            
+        }
+
+        public void Start()
+        {
             RegisterModules();
             RunEventModuleTimers();
         }
@@ -84,6 +89,7 @@ namespace HelloBotCore
                 var tEv = ev;
                 new Thread(() =>
                 {
+                    //Thread.Sleep((int)TimeSpan.FromSeconds(3).TotalMilliseconds);
                     Guid commandToken = Guid.NewGuid();
                     AddNewCommandContext(commandToken, new BotCommandContext()
                     {
@@ -99,6 +105,7 @@ namespace HelloBotCore
                         }
                         catch (Exception ex)
                         {
+                            ShowInternalMessage("Ошибка",ex.ToString());
                             //todo:log module exception to module exception file
                         }
                         
@@ -196,7 +203,7 @@ namespace HelloBotCore
                     if (systemCommandList.Any())
                     {
                         var systemComand = systemCommandList.First();
-                        ShowMessage(systemComand.Value.Callback(), systemComand.Key);
+                        ShowInternalMessage(systemComand.Value.Callback(), systemComand.Key);
                         return true;
                     }
                     else
@@ -231,12 +238,12 @@ namespace HelloBotCore
                                             {
                                                 OnErrorOccured(ex);
                                             }
-                                            ShowMessage(command,"модуль сломался");
+                                            ShowInternalMessage(command,"модуль сломался");
                                         }
                                     }
                                 }, TimeSpan.FromSeconds(_commandTimeoutSec)))
                                 {
-                                    ShowMessage(command,"модуль сломался. Причина : время на выполнение команды истекло");
+                                    ShowInternalMessage(command,"модуль сломался. Причина : время на выполнение команды истекло");
                                 }
                             }).Start();
                             return true;
@@ -386,7 +393,7 @@ namespace HelloBotCore
                     //_commandContexts.Remove(commandToken);
                 }
             }
-            //one command = one answer for now
+            
             if (commandContext != null)
             {
                 if (OnMessageRecieved != null)
@@ -400,7 +407,9 @@ namespace HelloBotCore
                     },  commandContext.ClientCommandContext );
             }
         }
-        private void ShowMessage(string commandname, string content, string title = null, ClientCommandContext clientCommandContext=null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
+
+        //todo : should be refactoring to show error (remove method and call error event)
+        private void ShowInternalMessage(string commandname, string content, string title = null, ClientCommandContext clientCommandContext=null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
         {
             Guid systemGuid = Guid.Empty;
             if (OnMessageRecieved != null)
@@ -409,9 +418,9 @@ namespace HelloBotCore
                     Answer = content,
                     Title = title,
                     AnswerType = answerType,
-                    CommandName = commandname
+                    CommandName = commandname,
+                    MessageSourceType = ModuleType.Event
                 },clientCommandContext);
-
         }
         
 

@@ -33,7 +33,6 @@ namespace Nigrimmist.Modules.Modules
                     UserName = ""
                 };
                 _client.SaveSettings(_settings);
-
             }
         }
 

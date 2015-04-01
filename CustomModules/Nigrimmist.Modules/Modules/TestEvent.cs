@@ -18,12 +18,12 @@ namespace Nigrimmist.Modules.Modules
 
         public override TimeSpan RunEvery
         {
-            get { return TimeSpan.FromSeconds(10); }
+            get { return TimeSpan.FromMinutes(10); }
         }
 
         public override void OnFire(Guid eventToken)
         {
-            _client.ShowMessage(eventToken, string.Format("Any content {0}", DateTime.Now),"test title");
+            _client.ShowMessage(eventToken, string.Format("Any content {0}", "s"),"test title");
         }
     }
 }

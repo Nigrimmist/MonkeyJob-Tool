@@ -78,8 +78,9 @@ namespace MonkeyJobTool.Forms
                 };
                 _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
                 _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
-
                 this.Controls.Add(_autocomplete);
+
+                _bot.Start();
                 this.ToTop(true);
                 
                 LogAnalytic();
@@ -126,12 +127,22 @@ namespace MonkeyJobTool.Forms
                 string answer = answerInfo.Answer;
                 var answerType = answerInfo.AnswerType;
                 SetLoading(false);
+            
+                if (answerInfo.MessageSourceType == ModuleType.Event)
+                {
+                    //do not show already exist popup for events
+                    if (App.Instance.NotificationPopupExist(answerInfo.Answer, answerInfo.Title))
+                    {
+                        return;
+                    }
+                }
+
                 if (clientCommandContext != null && clientCommandContext.IsToBuffer)
                 {
                     this.Invoke(new MethodInvoker(delegate
                     {
                         Clipboard.SetText(answer);
-                        App.Instance.ShowInternalPopup("Результат команды скопирован в буфер обмена", TimeSpan.FromSeconds(2));
+                        App.Instance.ShowInternalPopup("Результат команды скопирован в буфер обмена", TimeSpan.FromSeconds(3));
                     }));
                 }
                 else
@@ -353,7 +364,6 @@ namespace MonkeyJobTool.Forms
         public static Icon GetIconWithNotificationCount(int notificationCount)
         {
             Icon createdIcon;
-
             using (Bitmap bitmap = new Bitmap(32, 32))
             {
                 Icon icon = Resources.MonkeyJob_ico;
@@ -365,8 +375,9 @@ namespace MonkeyJobTool.Forms
                         {
                             graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixel;
                             graphics.DrawIcon(icon, 0, 0);
-                            graphics.FillEllipse(new SolidBrush(Color.OrangeRed), 10,12,22,21);
-                            graphics.DrawString(notificationCount.ToString(), drawFont, drawBrush, 14, 10);
+                            int ellipseRadius = notificationCount < 10 ? 22 : 26;
+                            graphics.FillEllipse(new SolidBrush(Color.OrangeRed), notificationCount < 10?10:7, 12, ellipseRadius, ellipseRadius);
+                            graphics.DrawString(notificationCount.ToString(), drawFont, drawBrush, notificationCount<10?14:8, 10);
                             createdIcon = Icon.FromHandle(bitmap.GetHicon());
                         }
                     }

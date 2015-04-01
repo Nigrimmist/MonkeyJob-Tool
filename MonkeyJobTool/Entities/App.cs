@@ -288,7 +288,6 @@ namespace MonkeyJobTool.Entities
         /// <summary>Returns true if the current application has focus, false otherwise</summary>
         public static bool ApplicationIsActivated()
         {
-            
             var activatedHandle = GetForegroundWindow();
             if (activatedHandle == IntPtr.Zero)
             {
@@ -316,6 +315,14 @@ namespace MonkeyJobTool.Entities
                 {
                     _openedPopups.Where(x => x.PopupType == PopupType.Notification).ToList().ForEach(x=>x.Close());
                 }
+        }
+
+        public bool NotificationPopupExist(string text, string title)
+        {
+            lock (_openedPopupsLock)
+            {
+                return _openedPopups.Where(x=>x.PopupType==PopupType.Notification).Any(x => x.Text == text);
+            }
         }
     }
 }
