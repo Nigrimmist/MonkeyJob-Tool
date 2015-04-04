@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Windows.Forms;
 using MonkeyJobTool.Forms;
 
 namespace MonkeyJobTool
@@ -11,9 +13,25 @@ namespace MonkeyJobTool
         [STAThread]
         static void Main()
         {
-            System.Windows.Forms.Application.EnableVisualStyles();
-            System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
-            System.Windows.Forms.Application.Run(new MainForm());
+            bool isAlreadyRunning = IsSyncMutexExists();
+
+            if (isAlreadyRunning)
+            {
+                MessageBox.Show("Извините, но программа уже запущена. Попробуйте проверить трей, возможно она спряталась там.");
+                return;
+            }
+
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainForm());
+        }
+
+        static Mutex _appSingleton;
+        private static bool IsSyncMutexExists()
+        {
+            bool onlyInstance = false;
+            _appSingleton = new Mutex(true, "MonkeyJob", out onlyInstance);
+            return !onlyInstance;
         }
     }
 }

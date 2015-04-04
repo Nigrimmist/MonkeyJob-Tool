@@ -30,7 +30,7 @@ namespace HelloBotCore
         public readonly double Version = 0.2;
         private List<ModuleCommandInfo> _handlerModules = new List<ModuleCommandInfo>();
         private List<ModuleEventInfo> _eventModules = new List<ModuleEventInfo>();
-        private readonly IDictionary<string, SystemCommandInfo> _systemCommands;
+        
         private readonly string _moduleDllmask;
         private readonly string _botCommandPrefix;
         private readonly string _moduleFolderPath;
@@ -67,11 +67,7 @@ namespace HelloBotCore
             _moduleFolderPath = moduleFolderPath;
             _commandTimeoutSec = 30;
             _commandDictLocks = new Dictionary<Guid, object>();
-            _systemCommands = new Dictionary<string, SystemCommandInfo>()
-            {
-                {"?", new SystemCommandInfo("список системных команд", GetSystemCommands)},
-                {"modules", new SystemCommandInfo("список модулей", GetUserDefinedCommands)},
-            };
+            
             _commandContexts = new Dictionary<Guid, BotCommandContext>();
             
         }
@@ -198,16 +194,6 @@ namespace HelloBotCore
                 var command = incomingMessage.Substring(incomingMessage.IndexOf(_botCommandPrefix, StringComparison.InvariantCulture) + _botCommandPrefix.Length);
                 if (!string.IsNullOrEmpty(command))
                 {
-                    
-                    var systemCommandList = _systemCommands.Where(x => x.Key.ToLower() == command.ToLower()).ToList();
-                    if (systemCommandList.Any())
-                    {
-                        var systemComand = systemCommandList.First();
-                        ShowInternalMessage(systemComand.Value.Callback(), systemComand.Key);
-                        return true;
-                    }
-                    else
-                    {
                         string args;
                         ModuleCommandInfo foundModule = FindModule(command, out command, out args);
                         if (foundModule != null)
@@ -249,7 +235,7 @@ namespace HelloBotCore
                             return true;
                         }
                         return false;
-                    }
+                    
                 }
                 return false;
             }
@@ -318,11 +304,6 @@ namespace HelloBotCore
             }
             args = args.Trim();
             return toReturn;
-        }
-
-        private string GetSystemCommands()
-        {
-            return String.Join(Environment.NewLine, _systemCommands.Select(x => String.Format(_botCommandPrefix+"{0} - {1}", x.Key, x.Value.Description)).ToArray());
         }
 
         public List<string> GetUserDefinedCommandList()
@@ -420,7 +401,7 @@ namespace HelloBotCore
                     Title = title,
                     AnswerType = answerType,
                     CommandName = commandname,
-                    MessageSourceType = ModuleType.Event
+                    MessageSourceType = ModuleType.Handler
                 },clientCommandContext);
         }
         

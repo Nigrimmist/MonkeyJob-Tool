@@ -33,9 +33,9 @@
             this.IconPic = new System.Windows.Forms.PictureBox();
             this.lblCloseHint = new System.Windows.Forms.Label();
             this.pnlHeader = new System.Windows.Forms.Panel();
+            this.rtTitle = new MonkeyJobTool.Controls.Autocomplete.RichTextLabel();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.pnlCloseHint = new System.Windows.Forms.Panel();
-            this.rtTitle = new MonkeyJobTool.Controls.Autocomplete.RichTextLabel();
             this.txtMessage = new MonkeyJobTool.Controls.Autocomplete.RichTextLabel();
             ((System.ComponentModel.ISupportInitialize)(this.IconPic)).BeginInit();
             this.pnlHeader.SuspendLayout();
@@ -58,7 +58,6 @@
             this.IconPic.Size = new System.Drawing.Size(27, 26);
             this.IconPic.TabIndex = 1;
             this.IconPic.TabStop = false;
-            this.IconPic.Click += new System.EventHandler(this.IconPic_Click);
             // 
             // lblCloseHint
             // 
@@ -71,7 +70,6 @@
             this.lblCloseHint.Size = new System.Drawing.Size(157, 13);
             this.lblCloseHint.TabIndex = 10;
             this.lblCloseHint.Text = "*Правый клик - для закрытия";
-            this.lblCloseHint.Click += new System.EventHandler(this.lblCloseHint_Click);
             // 
             // pnlHeader
             // 
@@ -84,7 +82,18 @@
             this.pnlHeader.Name = "pnlHeader";
             this.pnlHeader.Size = new System.Drawing.Size(258, 38);
             this.pnlHeader.TabIndex = 12;
-            this.pnlHeader.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlHeader_Paint);
+            // 
+            // rtTitle
+            // 
+            this.rtTitle.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rtTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rtTitle.Location = new System.Drawing.Point(33, 4);
+            this.rtTitle.Name = "rtTitle";
+            this.rtTitle.ReadOnly = true;
+            this.rtTitle.Size = new System.Drawing.Size(221, 21);
+            this.rtTitle.TabIndex = 11;
+            this.rtTitle.TabStop = false;
+            this.rtTitle.Text = "Title";
             // 
             // pnlMain
             // 
@@ -107,19 +116,6 @@
             this.pnlCloseHint.Size = new System.Drawing.Size(187, 19);
             this.pnlCloseHint.TabIndex = 13;
             // 
-            // rtTitle
-            // 
-            this.rtTitle.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.rtTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rtTitle.Location = new System.Drawing.Point(33, 4);
-            this.rtTitle.Name = "rtTitle";
-            this.rtTitle.ReadOnly = true;
-            this.rtTitle.Size = new System.Drawing.Size(221, 21);
-            this.rtTitle.TabIndex = 11;
-            this.rtTitle.TabStop = false;
-            this.rtTitle.Text = "Title";
-            this.rtTitle.TextChanged += new System.EventHandler(this.rtTitle_TextChanged);
-            // 
             // txtMessage
             // 
             this.txtMessage.BackColor = System.Drawing.Color.Transparent;
@@ -132,7 +128,6 @@
             this.txtMessage.TabIndex = 7;
             this.txtMessage.TabStop = false;
             this.txtMessage.Text = "";
-            this.txtMessage.TextChanged += new System.EventHandler(this.txtMessage_TextChanged);
             // 
             // InfoPopup
             // 
@@ -151,8 +146,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "InfoPopup";
             this.Load += new System.EventHandler(this.InfoPopup_Load);
-            this.Click += new System.EventHandler(this.InfoPopup_Click);
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.InfoPopup_Paint);
             ((System.ComponentModel.ISupportInitialize)(this.IconPic)).EndInit();
             this.pnlHeader.ResumeLayout(false);
             this.pnlMain.ResumeLayout(false);

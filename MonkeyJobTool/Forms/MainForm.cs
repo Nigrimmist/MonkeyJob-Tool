@@ -38,7 +38,7 @@ namespace MonkeyJobTool.Forms
 
         public MainForm()
         {
-           InitializeComponent();
+            InitializeComponent();
         }
         
         private void MainForm_Load(object sender, EventArgs e)
@@ -75,6 +75,7 @@ namespace MonkeyJobTool.Forms
                     Left = 43,
                     Top = 9
                 };
+
                 _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
                 _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
                 this.Controls.Add(_autocomplete);
@@ -151,7 +152,10 @@ namespace MonkeyJobTool.Forms
                         {
                             Process.Start(answer);
                             //close fixed popup with previous answer if exist
-                            App.Instance.CloseFixedPopup();
+                            this.Invoke(new MethodInvoker(delegate
+                            {
+                                App.Instance.CloseFixedPopup();
+                            }));
                         }
                     }
                     else if (answerType == AnswerBehaviourType.ShowText)
@@ -208,6 +212,7 @@ namespace MonkeyJobTool.Forms
         
         void autocomplete_OnCommandReceived(string command)
         {
+            _autocomplete.HidePopup();
             command = TryToReplaceCommand(command);
 
             bool toBuffer = false;
@@ -220,13 +225,15 @@ namespace MonkeyJobTool.Forms
 
             if (!_bot.HandleMessage(command, new ClientCommandContext(){IsToBuffer = toBuffer}))
             {
+                App.Instance.ShowFixedPopup(AppConstants.AppName, "Команда не найдена", null);
+                
                 SetLoading(false);
             }
         }
 
         private DataFilterInfo GetCommandListByTerm(string term)
         {
-            var foundItems = _bot.FindCommands(term).Select(x => x.Command.ToLower()).ToList();
+           var foundItems = _bot.FindCommands(term).Select(x => x.Command.ToLower()).ToList();
             
             return new DataFilterInfo()
             {
@@ -295,17 +302,18 @@ namespace MonkeyJobTool.Forms
 
         void ShowMain()
         {
-            if (_autocomplete != null && _autocomplete.IsPopupOpen)
-            {
-                _autocomplete.PopupToTop();
-            }
             App.Instance.AllPopupsToTop();
             this.ToTop(true);
-
-            if (_autocomplete != null)
-                _autocomplete.SelectAllText();
-
             App.Instance.ReorderPopupsPositions();
+
+            if (!App.Instance.AnyPopupExist())
+            {
+                if (_autocomplete.IsPopupOpen)
+                {
+                    _autocomplete.PopupToTop();
+                }
+            }
+            _autocomplete.SelectAllText();
         }
 
         private void LogAnalytic()
@@ -393,6 +401,6 @@ namespace MonkeyJobTool.Forms
         private void tsDonate_Click(object sender, EventArgs e)
         {
             new DonateListForm().ShowDialog();
-        } 
+        }
     }
 }

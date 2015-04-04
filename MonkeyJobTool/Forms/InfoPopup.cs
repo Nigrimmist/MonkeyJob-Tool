@@ -51,12 +51,7 @@ namespace MonkeyJobTool.Forms
             pnlMain.Height = this.Height;
             //pnlTimeRemain.Top = pnlMain.Height - pnlTimeRemain.Height;
 
-            foreach (Control control in Controls)
-            {
-                control.Click += InfoPopup_Click;
-                control.MouseUp += InfoPopup_MouseUp;
-                control.Cursor = Cursors.Hand;
-            }
+            _initControlsRecursive(this.Controls);
 
             //pnlTimeRemain.Width = pnlMainWidth;
             pnlHeader.Width = pnlMainWidth-2; //minus border
@@ -73,12 +68,12 @@ namespace MonkeyJobTool.Forms
             }
         }
 
-        private void InfoPopup_Click(object sender, EventArgs e)
+        private void _initControlsRecursive(Control.ControlCollection coll)
         {
-            this.Close();
-            if (OnPopupClosedBy != null)
+            foreach (Control c in coll)
             {
-                OnPopupClosedBy(ClosePopupReasonType.LeftClick, _sessionData);
+                c.MouseUp += InfoPopup_MouseUp;
+                _initControlsRecursive(c.Controls);
             }
         }
 
@@ -90,6 +85,14 @@ namespace MonkeyJobTool.Forms
                 if (OnPopupClosedBy != null)
                 {
                     OnPopupClosedBy(ClosePopupReasonType.RightClick, _sessionData);
+                }
+            }
+            else if (e.Button == MouseButtons.Left)
+            {
+                this.Close();
+                if (OnPopupClosedBy != null)
+                {
+                    OnPopupClosedBy(ClosePopupReasonType.LeftClick, _sessionData);
                 }
             }
         }
@@ -130,47 +133,25 @@ namespace MonkeyJobTool.Forms
             get { return true; }
         }
 
-        private void InfoPopup_Paint(object sender, PaintEventArgs e)
-        {
-            //ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, Color.Black, ButtonBorderStyle.Solid);
-        }
-
-
-        private void IconPic_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblCloseHint_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void pnlHeader_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void rtTitle_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtMessage_TextChanged(object sender, EventArgs e)
-        {
-
-        }
 
         private void pnlMain_Paint(object sender, PaintEventArgs e)
         {
-            int borderSize = 1; 
-            int halfThickness = borderSize / 2;
+            int borderSize = 1;
+            
             using (Pen p = new Pen(Color.Black, borderSize))
             {
-                e.Graphics.DrawRectangle(p, new Rectangle(halfThickness,
-                    halfThickness,
-                    pnlMain.ClientSize.Width - borderSize,
-                    pnlMain.ClientSize.Height - borderSize));
+                if (PopupType != PopupType.Fixed)
+                {
+                    e.Graphics.DrawLine(p, 0, 0, 0, pnlMain.ClientSize.Height);
+                    e.Graphics.DrawLine(p, 0, 0, pnlMain.ClientSize.Width, 0);
+                    e.Graphics.DrawLine(p, pnlMain.ClientSize.Width - borderSize, 0, pnlMain.ClientSize.Width - borderSize, pnlMain.ClientSize.Height - borderSize);
+
+                    e.Graphics.DrawLine(p, pnlMain.ClientSize.Width - borderSize, pnlMain.ClientSize.Height - borderSize, 0, pnlMain.ClientSize.Height - borderSize);
+                }
+                //e.Graphics.DrawRectangle(p, new Rectangle(halfThickness,
+                //    halfThickness,
+                //    pnlMain.ClientSize.Width - borderSize,
+                //    pnlMain.ClientSize.Height - borderSize));
             }
         }
     }
