@@ -43,7 +43,6 @@ namespace MonkeyJobTool.Forms
         
         private void MainForm_Load(object sender, EventArgs e)
         {
-            
             try
             {
                 App.Instance.Init(openFormHotKeyRaised, this);
@@ -117,10 +116,9 @@ namespace MonkeyJobTool.Forms
             if (_isFirstRun && !_isHelpBalloonDisplayed)
             {
                 _isHelpBalloonDisplayed = true;
-                ShowBalloon(string.Format("{0} рядом.", AppConstants.AppName), string.Format("Как только захочешь увидеть меня, нажми {0} или кликни по иконке в трее.", App.Instance.AppConf.HotKeys.ProgramOpen));
+                ShowBalloon(string.Format("{0} рядом.", AppConstants.AppName), string.Format("Как только захочешь увидеть меня, нажми {0} или кликни по иконке в трее. Через правый клик можно зайти в настройки.", App.Instance.AppConf.HotKeys.ProgramOpen));
             }
         }
-
 
         void BotOnMessageRecieved(Guid commandToken,AnswerInfo answerInfo, ClientCommandContext clientCommandContext)
         {
@@ -390,6 +388,11 @@ namespace MonkeyJobTool.Forms
         private void tsCheckAllAsDisplayed_Click(object sender, EventArgs e)
         {
             App.Instance.CheckAllNotificationAsRead();
+        }
+
+        private void tsDonate_Click(object sender, EventArgs e)
+        {
+            new DonateListForm().ShowDialog();
         } 
     }
 }

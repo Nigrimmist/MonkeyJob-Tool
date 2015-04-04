@@ -8,6 +8,7 @@ namespace HelloBotCommunication
 {
     public abstract class ModuleEventBase : ModuleBase
     {
+
         /// <summary>
         /// Required field for events. You OnFire method will be executed every "RunEvery" time + time, that will be elapsed for handle you OnFire method implementation.
         /// </summary>

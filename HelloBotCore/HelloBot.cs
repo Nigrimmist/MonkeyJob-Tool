@@ -27,6 +27,7 @@ namespace HelloBotCore
 
     public class HelloBot : IModuleClientHandler
     {
+        public readonly double Version = 0.2;
         private List<ModuleCommandInfo> _handlerModules = new List<ModuleCommandInfo>();
         private List<ModuleEventInfo> _eventModules = new List<ModuleEventInfo>();
         private readonly IDictionary<string, SystemCommandInfo> _systemCommands;
@@ -46,7 +47,6 @@ namespace HelloBotCore
         public delegate void OnMessageRecievedDelegate(Guid commandToken,AnswerInfo answer,ClientCommandContext clientCommandContext);
         public event OnErrorOccuredDelegate OnErrorOccured;
         public event OnMessageRecievedDelegate OnMessageRecieved;
-        public readonly double Version = 0.1;
         private readonly double _currentUIClientVersion;
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace HelloBotCore
                     Guid commandToken = Guid.NewGuid();
                     AddNewCommandContext(commandToken, new BotCommandContext()
                     {
-                        CommandName = tEv.ModuleName,
+                        CommandName = string.IsNullOrEmpty(tEv.DisplayName)?tEv.ModuleName:tEv.DisplayName,
                         CommandType = ModuleType.Event
                     });
 
@@ -224,7 +224,7 @@ namespace HelloBotCore
                                         AddNewCommandContext(commandTempGuid, new BotCommandContext()
                                         {
                                             ClientCommandContext = clientCommandContext,
-                                            CommandName = command,
+                                            CommandName = !string.IsNullOrEmpty(hnd.DisplayName) ? hnd.DisplayName : command,
                                             CommandType = ModuleType.Handler
                                         });
                                         
@@ -404,11 +404,12 @@ namespace HelloBotCore
                         CommandName = commandContext.CommandName,
                         AnswerType = answerType,
                         MessageSourceType = commandContext.CommandType
-                    },  commandContext.ClientCommandContext );
+                    },  commandContext.ClientCommandContext);
             }
         }
 
         //todo : should be refactoring to show error (remove method and call error event)
+        [Obsolete]
         private void ShowInternalMessage(string commandname, string content, string title = null, ClientCommandContext clientCommandContext=null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
         {
             Guid systemGuid = Guid.Empty;

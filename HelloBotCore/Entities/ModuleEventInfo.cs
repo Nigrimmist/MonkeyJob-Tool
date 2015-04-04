@@ -18,6 +18,7 @@ namespace HelloBotCore.Entities
             EventFireCallback = eventModuleBase.OnFire;
             EventRunEvery = eventModuleBase.RunEvery;
             base.Init(dllName, eventModuleBase, moduleClientHandler);
+            
         }
 
         public void CallEvent(Guid commandToken)

@@ -45,13 +45,13 @@
     <Compile Include="ClientLanguage.cs" />
     <Compile Include="Interfaces\IBot.cs" />
     <Compile Include="Interfaces\IBotCallback.cs" />
-    <Compile Include="Interfaces\IClientInit.cs" />
+    <Compile Include="ModuleBase.cs" />
     <Compile Include="Interfaces\IModuleRegister.cs" />
     <Compile Include="Interfaces\ITimerRegister.cs" />
     <Compile Include="MessageType.cs" />
     <Compile Include="ModuleEventBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ModuleBase.cs" />
+    <Compile Include="ModuleHandlerBase.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

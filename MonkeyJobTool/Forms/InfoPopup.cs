@@ -18,8 +18,7 @@ namespace MonkeyJobTool.Forms
         public PopupType PopupType;
         private TimeSpan? _timeToClose;
         private readonly object _sessionData;
-        private int _timerStep;
-        private int _initialFormWidth;
+        private TimeSpan _timeToTimerEventFire;
         public bool AlreadyNotified { get; private set; }
 
         public delegate void OnPopupCloseDelegate(ClosePopupReasonType reason, object sessionData);
@@ -27,7 +26,8 @@ namespace MonkeyJobTool.Forms
 
         public delegate void OnPopupHidedDelegate();
         public event OnPopupHidedDelegate OnPopupHided;
-
+        private string _closeHint = "*Правый клик - для закрытия";
+        private string _closeHintTimeFormat = "*Правый клик - для закрытия ({0}с)";
 
         public InfoPopup(PopupType popupType,string title, string text, TimeSpan? displayTime, object sessionData = null)
         {
@@ -42,23 +42,33 @@ namespace MonkeyJobTool.Forms
         
         private void InfoPopup_Load(object sender, EventArgs e)
         {
+            int pnlMainWidth = this.Width; //minus borders
+            pnlMain.Width = pnlMainWidth;
             txtMessage.Text = Text;
-            this.Height = txtMessage.Height+ 50;
-            lblTitle.Text = Title;
+            rtTitle.Text = Title;
+            txtMessage.Top = rtTitle.Height + 15; //padding
+            this.Height = txtMessage.Height + 55 + rtTitle.Height;
+            pnlMain.Height = this.Height;
+            //pnlTimeRemain.Top = pnlMain.Height - pnlTimeRemain.Height;
 
-            pnlTimeRemain.Top = this.Height - pnlTimeRemain.Height;
             foreach (Control control in Controls)
             {
                 control.Click += InfoPopup_Click;
                 control.MouseUp += InfoPopup_MouseUp;
                 control.Cursor = Cursors.Hand;
             }
-            pnlTimeRemain.Width = this.Width;
+
+            //pnlTimeRemain.Width = pnlMainWidth;
+            pnlHeader.Width = pnlMainWidth-2; //minus border
+            pnlHeader.Height = rtTitle.Height + 8; //+margin
+            lblCloseHint.Text = _closeHint;
+            pnlCloseHint.Top = pnlMain.Height - /*pnlTimeRemain.Height -*/ pnlCloseHint.Height-1;
+            rtTitle.BackColor = pnlHeader.BackColor = Color.SkyBlue;
+
+            
             if (_timeToClose.HasValue)
             {
-                pnlTimeRemain.Width = 0;
-                _timerStep = (int) (this.Width/(_timeToClose.Value.TotalMilliseconds/closeTimer.Interval));
-                _initialFormWidth = this.Width;
+                _timeToTimerEventFire = _timeToClose.Value;
                 closeTimer.Start();
             }
         }
@@ -83,13 +93,12 @@ namespace MonkeyJobTool.Forms
                 }
             }
         }
-
         
         private void closeTimer_Tick(object sender, EventArgs e)
         {
-            pnlTimeRemain.Width += _timerStep;
-            if (pnlTimeRemain.Width >= _initialFormWidth)
+            if (_timeToTimerEventFire.TotalSeconds <= 0)
             {
+                lblCloseHint.Text = _closeHint;
                 closeTimer.Stop();
                 AlreadyNotified = true;
                 if (PopupType != PopupType.Notification)
@@ -106,14 +115,64 @@ namespace MonkeyJobTool.Forms
                     if (OnPopupHided != null)
                         OnPopupHided();
                 }
+
             }
+            else
+            {
+                lblCloseHint.Text = string.Format(_closeHintTimeFormat, _timeToTimerEventFire.TotalSeconds);
+            }
+            _timeToTimerEventFire = _timeToTimerEventFire.Subtract(TimeSpan.FromSeconds(1));
+            
         }
 
         protected override bool ShowWithoutActivation
         {
             get { return true; }
         }
-                
+
+        private void InfoPopup_Paint(object sender, PaintEventArgs e)
+        {
+            //ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, Color.Black, ButtonBorderStyle.Solid);
+        }
+
+
+        private void IconPic_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblCloseHint_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pnlHeader_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void rtTitle_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtMessage_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pnlMain_Paint(object sender, PaintEventArgs e)
+        {
+            int borderSize = 1; 
+            int halfThickness = borderSize / 2;
+            using (Pen p = new Pen(Color.Black, borderSize))
+            {
+                e.Graphics.DrawRectangle(p, new Rectangle(halfThickness,
+                    halfThickness,
+                    pnlMain.ClientSize.Width - borderSize,
+                    pnlMain.ClientSize.Height - borderSize));
+            }
+        }
     }
 
 

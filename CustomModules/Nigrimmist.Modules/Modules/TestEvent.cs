@@ -25,5 +25,10 @@ namespace Nigrimmist.Modules.Modules
         {
             _client.ShowMessage(eventToken, string.Format("Any content {0}", "s"),"test title");
         }
+
+        public override string ModuleTitle
+        {
+            get { return "Title"; }
+        }
     }
 }

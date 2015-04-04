@@ -13,6 +13,7 @@ namespace HelloBotCore.Entities
         public string CommandDescription { get; set; }
         public double Version { get; set; }
         public string ModuleName { get; set; }
+        public string DisplayName { get; set; }
 
         public ModuleCommandInfoBase()
         {
@@ -22,12 +23,12 @@ namespace HelloBotCore.Entities
         public void Init(string dllName, ModuleBase handlerModuleBase, IModuleClientHandler moduleClientHandler)
         {
             CommandDescription = handlerModuleBase.ModuleDescription;
-            Version = handlerModuleBase.ModuleVersion;           
+            Version = handlerModuleBase.ModuleVersion;
+            DisplayName = handlerModuleBase.ModuleTitle;
             var handType = handlerModuleBase.GetType();
             ModuleName = dllName + "." + handType.Name;
             IClient client = new ModuleToClientAdapter(moduleClientHandler, this);
             handlerModuleBase.Init(client);
-            
         }
     }
 

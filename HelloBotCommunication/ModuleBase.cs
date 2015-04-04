@@ -1,24 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using HelloBotCommunication.Interfaces;
+﻿using HelloBotCommunication.Interfaces;
 
 namespace HelloBotCommunication
 {
-    public abstract class ModuleHandlerBase : ModuleBase
+    public abstract class ModuleBase
     {
         /// <summary>
-        /// Call command list.
+        /// Using for settings version tracking.
         /// </summary>
-        public abstract ReadOnlyCollection<CallCommandInfo> CallCommandList { get; }
-        
+        public virtual double ModuleVersion
+        {
+            get { return 1.0; }
+        }
 
         /// <summary>
-        /// Event will be fired for your Command
+        /// Init method for retrieving client functionality if required. Will be called after constructor.
         /// </summary>
-        /// <param name="command">Incoming command</param>
-        /// <param name="args">Command arguments, can be empty</param>
-        /// <param name="commandToken">Command token</param>
-        public abstract void HandleMessage(string command,string args, Guid commandToken);
+        /// <param name="client"></param>
+        public virtual void Init(IClient client)
+        {
+
+        }
+
+        /// <summary>
+        /// Your command description
+        /// </summary>
+        public virtual string ModuleDescription
+        {
+            get { return string.Empty; }
+        }
+
+        /// <summary>
+        /// Will be displayed in UI title. If null, title will be retrieved from command, otherwise from  module assembly
+        /// </summary>
+        public virtual string ModuleTitle { get { return null; } }
     }
 }

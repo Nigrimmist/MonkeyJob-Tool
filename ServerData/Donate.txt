@@ -1,7 +1,7 @@
 {
 	Donates : [
 		{
-			Comment : null,
+			Comment : 'Привет из Минска!',
 			USDCount : 1,
 			CreateDate : '01-04-2015',
 			From : 'Dzianis Yafimau',

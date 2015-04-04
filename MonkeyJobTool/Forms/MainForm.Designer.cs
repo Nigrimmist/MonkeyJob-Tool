@@ -33,10 +33,10 @@ namespace MonkeyJobTool.Forms
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.trayMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.tsExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsCheckAllAsDisplayed = new System.Windows.Forms.ToolStripMenuItem();
             this.tsSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.tsDonate = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsCheckAllAsDisplayed = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsExit = new System.Windows.Forms.ToolStripMenuItem();
             this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.MainIcon = new System.Windows.Forms.PictureBox();
             this.trayMenu.SuspendLayout();
@@ -53,13 +53,13 @@ namespace MonkeyJobTool.Forms
             this.trayMenu.Name = "trayMenu";
             this.trayMenu.Size = new System.Drawing.Size(262, 114);
             // 
-            // tsExit
+            // tsCheckAllAsDisplayed
             // 
-            this.tsExit.Image = global::MonkeyJobTool.Properties.Resources.exit;
-            this.tsExit.Name = "tsExit";
-            this.tsExit.Size = new System.Drawing.Size(261, 22);
-            this.tsExit.Text = "Выход";
-            this.tsExit.Click += new System.EventHandler(this.tsExit_Click);
+            this.tsCheckAllAsDisplayed.Image = global::MonkeyJobTool.Properties.Resources.eye109;
+            this.tsCheckAllAsDisplayed.Name = "tsCheckAllAsDisplayed";
+            this.tsCheckAllAsDisplayed.Size = new System.Drawing.Size(261, 22);
+            this.tsCheckAllAsDisplayed.Text = "Отметить все как просмотренные";
+            this.tsCheckAllAsDisplayed.Click += new System.EventHandler(this.tsCheckAllAsDisplayed_Click);
             // 
             // tsSettings
             // 
@@ -75,14 +75,15 @@ namespace MonkeyJobTool.Forms
             this.tsDonate.Name = "tsDonate";
             this.tsDonate.Size = new System.Drawing.Size(261, 22);
             this.tsDonate.Text = "Сказать спасибо";
+            this.tsDonate.Click += new System.EventHandler(this.tsDonate_Click);
             // 
-            // tsCheckAllAsDisplayed
+            // tsExit
             // 
-            this.tsCheckAllAsDisplayed.Image = global::MonkeyJobTool.Properties.Resources.eye109;
-            this.tsCheckAllAsDisplayed.Name = "tsCheckAllAsDisplayed";
-            this.tsCheckAllAsDisplayed.Size = new System.Drawing.Size(261, 22);
-            this.tsCheckAllAsDisplayed.Text = "Отметить все как просмотренные";
-            this.tsCheckAllAsDisplayed.Click += new System.EventHandler(this.tsCheckAllAsDisplayed_Click);
+            this.tsExit.Image = global::MonkeyJobTool.Properties.Resources.exit;
+            this.tsExit.Name = "tsExit";
+            this.tsExit.Size = new System.Drawing.Size(261, 22);
+            this.tsExit.Text = "Выход";
+            this.tsExit.Click += new System.EventHandler(this.tsExit_Click);
             // 
             // trayIcon
             // 

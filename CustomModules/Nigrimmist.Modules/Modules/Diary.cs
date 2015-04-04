@@ -41,6 +41,11 @@ namespace Nigrimmist.Modules.Modules
             get { return base.ModuleVersion; }
         }
 
+        public override string ModuleTitle
+        {
+            get { return "Diary"; }
+        }
+
         public override TimeSpan RunEvery
         {
             get { return TimeSpan.FromMinutes(5);}
@@ -75,15 +80,15 @@ namespace Nigrimmist.Modules.Modules
 
                 GetNotifies(hrm.Html, out newUmails, out newComments, out newDiscussions);
                 StringBuilder sbMessage = new StringBuilder();
-                if (newUmails > 0)
+                if (newUmails > 0 && _settings.CheckUmails)
                 {
                     sbMessage.Append("Новые U-Mail (" + newUmails+")"+Environment.NewLine);
                 }
-                if (newDiscussions > 0)
+                if (newDiscussions > 0 && _settings.CheckDiscussions)
                 {
                     sbMessage.Append("Новые дискуссии (" + newDiscussions+")"+Environment.NewLine);
                 }
-                if (newComments > 0)
+                if (newComments > 0 && _settings.CheckNewComments)
                 {
                     sbMessage.Append("Новые комментарии (" + newComments+")");
                 }

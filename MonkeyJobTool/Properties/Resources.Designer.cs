@@ -73,6 +73,16 @@ namespace MonkeyJobTool.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap closeIcon {
+            get {
+                object obj = ResourceManager.GetObject("closeIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap copy1 {
             get {
                 object obj = ResourceManager.GetObject("copy1", resourceCulture);
@@ -86,6 +96,26 @@ namespace MonkeyJobTool.Properties {
         public static System.Drawing.Bitmap copy22 {
             get {
                 object obj = ResourceManager.GetObject("copy22", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap donate_paypal_button {
+            get {
+                object obj = ResourceManager.GetObject("donate-paypal-button", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap donateCat {
+            get {
+                object obj = ResourceManager.GetObject("donateCat", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -127,6 +157,16 @@ namespace MonkeyJobTool.Properties {
             get {
                 object obj = ResourceManager.GetObject("heart72", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon heartIco {
+            get {
+                object obj = ResourceManager.GetObject("heartIco", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         
@@ -173,6 +213,26 @@ namespace MonkeyJobTool.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap paypal_large1 {
+            get {
+                object obj = ResourceManager.GetObject("paypal_large1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap PayPalLogo {
+            get {
+                object obj = ResourceManager.GetObject("PayPalLogo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap rightArrows {
             get {
                 object obj = ResourceManager.GetObject("rightArrows", resourceCulture);
@@ -186,6 +246,16 @@ namespace MonkeyJobTool.Properties {
         public static System.Drawing.Bitmap settings {
             get {
                 object obj = ResourceManager.GetObject("settings", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap ya {
+            get {
+                object obj = ResourceManager.GetObject("ya", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
