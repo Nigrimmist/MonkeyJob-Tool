@@ -12,5 +12,11 @@ namespace HelloBotCore.Entities
         public Action OnClosedAction { get; set; }
         public Action OnClickAction { get; set; }
         public ModuleType CommandType { get; set; }
+
+        public void ClearHandlers()
+        {
+            OnClosedAction = null;
+            OnClickAction = null;
+        }
     }
 }

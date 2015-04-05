@@ -55,7 +55,7 @@
             this.IconPic.Location = new System.Drawing.Point(3, 1);
             this.IconPic.Margin = new System.Windows.Forms.Padding(0);
             this.IconPic.Name = "IconPic";
-            this.IconPic.Size = new System.Drawing.Size(27, 26);
+            this.IconPic.Size = new System.Drawing.Size(26, 26);
             this.IconPic.TabIndex = 1;
             this.IconPic.TabStop = false;
             // 

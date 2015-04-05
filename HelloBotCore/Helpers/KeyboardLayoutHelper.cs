@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using MonkeyJobTool.Entities;
-using MonkeyJobTool.Extensions;
+using HelloBotCore.Entities;
 
-namespace MonkeyJobTool.Utilities
+namespace HelloBotCore.Helpers
 {
     public static class KeyboardLayoutHelper
     {
@@ -14,8 +10,8 @@ namespace MonkeyJobTool.Utilities
         private static readonly object _dictLocker = new object();
 
         private static readonly Dictionary<Language, char[]> langKeyBoardDictionary = new Dictionary<Language, char[]> {
-            { Language.ru, "йцукенгшщзхъфывапролджэячсмитьбю.ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,".ToCharArray() },
-            { Language.en, "qwertyuiop[]asdfghjkl;'zxcvbnm,./QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>?".ToCharArray() }
+            { Language.Russian, "йцукенгшщзхъфывапролджэячсмитьбю.ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,".ToCharArray() },
+            { Language.English, "qwertyuiop[]asdfghjkl;'zxcvbnm,./QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>?".ToCharArray() }
         };
 
         private static Dictionary<Language, KeyValuePair<Language, char[]>[]> Switches
@@ -78,6 +74,22 @@ namespace MonkeyJobTool.Utilities
             return toReturn;
         }
 
-        
+        public static Language DetectLanguage(this string value)
+        {
+            Dictionary<Language, int> counter = langKeyBoardDictionary.ToDictionary(d=>d.Key,d=>0);
+            int len = value.Length > 10 ? 10 : value.Length;
+
+            foreach (KeyValuePair<Language, char[]> lang in langKeyBoardDictionary)
+            {
+                for (var i = 0; i < len; i++)
+                {
+                    if (lang.Value.Contains(value[i]))
+                    {
+                        counter[lang.Key]++;
+                    }
+                }
+            }
+            return counter.OrderBy(x => x.Value).Last().Key;
+        }
     }
 }

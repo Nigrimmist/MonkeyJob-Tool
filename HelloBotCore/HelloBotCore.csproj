@@ -43,6 +43,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
@@ -63,7 +64,8 @@
     <Compile Include="HelloBot.cs" />
     <Compile Include="Entities\Language.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities\KeyboardLayoutHelper.cs" />
+    <Compile Include="Helpers\ImageHelper.cs" />
+    <Compile Include="Helpers\KeyboardLayoutHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

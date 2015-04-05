@@ -21,14 +21,21 @@ namespace Nigrimmist.Modules.Modules
             get { return TimeSpan.FromMinutes(10); }
         }
 
+        
         public override void OnFire(Guid eventToken)
         {
-            _client.ShowMessage(eventToken, string.Format("Any content {0}", "s"),"test title");
+            _client.ShowMessage(eventToken, string.Format("Тестовое уведомление. Будет появляться раз в час")).OnClick(() =>
+            {
+                _client.ShowMessage(eventToken, "Левый клик обработан");
+            }).OnClosed(() =>
+            {
+                _client.ShowMessage(eventToken, "Закрытие обработано");
+            });
         }
 
         public override string ModuleTitle
         {
-            get { return "Title"; }
+            get { return "Тестовый заголовок"; }
         }
     }
 }

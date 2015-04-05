@@ -6,9 +6,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using HelloBotCore.Entities;
-using HelloBotCore.Utilities;
 using HelloBotCommunication;
 using HelloBotCommunication.Interfaces;
+using HelloBotCore.Helpers;
 using Newtonsoft.Json;
 
 namespace HelloBotCore
@@ -384,7 +384,10 @@ namespace HelloBotCore
                         Title = title,
                         CommandName = commandContext.CommandName,
                         AnswerType = answerType,
-                        MessageSourceType = commandContext.CommandType
+                        MessageSourceType = commandContext.CommandType,
+                        Icon = commandInfo.Icon,
+                        BodyBackgroundColor = commandInfo.BodyBackgroundColor,
+                        HeaderBackgroundColor = commandInfo.HeaderBackgroundColor
                     },  commandContext.ClientCommandContext);
             }
         }
@@ -446,21 +449,20 @@ namespace HelloBotCore
                 {
                     case UserReactionToCommandType.HidedByTimeout:
                     {
-
                         break;
                     }
                     case UserReactionToCommandType.Clicked:
                         if (commandContext.OnClickAction != null)
                         {
                             commandContext.OnClickAction();
-                            commandContext.OnClickAction = null;
+                            commandContext.ClearHandlers();
                         }
                         break;
                     case UserReactionToCommandType.Closed:
                         if (commandContext.OnClosedAction != null)
                         {
                             commandContext.OnClosedAction();
-                            commandContext.OnClosedAction = null;
+                            commandContext.ClearHandlers();
                         }
                         break;
                     default:

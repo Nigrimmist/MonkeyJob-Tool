@@ -20,7 +20,6 @@ using MonkeyJobTool.Entities.Autocomplete;
 using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Helpers;
 using MonkeyJobTool.Properties;
-using MonkeyJobTool.Utilities;
 using Newtonsoft.Json;
 using Language = HelloBotCore.Entities.Language;
 
@@ -48,7 +47,6 @@ namespace MonkeyJobTool.Forms
                 App.Instance.Init(openFormHotKeyRaised, this);
                 App.Instance.OnSettingsChanged += Instance_OnSettingsChanged;
                 App.Instance.OnNotificationCountChanged += Instance_OnNotificationCountChanged;
-
                 var screen = Screen.FromPoint(this.Location);
                 this.tsCheckAllAsDisplayed.Visible = false;
                 this.ShowInTaskbar = false;
@@ -62,11 +60,6 @@ namespace MonkeyJobTool.Forms
                     var lastStatsCollectedKey = appRegistry.GetValue(AppConstants.Registry.LastStatsCollectedDateKey);
                     _isFirstRun = lastStatsCollectedKey == null;
                 }
-                
-                _bot = new HelloBot(App.Instance.ExecutionFolder + "ModuleSettings", AppConstants.AppVersion, botCommandPrefix: "", moduleFolderPath: App.Instance.ExecutionFolder);
-                _bot.OnErrorOccured += BotOnOnErrorOccured;
-                _bot.OnMessageRecieved += BotOnMessageRecieved;
-                _bot.SetCurrentLanguage((Language)(int)App.Instance.AppConf.Language);
 
                 _autocomplete = new AutoCompleteControl()
                 {
@@ -75,14 +68,12 @@ namespace MonkeyJobTool.Forms
                     Left = 43,
                     Top = 9
                 };
-
                 _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
                 _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
                 this.Controls.Add(_autocomplete);
 
-                _bot.Start();
+                InitBot();
                 this.ToTop(true);
-                
                 LogAnalytic();
             }
             catch (Exception ex)
@@ -90,6 +81,27 @@ namespace MonkeyJobTool.Forms
                 MessageBox.Show(ex.ToString());
             }
 
+        }
+
+        private void InitBot()
+        {
+            new Thread(() =>
+            {
+                try
+                {   
+                    SetLoading(true);
+                    _bot = new HelloBot(App.Instance.ExecutionFolder + "ModuleSettings", AppConstants.AppVersion, botCommandPrefix: "", moduleFolderPath: App.Instance.ExecutionFolder);
+                    _bot.OnErrorOccured += BotOnOnErrorOccured;
+                    _bot.OnMessageRecieved += BotOnMessageRecieved;
+                    _bot.SetCurrentLanguage((Language) (int) App.Instance.AppConf.Language);
+                    _bot.Start();
+                    SetLoading(false);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            }).Start();
         }
 
         void Instance_OnNotificationCountChanged(int notificationCount)
@@ -162,15 +174,16 @@ namespace MonkeyJobTool.Forms
                     {
                         if (!string.IsNullOrEmpty(answer))
                         {
+                            string title = string.IsNullOrEmpty(answerInfo.Title) ? answerInfo.CommandName : answerInfo.Title;
                             this.Invoke((MethodInvoker) (delegate
                             {
                                 switch (answerInfo.MessageSourceType)
                                 {
                                     case ModuleType.Handler:
-                                        App.Instance.ShowFixedPopup(answerInfo.CommandName, answer, commandToken);
+                                        App.Instance.ShowFixedPopup(title, answer, commandToken, answerInfo.Icon, answerInfo.HeaderBackgroundColor, answerInfo.BodyBackgroundColor);
                                         break;
                                     case ModuleType.Event:
-                                        App.Instance.ShowNotification(answerInfo.CommandName, answer,commandToken);
+                                        App.Instance.ShowNotification(title, answer, commandToken, answerInfo.Icon, answerInfo.HeaderBackgroundColor, answerInfo.BodyBackgroundColor);
                                         break;
                                     default:
                                         throw new ArgumentOutOfRangeException();

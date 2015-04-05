@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -14,7 +17,7 @@ namespace MonkeyJobTool.Forms
     public partial class InfoPopup : Form
     {
         public string Title { get; set; }
-        public string Text { get; set; }
+        public override sealed string Text { get; set; }
         public PopupType PopupType;
         private TimeSpan? _timeToClose;
         private readonly object _sessionData;
@@ -26,10 +29,15 @@ namespace MonkeyJobTool.Forms
 
         public delegate void OnPopupHidedDelegate();
         public event OnPopupHidedDelegate OnPopupHided;
-        private string _closeHint = "*Правый клик - для закрытия";
-        private string _closeHintTimeFormat = "*Правый клик - для закрытия ({0}с)";
+        private readonly string _closeHint = "*Правый клик - для закрытия";
+        private readonly string _closeHintTimeFormat = "*Правый клик - для закрытия ({0}с)";
 
-        public InfoPopup(PopupType popupType,string title, string text, TimeSpan? displayTime, object sessionData = null)
+        public new Image Icon { get; set; }
+        public Color TitleColor = Color.SkyBlue;
+        public Color BodyColor = Color.White;
+
+
+        public InfoPopup(PopupType popupType, string title, string text, TimeSpan? displayTime, object sessionData = null, Image icon = null, Color? titleBackgroundColor = null, Color? bodyBackgroundColor = null)
         {
             InitializeComponent();
             this.Text = text;
@@ -37,29 +45,35 @@ namespace MonkeyJobTool.Forms
             PopupType = popupType;
             _timeToClose = displayTime;
             _sessionData = sessionData;
-        }
+            Icon = icon;
 
+            if (titleBackgroundColor.HasValue)
+                TitleColor = titleBackgroundColor.Value;
+
+            if (bodyBackgroundColor.HasValue)
+                BodyColor = bodyBackgroundColor.Value;
+        }
+        
         
         private void InfoPopup_Load(object sender, EventArgs e)
         {
-            int pnlMainWidth = this.Width; //minus borders
+            if (Icon!=null)
+                IconPic.BackgroundImage = Icon;
+
+            int pnlMainWidth = this.Width; 
             pnlMain.Width = pnlMainWidth;
             txtMessage.Text = Text;
             rtTitle.Text = Title;
-            txtMessage.Top = rtTitle.Height + 15; //padding
+            txtMessage.Top = rtTitle.Height + 15; 
             this.Height = txtMessage.Height + 55 + rtTitle.Height;
             pnlMain.Height = this.Height;
-            //pnlTimeRemain.Top = pnlMain.Height - pnlTimeRemain.Height;
-
             _initControlsRecursive(this.Controls);
-
-            //pnlTimeRemain.Width = pnlMainWidth;
-            pnlHeader.Width = pnlMainWidth-2; //minus border
-            pnlHeader.Height = rtTitle.Height + 8; //+margin
+            pnlHeader.Width = pnlMainWidth-2; 
+            pnlHeader.Height = rtTitle.Height + 8;
             lblCloseHint.Text = _closeHint;
-            pnlCloseHint.Top = pnlMain.Height - /*pnlTimeRemain.Height -*/ pnlCloseHint.Height-1;
-            rtTitle.BackColor = pnlHeader.BackColor = Color.SkyBlue;
-
+            pnlCloseHint.Top = pnlMain.Height - pnlCloseHint.Height-1;
+            rtTitle.BackColor = pnlHeader.BackColor = TitleColor;
+            this.BackColor = txtMessage.BackColor=  BodyColor;
             
             if (_timeToClose.HasValue)
             {
@@ -154,6 +168,7 @@ namespace MonkeyJobTool.Forms
                 //    pnlMain.ClientSize.Height - borderSize));
             }
         }
+        
     }
 
 

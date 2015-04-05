@@ -1,4 +1,5 @@
-﻿using HelloBotCommunication.Interfaces;
+﻿using System.Drawing;
+using HelloBotCommunication.Interfaces;
 
 namespace HelloBotCommunication
 {
@@ -33,5 +34,20 @@ namespace HelloBotCommunication
         /// Will be displayed in UI title. If null, title will be retrieved from command, otherwise from  module assembly
         /// </summary>
         public virtual string ModuleTitle { get { return null; } }
+
+        /// <summary>
+        /// Your icon in base64 string. Should be 26x26 px. Can be in png format (transparency supported).
+        /// </summary>
+        public virtual string IconInBase64{get { return null; }}
+       
+        /// <summary>
+        /// Popup header background color
+        /// </summary>
+        public virtual Color? HeaderBackGroundColor { get { return null; } }
+
+        /// <summary>
+        /// Popup body background color
+        /// </summary>
+        public virtual Color? BodyBackgroundColor { get { return null; } }
     }
 }

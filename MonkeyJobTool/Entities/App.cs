@@ -134,14 +134,14 @@ namespace MonkeyJobTool.Entities
             get { return _appConf; }
         }
 
-        public void ShowNotification(string title, string text,Guid? commandToken)
+        public void ShowNotification(string title, string text, Guid? commandToken, Image icon = null, Color? titleBackgroundColor = null, Color? bodyBackgroundColor = null)
         {
-            ShowPopup(title, text, PopupType.Notification, null, commandToken);
+            ShowPopup(title, text, PopupType.Notification, null, commandToken, icon, titleBackgroundColor: titleBackgroundColor, bodyBackgroundColor: bodyBackgroundColor);
         }
 
-        public void ShowFixedPopup(string title, string text,  Guid? commandToken)
+        public void ShowFixedPopup(string title, string text, Guid? commandToken, Image icon = null, Color? titleBackgroundColor = null, Color? bodyBackgroundColor = null)
         {
-            ShowPopup(title, text, PopupType.Fixed,commandToken:commandToken);
+            ShowPopup(title, text, PopupType.Fixed, commandToken: commandToken, icon: icon, titleBackgroundColor: titleBackgroundColor, bodyBackgroundColor: bodyBackgroundColor);
         }
 
         public void ShowInternalPopup(string message, TimeSpan? timeToShow)
@@ -149,17 +149,15 @@ namespace MonkeyJobTool.Entities
             ShowPopup(string.Empty, message, PopupType.InternalMessage , timeToShow);
         }
 
-        private void ShowPopup(string title, string text, PopupType popupType, TimeSpan? displayTime = null, Guid? commandToken = null)
+        private void ShowPopup(string title, string text, PopupType popupType, TimeSpan? displayTime = null, Guid? commandToken = null, Image icon = null, Color? titleBackgroundColor = null, Color? bodyBackgroundColor = null)
         {
             if (popupType == PopupType.Notification)
             {
                 displayTime = TimeSpan.FromSeconds(10);
             }
 
-            InfoPopup popup = new InfoPopup(popupType, title, text, displayTime, commandToken);
+            InfoPopup popup = new InfoPopup(popupType, title, text, displayTime, commandToken,icon,titleBackgroundColor,bodyBackgroundColor);
             popup.Width = _mainForm.Width;
-
-
             var totalPopupY = _openedPopups.Sum(x => x.Height);
             popup.ToTop();
             popup.Location = new Point(_mainForm.Location.X, _mainForm.Location.Y - popup.Height - totalPopupY);

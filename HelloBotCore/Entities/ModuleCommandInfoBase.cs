@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using HelloBotCommunication;
 using HelloBotCommunication.Interfaces;
+using HelloBotCore.Helpers;
 
 namespace HelloBotCore.Entities
 {
@@ -14,6 +16,9 @@ namespace HelloBotCore.Entities
         public double Version { get; set; }
         public string ModuleName { get; set; }
         public string DisplayName { get; set; }
+        public Image Icon { get; set; }
+        public Color? BodyBackgroundColor { get; set; }
+        public Color? HeaderBackgroundColor { get; set; }
 
         public ModuleCommandInfoBase()
         {
@@ -27,6 +32,15 @@ namespace HelloBotCore.Entities
             DisplayName = handlerModuleBase.ModuleTitle;
             var handType = handlerModuleBase.GetType();
             ModuleName = dllName + "." + handType.Name;
+
+            if (!string.IsNullOrEmpty(handlerModuleBase.IconInBase64))
+            {
+                Icon = ImageHelper.ResizeImage(ImageHelper.GetFromBase64(handlerModuleBase.IconInBase64), 26, 26);
+            }
+
+            BodyBackgroundColor = handlerModuleBase.BodyBackgroundColor;
+            HeaderBackgroundColor = handlerModuleBase.HeaderBackGroundColor;
+
             IClient client = new ModuleToClientAdapter(moduleClientHandler, this);
             handlerModuleBase.Init(client);
         }
