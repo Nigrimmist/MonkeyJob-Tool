@@ -9,7 +9,7 @@ namespace MonkeyJobTool.Entities
     {
         public const string DateTimeFormat = "dd-MM-yyyy";
         public const string AppName = "MonkeyJob Tool";
-        public const double AppVersion = 0.5;
+        public const double AppVersion = 0.4;
 
         public class Registry
         {

@@ -64,7 +64,7 @@ namespace Nigrimmist.Modules.Modules
                 }
 
                 hrm.Get(string.Format(LatestVersionFileUrlFormat, langCode));
-                string versionJson = hrm.Html;
+                string versionJson = hrm.Html.Replace("\t","");
                 AppVersionInfo info = JsonConvert.DeserializeObject<AppVersionInfo>(versionJson);
                 var versions = info.Versions.OrderBy(x => x.Version);
                 var latestVersion = versions.Last();

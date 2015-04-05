@@ -16,7 +16,7 @@ namespace Nigrimmist.Modules.Modules
     {
         private IClient _client;
         private DiarySettings _settings;
-        private HtmlReaderManager hrm;
+        
         public override void Init(IClient client)
         {
             _client = client;
@@ -27,11 +27,17 @@ namespace Nigrimmist.Modules.Modules
             {
                 _settings = new DiarySettings()
                 {
-                    CheckDiscussions = true,
-                    CheckNewComments = true,
-                    CheckUmails = true,
-                    Password = "",
-                    UserName = ""
+                    DiaryList = new List<DiaryItem>()
+                    {
+                        new DiaryItem()
+                        {
+                            CheckDiscussions = true,
+                            CheckNewComments = true,
+                            CheckUmails = true,
+                            Password = "",
+                            UserName = ""
+                        }
+                    }
                 };
                 _client.SaveSettings(_settings);
             }
@@ -52,62 +58,68 @@ namespace Nigrimmist.Modules.Modules
             get { return TimeSpan.FromMinutes(5);}
         }
 
+        private Dictionary<string, HtmlReaderManager> _dict = new Dictionary<string, HtmlReaderManager>(); 
+
         public override void OnFire(Guid eventToken)
         {
-            if (_settings != null && !string.IsNullOrEmpty(_settings.UserName) && !string.IsNullOrEmpty(_settings.Password))
+            if (_settings != null)
             {
-                if (hrm == null)
+                foreach (var diary in _settings.DiaryList.Where(x => !string.IsNullOrEmpty(x.UserName) && !string.IsNullOrEmpty(x.Password)))
                 {
-                    hrm = new HtmlReaderManager();
-                    hrm.Encoding = Encoding.GetEncoding(1251);
-                    if (!Login(eventToken))
+                    HtmlReaderManager hrm;
+                    if (!_dict.TryGetValue(diary.UserName, out hrm))
                     {
-                        return;
+                        hrm = new HtmlReaderManager();
+                        hrm.Encoding = Encoding.GetEncoding(1251);
+                        _dict.Add(diary.UserName, hrm);
+                        if (!Login(eventToken,diary.UserName,diary.Password,hrm))
+                        {
+                            continue;
+                        }
                     }
-                }
-                
-                if (!IsAuthenticated())
-                {
-                    if (!Login(eventToken))
+
+                    if (!IsAuthenticated(hrm))
                     {
-                        return;
+                        if (!Login(eventToken, diary.UserName, diary.Password, hrm))
+                        {
+                            continue;
+                        }
                     }
-                    
-                }
 
-                int newUmails;
-                int newDiscussions;
-                int newComments;
+                    int newUmails;
+                    int newDiscussions;
+                    int newComments;
 
-                GetNotifies(hrm.Html, out newUmails, out newComments, out newDiscussions);
-                StringBuilder sbMessage = new StringBuilder();
-                if (newUmails > 0 && _settings.CheckUmails)
-                {
-                    sbMessage.Append("Новые U-Mail (" + newUmails+")"+Environment.NewLine);
-                }
-                if (newDiscussions > 0 && _settings.CheckDiscussions)
-                {
-                    sbMessage.Append("Новые дискуссии (" + newDiscussions+")"+Environment.NewLine);
-                }
-                if (newComments > 0 && _settings.CheckNewComments)
-                {
-                    sbMessage.Append("Новые комментарии (" + newComments+")");
-                }
-
-                string toReturn = sbMessage.ToString();
-                if (!string.IsNullOrEmpty(toReturn))
-                {
-                    toReturn = ("На дневнике : " + Environment.NewLine + Environment.NewLine) + toReturn;
-
-                    _client.ShowMessage(eventToken, toReturn).OnClick(() =>
+                    GetNotifies(hrm.Html, out newUmails, out newComments, out newDiscussions);
+                    StringBuilder sbMessage = new StringBuilder();
+                    if (newUmails > 0 && diary.CheckUmails)
                     {
-                        _client.ShowMessage(eventToken, "http://diary.ru", answerType: AnswerBehaviourType.OpenLink);
-                    });
+                        sbMessage.Append("Новые U-Mail (" + newUmails + ")" + Environment.NewLine);
+                    }
+                    if (newDiscussions > 0 && diary.CheckDiscussions)
+                    {
+                        sbMessage.Append("Новые дискуссии (" + newDiscussions + ")" + Environment.NewLine);
+                    }
+                    if (newComments > 0 && diary.CheckNewComments)
+                    {
+                        sbMessage.Append("Новые комментарии (" + newComments + ")");
+                    }
+
+                    string toReturn = sbMessage.ToString();
+                    if (!string.IsNullOrEmpty(toReturn))
+                    {
+                        toReturn = (@"На дневнике """+diary.UserName+@""" : " + Environment.NewLine + Environment.NewLine) + toReturn;
+
+                        _client.ShowMessage(eventToken, toReturn).OnClick(() =>
+                        {
+                            _client.ShowMessage(eventToken, "http://diary.ru", answerType: AnswerBehaviourType.OpenLink);
+                        });
+                    }
                 }
             }
         }
 
-        private bool IsAuthenticated()
+        private bool IsAuthenticated(HtmlReaderManager hrm)
         {
             hrm.Get("http://diary.ru");
             var htmlXml = new HtmlDocument();
@@ -115,17 +127,17 @@ namespace Nigrimmist.Modules.Modules
             return htmlXml.GetElementbyId("m_menu")!=null;
         }
 
-        private bool Login(Guid eventToken)
+        private bool Login(Guid eventToken, string username, string password, HtmlReaderManager hrm)
         {
             
             string postUrl = String.Format("user_pass={1}&user_login={0}",
-                                                               HttpUtility.UrlEncode(_settings.UserName, Encoding.GetEncoding(1251)),
-                                                               HttpUtility.UrlEncode(_settings.Password, Encoding.GetEncoding(1251)));
+                                                               HttpUtility.UrlEncode(username, Encoding.GetEncoding(1251)),
+                                                               HttpUtility.UrlEncode(password, Encoding.GetEncoding(1251)));
             hrm.Post("http://www.diary.ru/login.php", postUrl);
 
             if (hrm.Html.Contains("ip изменился"))
             {
-                _client.ShowMessage(eventToken, "Логин/пароль не верны", messageType: MessageType.Error);
+                _client.ShowMessage(eventToken, string.Format(@"Логин/пароль для ""{0}"" не верны", username), messageType: MessageType.Error);
                 return false;
             }
 
@@ -137,7 +149,7 @@ namespace Nigrimmist.Modules.Modules
 
             if (hrm.Html.Contains("Доступ к дневнику ограничен"))
             {
-                _client.ShowMessage(eventToken, "Доступ к дневнику ограничен. Обновление уведомления возможно только после ввода логина и пароля в файле настроек модуля", messageType: MessageType.Error);
+                _client.ShowMessage(eventToken, string.Format(@"Доступ к дневнику ""{0}"" ограничен. Обновление уведомления возможно только после ввода логина и пароля в файле настроек модуля", username), messageType: MessageType.Error);
                 return false;
             }
             hrm.Get("http://diary.ru");
@@ -194,9 +206,18 @@ namespace Nigrimmist.Modules.Modules
 
     public class DiarySettings
     {
+        public List<DiaryItem> DiaryList { get; set; }
+
+        public DiarySettings()
+        {
+            DiaryList = new List<DiaryItem>();
+        }
+    }
+
+    public class DiaryItem
+    {
         public string UserName { get; set; }
         public string Password { get; set; }
-
         public bool CheckUmails { get; set; }
         public bool CheckNewComments { get; set; }
         public bool CheckDiscussions { get; set; }

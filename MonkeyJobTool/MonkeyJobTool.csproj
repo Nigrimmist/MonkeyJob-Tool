@@ -34,6 +34,10 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <ApplicationIcon>monnkey_highres.ico</ApplicationIcon>
+  </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
@@ -237,6 +241,7 @@
     <None Include="Resources\PayPalLogo.png" />
     <None Include="Resources\heart72.ico" />
     <None Include="Resources\donate-paypal-button.jpg" />
+    <Content Include="monnkey_highres.ico" />
     <Content Include="Res\mj.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
