@@ -12,16 +12,18 @@ namespace MonkeyJobTool.Controls.Autocomplete
         private List<SelectableWordPart> _wordParts;
         private RichTextLabel _rtl;
         public string Value;
+        public int Index { get; set; }
+
+        public delegate void OnChildMouseEnterDelegate();
+        public event OnChildMouseEnterDelegate OnChildMouseEnter;
+        public event OnChildMouseEnterDelegate OnChildMouseLeave;
 
         public AutocompletePopupItemControl(List<SelectableWordPart> wordParts, string value)
         {
             this._wordParts = wordParts;
             this.Value = value;
             InitializeComponent();
-        }
 
-        private void AutocompleteItemControl_Load(object sender, EventArgs e)
-        {
             RichTextLabel rtl = new RichTextLabel();
             rtl.Font = new Font("MS Reference Sans Serif", 15.57F);
             //rtl.BackColor = Color.LemonChiffon;            
@@ -42,11 +44,34 @@ namespace MonkeyJobTool.Controls.Autocomplete
             sb.Append(@"}");
             rtl.Width = this.Width;
             rtl.Rtf = sb.ToString();
-            
+
             rtl.Left = 5;
             rtl.Top = 10;
             _rtl = rtl;
+            rtl.MouseEnter += rtl_MouseEnter;
+            rtl.MouseLeave += rtl_MouseLeave;
             this.Controls.Add(rtl);
+        }
+
+        void rtl_MouseLeave(object sender, EventArgs e)
+        {
+            if (OnChildMouseLeave != null)
+            {
+                OnChildMouseLeave();
+            }
+        }
+
+        void rtl_MouseEnter(object sender, EventArgs e)
+        {
+            if (OnChildMouseEnter != null)
+            {
+                OnChildMouseEnter();
+            }
+        }
+
+        private void AutocompleteItemControl_Load(object sender, EventArgs e)
+        {
+            
             
         }
         private string ConvertString2RTF(string input)

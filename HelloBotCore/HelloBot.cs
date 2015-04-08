@@ -315,17 +315,7 @@ namespace HelloBotCore
             }
             return toReturn;
         }
-        private string GetUserDefinedCommands()
-        {
-            StringBuilder sb = new StringBuilder();
-            var modules = _handlerModules.Select(x => String.Format("{0} - {1}", string.Join(" / ", x.CallCommandList.Select(y => _botCommandPrefix + y.Command).ToArray()), x.CommandDescription)).ToArray();
-            sb.Append(String.Join(Environment.NewLine,modules));
-            sb.AppendLine("");
-            sb.AppendLine("Запили свой модуль : https://github.com/Nigrimmist/MonkeyJob-Tool");
-
-            return sb.ToString();
-        }
-
+        
         public List<CallCommandInfo> FindCommands(string incCommand)
         {
             return (

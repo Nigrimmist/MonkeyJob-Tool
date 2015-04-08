@@ -16,11 +16,8 @@ namespace MonkeyJobTool.Controls.Autocomplete
             base.SetStyle(ControlStyles.Selectable, false);
             base.SetStyle(ControlStyles.UserMouse, true);
             base.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
-
-            base.MouseEnter += delegate(object sender, EventArgs e)
-            {
-                this.Cursor = Cursors.Hand;
-            };
+            this.Cursor = Cursors.Hand;
+            
             base.ContentsResized += cntrl_ContentsResized;
             
         }

@@ -42,15 +42,7 @@ namespace Nigrimmist.Modules.Modules
 
             answer = string.Format("Ответ равен : {0}", exprAnswer);
 
-            _client.ShowMessage(commandToken, answer).OnClick(() =>
-            {
-                _client.ShowMessage(commandToken, "Не надо сюда кликать");
-            }).OnClosed(
-                () =>
-                {
-                    _client.ShowMessage(commandToken, "Notified event fired");
-                }
-                );
+            _client.ShowMessage(commandToken, answer);
         }
     }
 }

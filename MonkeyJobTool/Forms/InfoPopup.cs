@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using MonkeyJobTool.Entities;
+using MonkeyJobTool.Helpers;
 
 namespace MonkeyJobTool.Forms
 {
@@ -67,7 +68,10 @@ namespace MonkeyJobTool.Forms
             txtMessage.Top = rtTitle.Height + 15; 
             this.Height = txtMessage.Height + 55 + rtTitle.Height;
             pnlMain.Height = this.Height;
-            _initControlsRecursive(this.Controls);
+            foreach (var c in FormHelper.IterateControls(Controls))
+            {
+                c.MouseUp += InfoPopup_MouseUp;
+            }
             pnlHeader.Width = pnlMainWidth-2; 
             pnlHeader.Height = rtTitle.Height + 8;
             lblCloseHint.Text = _closeHint;
@@ -82,14 +86,7 @@ namespace MonkeyJobTool.Forms
             }
         }
 
-        private void _initControlsRecursive(Control.ControlCollection coll)
-        {
-            foreach (Control c in coll)
-            {
-                c.MouseUp += InfoPopup_MouseUp;
-                _initControlsRecursive(c.Controls);
-            }
-        }
+        
 
         private void InfoPopup_MouseUp(object sender, MouseEventArgs e)
         {

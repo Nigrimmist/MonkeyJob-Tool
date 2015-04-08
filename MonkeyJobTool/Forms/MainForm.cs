@@ -66,7 +66,8 @@ namespace MonkeyJobTool.Forms
                     ParentForm = this,
                     DataFilterFunc = GetCommandListByTerm,
                     Left = 43,
-                    Top = 9
+                    Top = 9,
+                    StartSuggestFrom = 1
                 };
                 _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
                 _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;

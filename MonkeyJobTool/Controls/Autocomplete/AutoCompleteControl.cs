@@ -28,7 +28,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         public delegate void OnKeyPressedDelegate(Keys key);
         public event OnKeyPressedDelegate OnKeyPressed;
-
+        public int StartSuggestFrom = 1;
         public bool IsPopupOpen
         {
             get { return _isPopupOpen; }
@@ -42,20 +42,42 @@ namespace MonkeyJobTool.Controls.Autocomplete
         private void AutoCompleteControl_Load(object sender, EventArgs e)
         {
             _popup.OnItemHighlighted += popup_OnItemHighlighted;
+            _popup.OnNoOneSelected += _popup_OnNoOneSelected;
+            _popup.OnMouseClicked += _popup_OnMouseClicked;
+            
         }
 
-        void popup_OnItemHighlighted(string highlightedItem)
+        void _popup_OnMouseClicked(string clickedItem)
         {
-            txtCommand.Text = highlightedItem+" ";
+            SetCommand(clickedItem);
+        }
+
+        void _popup_OnNoOneSelected()
+        {
+            txtCommand.Text = _lastPreSelectText;
             txtCommand.SelectionStart = txtCommand.Text.Length;
+        }
+
+        private void SetCommand(string command)
+        {
+            txtCommand.Text = command + " ";
+            txtCommand.SelectionStart = txtCommand.Text.Length;
+        }
+        void popup_OnItemHighlighted(string highlightedItem,bool usingMouse)
+        {
+            if (!usingMouse)
+            {
+                SetCommand(highlightedItem);
+            }
         }
 
         private void txtCommand_TextChanged(object sender, EventArgs e)
         {
-            if (_popup.IsInSelectMode) return; //no any suggestions if selectMode enabled
+            if (_popup.IsAnyitemHighlighted) return; //no any suggestions if selectMode enabled
             string term = txtCommand.Text;
+            
             _lastPreSelectText = term;
-            if (!string.IsNullOrEmpty(term))
+            if (!string.IsNullOrEmpty(term) && term.Length >= StartSuggestFrom)
             {
                 var filterResult = DataFilterFunc(term);
                 term = filterResult.FoundByTerm; //incoming and outgoing term can be different
@@ -142,6 +164,9 @@ namespace MonkeyJobTool.Controls.Autocomplete
                     {
                         OnCommandReceived(txtCommand.Text);
                     }
+                    
+                    e.SuppressKeyPress = true;
+
                     break;
                 }
                 case Keys.Up:
@@ -152,19 +177,13 @@ namespace MonkeyJobTool.Controls.Autocomplete
                 }
                 case Keys.Down:
                 {
-                    var tIsInSelectMode = _popup.IsInSelectMode;
                     _popup.HighlightDown();
-                    if (!_popup.IsInSelectMode && tIsInSelectMode) //from select to non-select
-                    {
-                        txtCommand.Text = _lastPreSelectText;
-                        txtCommand.SelectionStart = txtCommand.Text.Length;
-                    }
                     e.Handled = true;
                     break;
                 }
                 default:
                 {
-                    _popup.ResetHighlight();
+                    _popup.ResetHighlightIndex();
 
                     break;
                 }

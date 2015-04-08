@@ -87,6 +87,10 @@ namespace Rextester
                     toReturn = toReturn.Replace(Environment.NewLine," ").Trim();
                     _client.ShowMessage(commandToken,toReturn.Length > 200 ? toReturn.Substring(0, 50) + "..." : toReturn);
                 }
+                else
+                {
+                    _client.ShowMessage(commandToken,"Что-то пошло не так");
+                }
                 
                 
             }

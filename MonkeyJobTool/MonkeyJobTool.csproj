@@ -123,6 +123,7 @@
     <Compile Include="Forms\SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\FormHelper.cs" />
     <Compile Include="Helpers\GoogleAnalytics.cs" />
     <Compile Include="Helpers\HtmlReaderManager.cs" />
     <Compile Include="Helpers\ImageHelper.cs" />
