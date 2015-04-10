@@ -116,6 +116,7 @@ namespace MonkeyJobTool.Forms
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "MonkeyJob Tool";
             this.Load += new System.EventHandler(this.MainForm_Load);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.MainForm_Paint);
             this.trayMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MainIcon)).EndInit();
             this.ResumeLayout(false);

@@ -44,7 +44,6 @@ namespace MonkeyJobTool.Controls.Autocomplete
             _popup.OnItemHighlighted += popup_OnItemHighlighted;
             _popup.OnNoOneSelected += _popup_OnNoOneSelected;
             _popup.OnMouseClicked += _popup_OnMouseClicked;
-            
         }
 
         void _popup_OnMouseClicked(string clickedItem)

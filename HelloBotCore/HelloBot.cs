@@ -224,12 +224,12 @@ namespace HelloBotCore
                                             {
                                                 OnErrorOccured(ex);
                                             }
-                                            ShowInternalMessage(command,"модуль сломался");
+                                            ShowInternalMessage(command,"Увы, что-то пошло не так и модуль сломался, попробуйте как-нибудь по другому.");
                                         }
                                     }
                                 }, TimeSpan.FromSeconds(_commandTimeoutSec)))
                                 {
-                                    ShowInternalMessage(command,"модуль сломался. Причина : время на выполнение команды истекло");
+                                    ShowInternalMessage(command,"модуль сломался. Причина : время модуля на выполнение команды истекло");
                                 }
                             }).Start();
                             return true;

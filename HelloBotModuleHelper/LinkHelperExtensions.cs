@@ -2,28 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using HtmlAgilityPack;
 using Newtonsoft.Json;
 
 namespace HelloBotModuleHelper
 {
     public static class LinkHelperExtensions
     {
-        private class idClass
-        {
-            public string id { get; set; }
-        }
-
+       
         public static string ToShortUrl(this string url)
         {
-            string shortenerPostUrl = "https://www.googleapis.com/urlshortener/v1/url";
-            string postData = string.Format(@"{{""longUrl"": ""{0}""}}", url);
+            string shortenerPostUrl = string.Format("http://tinyurl.com/create.php?source=indexpage&url={0}&submit=Make+TinyURL%21&alias=", Uri.EscapeUriString(url));
+           
             HtmlReaderManager hrm = new HtmlReaderManager();
-            hrm.ContentType = "application/json";
-            hrm.Post(shortenerPostUrl, postData);
-
-            var response = JsonConvert.DeserializeObject<idClass>(hrm.Html);
-            return response.id;
+            hrm.Get(shortenerPostUrl);
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(hrm.Html);
+            return doc.DocumentNode.SelectSingleNode("//blockquote[2]/b").InnerText;
         }
     }
 }

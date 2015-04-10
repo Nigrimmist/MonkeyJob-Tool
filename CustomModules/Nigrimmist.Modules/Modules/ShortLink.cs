@@ -40,7 +40,7 @@ namespace Nigrimmist.Modules.Modules
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
             string answer = args.ToShortUrl();
-            _client.ShowMessage(commandToken,answer);
+            _client.ShowMessage(commandToken,answer, answerType:AnswerBehaviourType.CopyToClipBoard);
         }
     }
 }

@@ -86,6 +86,7 @@
             // rtTitle
             // 
             this.rtTitle.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rtTitle.Cursor = System.Windows.Forms.Cursors.Hand;
             this.rtTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtTitle.Location = new System.Drawing.Point(33, 4);
             this.rtTitle.Name = "rtTitle";
@@ -120,6 +121,7 @@
             // 
             this.txtMessage.BackColor = System.Drawing.Color.Transparent;
             this.txtMessage.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtMessage.Cursor = System.Windows.Forms.Cursors.Hand;
             this.txtMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtMessage.Location = new System.Drawing.Point(14, 42);
             this.txtMessage.Name = "txtMessage";

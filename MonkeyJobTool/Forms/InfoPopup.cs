@@ -151,18 +151,14 @@ namespace MonkeyJobTool.Forms
             
             using (Pen p = new Pen(Color.Black, borderSize))
             {
-                if (PopupType != PopupType.Fixed)
-                {
+                
                     e.Graphics.DrawLine(p, 0, 0, 0, pnlMain.ClientSize.Height);
                     e.Graphics.DrawLine(p, 0, 0, pnlMain.ClientSize.Width, 0);
                     e.Graphics.DrawLine(p, pnlMain.ClientSize.Width - borderSize, 0, pnlMain.ClientSize.Width - borderSize, pnlMain.ClientSize.Height - borderSize);
 
                     e.Graphics.DrawLine(p, pnlMain.ClientSize.Width - borderSize, pnlMain.ClientSize.Height - borderSize, 0, pnlMain.ClientSize.Height - borderSize);
-                }
-                //e.Graphics.DrawRectangle(p, new Rectangle(halfThickness,
-                //    halfThickness,
-                //    pnlMain.ClientSize.Width - borderSize,
-                //    pnlMain.ClientSize.Height - borderSize));
+                
+                
             }
         }
         

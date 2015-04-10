@@ -139,7 +139,7 @@ namespace MonkeyJobTool.Forms
                 string answer = answerInfo.Answer;
                 var answerType = answerInfo.AnswerType;
                 SetLoading(false);
-            
+                string title = string.IsNullOrEmpty(answerInfo.Title) ? answerInfo.CommandName : answerInfo.Title;
                 if (answerInfo.MessageSourceType == ModuleType.Event)
                 {
                     //do not show already exist popup for events
@@ -149,12 +149,13 @@ namespace MonkeyJobTool.Forms
                     }
                 }
 
-                if (clientCommandContext != null && clientCommandContext.IsToBuffer)
+                if (answerType == AnswerBehaviourType.CopyToClipBoard || (clientCommandContext != null && clientCommandContext.IsToBuffer))
                 {
+                    
                     this.Invoke(new MethodInvoker(delegate
                     {
                         Clipboard.SetText(answer);
-                        App.Instance.ShowInternalPopup("Результат команды скопирован в буфер обмена", TimeSpan.FromSeconds(3));
+                        App.Instance.ShowInternalPopup(title,"Результат команды скопирован в буфер обмена", TimeSpan.FromSeconds(3));
                     }));
                 }
                 else
@@ -175,7 +176,7 @@ namespace MonkeyJobTool.Forms
                     {
                         if (!string.IsNullOrEmpty(answer))
                         {
-                            string title = string.IsNullOrEmpty(answerInfo.Title) ? answerInfo.CommandName : answerInfo.Title;
+                            
                             this.Invoke((MethodInvoker) (delegate
                             {
                                 switch (answerInfo.MessageSourceType)
@@ -415,6 +416,19 @@ namespace MonkeyJobTool.Forms
         private void tsDonate_Click(object sender, EventArgs e)
         {
             new DonateListForm().ShowDialog();
+        }
+
+        private void MainForm_Paint(object sender, PaintEventArgs e)
+        {
+            int borderSize = 1;
+
+            using (Pen p = new Pen(Color.Black, borderSize))
+            {
+                e.Graphics.DrawLine(p, 0, 0, 0, this.ClientSize.Height);
+                e.Graphics.DrawLine(p, 0, 0, this.ClientSize.Width, 0);
+                e.Graphics.DrawLine(p, this.ClientSize.Width - borderSize, 0, this.ClientSize.Width - borderSize, this.ClientSize.Height - borderSize);
+                e.Graphics.DrawLine(p, this.ClientSize.Width - borderSize, this.ClientSize.Height - borderSize, 0, this.ClientSize.Height - borderSize);
+            }
         }
     }
 }

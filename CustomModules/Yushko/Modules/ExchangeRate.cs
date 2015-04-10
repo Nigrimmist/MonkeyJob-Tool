@@ -29,7 +29,7 @@ namespace Yushko.Modules
             {
                 return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("курс валюты", new List<string>(){"курс","exrate"}),
+                    new CallCommandInfo("Курс валюты", new List<string>(){"курс","exrate"}),
                 });
             }
         }

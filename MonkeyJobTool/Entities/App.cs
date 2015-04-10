@@ -144,9 +144,9 @@ namespace MonkeyJobTool.Entities
             ShowPopup(title, text, PopupType.Fixed, commandToken: commandToken, icon: icon, titleBackgroundColor: titleBackgroundColor, bodyBackgroundColor: bodyBackgroundColor);
         }
 
-        public void ShowInternalPopup(string message, TimeSpan? timeToShow)
+        public void ShowInternalPopup(string title,string message, TimeSpan? timeToShow)
         {
-            ShowPopup(string.Empty, message, PopupType.InternalMessage , timeToShow);
+            ShowPopup(title, message, PopupType.InternalMessage , timeToShow);
         }
 
         private void ShowPopup(string title, string text, PopupType popupType, TimeSpan? displayTime = null, Guid? commandToken = null, Image icon = null, Color? titleBackgroundColor = null, Color? bodyBackgroundColor = null)
