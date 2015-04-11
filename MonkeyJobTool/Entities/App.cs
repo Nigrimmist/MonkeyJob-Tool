@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using HelloBotCore;
 using Microsoft.Win32;
 using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Forms;
@@ -133,6 +134,8 @@ namespace MonkeyJobTool.Entities
         {
             get { return _appConf; }
         }
+
+        public HelloBot Bot { get; set; }
 
         public void ShowNotification(string title, string text, Guid? commandToken, Image icon = null, Color? titleBackgroundColor = null, Color? bodyBackgroundColor = null)
         {

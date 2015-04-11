@@ -14,8 +14,8 @@ namespace HelloBotCore.Entities
         public Guid Id { get; set; }
         public string CommandDescription { get; set; }
         public double Version { get; set; }
-        public string ModuleName { get; set; }
-        public string DisplayName { get; set; }
+        public string ModuleSystemName { get; set; }
+        public string ProvidedTitle { get; set; }
         public Image Icon { get; set; }
         public Color? BodyBackgroundColor { get; set; }
         public Color? HeaderBackgroundColor { get; set; }
@@ -25,13 +25,18 @@ namespace HelloBotCore.Entities
             Id = Guid.NewGuid();
         }
 
+        public string GetModuleName()
+        {
+            return string.IsNullOrEmpty(this.ProvidedTitle) ? this.ModuleSystemName : this.ProvidedTitle;
+        }
+
         public void Init(string dllName, ModuleBase handlerModuleBase, IModuleClientHandler moduleClientHandler)
         {
             CommandDescription = handlerModuleBase.ModuleDescription;
             Version = handlerModuleBase.ModuleVersion;
-            DisplayName = handlerModuleBase.ModuleTitle;
+            ProvidedTitle = handlerModuleBase.ModuleTitle;
             var handType = handlerModuleBase.GetType();
-            ModuleName = dllName + "." + handType.Name;
+            ModuleSystemName = dllName + "." + handType.Name;
 
             if (!string.IsNullOrEmpty(handlerModuleBase.IconInBase64))
             {

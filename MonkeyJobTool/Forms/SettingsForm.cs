@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using HelloBotCore.Entities;
 using Microsoft.Win32;
 using MonkeyJobTool.Controls.Settings;
 using MonkeyJobTool.Entities;
@@ -24,9 +25,11 @@ namespace MonkeyJobTool.Forms
             chkIsHideDonateBtn.Checked = !App.Instance.AppConf.ShowDonateButton;
             HotKeysDatabind();
             CommandReplaceDatabind();
+            DatabindCommandGrid();
         }
 
         
+
 
         private void chkIsWithWindowsStart_CheckedChanged(object sender, EventArgs e)
         {
@@ -215,6 +218,60 @@ namespace MonkeyJobTool.Forms
             SaveConfiguration();
         }
 
-        
+        #region command grid
+        private void DatabindCommandGrid()
+        {
+            var events = App.Instance.Bot.Events;
+            var commands = App.Instance.Bot.Commands;
+
+            foreach (var eventInfo in events)
+            {
+                AddModuleInfoToGrid(eventInfo.GetModuleName(), "Событийный", true, eventInfo.ModuleSystemName);
+            }
+
+            foreach (var com in commands)
+            {
+                AddModuleInfoToGrid(com.GetModuleName(), "Команда", true,com.ModuleSystemName);
+            }
+        }
+
+        private void AddModuleInfoToGrid(string name, string type, bool enabled, string uniqueName)
+        {
+            DataGridViewRow r = new DataGridViewRow {ErrorText = uniqueName};
+            r.Cells.Add(new DataGridViewTextBoxCell()
+            {
+                Value = name,
+                Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleLeft }
+            });
+            r.Cells.Add(new DataGridViewTextBoxCell()
+            {
+                Value = type,
+                Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleLeft }
+            });
+
+            r.Cells.Add(new DataGridViewTextBoxCell()
+            {
+                Value = enabled?"Включен":"Выключен",
+                Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleLeft }
+            });
+
+            gridModules.Rows.Add(r);
+        }
+        #endregion
+
+        private void gridModules_RowEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            var moduleKey = gridModules.Rows[e.RowIndex].ErrorText;
+            var command = App.Instance.Bot.Commands.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
+            if (command != null)
+            {
+                txtDescr.Text = command.CommandDescription;
+            }
+        }
+
+        private void txtDescr_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

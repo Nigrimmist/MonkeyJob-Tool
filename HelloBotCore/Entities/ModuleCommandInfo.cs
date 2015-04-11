@@ -13,7 +13,7 @@ namespace HelloBotCore.Entities
         public delegate void HandleMessageFunc(string command, string args, Guid token);
         public HandleMessageFunc HandleMessage { get; set; }
         public delegate void OnEventFireDelegate(Guid eventToken);
-        public TimeSpan EventRunEvery { get; set; }
+        
         
         public void Init(string dllName,ModuleHandlerBase handlerModuleBase, IModuleClientHandler moduleClientHandler)
         {

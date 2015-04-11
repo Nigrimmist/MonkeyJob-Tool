@@ -27,7 +27,7 @@ namespace HelloBotCore
 
     public class HelloBot : IModuleClientHandler
     {
-        public readonly double Version = 0.2;
+        public readonly double Version = 0.4;
         private List<ModuleCommandInfo> _handlerModules = new List<ModuleCommandInfo>();
         private List<ModuleEventInfo> _eventModules = new List<ModuleEventInfo>();
         
@@ -85,11 +85,11 @@ namespace HelloBotCore
                 var tEv = ev;
                 new Thread(() =>
                 {
-                    //Thread.Sleep((int)TimeSpan.FromSeconds(3).TotalMilliseconds);
+                    
                     Guid commandToken = Guid.NewGuid();
                     AddNewCommandContext(commandToken, new BotCommandContext()
                     {
-                        CommandName = string.IsNullOrEmpty(tEv.DisplayName)?tEv.ModuleName:tEv.DisplayName,
+                        CommandName = tEv.GetModuleName(),
                         CommandType = ModuleType.Event
                     });
 
@@ -210,7 +210,7 @@ namespace HelloBotCore
                                         AddNewCommandContext(commandTempGuid, new BotCommandContext()
                                         {
                                             ClientCommandContext = clientCommandContext,
-                                            CommandName = !string.IsNullOrEmpty(hnd.DisplayName) ? hnd.DisplayName : command,
+                                            CommandName = !string.IsNullOrEmpty(hnd.ProvidedTitle) ? hnd.ProvidedTitle : command,
                                             CommandType = ModuleType.Handler
                                         });
                                         
@@ -335,7 +335,7 @@ namespace HelloBotCore
             {
                 var settings = new ModuleSettings<T>(commandInfo.Version, serializableSettingObject);
                 var json = JsonConvert.SerializeObject(settings, Formatting.Indented);
-                string moduleFileName = commandInfo.ModuleName + ".json";
+                string moduleFileName = commandInfo.ModuleSystemName + ".json";
                 File.WriteAllText(_settingsFolderAbsolutePath + "/" + moduleFileName, json);
             }
         }
@@ -344,7 +344,7 @@ namespace HelloBotCore
         {
             lock (_commandDictLocks[commandInfo.Id])
             {
-                string moduleFileName = commandInfo.ModuleName + ".json";
+                string moduleFileName = commandInfo.ModuleSystemName + ".json";
                 string fullPath = _settingsFolderAbsolutePath+"/" + moduleFileName;
                 if (!File.Exists(fullPath)) return default(T);
                 string data = File.ReadAllText(fullPath);
@@ -481,6 +481,9 @@ namespace HelloBotCore
         {
             return _currentUIClientVersion;
         }
+
+        public List<ModuleEventInfo> Events { get { return _eventModules; } }
+        public List<ModuleCommandInfo> Commands { get { return _handlerModules; } }
     }
 
    
