@@ -33,7 +33,19 @@ namespace Nigrimmist.Modules.Modules
                 });
             }
         }
-        public override string ModuleDescription { get { return @"Погода с тутбая для Минска. ""!погода"" = текущая+завтра"; } }
+        
+
+        public override DescriptionInfo ModuleDescription
+        {
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = @"Погода с тутбая для Минска. ""!погода"" = текущая+завтра"
+                };
+            }
+        }
+
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
             HtmlReaderManager hrm = new HtmlReaderManager();

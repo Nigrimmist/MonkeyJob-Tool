@@ -33,7 +33,18 @@ namespace Yushko.Modules
                 });
             }
         }
-        public override string ModuleDescription { get { return @"гороскоп <знак зодиака>"; } }
+        
+
+        public override DescriptionInfo ModuleDescription
+        {
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = "гороскоп <знак зодиака>"
+                };
+            }
+        }
 
         private IDictionary<string, string> Signs = new Dictionary<string, string>()
         {

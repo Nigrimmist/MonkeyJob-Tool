@@ -32,7 +32,18 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override string ModuleDescription { get { return @"Выбирает между чем-то. Использует ""Или"" в качестве разделителя"; } }
+        public override DescriptionInfo ModuleDescription
+        {
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = @"Выбирает между чем-то. Использует ""Или"" в качестве разделителя"
+                };
+            }
+        }
+
+        
         private Random _r = new Random();
         private const int ChanceOfSpecialAnswer = 30;
 

@@ -44,9 +44,18 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override string ModuleDescription { get { return @"Случайный совет с http://fucking-great-advice.ru/"; } }
+        public override DescriptionInfo ModuleDescription
+        {
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = @"Случайный совет с http://fucking-great-advice.ru/"
+                };
+            }
+        }
 
-        public override void HandleMessage(string command, string args, Guid commandToken)
+            public override void HandleMessage(string command, string args, Guid commandToken)
         {
             HtmlReaderManager hrm = new HtmlReaderManager();
             hrm.Encoding = Encoding.GetEncoding(1251);

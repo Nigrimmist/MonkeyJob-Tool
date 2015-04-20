@@ -36,9 +36,16 @@ namespace SmartAssHandlerLib
             }
         }
 
-        public override string ModuleDescription
+        
+        public override DescriptionInfo ModuleDescription
         {
-            get { return string.Empty; }
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = ""
+                };
+            }
         }
 
         public override void HandleMessage(string command, string args, Guid commandToken)

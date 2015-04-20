@@ -41,12 +41,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnswerBehaviourType.cs" />
+    <Compile Include="AuthorInfo.cs" />
     <Compile Include="CallCommandInfo.cs" />
     <Compile Include="ClientLanguage.cs" />
-    <Compile Include="Interfaces\IBot.cs" />
+    <Compile Include="DescriptionInfo.cs" />
+    <Compile Include="Interfaces\IClient.cs" />
     <Compile Include="Interfaces\IBotCallback.cs" />
     <Compile Include="ModuleBase.cs" />
-    <Compile Include="Interfaces\IModuleRegister.cs" />
+    <Compile Include="Interfaces\ModuleRegister.cs" />
     <Compile Include="Interfaces\ITimerRegister.cs" />
     <Compile Include="MessageType.cs" />
     <Compile Include="ModuleEventBase.cs" />

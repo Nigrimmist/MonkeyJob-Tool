@@ -19,9 +19,9 @@ namespace Yushko
             };
         }
 
-        public override string ByAuthor
+        public override AuthorInfo AuthorInfo
         {
-            get { throw new System.NotImplementedException(); }
+            get { return null; }
         }
     }
 }

@@ -48,9 +48,17 @@ namespace SmartAssHandlerLib
                 });
             }
         }
-        public override string ModuleDescription
+        
+
+        public override DescriptionInfo ModuleDescription
         {
-            get { return "Лаконичный ответ на простой вопрос."; }
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = "Лаконичный ответ на простой вопрос."
+                };
+            }
         }
 
         public override void HandleMessage(string command, string args, Guid commandToken)

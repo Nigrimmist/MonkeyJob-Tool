@@ -39,8 +39,17 @@ namespace Nigrimmist.Modules.Modules
         }
 
         
+        public override DescriptionInfo ModuleDescription
+        {
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = "Случайная цитата с башорга"
+                };
+            }
+        }
 
-        public override string ModuleDescription { get { return @"Случайная цитата с башорга"; } }
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
             if (!_jokes.Any())

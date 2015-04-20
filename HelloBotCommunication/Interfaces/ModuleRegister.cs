@@ -12,6 +12,6 @@ namespace HelloBotCommunication.Interfaces
         {
             return new List<ModuleEventBase>();
         }
-        public abstract string ByAuthor { get; }
+        public abstract AuthorInfo AuthorInfo { get; }
     }
 }

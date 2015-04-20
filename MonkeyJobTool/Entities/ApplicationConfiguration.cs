@@ -40,6 +40,11 @@ namespace MonkeyJobTool.Entities
 
     public class SystemData
     {
-        //public double Version { get; set; }
+        public List<string>  DisabledModules { get; set; }
+
+        public SystemData()
+        {
+            DisabledModules = new List<string>();
+        }
     }
 }

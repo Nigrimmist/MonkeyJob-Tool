@@ -95,7 +95,18 @@ namespace Yushko.Modules
             return result;
         }
 
-        public override string ModuleDescription { get { return @"казнить нельзя помиловать"; } }
+        
+
+        public override DescriptionInfo ModuleDescription
+        {
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = "казнить нельзя помиловать"
+                };
+            }
+        }
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

@@ -13,17 +13,22 @@ namespace HelloBotCore.Entities
         public TimeSpan EventRunEvery { get; set; }
         public OnEventFireDelegate EventFireCallback;
 
-        public void Init(string dllName, ModuleEventBase eventModuleBase, IModuleClientHandler moduleClientHandler)
+        public void Init(string dllName, ModuleEventBase eventModuleBase, IModuleClientHandler moduleClientHandler,AuthorInfo author)
         {
             EventFireCallback = eventModuleBase.OnFire;
             EventRunEvery = eventModuleBase.RunEvery;
-            base.Init(dllName, eventModuleBase, moduleClientHandler);
-            
+            CommandDescription = new DescriptionInfo() {Description = eventModuleBase.ModuleDescription};
+            base.Init(dllName, eventModuleBase, moduleClientHandler, author);
         }
 
         public void CallEvent(Guid commandToken)
         {
             EventFireCallback(commandToken);
+        }
+
+        public override ModuleType ModuleType
+        {
+            get { return ModuleType.Event; }
         }
     }
 }

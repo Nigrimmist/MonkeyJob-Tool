@@ -33,6 +33,8 @@ namespace Nigrimmist.Modules.Modules
         {
             get { return "Модуль проверки наличия новых версий программы"; }
         }
+        
+
 
         public override TimeSpan RunEvery
         {

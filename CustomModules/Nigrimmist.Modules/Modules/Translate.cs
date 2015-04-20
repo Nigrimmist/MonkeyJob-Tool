@@ -35,7 +35,18 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override string ModuleDescription { get { return "Переводчик. Язык определяет автоматически, поддерживаются только русский/английский"; } }
+        public override DescriptionInfo ModuleDescription
+        {
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = "Переводчик. Язык определяет автоматически, поддерживаются только русский/английский"
+                };
+            }
+        }
+
+        
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

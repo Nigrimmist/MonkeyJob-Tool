@@ -20,6 +20,13 @@ namespace HelloBotCommunication
         /// <param name="args">Command arguments, can be empty</param>
         /// <param name="commandToken">Command token</param>
         public abstract void HandleMessage(string command,string args, Guid commandToken);
-        
+
+        /// <summary>
+        /// Your command description info
+        /// </summary>
+        public virtual DescriptionInfo ModuleDescription
+        {
+            get { return null; }
+        }
     }
 }

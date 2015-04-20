@@ -33,11 +33,17 @@ namespace Nigrimmist.Modules.Modules
                 });
             }
         }
-        public override string ModuleDescription
+        
+        public override DescriptionInfo ModuleDescription
         {
-            get { return @"Генерирует ссылку на карту по адресу. Добавьте help для просмотра справки."; }
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = "Генерирует ссылку на карту по адресу. Добавьте help для просмотра справки."
+                };
+            }
         }
-
        
         private IDictionary<string, string> mapUrlProviders = new Dictionary<string, string>()
         {

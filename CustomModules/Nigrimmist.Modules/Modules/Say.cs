@@ -32,8 +32,17 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-
-        public override string ModuleDescription { get { return @"Говорит что прикажете"; } }
+        public override DescriptionInfo ModuleDescription
+        {
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = "Говорит что прикажете"
+                };
+            }
+        }
+        
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
             _client.ShowMessage(commandToken,args);

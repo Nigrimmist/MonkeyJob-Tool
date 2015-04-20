@@ -34,11 +34,17 @@ namespace Yushko.Modules
             }
         }
 
-        public override string ModuleDescription
+        
+        public override DescriptionInfo ModuleDescription
         {
-            get { return "курсы валют по НацБанку. Для справки добавьте \"помощь\" или \"help\""; }
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = "курсы валют по НацБанку. Для справки добавьте \"помощь\" или \"help\""
+                };
+            }
         }
-
 
         public ExRatesSoapClient rates = new ExRatesSoapClient();
         public List<int> requiredCurrencies = new List<int> { 978, 840, 643 };//EUR, USD, RUB //826=GBP, 

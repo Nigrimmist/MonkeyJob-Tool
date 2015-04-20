@@ -34,8 +34,17 @@ namespace Nigrimmist.Modules.Modules
                 });
             }
         }
-       
-        public override string ModuleDescription { get { return @"Сокращалка ссылок"; } }
+        public override DescriptionInfo ModuleDescription
+        {
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = "Сокращалка ссылок"
+                };
+            }
+        }
+        
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

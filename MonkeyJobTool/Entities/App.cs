@@ -337,5 +337,25 @@ namespace MonkeyJobTool.Entities
                 return _openedPopups.Any();
             }
         }
+
+        public void DisableModule(string moduleSystemName)
+        {
+            Bot.DisableModule(moduleSystemName);
+            if (!AppConf.SystemData.DisabledModules.Contains(moduleSystemName))
+            {
+                AppConf.SystemData.DisabledModules.Add(moduleSystemName);
+                AppConf.Save();
+            }
+        }
+
+        public void EnableModule(string moduleSystemName)
+        {
+            Bot.EnableModule(moduleSystemName);
+            if (!AppConf.SystemData.DisabledModules.Contains(moduleSystemName))
+            {
+                AppConf.SystemData.DisabledModules.Remove(moduleSystemName);
+                AppConf.Save();
+            }
+        }
     }
 }

@@ -35,7 +35,18 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override string ModuleDescription { get { return @"Случайная цитата c http://online-generators.ru"; } }
+        public override DescriptionInfo ModuleDescription
+        {
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = "Случайная цитата c http://online-generators.ru"
+                };
+            }
+        }
+
+       
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

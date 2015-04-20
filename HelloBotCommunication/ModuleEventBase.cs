@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using HelloBotCommunication.Interfaces;
 
@@ -19,5 +20,10 @@ namespace HelloBotCommunication
         /// </summary>
         /// <param name="eventToken"></param>
         public abstract void OnFire(Guid eventToken);
+
+        /// <summary>
+        /// General event description
+        /// </summary>
+        public virtual string ModuleDescription { get { return null; } }
     }
 }

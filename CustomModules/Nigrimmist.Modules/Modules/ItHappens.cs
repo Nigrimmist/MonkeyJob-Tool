@@ -38,7 +38,18 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override string ModuleDescription { get { return @"Случайная IT история с ithappens.me"; } }
+        
+        public override DescriptionInfo ModuleDescription
+        {
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = "Случайная IT история с ithappens.me"
+                };
+            }
+        }
+
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
             if (!_jokes.Any())

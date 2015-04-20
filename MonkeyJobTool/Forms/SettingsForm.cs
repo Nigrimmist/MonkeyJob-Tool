@@ -226,12 +226,12 @@ namespace MonkeyJobTool.Forms
 
             foreach (var eventInfo in events)
             {
-                AddModuleInfoToGrid(eventInfo.GetModuleName(), "Событийный", true, eventInfo.ModuleSystemName);
+                AddModuleInfoToGrid(eventInfo.GetModuleName(), "Событийный", eventInfo.IsEnabled, eventInfo.ModuleSystemName);
             }
 
             foreach (var com in commands)
             {
-                AddModuleInfoToGrid(com.GetModuleName(), "Команда", true,com.ModuleSystemName);
+                AddModuleInfoToGrid(com.GetModuleName(), "Команда", com.IsEnabled, com.ModuleSystemName);
             }
         }
 
@@ -249,10 +249,10 @@ namespace MonkeyJobTool.Forms
                 Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleLeft }
             });
 
-            r.Cells.Add(new DataGridViewTextBoxCell()
+            r.Cells.Add(new DataGridViewCheckBoxCell()
             {
-                Value = enabled?"Включен":"Выключен",
-                Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleLeft }
+                Value = enabled,
+                Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleCenter }
             });
 
             gridModules.Rows.Add(r);
@@ -262,16 +262,29 @@ namespace MonkeyJobTool.Forms
         private void gridModules_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
             var moduleKey = gridModules.Rows[e.RowIndex].ErrorText;
-            var command = App.Instance.Bot.Commands.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
-            if (command != null)
+            var baseModuleInfo = App.Instance.Bot.Modules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
+
+            if (baseModuleInfo != null)
             {
-                txtDescr.Text = command.CommandDescription;
+                txtDescr.Text = baseModuleInfo.CommandDescription.Description;
+                txtAuthorEmail.Text = baseModuleInfo.Author != null && !string.IsNullOrEmpty(baseModuleInfo.Author.ContactEmail) ? baseModuleInfo.Author.ContactEmail : "Не указан";
+                txtAuthorName.Text = baseModuleInfo.Author != null && !string.IsNullOrEmpty(baseModuleInfo.Author.Name) ? baseModuleInfo.Author.Name : "Не указано";
+                btnEnabledDisableModule.Text = (baseModuleInfo.IsEnabled ? "В" : "Вы") + "ключить";
+
+                if (baseModuleInfo.ModuleType == ModuleType.Handler)
+                {
+                    txtSamples.Text = string.Join(Environment.NewLine, (baseModuleInfo as ModuleCommandInfo).CommandDescription.SamplesOfUsing.ToArray());
+                    txtScheme.Text = (baseModuleInfo as ModuleCommandInfo).CommandDescription.CommandScheme;
+                }
             }
         }
 
-        private void txtDescr_TextChanged(object sender, EventArgs e)
-        {
 
+        private void btnEnabledDisableModule_Click(object sender, EventArgs e)
+        {
+            var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
+            var command = App.Instance.Bot.Commands.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
+            //gridModules.Rows[e.RowIndex].Cells[2].Value = baseModuleInfo.IsEnabled;
         }
     }
 }

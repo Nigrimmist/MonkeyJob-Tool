@@ -32,7 +32,26 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override string ModuleDescription { get { return "Умный калькулятор. Реализация NCalc библиотеки"; }  }
+        
+        public override DescriptionInfo ModuleDescription
+        {
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = "Умный калькулятор. Реализация NCalc библиотеки",
+                    SamplesOfUsing = new List<string>()
+                    {
+                        "калькулятор 1+2-3",
+                        "calc 3*(2+9)",
+                        "calc Sqrt(4)",
+                        "calc Tan(0)",
+                    },
+                    CommandScheme = "calc <мат. выражение>"
+                };
+            }
+        }
+
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

@@ -37,10 +37,18 @@ namespace SmartAssHandlerLib
             }
         }
 
-        public override string ModuleDescription
+        public override DescriptionInfo ModuleDescription
         {
-            get { return "Безумная заумь небольшими дозами. Добавьте слово \"напалмом\" к команде, чтобы получить порцию зауми побольше. "; }
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = "Безумная заумь небольшими дозами. Добавьте слово \"напалмом\" к команде, чтобы получить порцию зауми побольше. "
+                };
+            }
         }
+
+        
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

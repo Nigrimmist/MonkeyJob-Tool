@@ -21,15 +21,7 @@ namespace HelloBotCommunication
         {
 
         }
-
-        /// <summary>
-        /// Your command description
-        /// </summary>
-        public virtual string ModuleDescription
-        {
-            get { return string.Empty; }
-        }
-
+        
         /// <summary>
         /// Will be displayed in UI title. If null, title will be retrieved from command, otherwise from  module assembly
         /// </summary>

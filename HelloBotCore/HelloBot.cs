@@ -28,9 +28,9 @@ namespace HelloBotCore
     public class HelloBot : IModuleClientHandler
     {
         public readonly double Version = 0.4;
-        private List<ModuleCommandInfo> _handlerModules = new List<ModuleCommandInfo>();
-        private List<ModuleEventInfo> _eventModules = new List<ModuleEventInfo>();
         
+        private List<ModuleCommandInfoBase> _modules = new List<ModuleCommandInfoBase>();
+
         private readonly string _moduleDllmask;
         private readonly string _botCommandPrefix;
         private readonly string _moduleFolderPath;
@@ -48,6 +48,7 @@ namespace HelloBotCore
         public event OnErrorOccuredDelegate OnErrorOccured;
         public event OnMessageRecievedDelegate OnMessageRecieved;
         private readonly double _currentUIClientVersion;
+        
 
         /// <summary>
         /// Bot costructor
@@ -80,7 +81,7 @@ namespace HelloBotCore
 
         private void RunEventModuleTimers()
         {
-            foreach (var ev in _eventModules)
+            foreach (var ev in Events)
             {
                 var tEv = ev;
                 new Thread(() =>
@@ -123,10 +124,11 @@ namespace HelloBotCore
         private void RegisterModules()
         {
             var allModules = GetModules();
-            
-            _handlerModules = allModules.OfType<ModuleCommandInfo>().Where(x=>x.CallCommandList.Any()).ToList();
-            _handlerModules = ExtendAliases(_handlerModules);//extend aliases for autocomplete wrong keyboard layout search
-            _eventModules = allModules.OfType<ModuleEventInfo>().ToList();
+
+            var handlerModules = allModules.OfType<ModuleCommandInfo>().Where(x => x.CallCommandList.Any()).ToList();
+            var baseList = ExtendAliases(handlerModules).Select(x => (ModuleCommandInfoBase)x).ToList();//extend aliases for autocomplete wrong keyboard layout search
+            baseList.AddRange(allModules.OfType<ModuleEventInfo>().Select(x => (ModuleCommandInfoBase)x));
+            Modules.AddRange(baseList);
         }
 
         private List<ModuleCommandInfo> ExtendAliases(List<ModuleCommandInfo> modules)
@@ -167,7 +169,7 @@ namespace HelloBotCore
                     {
                         var tModule = new ModuleCommandInfo();
                         _commandDictLocks.Add(tModule.Id, new object());
-                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this);
+                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this, ((ModuleRegister)obj).AuthorInfo);
                         return (ModuleCommandInfoBase)tModule;
                     });
 
@@ -175,7 +177,7 @@ namespace HelloBotCore
                     {
                         var tModule = new ModuleEventInfo();
                         _commandDictLocks.Add(tModule.Id, new object());
-                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this);
+                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this, ((ModuleRegister)obj).AuthorInfo);
                         return (ModuleCommandInfoBase)tModule;
                     });
 
@@ -262,7 +264,7 @@ namespace HelloBotCore
             command = string.Empty;
             List<string> foundCommands = new List<string>();
             args = string.Empty;
-            foreach (var module in _handlerModules)
+            foreach (var module in Commands)
             {
                 foreach (var com in module.CallCommandList)
                 {
@@ -277,7 +279,7 @@ namespace HelloBotCore
             if (!foundCommands.Any())
             {
                 //trying search by aliases
-                foreach (var module in _handlerModules)
+                foreach (var module in Commands)
                 {
                     foreach (var com in module.CallCommandList)
                     {
@@ -296,7 +298,7 @@ namespace HelloBotCore
             if (foundCommands.Any())
             {
                 string foundCommand = foundCommands.OrderByDescending(x => x).First();
-                toReturn = _handlerModules.FirstOrDefault(x => x.CallCommandList.Select(y=>y.Command).Contains(foundCommand,StringComparer.OrdinalIgnoreCase));
+                toReturn = Commands.FirstOrDefault(x => x.CallCommandList.Select(y=>y.Command).Contains(foundCommand,StringComparer.OrdinalIgnoreCase));
                 if (toReturn != null)
                 {
                     command = foundCommand;
@@ -309,7 +311,7 @@ namespace HelloBotCore
         public List<string> GetUserDefinedCommandList()
         {
             List<string> toReturn = new List<string>();
-            foreach (var commandList in _handlerModules.Select(x=>x.CallCommandList))
+            foreach (var commandList in Commands.Select(x=>x.CallCommandList))
             {
                 toReturn.AddRange(commandList.Select(x=>x.Command));
             }
@@ -319,11 +321,11 @@ namespace HelloBotCore
         public List<CallCommandInfo> FindCommands(string incCommand)
         {
             return (
-                from module in _handlerModules
+                from module in Commands
                 from cmd in module.CallCommandList where
                 cmd.Command.StartsWith(incCommand, StringComparison.InvariantCultureIgnoreCase) ||
                 cmd.Aliases.Any(y => y.StartsWith(incCommand, StringComparison.InvariantCultureIgnoreCase))
-                let descr = !string.IsNullOrEmpty(cmd.Description) ? cmd.Description : module.CommandDescription
+                let descr = !string.IsNullOrEmpty(cmd.Description) ? cmd.Description : module.CommandDescription.Description
                 select new CallCommandInfo(cmd.Command, descr)).ToList();
         }
 
@@ -482,9 +484,20 @@ namespace HelloBotCore
             return _currentUIClientVersion;
         }
 
-        public List<ModuleEventInfo> Events { get { return _eventModules; } }
-        public List<ModuleCommandInfo> Commands { get { return _handlerModules; } }
-    }
+        public IEnumerable<ModuleEventInfo> Events { get { return _modules.OfType<ModuleEventInfo>(); } }
+        public IEnumerable<ModuleCommandInfo> Commands { get { return _modules.OfType<ModuleCommandInfo>(); } }
 
-   
+        public List<ModuleCommandInfoBase> Modules { get { return _modules; } }
+
+
+        public void DisableModule(string moduleSystemName)
+        {
+            Commands.Single(x => x.ModuleSystemName == moduleSystemName).IsEnabled = false;
+        }
+
+        public void EnableModule(string moduleSystemName)
+        {
+            Commands.Single(x => x.ModuleSystemName == moduleSystemName).IsEnabled = true;
+        }
+    }
 }

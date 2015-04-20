@@ -41,7 +41,17 @@ namespace SmartAssHandlerLib
             }
         }
 
-        public override string ModuleDescription { get { return "Shows fucking WEATHER!"; } }
+        public override DescriptionInfo ModuleDescription
+        {
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = "Shows fucking WEATHER!"
+                };
+            }
+        }
+        
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

@@ -35,7 +35,20 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override string ModuleDescription { get { return "Ну а что тут объяснять. Сиськи."; } }
+        public override DescriptionInfo ModuleDescription
+        {
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = "Ну а что тут объяснять. Сиськи.",
+                    SamplesOfUsing = new List<string>(){"сиськи"},
+                    CommandScheme = "сиськи"
+                };
+            }
+        }
+
+
         private Random _r = new Random();
         private List<string> _images = new List<string>();
 

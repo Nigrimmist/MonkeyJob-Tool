@@ -41,9 +41,9 @@ namespace Nigrimmist.Modules
             };
         }
 
-        public override string ByAuthor
+        public override AuthorInfo AuthorInfo
         {
-            get { throw new System.NotImplementedException(); }
+            get { return new AuthorInfo("Nikita Vasileusky", "Nigrimmist@gmail.com"); }
         }
     }
 }

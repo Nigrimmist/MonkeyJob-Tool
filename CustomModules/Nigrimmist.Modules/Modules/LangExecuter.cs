@@ -41,7 +41,16 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override string ModuleDescription { get { return "Выполняет код на C#. Добавьте help для вызова справки."; } }
+       public override DescriptionInfo ModuleDescription
+        {
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = "Выполняет код на C#. Добавьте help для вызова справки."
+                };
+            }
+        }
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

@@ -9,16 +9,19 @@ using HelloBotCore.Helpers;
 
 namespace HelloBotCore.Entities
 {
-    public class ModuleCommandInfoBase
+    public abstract class ModuleCommandInfoBase
     {
+        public bool IsEnabled { get; set; }
         public Guid Id { get; set; }
-        public string CommandDescription { get; set; }
+        public DescriptionInfo CommandDescription { get; set; }
         public double Version { get; set; }
         public string ModuleSystemName { get; set; }
         public string ProvidedTitle { get; set; }
         public Image Icon { get; set; }
         public Color? BodyBackgroundColor { get; set; }
         public Color? HeaderBackgroundColor { get; set; }
+        public AuthorInfo Author { get; set; }
+
 
         public ModuleCommandInfoBase()
         {
@@ -30,9 +33,8 @@ namespace HelloBotCore.Entities
             return string.IsNullOrEmpty(this.ProvidedTitle) ? this.ModuleSystemName : this.ProvidedTitle;
         }
 
-        public void Init(string dllName, ModuleBase handlerModuleBase, IModuleClientHandler moduleClientHandler)
+        public void Init(string dllName, ModuleBase handlerModuleBase, IModuleClientHandler moduleClientHandler, AuthorInfo author)
         {
-            CommandDescription = handlerModuleBase.ModuleDescription;
             Version = handlerModuleBase.ModuleVersion;
             ProvidedTitle = handlerModuleBase.ModuleTitle;
             var handType = handlerModuleBase.GetType();
@@ -45,10 +47,12 @@ namespace HelloBotCore.Entities
 
             BodyBackgroundColor = handlerModuleBase.BodyBackgroundColor;
             HeaderBackgroundColor = handlerModuleBase.HeaderBackGroundColor;
-
+            Author = author;
             IClient client = new ModuleToClientAdapter(moduleClientHandler, this);
             handlerModuleBase.Init(client);
         }
+
+        public abstract ModuleType ModuleType { get; }
     }
 
 

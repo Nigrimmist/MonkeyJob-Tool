@@ -7,6 +7,6 @@
 	ShowDonateButton : true,
 	Language : 2,
 	SystemData : {
-		Version : 0.05			
+		DisabledModules : []			
 	}
 }

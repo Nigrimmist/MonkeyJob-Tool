@@ -52,7 +52,19 @@ namespace Nigrimmist.Modules.Modules
         }
 
        
-        public override string ModuleDescription { get { return @"Бот знает всё. Ну или почти всё."; } }
+        
+
+        public override DescriptionInfo ModuleDescription
+        {
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = "Бот знает всё. Ну или почти всё."
+                };
+            }
+        }
+
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
             args = args.Replace("?"," ").Trim();

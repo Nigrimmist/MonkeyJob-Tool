@@ -32,8 +32,18 @@ namespace Yushko.Modules
                 });
             }
         }
-        public override string ModuleDescription { get { return @"Интересный факт одной строкой"; } }
+        
 
+        public override DescriptionInfo ModuleDescription
+        {
+            get
+            {
+                return new DescriptionInfo()
+                {
+                    Description = "Интересный факт одной строкой"
+                };
+            }
+        }
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

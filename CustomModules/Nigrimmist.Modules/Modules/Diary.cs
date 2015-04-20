@@ -43,20 +43,22 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override double ModuleVersion
-        {
-            get { return base.ModuleVersion; }
-        }
-
         public override string ModuleTitle
         {
             get { return "Diary"; }
+        }
+
+        public override string ModuleDescription
+        {
+            get { return "Оповещения о новых дискуссиях, u-mail'ах и комментариях на сайте Diary.ru"; }
         }
 
         public override TimeSpan RunEvery
         {
             get { return TimeSpan.FromMinutes(5);}
         }
+
+
 
         private Dictionary<string, HtmlReaderManager> _dict = new Dictionary<string, HtmlReaderManager>(); 
 
