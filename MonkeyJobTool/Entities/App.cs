@@ -351,7 +351,7 @@ namespace MonkeyJobTool.Entities
         public void EnableModule(string moduleSystemName)
         {
             Bot.EnableModule(moduleSystemName);
-            if (!AppConf.SystemData.DisabledModules.Contains(moduleSystemName))
+            if (AppConf.SystemData.DisabledModules.Contains(moduleSystemName))
             {
                 AppConf.SystemData.DisabledModules.Remove(moduleSystemName);
                 AppConf.Save();

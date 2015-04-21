@@ -56,10 +56,10 @@
             this.txtDescr = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.gridModules = new System.Windows.Forms.DataGridView();
+            this.btnSaveConfig = new System.Windows.Forms.Button();
             this.ModuleName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.moduleTypeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colStatus = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.btnSaveConfig = new System.Windows.Forms.Button();
+            this.colIsEnabled = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tsCommands.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -356,7 +356,7 @@
             this.gridModules.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ModuleName,
             this.moduleTypeColumn,
-            this.colStatus});
+            this.colIsEnabled});
             this.gridModules.Cursor = System.Windows.Forms.Cursors.Hand;
             this.gridModules.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.gridModules.Location = new System.Drawing.Point(6, 6);
@@ -368,6 +368,19 @@
             this.gridModules.Size = new System.Drawing.Size(424, 168);
             this.gridModules.TabIndex = 0;
             this.gridModules.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridModules_RowEnter);
+            // 
+            // btnSaveConfig
+            // 
+            this.btnSaveConfig.BackColor = System.Drawing.Color.Moccasin;
+            this.btnSaveConfig.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnSaveConfig.ForeColor = System.Drawing.Color.Black;
+            this.btnSaveConfig.Location = new System.Drawing.Point(631, 427);
+            this.btnSaveConfig.Name = "btnSaveConfig";
+            this.btnSaveConfig.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveConfig.TabIndex = 5;
+            this.btnSaveConfig.Text = "Сохранить";
+            this.btnSaveConfig.UseVisualStyleBackColor = false;
+            this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
             // 
             // ModuleName
             // 
@@ -383,25 +396,11 @@
             this.moduleTypeColumn.Name = "moduleTypeColumn";
             this.moduleTypeColumn.ReadOnly = true;
             // 
-            // colStatus
+            // colIsEnabled
             // 
-            this.colStatus.FillWeight = 26.01276F;
-            this.colStatus.HeaderText = "Вкл";
-            this.colStatus.Name = "colStatus";
-            this.colStatus.ReadOnly = true;
-            // 
-            // btnSaveConfig
-            // 
-            this.btnSaveConfig.BackColor = System.Drawing.Color.Moccasin;
-            this.btnSaveConfig.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnSaveConfig.ForeColor = System.Drawing.Color.Black;
-            this.btnSaveConfig.Location = new System.Drawing.Point(631, 427);
-            this.btnSaveConfig.Name = "btnSaveConfig";
-            this.btnSaveConfig.Size = new System.Drawing.Size(75, 23);
-            this.btnSaveConfig.TabIndex = 5;
-            this.btnSaveConfig.Text = "Сохранить";
-            this.btnSaveConfig.UseVisualStyleBackColor = false;
-            this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
+            this.colIsEnabled.HeaderText = "Статус";
+            this.colIsEnabled.Name = "colIsEnabled";
+            this.colIsEnabled.ReadOnly = true;
             // 
             // SettingsForm
             // 
@@ -456,13 +455,13 @@
         private System.Windows.Forms.TextBox txtAuthorEmail;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox txtAuthorName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ModuleName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn moduleTypeColumn;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn colStatus;
         private System.Windows.Forms.Button btnEnabledDisableModule;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox txtScheme;
         private System.Windows.Forms.TextBox txtSamples;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ModuleName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn moduleTypeColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colIsEnabled;
     }
 }

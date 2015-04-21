@@ -48,7 +48,7 @@ namespace HelloBotCore
         public event OnErrorOccuredDelegate OnErrorOccured;
         public event OnMessageRecievedDelegate OnMessageRecieved;
         private readonly double _currentUIClientVersion;
-        
+
 
         /// <summary>
         /// Bot costructor
@@ -56,7 +56,8 @@ namespace HelloBotCore
         /// <param name="settingsFolderAbsolutePath">folder for module settings, will be created if not exist</param>
         /// <param name="moduleDllmask">File mask for retrieving client command dlls</param>
         /// <param name="botCommandPrefix">Prefix for bot commands. Only messages with that prefix will be handled</param>
-        public HelloBot(string settingsFolderAbsolutePath,double currentUIClientVersion,string moduleDllmask = "*.dll", string botCommandPrefix = "!", string moduleFolderPath = "." )
+        /// <param name="disabledModules">List of disabled modules</param>
+        public HelloBot(string settingsFolderAbsolutePath,double currentUIClientVersion,string moduleDllmask = "*.dll", string botCommandPrefix = "!", string moduleFolderPath = ".")
         {
             _currentUIClientVersion = currentUIClientVersion;
             _settingsFolderAbsolutePath = settingsFolderAbsolutePath;
@@ -73,9 +74,9 @@ namespace HelloBotCore
             
         }
 
-        public void Start()
+        public void Start(List<string> disabledModules=null)
         {
-            RegisterModules();
+            RegisterModules(disabledModules);
             RunEventModuleTimers();
         }
 
@@ -121,9 +122,10 @@ namespace HelloBotCore
             }
         }
 
-        private void RegisterModules()
+        private void RegisterModules(List<string> disabledModules=null)
         {
-            var allModules = GetModules();
+
+            var allModules = GetModules(disabledModules);
 
             var handlerModules = allModules.OfType<ModuleCommandInfo>().Where(x => x.CallCommandList.Any()).ToList();
             var baseList = ExtendAliases(handlerModules).Select(x => (ModuleCommandInfoBase)x).ToList();//extend aliases for autocomplete wrong keyboard layout search
@@ -150,26 +152,29 @@ namespace HelloBotCore
             return modules;
         }
 
-        protected virtual List<ModuleCommandInfoBase> GetModules()
+        protected virtual List<ModuleCommandInfoBase> GetModules(List<string> disabledModules)
         {
             List<ModuleCommandInfoBase> toReturn = new List<ModuleCommandInfoBase>();
             var dlls = Directory.GetFiles(_moduleFolderPath, _moduleDllmask);
             var i = typeof(ModuleRegister);
+            if (disabledModules == null) disabledModules = new List<string>();
             foreach (var dll in dlls)
             {
                 var ass = Assembly.LoadFile(dll);
                 var fi = new FileInfo(dll);
                 //get types from assembly
                 var typesInAssembly = ass.GetTypes().Where(type => i.IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
-
+                
                 foreach (Type type in typesInAssembly)
                 {
                     object obj = Activator.CreateInstance(type);
+                    
                     var modules = ((ModuleRegister)obj).GetModules().Select(module =>
                     {
                         var tModule = new ModuleCommandInfo();
                         _commandDictLocks.Add(tModule.Id, new object());
                         tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this, ((ModuleRegister)obj).AuthorInfo);
+                        tModule.IsEnabled = !disabledModules.Contains(tModule.ModuleSystemName);
                         return (ModuleCommandInfoBase)tModule;
                     });
 
@@ -178,6 +183,7 @@ namespace HelloBotCore
                         var tModule = new ModuleEventInfo();
                         _commandDictLocks.Add(tModule.Id, new object());
                         tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this, ((ModuleRegister)obj).AuthorInfo);
+                        tModule.IsEnabled = !disabledModules.Contains(tModule.ModuleSystemName);
                         return (ModuleCommandInfoBase)tModule;
                     });
 
@@ -492,12 +498,12 @@ namespace HelloBotCore
 
         public void DisableModule(string moduleSystemName)
         {
-            Commands.Single(x => x.ModuleSystemName == moduleSystemName).IsEnabled = false;
+            Modules.Single(x => x.ModuleSystemName == moduleSystemName).IsEnabled = false;
         }
 
         public void EnableModule(string moduleSystemName)
         {
-            Commands.Single(x => x.ModuleSystemName == moduleSystemName).IsEnabled = true;
+            Modules.Single(x => x.ModuleSystemName == moduleSystemName).IsEnabled = true;
         }
     }
 }

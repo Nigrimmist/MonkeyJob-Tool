@@ -95,7 +95,7 @@ namespace MonkeyJobTool.Forms
                     _bot.OnErrorOccured += BotOnOnErrorOccured;
                     _bot.OnMessageRecieved += BotOnMessageRecieved;
                     _bot.SetCurrentLanguage((Language) (int) App.Instance.AppConf.Language);
-                    _bot.Start();
+                    _bot.Start(App.Instance.AppConf.SystemData.DisabledModules);
                     App.Instance.Bot = _bot;
                     SetLoading(false);
                 }

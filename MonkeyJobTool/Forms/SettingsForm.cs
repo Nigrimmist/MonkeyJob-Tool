@@ -249,9 +249,9 @@ namespace MonkeyJobTool.Forms
                 Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleLeft }
             });
 
-            r.Cells.Add(new DataGridViewCheckBoxCell()
+            r.Cells.Add(new DataGridViewTextBoxCell()
             {
-                Value = enabled,
+                Value = enabled?"Вкл":"Выкл",
                 Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleCenter }
             });
 
@@ -269,8 +269,8 @@ namespace MonkeyJobTool.Forms
                 txtDescr.Text = baseModuleInfo.CommandDescription.Description;
                 txtAuthorEmail.Text = baseModuleInfo.Author != null && !string.IsNullOrEmpty(baseModuleInfo.Author.ContactEmail) ? baseModuleInfo.Author.ContactEmail : "Не указан";
                 txtAuthorName.Text = baseModuleInfo.Author != null && !string.IsNullOrEmpty(baseModuleInfo.Author.Name) ? baseModuleInfo.Author.Name : "Не указано";
-                btnEnabledDisableModule.Text = (baseModuleInfo.IsEnabled ? "В" : "Вы") + "ключить";
-
+                btnEnabledDisableModule.Text = (!baseModuleInfo.IsEnabled ? "В" : "Вы") + "ключить модуль";
+                gridModules.Rows[e.RowIndex].Cells[gridModules.Rows[e.RowIndex].Cells.Count - 1].Value = baseModuleInfo.IsEnabled ? "Вкл" : "Выкл";
                 if (baseModuleInfo.ModuleType == ModuleType.Handler)
                 {
                     txtSamples.Text = string.Join(Environment.NewLine, (baseModuleInfo as ModuleCommandInfo).CommandDescription.SamplesOfUsing.ToArray());
@@ -283,8 +283,16 @@ namespace MonkeyJobTool.Forms
         private void btnEnabledDisableModule_Click(object sender, EventArgs e)
         {
             var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
-            var command = App.Instance.Bot.Commands.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
-            //gridModules.Rows[e.RowIndex].Cells[2].Value = baseModuleInfo.IsEnabled;
+            var module = App.Instance.Bot.Modules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
+            if (module.IsEnabled)
+            {
+                App.Instance.DisableModule(module.ModuleSystemName);
+            }
+            else
+            {
+                App.Instance.EnableModule(module.ModuleSystemName);
+            }
+            gridModules_RowEnter(null, new DataGridViewCellContextMenuStripNeededEventArgs(0, gridModules.SelectedRows[0].Index));
         }
     }
 }
