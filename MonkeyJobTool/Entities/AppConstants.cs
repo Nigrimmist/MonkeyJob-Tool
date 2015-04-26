@@ -14,6 +14,7 @@ namespace MonkeyJobTool.Entities
         public class Registry
         {
             public const string LastStatsCollectedDateKey = "LastStatsDate";
+            public const string FirstRun = "FirstRun";
         }
 
         public class Paths

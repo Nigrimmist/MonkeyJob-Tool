@@ -44,6 +44,15 @@ namespace MonkeyJobTool.Forms
         {
             try
             {
+                RegistryKey appRegistry = Registry.CurrentUser.CreateSubKey(AppConstants.AppName);
+                if (appRegistry != null)
+                {
+                    var firstRunKeyVal = appRegistry.GetValue(AppConstants.Registry.FirstRun);
+                    _isFirstRun = firstRunKeyVal == null;
+                    if(_isFirstRun)
+                        appRegistry.SetValue(AppConstants.Registry.FirstRun,"1");
+                }
+
                 App.Instance.Init(openFormHotKeyRaised, this);
                 App.Instance.OnSettingsChanged += Instance_OnSettingsChanged;
                 App.Instance.OnNotificationCountChanged += Instance_OnNotificationCountChanged;
@@ -51,31 +60,25 @@ namespace MonkeyJobTool.Forms
                 this.tsCheckAllAsDisplayed.Visible = false;
                 this.ShowInTaskbar = false;
                 this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
-                this.Deactivate += MainForm_Deactivate;
-                this.tsDonate.Visible = App.Instance.AppConf.ShowDonateButton;
 
-                RegistryKey appRegistry = Registry.CurrentUser.CreateSubKey(AppConstants.AppName);
-                if (appRegistry != null)
+                InitBot(() =>
                 {
-                    var lastStatsCollectedKey = appRegistry.GetValue(AppConstants.Registry.LastStatsCollectedDateKey);
-                    _isFirstRun = lastStatsCollectedKey == null;
-                }
+                    this.Invoke(new MethodInvoker(delegate
+                    {
+                        if (_isFirstRun)
+                        {
+                            var firstRunSettingForm = new SettingsForm();
+                            firstRunSettingForm.Closed += (s, ev) => { Init(); };
+                            firstRunSettingForm.ShowDialog();
+                            
+                        }
+                        else
+                            Init();
+                    }));
+                    
+                });
+                
 
-                _autocomplete = new AutoCompleteControl()
-                {
-                    ParentForm = this,
-                    DataFilterFunc = GetCommandListByTerm,
-                    Left = 43,
-                    Top = 9,
-                    StartSuggestFrom = 1
-                };
-                _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
-                _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
-                this.Controls.Add(_autocomplete);
-
-                InitBot();
-                this.ToTop(true);
-                LogAnalytic();
             }
             catch (Exception ex)
             {
@@ -84,7 +87,30 @@ namespace MonkeyJobTool.Forms
 
         }
 
-        private void InitBot()
+
+        private void Init()
+        {
+            this.Deactivate += MainForm_Deactivate;
+            this.tsDonate.Visible = App.Instance.AppConf.ShowDonateButton;
+
+            _autocomplete = new AutoCompleteControl()
+            {
+                ParentForm = this,
+                DataFilterFunc = GetCommandListByTerm,
+                Left = 43,
+                Top = 9,
+                StartSuggestFrom = 1
+            };
+            _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
+            _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
+            this.Controls.Add(_autocomplete);
+
+            
+            this.ToTop(true);
+            LogAnalytic();
+        }
+
+        private void InitBot(Action afterInitActionClbck=null)
         {
             new Thread(() =>
             {
@@ -98,6 +124,10 @@ namespace MonkeyJobTool.Forms
                     _bot.Start(App.Instance.AppConf.SystemData.DisabledModules);
                     App.Instance.Bot = _bot;
                     SetLoading(false);
+                    if (afterInitActionClbck != null)
+                    {
+                        afterInitActionClbck();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -338,7 +368,7 @@ namespace MonkeyJobTool.Forms
             {
                 new Thread(() =>
                 {
-                   DateTime lastLogDate = DateTime.Today;
+                    DateTime lastLogDate = DateTime.Today;
 
                     RegistryKey appRegistry = Registry.CurrentUser.CreateSubKey(AppConstants.AppName);
                     var lastStatsCollectedKey = appRegistry.GetValue(AppConstants.Registry.LastStatsCollectedDateKey);
@@ -352,8 +382,9 @@ namespace MonkeyJobTool.Forms
                         lastLogDate = DateTime.ParseExact(lastStatsCollectedKey.ToString(), AppConstants.DateTimeFormat, null);
                     }
 
-                    if (DateTime.Today > lastLogDate)
+                    if (DateTime.Today > lastLogDate && App.Instance.AppConf.AllowUsingGoogleAnalytics)
                         GoogleAnalytics.LogRun();
+
 
                     appRegistry.SetValue(AppConstants.Registry.LastStatsCollectedDateKey, DateTime.Now.Date.ToString(AppConstants.DateTimeFormat));
 

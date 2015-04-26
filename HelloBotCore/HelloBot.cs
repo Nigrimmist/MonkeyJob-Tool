@@ -29,7 +29,7 @@ namespace HelloBotCore
     {
         public readonly double Version = 0.4;
         
-        private List<ModuleCommandInfoBase> _modules = new List<ModuleCommandInfoBase>();
+        private List<ModuleCommandInfoBase> _allModules = new List<ModuleCommandInfoBase>();
 
         private readonly string _moduleDllmask;
         private readonly string _botCommandPrefix;
@@ -56,7 +56,6 @@ namespace HelloBotCore
         /// <param name="settingsFolderAbsolutePath">folder for module settings, will be created if not exist</param>
         /// <param name="moduleDllmask">File mask for retrieving client command dlls</param>
         /// <param name="botCommandPrefix">Prefix for bot commands. Only messages with that prefix will be handled</param>
-        /// <param name="disabledModules">List of disabled modules</param>
         public HelloBot(string settingsFolderAbsolutePath,double currentUIClientVersion,string moduleDllmask = "*.dll", string botCommandPrefix = "!", string moduleFolderPath = ".")
         {
             _currentUIClientVersion = currentUIClientVersion;
@@ -99,7 +98,10 @@ namespace HelloBotCore
                     {
                         try
                         {
-                            tEv.CallEvent(commandToken);
+                            if (tEv.IsEnabled)
+                            {
+                                tEv.CallEvent(commandToken);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -125,12 +127,12 @@ namespace HelloBotCore
         private void RegisterModules(List<string> disabledModules=null)
         {
 
-            var allModules = GetModules(disabledModules);
+            var allModules = LoadModules(disabledModules);
 
             var handlerModules = allModules.OfType<ModuleCommandInfo>().Where(x => x.CallCommandList.Any()).ToList();
             var baseList = ExtendAliases(handlerModules).Select(x => (ModuleCommandInfoBase)x).ToList();//extend aliases for autocomplete wrong keyboard layout search
             baseList.AddRange(allModules.OfType<ModuleEventInfo>().Select(x => (ModuleCommandInfoBase)x));
-            Modules.AddRange(baseList);
+            AllModules.AddRange(baseList);
         }
 
         private List<ModuleCommandInfo> ExtendAliases(List<ModuleCommandInfo> modules)
@@ -152,7 +154,7 @@ namespace HelloBotCore
             return modules;
         }
 
-        protected virtual List<ModuleCommandInfoBase> GetModules(List<string> disabledModules)
+        protected virtual List<ModuleCommandInfoBase> LoadModules(List<string> disabledModules)
         {
             List<ModuleCommandInfoBase> toReturn = new List<ModuleCommandInfoBase>();
             var dlls = Directory.GetFiles(_moduleFolderPath, _moduleDllmask);
@@ -270,7 +272,7 @@ namespace HelloBotCore
             command = string.Empty;
             List<string> foundCommands = new List<string>();
             args = string.Empty;
-            foreach (var module in Commands)
+            foreach (var module in EnabledCommands)
             {
                 foreach (var com in module.CallCommandList)
                 {
@@ -285,7 +287,7 @@ namespace HelloBotCore
             if (!foundCommands.Any())
             {
                 //trying search by aliases
-                foreach (var module in Commands)
+                foreach (var module in EnabledCommands)
                 {
                     foreach (var com in module.CallCommandList)
                     {
@@ -304,7 +306,7 @@ namespace HelloBotCore
             if (foundCommands.Any())
             {
                 string foundCommand = foundCommands.OrderByDescending(x => x).First();
-                toReturn = Commands.FirstOrDefault(x => x.CallCommandList.Select(y=>y.Command).Contains(foundCommand,StringComparer.OrdinalIgnoreCase));
+                toReturn = EnabledCommands.FirstOrDefault(x => x.CallCommandList.Select(y=>y.Command).Contains(foundCommand,StringComparer.OrdinalIgnoreCase));
                 if (toReturn != null)
                 {
                     command = foundCommand;
@@ -317,7 +319,7 @@ namespace HelloBotCore
         public List<string> GetUserDefinedCommandList()
         {
             List<string> toReturn = new List<string>();
-            foreach (var commandList in Commands.Select(x=>x.CallCommandList))
+            foreach (var commandList in EnabledCommands.Select(x=>x.CallCommandList))
             {
                 toReturn.AddRange(commandList.Select(x=>x.Command));
             }
@@ -327,7 +329,7 @@ namespace HelloBotCore
         public List<CallCommandInfo> FindCommands(string incCommand)
         {
             return (
-                from module in Commands
+                from module in EnabledCommands
                 from cmd in module.CallCommandList where
                 cmd.Command.StartsWith(incCommand, StringComparison.InvariantCultureIgnoreCase) ||
                 cmd.Aliases.Any(y => y.StartsWith(incCommand, StringComparison.InvariantCultureIgnoreCase))
@@ -490,20 +492,20 @@ namespace HelloBotCore
             return _currentUIClientVersion;
         }
 
-        public IEnumerable<ModuleEventInfo> Events { get { return _modules.OfType<ModuleEventInfo>(); } }
-        public IEnumerable<ModuleCommandInfo> Commands { get { return _modules.OfType<ModuleCommandInfo>(); } }
+        public IEnumerable<ModuleEventInfo> Events { get { return _allModules.OfType<ModuleEventInfo>(); } }
+        public IEnumerable<ModuleCommandInfo> EnabledCommands { get { return _allModules.OfType<ModuleCommandInfo>().Where(x=>x.IsEnabled); } }
 
-        public List<ModuleCommandInfoBase> Modules { get { return _modules; } }
+        public List<ModuleCommandInfoBase> AllModules { get { return _allModules; } }
 
 
         public void DisableModule(string moduleSystemName)
         {
-            Modules.Single(x => x.ModuleSystemName == moduleSystemName).IsEnabled = false;
+            AllModules.Single(x => x.ModuleSystemName == moduleSystemName).IsEnabled = false;
         }
 
         public void EnableModule(string moduleSystemName)
         {
-            Modules.Single(x => x.ModuleSystemName == moduleSystemName).IsEnabled = true;
+            AllModules.Single(x => x.ModuleSystemName == moduleSystemName).IsEnabled = true;
         }
     }
 }

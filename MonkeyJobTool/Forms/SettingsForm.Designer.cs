@@ -56,10 +56,11 @@
             this.txtDescr = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.gridModules = new System.Windows.Forms.DataGridView();
-            this.btnSaveConfig = new System.Windows.Forms.Button();
             this.ModuleName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.moduleTypeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colIsEnabled = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btnSaveConfig = new System.Windows.Forms.Button();
+            this.chkIsDenyCollectingStats = new System.Windows.Forms.CheckBox();
             this.tsCommands.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -121,6 +122,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.chkIsDenyCollectingStats);
             this.tabPage1.Controls.Add(this.chkIsHideDonateBtn);
             this.tabPage1.Controls.Add(this.chkIsWithWindowsStart);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
@@ -250,7 +252,7 @@
             this.groupBox1.Size = new System.Drawing.Size(673, 199);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Описание и настройка";
+            this.groupBox1.Text = "Описание";
             // 
             // label8
             // 
@@ -369,19 +371,6 @@
             this.gridModules.TabIndex = 0;
             this.gridModules.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridModules_RowEnter);
             // 
-            // btnSaveConfig
-            // 
-            this.btnSaveConfig.BackColor = System.Drawing.Color.Moccasin;
-            this.btnSaveConfig.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnSaveConfig.ForeColor = System.Drawing.Color.Black;
-            this.btnSaveConfig.Location = new System.Drawing.Point(631, 427);
-            this.btnSaveConfig.Name = "btnSaveConfig";
-            this.btnSaveConfig.Size = new System.Drawing.Size(75, 23);
-            this.btnSaveConfig.TabIndex = 5;
-            this.btnSaveConfig.Text = "Сохранить";
-            this.btnSaveConfig.UseVisualStyleBackColor = false;
-            this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
-            // 
             // ModuleName
             // 
             this.ModuleName.FillWeight = 150F;
@@ -402,6 +391,29 @@
             this.colIsEnabled.Name = "colIsEnabled";
             this.colIsEnabled.ReadOnly = true;
             // 
+            // btnSaveConfig
+            // 
+            this.btnSaveConfig.BackColor = System.Drawing.Color.Moccasin;
+            this.btnSaveConfig.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnSaveConfig.ForeColor = System.Drawing.Color.Black;
+            this.btnSaveConfig.Location = new System.Drawing.Point(631, 427);
+            this.btnSaveConfig.Name = "btnSaveConfig";
+            this.btnSaveConfig.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveConfig.TabIndex = 5;
+            this.btnSaveConfig.Text = "Сохранить";
+            this.btnSaveConfig.UseVisualStyleBackColor = false;
+            this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
+            // 
+            // chkIsDenyCollectingStats
+            // 
+            this.chkIsDenyCollectingStats.AutoSize = true;
+            this.chkIsDenyCollectingStats.Location = new System.Drawing.Point(6, 61);
+            this.chkIsDenyCollectingStats.Name = "chkIsDenyCollectingStats";
+            this.chkIsDenyCollectingStats.Size = new System.Drawing.Size(358, 17);
+            this.chkIsDenyCollectingStats.TabIndex = 2;
+            this.chkIsDenyCollectingStats.Text = "Запретить собирать статистику запусков (через Google Analytics)";
+            this.chkIsDenyCollectingStats.UseVisualStyleBackColor = true;
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -414,6 +426,7 @@
             this.Name = "SettingsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Настройки";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.SettingsForm_FormClosed);
             this.Load += new System.EventHandler(this.SettingsForm_Load);
             this.tsCommands.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -463,5 +476,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ModuleName;
         private System.Windows.Forms.DataGridViewTextBoxColumn moduleTypeColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn colIsEnabled;
+        private System.Windows.Forms.CheckBox chkIsDenyCollectingStats;
     }
 }

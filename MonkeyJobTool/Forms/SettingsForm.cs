@@ -23,6 +23,7 @@ namespace MonkeyJobTool.Forms
         {
             chkIsWithWindowsStart.Checked = IsStartupShortcutExist();
             chkIsHideDonateBtn.Checked = !App.Instance.AppConf.ShowDonateButton;
+            chkIsDenyCollectingStats.Checked = !App.Instance.AppConf.AllowUsingGoogleAnalytics;
             HotKeysDatabind();
             CommandReplaceDatabind();
             DatabindCommandGrid();
@@ -162,6 +163,7 @@ namespace MonkeyJobTool.Forms
             }
 
             App.Instance.AppConf.ShowDonateButton = !chkIsHideDonateBtn.Checked;
+            App.Instance.AppConf.AllowUsingGoogleAnalytics = !chkIsDenyCollectingStats.Checked;
             App.Instance.AppConf.HotKeys.ProgramOpen = string.Join("+", new List<string>() { cmbKey1.Text, cmbKey2.Text, cmbKey3.Text }.Where(x=>!string.IsNullOrEmpty(x)).ToArray());
             App.Instance.AppConf.CommandReplaces = GetCommandReplaces();
             App.Instance.AppConf.Save();
@@ -221,17 +223,9 @@ namespace MonkeyJobTool.Forms
         #region command grid
         private void DatabindCommandGrid()
         {
-            var events = App.Instance.Bot.Events;
-            var commands = App.Instance.Bot.Commands;
-
-            foreach (var eventInfo in events)
+            foreach (var mod in App.Instance.Bot.AllModules.OrderByDescending(x=>x.ModuleType).ThenBy(x=>x.ModuleSystemName))
             {
-                AddModuleInfoToGrid(eventInfo.GetModuleName(), "Событийный", eventInfo.IsEnabled, eventInfo.ModuleSystemName);
-            }
-
-            foreach (var com in commands)
-            {
-                AddModuleInfoToGrid(com.GetModuleName(), "Команда", com.IsEnabled, com.ModuleSystemName);
+                AddModuleInfoToGrid(mod.GetModuleName(), mod.ModuleType == ModuleType.Handler ? "Команда" : "Событийный", mod.IsEnabled, mod.ModuleSystemName);
             }
         }
 
@@ -262,7 +256,7 @@ namespace MonkeyJobTool.Forms
         private void gridModules_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
             var moduleKey = gridModules.Rows[e.RowIndex].ErrorText;
-            var baseModuleInfo = App.Instance.Bot.Modules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
+            var baseModuleInfo = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
 
             if (baseModuleInfo != null)
             {
@@ -283,7 +277,7 @@ namespace MonkeyJobTool.Forms
         private void btnEnabledDisableModule_Click(object sender, EventArgs e)
         {
             var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
-            var module = App.Instance.Bot.Modules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
+            var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
             if (module.IsEnabled)
             {
                 App.Instance.DisableModule(module.ModuleSystemName);
@@ -293,6 +287,11 @@ namespace MonkeyJobTool.Forms
                 App.Instance.EnableModule(module.ModuleSystemName);
             }
             gridModules_RowEnter(null, new DataGridViewCellContextMenuStripNeededEventArgs(0, gridModules.SelectedRows[0].Index));
+        }
+
+        private void SettingsForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+
         }
     }
 }
