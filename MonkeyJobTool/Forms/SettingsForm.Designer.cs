@@ -35,10 +35,15 @@
             this.cmbKey3 = new System.Windows.Forms.ComboBox();
             this.tsCommands = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.htDonateBtn = new MonkeyJobTool.Controls.HelpTooltip();
+            this.htStatsCollect = new MonkeyJobTool.Controls.HelpTooltip();
+            this.chkIsDenyCollectingStats = new System.Windows.Forms.CheckBox();
             this.chkIsHideDonateBtn = new System.Windows.Forms.CheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.htHotKey = new MonkeyJobTool.Controls.HelpTooltip();
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.htReplace = new MonkeyJobTool.Controls.HelpTooltip();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.pnlCommandReplaces = new System.Windows.Forms.FlowLayoutPanel();
@@ -60,7 +65,6 @@
             this.moduleTypeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colIsEnabled = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnSaveConfig = new System.Windows.Forms.Button();
-            this.chkIsDenyCollectingStats = new System.Windows.Forms.CheckBox();
             this.tsCommands.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -122,6 +126,8 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.htDonateBtn);
+            this.tabPage1.Controls.Add(this.htStatsCollect);
             this.tabPage1.Controls.Add(this.chkIsDenyCollectingStats);
             this.tabPage1.Controls.Add(this.chkIsHideDonateBtn);
             this.tabPage1.Controls.Add(this.chkIsWithWindowsStart);
@@ -132,6 +138,34 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Общие";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // htDonateBtn
+            // 
+            this.htDonateBtn.AutoSize = true;
+            this.htDonateBtn.HelpText = "";
+            this.htDonateBtn.Location = new System.Drawing.Point(255, 38);
+            this.htDonateBtn.Name = "htDonateBtn";
+            this.htDonateBtn.Size = new System.Drawing.Size(19, 19);
+            this.htDonateBtn.TabIndex = 4;
+            // 
+            // htStatsCollect
+            // 
+            this.htStatsCollect.AutoSize = true;
+            this.htStatsCollect.HelpText = "";
+            this.htStatsCollect.Location = new System.Drawing.Point(370, 61);
+            this.htStatsCollect.Name = "htStatsCollect";
+            this.htStatsCollect.Size = new System.Drawing.Size(19, 19);
+            this.htStatsCollect.TabIndex = 3;
+            // 
+            // chkIsDenyCollectingStats
+            // 
+            this.chkIsDenyCollectingStats.AutoSize = true;
+            this.chkIsDenyCollectingStats.Location = new System.Drawing.Point(6, 61);
+            this.chkIsDenyCollectingStats.Name = "chkIsDenyCollectingStats";
+            this.chkIsDenyCollectingStats.Size = new System.Drawing.Size(358, 17);
+            this.chkIsDenyCollectingStats.TabIndex = 2;
+            this.chkIsDenyCollectingStats.Text = "Запретить собирать статистику запусков (через Google Analytics)";
+            this.chkIsDenyCollectingStats.UseVisualStyleBackColor = true;
             // 
             // chkIsHideDonateBtn
             // 
@@ -145,6 +179,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.htHotKey);
             this.tabPage2.Controls.Add(this.label1);
             this.tabPage2.Controls.Add(this.cmbKey1);
             this.tabPage2.Controls.Add(this.cmbKey3);
@@ -157,6 +192,15 @@
             this.tabPage2.Text = "Хоткеи";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // htHotKey
+            // 
+            this.htHotKey.AutoSize = true;
+            this.htHotKey.HelpText = "";
+            this.htHotKey.Location = new System.Drawing.Point(318, 14);
+            this.htHotKey.Name = "htHotKey";
+            this.htHotKey.Size = new System.Drawing.Size(19, 19);
+            this.htHotKey.TabIndex = 5;
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -168,6 +212,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.htReplace);
             this.tabPage3.Controls.Add(this.label3);
             this.tabPage3.Controls.Add(this.label2);
             this.tabPage3.Controls.Add(this.pnlCommandReplaces);
@@ -178,6 +223,15 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Сокращения команд";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // htReplace
+            // 
+            this.htReplace.AutoSize = true;
+            this.htReplace.HelpText = "";
+            this.htReplace.Location = new System.Drawing.Point(395, 43);
+            this.htReplace.Name = "htReplace";
+            this.htReplace.Size = new System.Drawing.Size(19, 19);
+            this.htReplace.TabIndex = 6;
             // 
             // label3
             // 
@@ -205,7 +259,7 @@
             this.pnlCommandReplaces.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.pnlCommandReplaces.Location = new System.Drawing.Point(6, 36);
             this.pnlCommandReplaces.Name = "pnlCommandReplaces";
-            this.pnlCommandReplaces.Size = new System.Drawing.Size(424, 307);
+            this.pnlCommandReplaces.Size = new System.Drawing.Size(426, 307);
             this.pnlCommandReplaces.TabIndex = 0;
             this.pnlCommandReplaces.WrapContents = false;
             // 
@@ -404,16 +458,6 @@
             this.btnSaveConfig.UseVisualStyleBackColor = false;
             this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
             // 
-            // chkIsDenyCollectingStats
-            // 
-            this.chkIsDenyCollectingStats.AutoSize = true;
-            this.chkIsDenyCollectingStats.Location = new System.Drawing.Point(6, 61);
-            this.chkIsDenyCollectingStats.Name = "chkIsDenyCollectingStats";
-            this.chkIsDenyCollectingStats.Size = new System.Drawing.Size(358, 17);
-            this.chkIsDenyCollectingStats.TabIndex = 2;
-            this.chkIsDenyCollectingStats.Text = "Запретить собирать статистику запусков (через Google Analytics)";
-            this.chkIsDenyCollectingStats.UseVisualStyleBackColor = true;
-            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -477,5 +521,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn moduleTypeColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn colIsEnabled;
         private System.Windows.Forms.CheckBox chkIsDenyCollectingStats;
+        private Controls.HelpTooltip htStatsCollect;
+        private Controls.HelpTooltip htDonateBtn;
+        private Controls.HelpTooltip htHotKey;
+        private Controls.HelpTooltip htReplace;
     }
 }

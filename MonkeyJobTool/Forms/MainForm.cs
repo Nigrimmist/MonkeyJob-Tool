@@ -228,53 +228,73 @@ namespace MonkeyJobTool.Forms
                 }
         }
 
-        private string TryToReplaceCommand(string command)
+        private string TryToReplaceCommand(string command, out bool replaceCountExceed)
         {
-            string toReturn = command;
-            var bestMatchReplace = App.Instance.AppConf.CommandReplaces.Where(x => command.StartsWith(x.From)).OrderByDescending(x=>x.From.Length).FirstOrDefault();
-            if (bestMatchReplace != null)
+            int replaceChainCount = 0;
+            replaceCountExceed = false;
+            while (true)
             {
-                var args = command.Substring(bestMatchReplace.From.Length);
-                if (args.Length == 0 || args.StartsWith(" ")) //not part of other word
+                string toReturn = command;
+                var bestMatchReplace = App.Instance.AppConf.CommandReplaces.Where(x => command.StartsWith(x.From)).OrderByDescending(x => x.From.Length).FirstOrDefault();
+                if (bestMatchReplace != null)
                 {
-                    var commandArgs = args.Trim().Split(new[] {"=>"}, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    var replaceCount = Regex.Matches(bestMatchReplace.To, @"({\d+})").Count;
-
-                    if (commandArgs.Count < replaceCount)
+                    var args = command.Substring(bestMatchReplace.From.Length);
+                    if (args.Length == 0 || args.StartsWith(" ")) //not part of other word
                     {
-                        commandArgs.AddRange(Enumerable.Repeat("", replaceCount - commandArgs.Count));
-                    }
+                        var commandArgs = args.Trim().Split(new[] {"=>"}, StringSplitOptions.RemoveEmptyEntries).ToList();
+                        var replaceCount = Regex.Matches(bestMatchReplace.To, @"({\d+})").Count;
 
-                    toReturn = string.Format(bestMatchReplace.To, commandArgs.ToArray());
+                        if (commandArgs.Count < replaceCount)
+                        {
+                            commandArgs.AddRange(Enumerable.Repeat("", replaceCount - commandArgs.Count));
+                        }
 
-                    if (replaceCount == 0)
-                    {
-                        toReturn = bestMatchReplace.To + args;
+                        toReturn = string.Format(bestMatchReplace.To, commandArgs.ToArray());
+
+                        if (replaceCount == 0)
+                        {
+                            toReturn = bestMatchReplace.To + args;
+                        }
                     }
+                    command = toReturn;
+                    if (replaceChainCount++ < 20)
+                        continue;
+                    else
+                        replaceCountExceed = true;
                 }
+                return toReturn;
+                break;
             }
-            return toReturn;
         }
-        
+
         void autocomplete_OnCommandReceived(string command)
         {
             _autocomplete.HidePopup();
-            command = TryToReplaceCommand(command);
+            bool commandReplaceCountExceed;
+            command = TryToReplaceCommand(command, out commandReplaceCountExceed);
 
-            bool toBuffer = false;
-            if (command.Trim().EndsWith(_copyToBufferPostFix, StringComparison.InvariantCultureIgnoreCase))
+            if (commandReplaceCountExceed)
             {
-                command = command.Substring(0, command.Length - _copyToBufferPostFix.Length);
-                toBuffer = true;
+                App.Instance.ShowFixedPopup(AppConstants.AppName, "Обнаружено зацикливание в заменах команд, проверьте их на корректность.", null);
             }
-            SetLoading(true);
+            else
+            {
+                bool toBuffer = false;
+                if (command.Trim().EndsWith(_copyToBufferPostFix, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    command = command.Substring(0, command.Length - _copyToBufferPostFix.Length);
+                    toBuffer = true;
+                }
+                SetLoading(true);
 
-            if (!_bot.HandleMessage(command, new ClientCommandContext(){IsToBuffer = toBuffer}))
-            {
-                App.Instance.ShowFixedPopup(AppConstants.AppName, "Команда не найдена", null);
-                
-                SetLoading(false);
+                if (!_bot.HandleMessage(command, new ClientCommandContext() { IsToBuffer = toBuffer }))
+                {
+                    App.Instance.ShowFixedPopup(AppConstants.AppName, "Команда не найдена", null);
+
+                    SetLoading(false);
+                }
             }
+            
         }
 
         private DataFilterInfo GetCommandListByTerm(string term)
@@ -322,6 +342,7 @@ namespace MonkeyJobTool.Forms
                 case Keys.Escape:
                 {
                     HideMain();
+                    App.Instance.CloseFixedPopup();
                     App.Instance.ReorderPopupsPositions();
                     break;
                 }
@@ -382,7 +403,7 @@ namespace MonkeyJobTool.Forms
                         lastLogDate = DateTime.ParseExact(lastStatsCollectedKey.ToString(), AppConstants.DateTimeFormat, null);
                     }
 
-                    if (DateTime.Today > lastLogDate && App.Instance.AppConf.AllowUsingGoogleAnalytics)
+                    if (DateTime.Today > lastLogDate)
                         GoogleAnalytics.LogRun();
 
 

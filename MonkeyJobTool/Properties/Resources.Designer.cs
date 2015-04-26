@@ -173,6 +173,16 @@ namespace MonkeyJobTool.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap help1 {
+            get {
+                object obj = ResourceManager.GetObject("help1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap ice_cream {
             get {
                 object obj = ResourceManager.GetObject("ice_cream", resourceCulture);
@@ -226,6 +236,16 @@ namespace MonkeyJobTool.Properties {
         public static System.Drawing.Bitmap PayPalLogo {
             get {
                 object obj = ResourceManager.GetObject("PayPalLogo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap question__1_ {
+            get {
+                object obj = ResourceManager.GetObject("question__1_", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
