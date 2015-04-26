@@ -32,6 +32,6 @@ namespace HelloBotCore.Entities
             get { return ModuleType.Handler; }
         }
 
-
+        
     }
 }

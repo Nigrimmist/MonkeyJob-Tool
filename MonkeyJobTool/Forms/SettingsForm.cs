@@ -307,6 +307,31 @@ namespace MonkeyJobTool.Forms
         {
         }
 
+        private HelpPopup _commandHelpCommand = null;
+
+        private void gridModules_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                var moduleKey = gridModules.Rows[e.RowIndex].ErrorText;
+                if (!string.IsNullOrEmpty(moduleKey))
+                {
+                    var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
+                    if (_commandHelpCommand == null)
+                    {
+                        _commandHelpCommand = new HelpPopup();
+                        _commandHelpCommand.HelpData = new HelpInfo() {Body = module.ToString()};
+                    }
+
+                }
+            }
+        }
+
+        private void gridModules_MouseLeave(object sender, EventArgs e)
+        {
+
+        }
+
 
 
     }
