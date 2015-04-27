@@ -31,11 +31,9 @@ namespace HelloBotCore.Entities
             get { return ModuleType.Event; }
         }
 
-        public override string ToString()
+        public override string GetDescriptionText()
         {
-            var toReturn = "Запускается раз в " + EventRunEvery;
-
-            return base.ToString() + toReturn;
+            return "Запускается раз в " + EventRunEvery;
         }
     }
 }

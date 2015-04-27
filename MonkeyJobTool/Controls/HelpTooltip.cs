@@ -12,21 +12,17 @@ namespace MonkeyJobTool.Controls
 {
     public partial class HelpTooltip : UserControl
     {
-        public string HelpText { get; set; }
+        public string HelpText
+        {
+            set
+            {
+                HelpPopupManager.BindHelpForm(picBox, value);
+            }
+        }
 
         public HelpTooltip()
         {
             InitializeComponent();
-        }
-
-        private void picBox_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void HelpTooltip_Load(object sender, EventArgs e)
-        {
-            HelpPopupManager.BindHelpForm(picBox, HelpText);
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -7,6 +9,8 @@ using HelloBotCore.Entities;
 using Microsoft.Win32;
 using MonkeyJobTool.Controls.Settings;
 using MonkeyJobTool.Entities;
+using MonkeyJobTool.Extensions;
+using MonkeyJobTool.Properties;
 
 namespace MonkeyJobTool.Forms
 {
@@ -274,16 +278,8 @@ namespace MonkeyJobTool.Forms
 
             if (baseModuleInfo != null)
             {
-                txtDescr.Text = baseModuleInfo.CommandDescription.Description;
-                txtAuthorEmail.Text = baseModuleInfo.Author != null && !string.IsNullOrEmpty(baseModuleInfo.Author.ContactEmail) ? baseModuleInfo.Author.ContactEmail : "Не указан";
-                txtAuthorName.Text = baseModuleInfo.Author != null && !string.IsNullOrEmpty(baseModuleInfo.Author.Name) ? baseModuleInfo.Author.Name : "Не указано";
                 btnEnabledDisableModule.Text = (!baseModuleInfo.IsEnabled ? "В" : "Вы") + "ключить модуль";
                 gridModules.Rows[e.RowIndex].Cells[gridModules.Rows[e.RowIndex].Cells.Count - 1].Value = baseModuleInfo.IsEnabled ? "Вкл" : "Выкл";
-                if (baseModuleInfo.ModuleType == ModuleType.Handler)
-                {
-                    txtSamples.Text = string.Join(Environment.NewLine, (baseModuleInfo as ModuleCommandInfo).CommandDescription.SamplesOfUsing.ToArray());
-                    txtScheme.Text = (baseModuleInfo as ModuleCommandInfo).CommandDescription.CommandScheme;
-                }
             }
         }
 
@@ -291,6 +287,7 @@ namespace MonkeyJobTool.Forms
         private void btnEnabledDisableModule_Click(object sender, EventArgs e)
         {
             var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
+            
             var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
             if (module.IsEnabled)
             {
@@ -303,32 +300,59 @@ namespace MonkeyJobTool.Forms
             gridModules_RowEnter(null, new DataGridViewCellContextMenuStripNeededEventArgs(0, gridModules.SelectedRows[0].Index));
         }
 
-        private void SettingsForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-        }
+        
+        
 
         private HelpPopup _commandHelpCommand = null;
+        
 
-        private void gridModules_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
+        private int _displayHelpRowId = -1;
+        private void gridModules_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.RowIndex >= 0)
+            int rowIndex = gridModules.HitTest(e.X,e.Y).RowIndex;
+            if (rowIndex >= 0)
             {
-                var moduleKey = gridModules.Rows[e.RowIndex].ErrorText;
-                if (!string.IsNullOrEmpty(moduleKey))
+                if (rowIndex != _displayHelpRowId)
                 {
-                    var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
-                    if (_commandHelpCommand == null)
+                    _displayHelpRowId = rowIndex;
+                    var moduleKey = gridModules.Rows[rowIndex].ErrorText;
+                    if (!string.IsNullOrEmpty(moduleKey))
                     {
-                        _commandHelpCommand = new HelpPopup();
-                        _commandHelpCommand.HelpData = new HelpInfo() {Body = module.ToString()};
+                        var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
+                        
+                        if (_commandHelpCommand != null)
+                        {
+                            _commandHelpCommand.Hide();
+                        }
+                        _commandHelpCommand = new HelpPopup { FormType = PopupFormType.CommandInfo };
+                        _commandHelpCommand.HelpData = new HelpInfo()
+                        {
+                            Body = module.ToString(),
+                            Icon = module.Icon ?? Resources.monkey_highres_img,
+                            Title = "Информация о модуле "+module.GetModuleName()
+                        };
+                        _commandHelpCommand.Init();
                     }
-
+                }
+                if (_commandHelpCommand != null)
+                {
+                    _commandHelpCommand.MouseCoords = new Point(Cursor.Position.X, Cursor.Position.Y);
+                    _commandHelpCommand.SetupCoords();
+                    _commandHelpCommand.ToTop();
+                }
+            }
+            else
+            {
+                if (_commandHelpCommand != null)
+                {
+                    _commandHelpCommand.Hide();
                 }
             }
         }
 
-        private void gridModules_MouseLeave(object sender, EventArgs e)
+        private void gridModules_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
         {
+            
 
         }
 

@@ -41,7 +41,7 @@
             this.picBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.picBox.TabIndex = 0;
             this.picBox.TabStop = false;
-            this.picBox.Click += new System.EventHandler(this.picBox_Click);
+            
             // 
             // HelpTooltip
             // 
@@ -51,7 +51,6 @@
             this.Controls.Add(this.picBox);
             this.Name = "HelpTooltip";
             this.Size = new System.Drawing.Size(41, 44);
-            this.Load += new System.EventHandler(this.HelpTooltip_Load);
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

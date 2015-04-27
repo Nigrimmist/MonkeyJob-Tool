@@ -54,21 +54,38 @@ namespace HelloBotCore.Entities
 
         public abstract ModuleType ModuleType { get; }
 
+        public virtual string GetDescriptionText()
+        {
+            return "";
+        }
+
         public override string ToString()
         {
-            string toReturn=string.Empty;
-            if(!string.IsNullOrEmpty(Author.Name))
-                toReturn += "Автор :" + Author.Name+Environment.NewLine;
-            if (!string.IsNullOrEmpty(Author.ContactEmail))
-                toReturn += "Email для связи :" + Author.ContactEmail + Environment.NewLine;
+            string toReturn = string.Empty;
             if (!string.IsNullOrEmpty(CommandDescription.Description))
-                toReturn += "Описание :" + CommandDescription.Description + Environment.NewLine;
+                toReturn += "Описание : " + CommandDescription.Description + Environment.NewLine;
             if (!string.IsNullOrEmpty(CommandDescription.CommandScheme))
-                toReturn += "Схема команды :" + CommandDescription.CommandScheme + Environment.NewLine;
+                toReturn += "Схема команды : " + CommandDescription.CommandScheme + Environment.NewLine;
             if (CommandDescription.SamplesOfUsing != null && CommandDescription.SamplesOfUsing.Any())
-                toReturn += "Примеры использования :" + string.Join(Environment.NewLine,CommandDescription.SamplesOfUsing.ToArray()) + Environment.NewLine;
-            return toReturn;
+                toReturn += "Примеры использования : " + string.Join(Environment.NewLine, CommandDescription.SamplesOfUsing.ToArray()) + Environment.NewLine;
             
+            string moduleDescription = GetDescriptionText();
+
+            if (!string.IsNullOrEmpty(moduleDescription))
+            {
+                toReturn += moduleDescription+Environment.NewLine;
+            }
+            
+            
+            if (Author != null)
+            {
+                if (!string.IsNullOrEmpty(Author.Name))
+                    toReturn += "Автор : " + Author.Name + Environment.NewLine;
+                if (!string.IsNullOrEmpty(Author.ContactEmail))
+                    toReturn += "Email для связи : " + Author.ContactEmail + Environment.NewLine;
+            }
+            return toReturn;
+
         }
     }
 

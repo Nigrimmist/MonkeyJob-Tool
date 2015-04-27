@@ -9,6 +9,7 @@ namespace MonkeyJobTool.Forms
     public enum PopupFormType
     {
         HelpForm,
+        CommandInfo
     }
     
     public partial class HelpPopup : Form
@@ -16,8 +17,6 @@ namespace MonkeyJobTool.Forms
         public Point MouseCoords { get; set; }
         public PopupFormType FormType { get; set; }
         public HelpInfo HelpData { get; set; }
-        
-
 
         public HelpPopup()
         {
@@ -33,34 +32,56 @@ namespace MonkeyJobTool.Forms
             fldBody.Text = string.Empty;
             switch (FormType)
             {
-                
-                    case PopupFormType.HelpForm:
-                    {
-                        HandleHelp(HelpData);
-                        break;
-                    }
+                case PopupFormType.HelpForm:
+                {
+                    HandleHelp();
+                    break;
+                }
+                case PopupFormType.CommandInfo:
+                {
+                    HandleCommandInfo();
+                    break;
+                }
             }
-            Font tempFont = ((RichTextBox) (fldBody)).Font;
-            int textLength = ((RichTextBox) (fldBody)).Text.Length;
-            int textLines = ((RichTextBox) (fldBody)).GetLineFromCharIndex(textLength) + 1;
-            int margin = ((RichTextBox) (fldBody)).Bounds.Height - ((RichTextBox) (fldBody)).ClientSize.Height;
+            Font tempFont = ( (fldBody)).Font;
+            int textLength = ((fldBody)).Text.Length;
+            int textLines = ((fldBody)).GetLineFromCharIndex(textLength) + 1;
+            int margin = ((fldBody)).Bounds.Height - ((fldBody)).ClientSize.Height;
             ((RichTextBox)(fldBody)).Height = (TextRenderer.MeasureText(" ", tempFont).Height * textLines) + margin + 3 + richTextBox2.Height;
             this.Height = fldBody.Height+28;
         }
 
+        private void HandleCommandInfo()
+        {
+            lblTitle.Text = HelpData.Title;
+            
+            fldBody.Width = 400;
+            fldBody.Location = new Point(50, fldBody.Location.Y);
+            PictureBox iconBox = new PictureBox();
+            iconBox.Image = HelpData.Icon;
+            fldBody.Text = HelpData.Body;
+            iconBox.Size = new Size(36, 36);
+            iconBox.Top = 25;
+            iconBox.Left = 8;
+            iconBox.Height = Resources.help1.Height;
+            iconBox.Width = Resources.help1.Width;
+            this.Controls.Add(iconBox);
+        }
         
-        private void HandleHelp(HelpInfo helpData)
+        private void HandleHelp()
         {
             lblTitle.Text = "Полезная информация";
             fldBody.Width = 400;
-            fldBody.Location = new Point(50, fldBody.Location.Y); 
+            fldBody.Location = new Point(50, fldBody.Location.Y);
             PictureBox iconBox = new PictureBox();
             iconBox.Image = Resources.help1;
-            fldBody.Text = helpData.Body;
+            fldBody.Text = HelpData.Body;
             iconBox.Size = new Size(36, 36);
-            this.Controls.Add(iconBox);
             iconBox.Top = 25;
             iconBox.Left = 8;
+            iconBox.Height = Resources.help1.Height;
+            iconBox.Width = Resources.help1.Width;
+            this.Controls.Add(iconBox);
         }
 
         public void SetupCoords()
@@ -72,33 +93,19 @@ namespace MonkeyJobTool.Forms
 
             if (currentFormBottomPosition < 0)
             {
-                //this.Height -= -currentFormBottomPosition;
-                //((RichTextBox)(richTextBox1)).Height -= -currentFormBottomPosition;
-
-
-                this.Top = MouseCoords.Y + 3 - (-currentFormBottomPosition)-10;
-                //if (screen.WorkingArea.Height - this.Top + (-currentFormBottomPosition) <= screen.WorkingArea.Height)
-                //{
-                //    this.Top = MouseCoords.Y + 3 - (-currentFormBottomPosition);
-                //}
+                this.Top = MouseCoords.Y + 3 - (-currentFormBottomPosition) - 10;
             }
             else
             {
-                
                 this.Top = MouseCoords.Y + 3;
             }
 
-            //lblTitle.Text = currentFormBottomPosition.ToString();
         }
-        
-
 
         private void FullPostForm_Load(object sender, EventArgs e)
         {
             
         }
-
-
 
         private void richTextBox1_MouseEnter(object sender, EventArgs e)
         {
@@ -111,23 +118,14 @@ namespace MonkeyJobTool.Forms
             get { return true; }
         }
 
-        private void messageForm_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
+        private void messageForm_Paint(object sender, PaintEventArgs e)
         {
-            try
-            {
-                ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, Color.Black, ButtonBorderStyle.Solid);
-                
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
+            ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, Color.Black, ButtonBorderStyle.Solid);
         }
 
         private void richTextBox2_MouseMove(object sender, MouseEventArgs e)
         {
-            this.Close();
+            this.Hide();
         }
 
 
@@ -136,5 +134,7 @@ namespace MonkeyJobTool.Forms
     public class HelpInfo
     {
         public string Body { get; set; }
+        public Image Icon { get; set; }
+        public string Title { get; set; }
     }
 }

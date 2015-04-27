@@ -25,15 +25,18 @@ namespace MonkeyJobTool.Managers
 
         private static void target_MouseLeave(object sender, EventArgs e)
         {
-            if (CurrentHelpForm.InvokeRequired)
+            if (CurrentHelpForm != null)
             {
-                CurrentHelpForm.Invoke(new MethodInvoker(CloseHelpForm));
+                if (CurrentHelpForm.InvokeRequired)
+                {
+                    CurrentHelpForm.Invoke(new MethodInvoker(CloseHelpForm));
+                }
+                else
+                {
+                    CloseHelpForm();
+                }
             }
-            else
-            {
-                CloseHelpForm();
-            }
-            
+
         }
 
         private static void CloseHelpForm()
@@ -52,6 +55,7 @@ namespace MonkeyJobTool.Managers
 
         private static void ShowHelpForm()
         {
+            CurrentHelpForm.MouseCoords = new Point(Cursor.Position.X, Cursor.Position.Y);
             CurrentHelpForm.Show();
             CurrentHelpForm.SetupCoords();
         }
@@ -64,7 +68,6 @@ namespace MonkeyJobTool.Managers
             {
                 FormType = PopupFormType.HelpForm,
                 HelpData = new HelpInfo() {Body = body},
-                MouseCoords = new Point(Cursor.Position.X, Cursor.Position.Y)
             };
 
             postForm.Init();
