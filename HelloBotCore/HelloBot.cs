@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using HelloBotCore.Entities;
 using HelloBotCommunication;
+using HelloBotCommunication.Attributes.SettingAttributes;
 using HelloBotCommunication.Interfaces;
 using HelloBotCore.Helpers;
 using Newtonsoft.Json;
@@ -159,33 +160,48 @@ namespace HelloBotCore
             List<ModuleCommandInfoBase> toReturn = new List<ModuleCommandInfoBase>();
             var dlls = Directory.GetFiles(_moduleFolderPath, _moduleDllmask);
             var i = typeof(ModuleRegister);
+            var settingsAttr = typeof (ModuleSettingsForAttribute);
+            
             if (disabledModules == null) disabledModules = new List<string>();
             foreach (var dll in dlls)
             {
                 var ass = Assembly.LoadFile(dll);
                 var fi = new FileInfo(dll);
                 //get types from assembly
-                var typesInAssembly = ass.GetTypes().Where(type => i.IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
-                
+                var types = ass.GetTypes();
+                var typesInAssembly = types.Where(type => i.IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                var settingForModules = types.Where(t => t.IsDefined(settingsAttr, false)).Select(x =>
+                    new
+                    {
+                        moduleSettingsClass = x,
+                        moduleForParentClass = ((ModuleSettingsForAttribute)(Attribute.GetCustomAttribute(x, settingsAttr))).ModuleType
+                    }).ToList();
+
                 foreach (Type type in typesInAssembly)
                 {
                     object obj = Activator.CreateInstance(type);
                     
                     var modules = ((ModuleRegister)obj).GetModules().Select(module =>
                     {
+                        var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == module.GetType());
                         var tModule = new ModuleCommandInfo();
                         _commandDictLocks.Add(tModule.Id, new object());
                         tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this, ((ModuleRegister)obj).AuthorInfo);
                         tModule.IsEnabled = !disabledModules.Contains(tModule.ModuleSystemName);
+                        if (settingClass != null)
+                            tModule.ModuleSettingsType = settingClass.moduleSettingsClass;
                         return (ModuleCommandInfoBase)tModule;
                     });
 
                     var events = ((ModuleRegister)obj).GetEvents().Select(ev =>
                     {
+                        var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == ev.GetType());
                         var tModule = new ModuleEventInfo();
                         _commandDictLocks.Add(tModule.Id, new object());
                         tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this, ((ModuleRegister)obj).AuthorInfo);
                         tModule.IsEnabled = !disabledModules.Contains(tModule.ModuleSystemName);
+                        if (settingClass != null)
+                            tModule.ModuleSettingsType = settingClass.moduleSettingsClass;
                         return (ModuleCommandInfoBase)tModule;
                     });
 

@@ -41,6 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnswerBehaviourType.cs" />
+    <Compile Include="Attributes\SettingAttributes\ModuleSettingsAttribute.cs" />
+    <Compile Include="Attributes\SettingAttributes\SettingsNameFieldAttribute.cs" />
     <Compile Include="AuthorInfo.cs" />
     <Compile Include="CallCommandInfo.cs" />
     <Compile Include="ClientLanguage.cs" />

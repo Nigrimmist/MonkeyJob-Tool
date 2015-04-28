@@ -46,14 +46,15 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.btnEnabledDisableModule = new System.Windows.Forms.Button();
             this.gridModules = new System.Windows.Forms.DataGridView();
-            this.ModuleName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.moduleTypeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colIsEnabled = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnSaveConfig = new System.Windows.Forms.Button();
             this.htDonateBtn = new MonkeyJobTool.Controls.HelpTooltip();
             this.htStatsCollect = new MonkeyJobTool.Controls.HelpTooltip();
             this.htHotKey = new MonkeyJobTool.Controls.HelpTooltip();
             this.htReplace = new MonkeyJobTool.Controls.HelpTooltip();
+            this.ModuleName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.moduleTypeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colIsEnabled = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.settingsCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tsCommands.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -251,7 +252,8 @@
             this.gridModules.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ModuleName,
             this.moduleTypeColumn,
-            this.colIsEnabled});
+            this.colIsEnabled,
+            this.settingsCol});
             this.gridModules.Cursor = System.Windows.Forms.Cursors.Hand;
             this.gridModules.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.gridModules.Location = new System.Drawing.Point(6, 6);
@@ -260,13 +262,56 @@
             this.gridModules.ReadOnly = true;
             this.gridModules.RowHeadersVisible = false;
             this.gridModules.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.gridModules.Size = new System.Drawing.Size(424, 168);
+            this.gridModules.Size = new System.Drawing.Size(424, 208);
             this.gridModules.TabIndex = 0;
-            
             this.gridModules.CellMouseLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridModules_CellMouseLeave);
             this.gridModules.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridModules_RowEnter);
-            
             this.gridModules.MouseMove += new System.Windows.Forms.MouseEventHandler(this.gridModules_MouseMove);
+            // 
+            // btnSaveConfig
+            // 
+            this.btnSaveConfig.BackColor = System.Drawing.Color.Moccasin;
+            this.btnSaveConfig.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnSaveConfig.ForeColor = System.Drawing.Color.Black;
+            this.btnSaveConfig.Location = new System.Drawing.Point(518, 259);
+            this.btnSaveConfig.Name = "btnSaveConfig";
+            this.btnSaveConfig.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveConfig.TabIndex = 5;
+            this.btnSaveConfig.Text = "Сохранить";
+            this.btnSaveConfig.UseVisualStyleBackColor = false;
+            this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
+            // 
+            // htDonateBtn
+            // 
+            this.htDonateBtn.AutoSize = true;
+            this.htDonateBtn.Location = new System.Drawing.Point(255, 38);
+            this.htDonateBtn.Name = "htDonateBtn";
+            this.htDonateBtn.Size = new System.Drawing.Size(19, 19);
+            this.htDonateBtn.TabIndex = 4;
+            // 
+            // htStatsCollect
+            // 
+            this.htStatsCollect.AutoSize = true;
+            this.htStatsCollect.Location = new System.Drawing.Point(370, 61);
+            this.htStatsCollect.Name = "htStatsCollect";
+            this.htStatsCollect.Size = new System.Drawing.Size(19, 19);
+            this.htStatsCollect.TabIndex = 3;
+            // 
+            // htHotKey
+            // 
+            this.htHotKey.AutoSize = true;
+            this.htHotKey.Location = new System.Drawing.Point(318, 14);
+            this.htHotKey.Name = "htHotKey";
+            this.htHotKey.Size = new System.Drawing.Size(19, 19);
+            this.htHotKey.TabIndex = 5;
+            // 
+            // htReplace
+            // 
+            this.htReplace.AutoSize = true;
+            this.htReplace.Location = new System.Drawing.Point(395, 43);
+            this.htReplace.Name = "htReplace";
+            this.htReplace.Size = new System.Drawing.Size(19, 19);
+            this.htReplace.TabIndex = 6;
             // 
             // ModuleName
             // 
@@ -288,54 +333,11 @@
             this.colIsEnabled.Name = "colIsEnabled";
             this.colIsEnabled.ReadOnly = true;
             // 
-            // btnSaveConfig
+            // settingsCol
             // 
-            this.btnSaveConfig.BackColor = System.Drawing.Color.Moccasin;
-            this.btnSaveConfig.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnSaveConfig.ForeColor = System.Drawing.Color.Black;
-            this.btnSaveConfig.Location = new System.Drawing.Point(518, 259);
-            this.btnSaveConfig.Name = "btnSaveConfig";
-            this.btnSaveConfig.Size = new System.Drawing.Size(75, 23);
-            this.btnSaveConfig.TabIndex = 5;
-            this.btnSaveConfig.Text = "Сохранить";
-            this.btnSaveConfig.UseVisualStyleBackColor = false;
-            this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
-            // 
-            // htDonateBtn
-            // 
-            this.htDonateBtn.AutoSize = true;
-            this.htDonateBtn.HelpText = "";
-            this.htDonateBtn.Location = new System.Drawing.Point(255, 38);
-            this.htDonateBtn.Name = "htDonateBtn";
-            this.htDonateBtn.Size = new System.Drawing.Size(19, 19);
-            this.htDonateBtn.TabIndex = 4;
-            // 
-            // htStatsCollect
-            // 
-            this.htStatsCollect.AutoSize = true;
-            this.htStatsCollect.HelpText = "";
-            this.htStatsCollect.Location = new System.Drawing.Point(370, 61);
-            this.htStatsCollect.Name = "htStatsCollect";
-            this.htStatsCollect.Size = new System.Drawing.Size(19, 19);
-            this.htStatsCollect.TabIndex = 3;
-            // 
-            // htHotKey
-            // 
-            this.htHotKey.AutoSize = true;
-            this.htHotKey.HelpText = "";
-            this.htHotKey.Location = new System.Drawing.Point(318, 14);
-            this.htHotKey.Name = "htHotKey";
-            this.htHotKey.Size = new System.Drawing.Size(19, 19);
-            this.htHotKey.TabIndex = 5;
-            // 
-            // htReplace
-            // 
-            this.htReplace.AutoSize = true;
-            this.htReplace.HelpText = "";
-            this.htReplace.Location = new System.Drawing.Point(395, 43);
-            this.htReplace.Name = "htReplace";
-            this.htReplace.Size = new System.Drawing.Size(19, 19);
-            this.htReplace.TabIndex = 6;
+            this.settingsCol.HeaderText = "settingsCol";
+            this.settingsCol.Name = "settingsCol";
+            this.settingsCol.ReadOnly = true;
             // 
             // SettingsForm
             // 
@@ -349,7 +351,6 @@
             this.Name = "SettingsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Настройки";
-            
             this.Load += new System.EventHandler(this.SettingsForm_Load);
             this.tsCommands.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -383,13 +384,14 @@
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.DataGridView gridModules;
         private System.Windows.Forms.Button btnEnabledDisableModule;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ModuleName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn moduleTypeColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colIsEnabled;
         private System.Windows.Forms.CheckBox chkIsDenyCollectingStats;
         private Controls.HelpTooltip htStatsCollect;
         private Controls.HelpTooltip htDonateBtn;
         private Controls.HelpTooltip htHotKey;
         private Controls.HelpTooltip htReplace;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ModuleName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn moduleTypeColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colIsEnabled;
+        private System.Windows.Forms.DataGridViewTextBoxColumn settingsCol;
     }
 }

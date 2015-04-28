@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using HelloBotCommunication;
+using HelloBotCommunication.Attributes.SettingAttributes;
 using HelloBotCommunication.Interfaces;
 using HelloBotModuleHelper;
 using HtmlAgilityPack;
@@ -206,8 +207,11 @@ namespace Nigrimmist.Modules.Modules
         }
     }
 
+
+    [ModuleSettingsFor(typeof(Diary))]
     public class DiarySettings
     {
+        [SettingsNameField("Аккаунты")]
         public List<DiaryItem> DiaryList { get; set; }
 
         public DiarySettings()
@@ -218,10 +222,15 @@ namespace Nigrimmist.Modules.Modules
 
     public class DiaryItem
     {
+        [SettingsNameField("Логин")]
         public string UserName { get; set; }
+        [SettingsNameField("Пароль")]
         public string Password { get; set; }
+        [SettingsNameField("Проверять U-mail?")]
         public bool CheckUmails { get; set; }
+        [SettingsNameField("Проверять комментарии?")]
         public bool CheckNewComments { get; set; }
+        [SettingsNameField("Проверять дискуссии?")]
         public bool CheckDiscussions { get; set; }
     }
 }

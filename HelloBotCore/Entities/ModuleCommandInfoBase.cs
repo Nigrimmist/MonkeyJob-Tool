@@ -21,7 +21,7 @@ namespace HelloBotCore.Entities
         public Color? BodyBackgroundColor { get; set; }
         public Color? HeaderBackgroundColor { get; set; }
         public AuthorInfo Author { get; set; }
-
+        public Type ModuleSettingsType { get; set; }
 
         public ModuleCommandInfoBase()
         {

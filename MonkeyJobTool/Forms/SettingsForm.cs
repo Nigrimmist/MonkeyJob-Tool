@@ -250,11 +250,12 @@ namespace MonkeyJobTool.Forms
         private void AddModuleInfoToGrid(string name, string type, bool enabled, string uniqueName)
         {
             DataGridViewRow r = new DataGridViewRow {ErrorText = uniqueName};
+            
             r.Cells.Add(new DataGridViewTextBoxCell()
             {
                 Value = name,
                 Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleLeft }
-            });
+            }); 
             r.Cells.Add(new DataGridViewTextBoxCell()
             {
                 Value = type,
@@ -266,10 +267,14 @@ namespace MonkeyJobTool.Forms
                 Value = enabled?"Вкл":"Выкл",
                 Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleCenter }
             });
+            r.Cells.Add(new DataGridViewImageCell()
+            {
+                Value = Resources.MonkeyJob_ico,
 
+                Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleCenter }
+            });
             gridModules.Rows.Add(r);
         }
-        #endregion
 
         private void gridModules_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
@@ -279,37 +284,16 @@ namespace MonkeyJobTool.Forms
             if (baseModuleInfo != null)
             {
                 btnEnabledDisableModule.Text = (!baseModuleInfo.IsEnabled ? "В" : "Вы") + "ключить модуль";
-                gridModules.Rows[e.RowIndex].Cells[gridModules.Rows[e.RowIndex].Cells.Count - 1].Value = baseModuleInfo.IsEnabled ? "Вкл" : "Выкл";
+                gridModules.Rows[e.RowIndex].Cells[gridModules.Rows[e.RowIndex].Cells.Count - 2].Value = baseModuleInfo.IsEnabled ? "Вкл" : "Выкл";
             }
         }
-
-
-        private void btnEnabledDisableModule_Click(object sender, EventArgs e)
-        {
-            var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
-            
-            var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
-            if (module.IsEnabled)
-            {
-                App.Instance.DisableModule(module.ModuleSystemName);
-            }
-            else
-            {
-                App.Instance.EnableModule(module.ModuleSystemName);
-            }
-            gridModules_RowEnter(null, new DataGridViewCellContextMenuStripNeededEventArgs(0, gridModules.SelectedRows[0].Index));
-        }
-
-        
-        
 
         private HelpPopup _commandHelpCommand = null;
-        
 
         private int _displayHelpRowId = -1;
         private void gridModules_MouseMove(object sender, MouseEventArgs e)
         {
-            int rowIndex = gridModules.HitTest(e.X,e.Y).RowIndex;
+            int rowIndex = gridModules.HitTest(e.X, e.Y).RowIndex;
             if (rowIndex >= 0)
             {
                 if (rowIndex != _displayHelpRowId)
@@ -319,9 +303,10 @@ namespace MonkeyJobTool.Forms
                     if (!string.IsNullOrEmpty(moduleKey))
                     {
                         var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
-                        
+
                         if (_commandHelpCommand != null)
                         {
+                            //todo : do not hide, only change text (troble with dynamic border exist). reason : blinking
                             _commandHelpCommand.Hide();
                         }
                         _commandHelpCommand = new HelpPopup { FormType = PopupFormType.CommandInfo };
@@ -329,7 +314,7 @@ namespace MonkeyJobTool.Forms
                         {
                             Body = module.ToString(),
                             Icon = module.Icon ?? Resources.monkey_highres_img,
-                            Title = "Информация о модуле "+module.GetModuleName()
+                            Title = "Информация о модуле " + module.GetModuleName()
                         };
                         _commandHelpCommand.Init();
                     }
@@ -352,9 +337,31 @@ namespace MonkeyJobTool.Forms
 
         private void gridModules_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
         {
-            
+
 
         }
+        #endregion
+
+        
+
+
+        private void btnEnabledDisableModule_Click(object sender, EventArgs e)
+        {
+            var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
+            
+            var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
+            if (module.IsEnabled)
+            {
+                App.Instance.DisableModule(module.ModuleSystemName);
+            }
+            else
+            {
+                App.Instance.EnableModule(module.ModuleSystemName);
+            }
+            gridModules_RowEnter(null, new DataGridViewCellContextMenuStripNeededEventArgs(0, gridModules.SelectedRows[0].Index));
+        }
+
+        
 
 
 
