@@ -265,6 +265,7 @@
     <Content Include="monnkey_highres.ico" />
     <None Include="Resources\help1.png" />
     <None Include="Resources\question %281%29.gif" />
+    <None Include="Resources\settings_small.png" />
     <Content Include="Res\mj.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

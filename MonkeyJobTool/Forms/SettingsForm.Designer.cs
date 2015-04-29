@@ -47,14 +47,14 @@
             this.btnEnabledDisableModule = new System.Windows.Forms.Button();
             this.gridModules = new System.Windows.Forms.DataGridView();
             this.btnSaveConfig = new System.Windows.Forms.Button();
+            this.ModuleName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.moduleTypeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colIsEnabled = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.settingsCol = new System.Windows.Forms.DataGridViewImageColumn();
             this.htDonateBtn = new MonkeyJobTool.Controls.HelpTooltip();
             this.htStatsCollect = new MonkeyJobTool.Controls.HelpTooltip();
             this.htHotKey = new MonkeyJobTool.Controls.HelpTooltip();
             this.htReplace = new MonkeyJobTool.Controls.HelpTooltip();
-            this.ModuleName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.moduleTypeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colIsEnabled = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.settingsCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tsCommands.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -264,7 +264,9 @@
             this.gridModules.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.gridModules.Size = new System.Drawing.Size(424, 208);
             this.gridModules.TabIndex = 0;
+            this.gridModules.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridModules_CellClick);
             this.gridModules.CellMouseLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridModules_CellMouseLeave);
+            this.gridModules.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.gridModules_CellMouseMove);
             this.gridModules.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridModules_RowEnter);
             this.gridModules.MouseMove += new System.Windows.Forms.MouseEventHandler(this.gridModules_MouseMove);
             // 
@@ -280,6 +282,34 @@
             this.btnSaveConfig.Text = "Сохранить";
             this.btnSaveConfig.UseVisualStyleBackColor = false;
             this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
+            // 
+            // ModuleName
+            // 
+            this.ModuleName.FillWeight = 150F;
+            this.ModuleName.HeaderText = "Модуль";
+            this.ModuleName.Name = "ModuleName";
+            this.ModuleName.ReadOnly = true;
+            // 
+            // moduleTypeColumn
+            // 
+            this.moduleTypeColumn.FillWeight = 85F;
+            this.moduleTypeColumn.HeaderText = "Тип";
+            this.moduleTypeColumn.Name = "moduleTypeColumn";
+            this.moduleTypeColumn.ReadOnly = true;
+            // 
+            // colIsEnabled
+            // 
+            this.colIsEnabled.HeaderText = "Статус";
+            this.colIsEnabled.Name = "colIsEnabled";
+            this.colIsEnabled.ReadOnly = true;
+            // 
+            // settingsCol
+            // 
+            this.settingsCol.HeaderText = "Настройки";
+            this.settingsCol.Name = "settingsCol";
+            this.settingsCol.ReadOnly = true;
+            this.settingsCol.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.settingsCol.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // htDonateBtn
             // 
@@ -312,32 +342,6 @@
             this.htReplace.Name = "htReplace";
             this.htReplace.Size = new System.Drawing.Size(19, 19);
             this.htReplace.TabIndex = 6;
-            // 
-            // ModuleName
-            // 
-            this.ModuleName.FillWeight = 150F;
-            this.ModuleName.HeaderText = "Модуль";
-            this.ModuleName.Name = "ModuleName";
-            this.ModuleName.ReadOnly = true;
-            // 
-            // moduleTypeColumn
-            // 
-            this.moduleTypeColumn.FillWeight = 85F;
-            this.moduleTypeColumn.HeaderText = "Тип";
-            this.moduleTypeColumn.Name = "moduleTypeColumn";
-            this.moduleTypeColumn.ReadOnly = true;
-            // 
-            // colIsEnabled
-            // 
-            this.colIsEnabled.HeaderText = "Статус";
-            this.colIsEnabled.Name = "colIsEnabled";
-            this.colIsEnabled.ReadOnly = true;
-            // 
-            // settingsCol
-            // 
-            this.settingsCol.HeaderText = "settingsCol";
-            this.settingsCol.Name = "settingsCol";
-            this.settingsCol.ReadOnly = true;
             // 
             // SettingsForm
             // 
@@ -392,6 +396,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ModuleName;
         private System.Windows.Forms.DataGridViewTextBoxColumn moduleTypeColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn colIsEnabled;
-        private System.Windows.Forms.DataGridViewTextBoxColumn settingsCol;
+        private System.Windows.Forms.DataGridViewImageColumn settingsCol;
     }
 }

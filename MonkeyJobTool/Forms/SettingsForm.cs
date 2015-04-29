@@ -243,11 +243,11 @@ namespace MonkeyJobTool.Forms
         {
             foreach (var mod in App.Instance.Bot.AllModules.OrderByDescending(x=>x.ModuleType).ThenBy(x=>x.ModuleSystemName))
             {
-                AddModuleInfoToGrid(mod.GetModuleName(), mod.ModuleType == ModuleType.Handler ? "Команда" : "Событийный", mod.IsEnabled, mod.ModuleSystemName);
+                AddModuleInfoToGrid(mod.GetModuleName(), mod.ModuleType == ModuleType.Handler ? "Команда" : "Событийный", mod.IsEnabled, mod.ModuleSystemName,mod.ModuleSettingsType!=null);
             }
         }
 
-        private void AddModuleInfoToGrid(string name, string type, bool enabled, string uniqueName)
+        private void AddModuleInfoToGrid(string name, string type, bool enabled, string uniqueName, bool isWithSettings)
         {
             DataGridViewRow r = new DataGridViewRow {ErrorText = uniqueName};
             
@@ -269,7 +269,7 @@ namespace MonkeyJobTool.Forms
             });
             r.Cells.Add(new DataGridViewImageCell()
             {
-                Value = Resources.MonkeyJob_ico,
+                Value = isWithSettings?Resources.settings_small:new Bitmap(1,1),
 
                 Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleCenter }
             });
@@ -278,14 +278,7 @@ namespace MonkeyJobTool.Forms
 
         private void gridModules_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            var moduleKey = gridModules.Rows[e.RowIndex].ErrorText;
-            var baseModuleInfo = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
-
-            if (baseModuleInfo != null)
-            {
-                btnEnabledDisableModule.Text = (!baseModuleInfo.IsEnabled ? "В" : "Вы") + "ключить модуль";
-                gridModules.Rows[e.RowIndex].Cells[gridModules.Rows[e.RowIndex].Cells.Count - 2].Value = baseModuleInfo.IsEnabled ? "Вкл" : "Выкл";
-            }
+           
         }
 
         private HelpPopup _commandHelpCommand = null;
@@ -358,7 +351,27 @@ namespace MonkeyJobTool.Forms
             {
                 App.Instance.EnableModule(module.ModuleSystemName);
             }
-            gridModules_RowEnter(null, new DataGridViewCellContextMenuStripNeededEventArgs(0, gridModules.SelectedRows[0].Index));
+            gridModules.Rows[gridModules.SelectedRows[0].Index].Cells["colIsEnabled"].Value = module.IsEnabled ? "Вкл" : "Выкл";
+            btnEnabledDisableModule.Text = (!module.IsEnabled ? "В" : "Вы") + "ключить модуль";
+        }
+
+        private void gridModules_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void gridModules_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex == gridModules.Rows[e.RowIndex].Cells["settingsCol"].ColumnIndex)
+            {
+                var moduleKey = gridModules.Rows[e.RowIndex].ErrorText;
+                var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
+                gridModules.Cursor = module.ModuleSettingsType != null ? Cursors.Hand : Cursors.Default;
+            }
+            else
+            {
+                gridModules.Cursor = Cursors.Default;
+            }
         }
 
         
