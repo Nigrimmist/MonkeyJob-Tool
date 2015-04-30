@@ -129,6 +129,12 @@
     <Compile Include="Forms\InfoPopup.Designer.cs">
       <DependentUpon>InfoPopup.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\ModuleSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ModuleSettingsForm.Designer.cs">
+      <DependentUpon>ModuleSettingsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -182,6 +188,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ModuleSettingsForm.resx">
+      <DependentUpon>ModuleSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>

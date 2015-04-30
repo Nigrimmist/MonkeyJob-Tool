@@ -357,7 +357,15 @@ namespace MonkeyJobTool.Forms
 
         private void gridModules_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-
+            if (e.RowIndex >= 0 && e.ColumnIndex == gridModules.Rows[e.RowIndex].Cells["settingsCol"].ColumnIndex)
+            {
+                var moduleKey = gridModules.Rows[e.RowIndex].ErrorText;
+                var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
+                if (module.ModuleSettingsType != null)
+                {
+                    
+                }
+            }
         }
 
         private void gridModules_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
