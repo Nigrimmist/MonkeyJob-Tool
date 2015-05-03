@@ -367,7 +367,7 @@ namespace MonkeyJobTool.Forms
                     {
                         Module = module
                     };
-                    setMod.ShowDialog();
+                    setMod.Show();
                 }
             }
         }

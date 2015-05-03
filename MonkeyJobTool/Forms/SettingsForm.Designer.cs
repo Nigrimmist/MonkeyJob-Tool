@@ -46,11 +46,11 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.btnEnabledDisableModule = new System.Windows.Forms.Button();
             this.gridModules = new System.Windows.Forms.DataGridView();
-            this.btnSaveConfig = new System.Windows.Forms.Button();
             this.ModuleName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.moduleTypeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colIsEnabled = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.settingsCol = new System.Windows.Forms.DataGridViewImageColumn();
+            this.btnSaveConfig = new System.Windows.Forms.Button();
             this.htDonateBtn = new MonkeyJobTool.Controls.HelpTooltip();
             this.htStatsCollect = new MonkeyJobTool.Controls.HelpTooltip();
             this.htHotKey = new MonkeyJobTool.Controls.HelpTooltip();
@@ -270,19 +270,6 @@
             this.gridModules.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridModules_RowEnter);
             this.gridModules.MouseMove += new System.Windows.Forms.MouseEventHandler(this.gridModules_MouseMove);
             // 
-            // btnSaveConfig
-            // 
-            this.btnSaveConfig.BackColor = System.Drawing.Color.Moccasin;
-            this.btnSaveConfig.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnSaveConfig.ForeColor = System.Drawing.Color.Black;
-            this.btnSaveConfig.Location = new System.Drawing.Point(518, 259);
-            this.btnSaveConfig.Name = "btnSaveConfig";
-            this.btnSaveConfig.Size = new System.Drawing.Size(75, 23);
-            this.btnSaveConfig.TabIndex = 5;
-            this.btnSaveConfig.Text = "Сохранить";
-            this.btnSaveConfig.UseVisualStyleBackColor = false;
-            this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
-            // 
             // ModuleName
             // 
             this.ModuleName.FillWeight = 150F;
@@ -310,6 +297,19 @@
             this.settingsCol.ReadOnly = true;
             this.settingsCol.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.settingsCol.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // btnSaveConfig
+            // 
+            this.btnSaveConfig.BackColor = System.Drawing.Color.Moccasin;
+            this.btnSaveConfig.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnSaveConfig.ForeColor = System.Drawing.Color.Black;
+            this.btnSaveConfig.Location = new System.Drawing.Point(518, 259);
+            this.btnSaveConfig.Name = "btnSaveConfig";
+            this.btnSaveConfig.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveConfig.TabIndex = 5;
+            this.btnSaveConfig.Text = "Сохранить";
+            this.btnSaveConfig.UseVisualStyleBackColor = false;
+            this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
             // 
             // htDonateBtn
             // 
