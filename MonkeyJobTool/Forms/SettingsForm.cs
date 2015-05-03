@@ -363,7 +363,11 @@ namespace MonkeyJobTool.Forms
                 var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
                 if (module.ModuleSettingsType != null)
                 {
-                    
+                    var setMod = new ModuleSettingsForm()
+                    {
+                        Module = module
+                    };
+                    setMod.ShowDialog();
                 }
             }
         }
