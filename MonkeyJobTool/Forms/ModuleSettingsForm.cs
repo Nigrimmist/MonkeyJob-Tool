@@ -11,7 +11,10 @@ using System.Windows.Forms;
 using HelloBotCommunication.Attributes.SettingAttributes;
 using HelloBotCore.Entities;
 using MonkeyJobTool.Controls.Autocomplete;
+using MonkeyJobTool.Controls.Settings;
 using MonkeyJobTool.Entities;
+using MonkeyJobTool.Entities.Json;
+using MonkeyJobTool.Helpers;
 using Newtonsoft.Json;
 
 namespace MonkeyJobTool.Forms
@@ -64,39 +67,56 @@ namespace MonkeyJobTool.Forms
                     }
                     else if (typeof(IList).IsAssignableFrom(info.PropertyType))
                     {
-                        foreach (var item in (IEnumerable)info.GetValue(obj, null))
+                        int lastPanelWidth = 100;
+                        //AddControl("test", new TextBox() { Text = "test" }, "s", collectionPanel);
+                        //AddControl("test", new TextBox() { Text = "test" }, "s", collectionPanel);
+                        //AddControl("test", new TextBox() { Text = "test" }, "s", collectionPanel);
+                        //AddControl("test", new TextBox() { Text = "test" }, "s", collectionPanel);
+                        FlowLayoutPanel collectionPanel = new FlowLayoutPanel
                         {
-                            FlowLayoutPanel newPanel = new FlowLayoutPanel()
+                            AutoSizeMode = AutoSizeMode.GrowOnly,
+                            BorderStyle = BorderStyle.FixedSingle,
+                            AutoSize = true,
+                            AccessibleName = Guid.NewGuid().ToString(),
+                            FlowDirection = FlowDirection.TopDown,
+                            Margin = new Padding() {Left = 10}
+                        };
+                        parentControl.Controls.Add(collectionPanel);
+                        DataButton btnAddNewItem = new DataButton();
+                        foreach (object item in (IEnumerable)info.GetValue(obj, null))
+                        {
+                            lastPanelWidth = AddNewItemToForm(item,collectionPanel);
+                            btnAddNewItem.Data = new CloneObjData()
                             {
-                                Margin = new Padding() {Left = 10},
-                                AutoSizeMode = AutoSizeMode.GrowOnly,
-                                BorderStyle = BorderStyle.FixedSingle,
-                                AutoSize = true,
-                                AccessibleName = Guid.NewGuid().ToString(),
-                                FlowDirection = FlowDirection.LeftToRight,
-                                
-                                //Width = 350,
-                                //WrapContents = true
-                            };
-
-                            //if (parentControl.Controls.Count>0)
-                            //{
-                            //    var lastCtrl = parentControl.Controls[parentControl.Controls.Count - 1];
-                            //    newPanel.Top = lastCtrl.Top + lastCtrl.Height + 10;
-                            //}
-                            
-                            parentControl.Controls.Add(newPanel);
-                            BindObject(item, newPanel);
+                                Data = item,
+                                DataType = item.GetType()
+                            }; //save last for clone by btn click
                         }
+                        
+                        Panel btnPanel = new Panel {BorderStyle = BorderStyle.FixedSingle};
 
-                        //Button btnAddNewItem = new Button();
-                        //btnAddNewItem.Text = "+";
-                        //btnAddNewItem.AccessibleName = parentControl.AccessibleName;
-                        //btnAddNewItem.Click+= (sender, args) =>
-                        //{
-                            
-                        //};
-                        //parentControl.Controls.Add(btnAddNewItem);
+                        
+                        btnAddNewItem.Text = "Добавить";
+                        btnAddNewItem.AccessibleName = parentControl.AccessibleName;
+                        btnAddNewItem.Width = 100;
+                        btnAddNewItem.Click += (sender, args) =>
+                        {
+                            var clonedObj = ((DataButton)sender).Data as CloneObjData;
+
+                            if (clonedObj != null)
+                            {
+                                var jsonObj = JsonConvert.SerializeObject(clonedObj.Data);
+                                var materializedObj = JsonConvert.DeserializeObject(jsonObj, clonedObj.DataType);
+                                AddNewItemToForm(materializedObj, collectionPanel);
+                                
+                            }
+                        };
+                        btnPanel.Controls.Add(btnAddNewItem);
+                        btnPanel.Width = lastPanelWidth;
+                        parentControl.Controls.Add(btnPanel);
+                        btnAddNewItem.Left = parentControl.Left + lastPanelWidth - btnAddNewItem.Width - 20; //aligning by prev panel
+                        btnPanel.Margin = new Padding() {Left = 10};
+                        btnPanel.Height = btnAddNewItem.Height + 2;
                     }
                     else
                     {
@@ -109,7 +129,23 @@ namespace MonkeyJobTool.Forms
             }
             
         }
-        
+
+        private int AddNewItemToForm(object item, Control collectionPanel)
+        {
+            FlowLayoutPanel newPanel = new FlowLayoutPanel()
+            {
+                AutoSizeMode = AutoSizeMode.GrowOnly,
+                BorderStyle = BorderStyle.FixedSingle,
+                AutoSize = true,
+                AccessibleName = Guid.NewGuid().ToString(),
+                FlowDirection = FlowDirection.TopDown,
+                //Width = 300
+            };
+            collectionPanel.Controls.Add(newPanel);
+            BindObject(item, newPanel);
+            return newPanel.Width;
+        }
+
         private void AddControl(string label, Control cntrl, string propName, Control parentControl)
         {
             Panel tPanel = new Panel();

@@ -37,7 +37,7 @@
             this.pnlSettings.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.pnlSettings.Location = new System.Drawing.Point(12, 12);
             this.pnlSettings.Name = "pnlSettings";
-            this.pnlSettings.Size = new System.Drawing.Size(459, 288);
+            this.pnlSettings.Size = new System.Drawing.Size(459, 303);
             this.pnlSettings.TabIndex = 0;
             // 
             // ModuleSettingsForm
@@ -46,7 +46,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(483, 312);
+            this.ClientSize = new System.Drawing.Size(483, 328);
             this.Controls.Add(this.pnlSettings);
             this.Name = "ModuleSettingsForm";
             this.Text = "Настройки модуля";

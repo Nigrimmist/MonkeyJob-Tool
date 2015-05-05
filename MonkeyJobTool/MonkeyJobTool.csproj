@@ -79,12 +79,16 @@
     <Compile Include="Controls\Settings\CommandReplaceBlock.Designer.cs">
       <DependentUpon>CommandReplaceBlock.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Settings\DataButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Entities\AppConstants.cs" />
     <Compile Include="Entities\ApplicationConfiguration.cs" />
     <Compile Include="Entities\Autocomplete\AutocompletePopupInfo.cs" />
     <Compile Include="Entities\Autocomplete\AutocompletePopupItem.cs" />
     <Compile Include="Entities\Autocomplete\DataFilterInfo.cs" />
     <Compile Include="Entities\ClosePopupReasonType.cs" />
+    <Compile Include="Entities\Json\CloneObjData.cs" />
     <Compile Include="Entities\Json\DonateItem.cs" />
     <Compile Include="Entities\HotKeyType.cs" />
     <Compile Include="Controls\Autocomplete\AutocompletePopupItemControl.cs">
@@ -141,6 +145,7 @@
     <Compile Include="Forms\SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\ObjectCopier.cs" />
     <Compile Include="Helpers\FormHelper.cs" />
     <Compile Include="Helpers\GoogleAnalytics.cs" />
     <Compile Include="Helpers\HtmlReaderManager.cs" />
