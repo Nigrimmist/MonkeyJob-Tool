@@ -17,6 +17,7 @@ using MonkeyJobTool.Entities.Json;
 using MonkeyJobTool.Helpers;
 using Newtonsoft.Json;
 
+
 namespace MonkeyJobTool.Forms
 {
     public partial class ModuleSettingsForm : Form
@@ -41,9 +42,8 @@ namespace MonkeyJobTool.Forms
 
             var table = new TableLayoutPanel()
             {
-                RowCount = 1,
-                ColumnCount = 1,
-                AutoSize = true
+                AutoSize = true,
+                CellBorderStyle = TableLayoutPanelCellBorderStyle.Single
             };
             pnlSettings.Controls.Add(table);
             BindObject(settings, table);
@@ -53,10 +53,12 @@ namespace MonkeyJobTool.Forms
         public void BindObject(object obj, TableLayoutPanel parentControl)
         {
             var props = obj.GetType().GetProperties();
-            parentControl.ColumnStyles.Add(new ColumnStyle());
-
+            
             foreach (var info in props)
             {
+                
+                
+
                 var tInfo = info.PropertyType;
                 var propTitle = Attribute.GetCustomAttribute(info, typeof(SettingsNameFieldAttribute)) as SettingsNameFieldAttribute;
 
@@ -76,27 +78,17 @@ namespace MonkeyJobTool.Forms
                     }
                     else if (typeof(IList).IsAssignableFrom(info.PropertyType))
                     {
-                        int lastPanelWidth = 100;
-                        
-                        
-                        //FlowLayoutPanel collectionPanel = new FlowLayoutPanel
-                        //{
-                        //    AutoSizeMode = AutoSizeMode.GrowOnly,
-                        //    BorderStyle = BorderStyle.FixedSingle,
-                        //    AutoSize = true,
-                        //    AccessibleName = Guid.NewGuid().ToString(),
-                        //    FlowDirection = FlowDirection.TopDown,
-                        //    Margin = new Padding() {Left = 10}
-                        //};
-
                         var collectionPanel = new TableLayoutPanel()
                         {
-                            RowCount = 1,
-                            ColumnCount = 1,
-                            AutoSize = true
+                            AutoSize = true,
+                            CellBorderStyle = TableLayoutPanelCellBorderStyle.Single
                         };
+
+                        parentControl.RowStyles.Add(new RowStyle());
+                        parentControl.Controls.Add(collectionPanel, 1, parentControl.RowCount);
+                        parentControl.RowCount++;
                         
-                        parentControl.Controls.Add(collectionPanel);
+
                         DataButton btnAddNewItem = new DataButton();
                         foreach (object item in (IEnumerable)info.GetValue(obj, null))
                         {
@@ -107,9 +99,9 @@ namespace MonkeyJobTool.Forms
                                 DataType = item.GetType()
                             }; //save last for clone by btn click
                         }
-                        
-                        //Panel btnPanel = new Panel {BorderStyle = BorderStyle.FixedSingle};
 
+                        
+                        btnAddNewItem.ParentPanel = collectionPanel;
 
                         btnAddNewItem.Text = "Добавить";
                         btnAddNewItem.AccessibleName = parentControl.AccessibleName;
@@ -122,16 +114,16 @@ namespace MonkeyJobTool.Forms
                             {
                                 var jsonObj = JsonConvert.SerializeObject(clonedObj.Data);
                                 var materializedObj = JsonConvert.DeserializeObject(jsonObj, clonedObj.DataType);
-                                //AddNewItemToForm(materializedObj, collectionPanel);
-
+                                
+                                BindObject(materializedObj, ((DataButton)sender).ParentPanel);
                             }
                         };
-                        //btnPanel.Controls.Add(btnAddNewItem);
-                        //btnPanel.Width = lastPanelWidth;
-                        //parentControl.Controls.Add(btnPanel);
-                        ////btnAddNewItem.Left = parentControl.Left + lastPanelWidth - btnAddNewItem.Width - 20; //aligning by prev panel
-                        //btnPanel.Margin = new Padding() {Left = 10};
-                        //btnPanel.Height = btnAddNewItem.Height + 2;
+
+                        //button to next row
+                        parentControl.RowStyles.Add(new RowStyle());
+                        parentControl.Controls.Add(btnAddNewItem,1,parentControl.RowCount);
+                        parentControl.RowCount++;
+                        
                     }
                     else
                     {
@@ -140,26 +132,27 @@ namespace MonkeyJobTool.Forms
 
                     
                 }
+
                 
             }
             
         }
 
-        //private int AddNewItemToForm(object item, Control collectionPanel)
-        //{
-        //    FlowLayoutPanel newPanel = new FlowLayoutPanel()
-        //    {
-        //        AutoSizeMode = AutoSizeMode.GrowOnly,
-        //        BorderStyle = BorderStyle.FixedSingle,
-        //        AutoSize = true,
-        //        AccessibleName = Guid.NewGuid().ToString(),
-        //        FlowDirection = FlowDirection.TopDown,
-        //        //Width = 300
-        //    };
-        //    collectionPanel.Controls.Add(newPanel);
+        private int AddNewItemToForm(object item, Control collectionPanel)
+        {
+            FlowLayoutPanel newPanel = new FlowLayoutPanel()
+            {
+                AutoSizeMode = AutoSizeMode.GrowOnly,
+                BorderStyle = BorderStyle.FixedSingle,
+                AutoSize = true,
+                AccessibleName = Guid.NewGuid().ToString(),
+                FlowDirection = FlowDirection.TopDown,
+                //Width = 300
+            };
+            collectionPanel.Controls.Add(newPanel);
             
-        //    return newPanel.Width;
-        //}
+            return newPanel.Width;
+        }
 
         private void AddControl(string label, Control cntrl, string propName, TableLayoutPanel parentControl)
         {
@@ -187,7 +180,11 @@ namespace MonkeyJobTool.Forms
             cntrl.AccessibleName = propName;
             //cntrl.Top = top;
             tPanel.Controls.Add(cntrl);
+
+            parentControl.RowStyles.Add(new RowStyle());
             parentControl.Controls.Add(tPanel, 1, parentControl.RowCount);
+            parentControl.RowCount++;
+
             tPanel.Height = (from Control control in tPanel.Controls select control.Height).Concat(new[] { 0 }).Max();
         }
     }
