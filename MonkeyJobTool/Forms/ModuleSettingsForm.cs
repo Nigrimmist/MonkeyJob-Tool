@@ -64,17 +64,18 @@ namespace MonkeyJobTool.Forms
 
                 if (propTitle != null)
                 {
+                    var objVal = info.GetValue(obj, null) ?? "";
                     if (tInfo == typeof (int))
                     {
-                        AddControl(propTitle.Label, new TextBox() { Text = info.GetValue(obj, null).ToString() }, info.Name, parentControl);
+                        AddControl(propTitle.Label, new TextBox() { Text = objVal.ToString() }, info.Name, parentControl);
                     }
                     else if (tInfo == typeof (string))
                     {
-                        AddControl(propTitle.Label, new TextBox() { Text = info.GetValue(obj, null).ToString() }, info.Name, parentControl);
+                        AddControl(propTitle.Label, new TextBox() { Text = objVal.ToString() }, info.Name, parentControl);
                     }
                     else if (tInfo == typeof(bool))
                     {
-                        AddControl("", new CheckBox() { Checked = (bool)info.GetValue(obj, null), Text = propTitle.Label }, info.Name, parentControl);
+                        AddControl("", new CheckBox() { Checked = (bool)objVal, Text = propTitle.Label }, info.Name, parentControl);
                     }
                     else if (typeof(IList).IsAssignableFrom(info.PropertyType))
                     {
@@ -84,13 +85,16 @@ namespace MonkeyJobTool.Forms
                             CellBorderStyle = TableLayoutPanelCellBorderStyle.Single
                         };
 
-                        parentControl.RowStyles.Add(new RowStyle());
-                        parentControl.Controls.Add(collectionPanel, 1, parentControl.RowCount);
-                        parentControl.RowCount++;
-                        
-
+                        AddControlToNewPanelRow(parentControl, collectionPanel);
+                        AddControlToNewPanelRow(collectionPanel, new RichTextLabel()
+                        {
+                            Text = propTitle.Label,
+                            //AutoSize = false,
+                            Dock = DockStyle.Fill,
+                            BackColor = Color.DarkSalmon
+                        });
                         DataButton btnAddNewItem = new DataButton();
-                        foreach (object item in (IEnumerable)info.GetValue(obj, null))
+                        foreach (object item in (IEnumerable)objVal)
                         {
                             BindObject(item, collectionPanel);
                             btnAddNewItem.Data = new CloneObjData()
@@ -120,10 +124,7 @@ namespace MonkeyJobTool.Forms
                         };
 
                         //button to next row
-                        parentControl.RowStyles.Add(new RowStyle());
-                        parentControl.Controls.Add(btnAddNewItem,1,parentControl.RowCount);
-                        parentControl.RowCount++;
-                        
+                        AddControlToNewPanelRow(parentControl, btnAddNewItem);
                     }
                     else
                     {
@@ -181,11 +182,15 @@ namespace MonkeyJobTool.Forms
             //cntrl.Top = top;
             tPanel.Controls.Add(cntrl);
 
-            parentControl.RowStyles.Add(new RowStyle());
-            parentControl.Controls.Add(tPanel, 1, parentControl.RowCount);
-            parentControl.RowCount++;
-
+            AddControlToNewPanelRow(parentControl, tPanel);
             tPanel.Height = (from Control control in tPanel.Controls select control.Height).Concat(new[] { 0 }).Max();
+        }
+
+        private void AddControlToNewPanelRow(TableLayoutPanel panel, Control cntrl)
+        {
+            panel.RowStyles.Add(new RowStyle());
+            panel.Controls.Add(cntrl, 1, panel.RowCount);
+            panel.RowCount++;
         }
     }
 }
