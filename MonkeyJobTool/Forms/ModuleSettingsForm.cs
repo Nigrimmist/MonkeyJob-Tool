@@ -49,7 +49,7 @@ namespace MonkeyJobTool.Forms
             BindObject(settings, table);
         }
 
-
+        
         public void BindObject(object obj, TableLayoutPanel parentControl)
         {
             var props = obj.GetType().GetProperties();
@@ -57,8 +57,6 @@ namespace MonkeyJobTool.Forms
             foreach (var info in props)
             {
                 
-                
-
                 var tInfo = info.PropertyType;
                 var propTitle = Attribute.GetCustomAttribute(info, typeof(SettingsNameFieldAttribute)) as SettingsNameFieldAttribute;
 
@@ -82,18 +80,18 @@ namespace MonkeyJobTool.Forms
                         var collectionPanel = new TableLayoutPanel()
                         {
                             AutoSize = true,
-                            CellBorderStyle = TableLayoutPanelCellBorderStyle.Single
+                            CellBorderStyle = TableLayoutPanelCellBorderStyle.Single,
                         };
-
-                        AddControlToNewPanelRow(parentControl, collectionPanel);
-                        AddControlToNewPanelRow(collectionPanel, new RichTextLabel()
+                        AddControlToNewPanelRow(parentControl, new RichTextLabel()
                         {
                             Text = propTitle.Label,
-                            //AutoSize = false,
                             Dock = DockStyle.Fill,
                             BackColor = Color.DarkSalmon
-                        });
+                        }, 0);
+                        AddControlToNewPanelRow(parentControl, collectionPanel, 20);
+                        
                         DataButton btnAddNewItem = new DataButton();
+                        
                         foreach (object item in (IEnumerable)objVal)
                         {
                             BindObject(item, collectionPanel);
@@ -124,14 +122,12 @@ namespace MonkeyJobTool.Forms
                         };
 
                         //button to next row
-                        AddControlToNewPanelRow(parentControl, btnAddNewItem);
+                        AddControlToNewPanelRow(parentControl, btnAddNewItem,0);
                     }
                     else
                     {
                         BindObject(info, parentControl);
                     }
-
-                    
                 }
 
                 
@@ -139,29 +135,10 @@ namespace MonkeyJobTool.Forms
             
         }
 
-        private int AddNewItemToForm(object item, Control collectionPanel)
-        {
-            FlowLayoutPanel newPanel = new FlowLayoutPanel()
-            {
-                AutoSizeMode = AutoSizeMode.GrowOnly,
-                BorderStyle = BorderStyle.FixedSingle,
-                AutoSize = true,
-                AccessibleName = Guid.NewGuid().ToString(),
-                FlowDirection = FlowDirection.TopDown,
-                //Width = 300
-            };
-            collectionPanel.Controls.Add(newPanel);
-            
-            return newPanel.Width;
-        }
-
         private void AddControl(string label, Control cntrl, string propName, TableLayoutPanel parentControl)
         {
             Panel tPanel = new Panel();
             tPanel.Width = 310;
-            //tPanel.AutoSize = true;
-            
-            //tPanel.Height = 100;
             if (!string.IsNullOrEmpty(label))
             {
                 var lbl = new RichTextLabel()
@@ -177,17 +154,15 @@ namespace MonkeyJobTool.Forms
                 cntrl.Left += lbl.Width;
             }
             cntrl.Width = 200;
-            //cntrl.BackColor = Color.Aqua;
             cntrl.AccessibleName = propName;
-            //cntrl.Top = top;
             tPanel.Controls.Add(cntrl);
-
-            AddControlToNewPanelRow(parentControl, tPanel);
+            AddControlToNewPanelRow(parentControl, tPanel, 0);
             tPanel.Height = (from Control control in tPanel.Controls select control.Height).Concat(new[] { 0 }).Max();
         }
 
-        private void AddControlToNewPanelRow(TableLayoutPanel panel, Control cntrl)
+        private void AddControlToNewPanelRow(TableLayoutPanel panel, Control cntrl, int leftMargin)
         {
+            cntrl.Margin = new Padding(leftMargin, 0, 0, 0);
             panel.RowStyles.Add(new RowStyle());
             panel.Controls.Add(cntrl, 1, panel.RowCount);
             panel.RowCount++;
