@@ -361,8 +361,7 @@ namespace HelloBotCore
             {
                 var settings = new ModuleSettings<T>(commandInfo.Version, serializableSettingObject);
                 var json = JsonConvert.SerializeObject(settings, Formatting.Indented);
-                string moduleFileName = commandInfo.ModuleSystemName + ".json";
-                File.WriteAllText(_settingsFolderAbsolutePath + "/" + moduleFileName, json);
+                File.WriteAllText(commandInfo.GetSettingFileFullPath(_settingsFolderAbsolutePath), json);
             }
         }
 
@@ -370,9 +369,8 @@ namespace HelloBotCore
         {
             lock (_commandDictLocks[commandInfo.Id])
             {
-                string moduleFileName = commandInfo.ModuleSystemName + ".json";
-                string fullPath = _settingsFolderAbsolutePath+"/" + moduleFileName;
-                if (!File.Exists(fullPath)) return default(T);
+                string fullPath = commandInfo.GetSettingFileFullPath(_settingsFolderAbsolutePath);
+                if (!File.Exists(fullPath)) return null;
                 string data = File.ReadAllText(fullPath);
                 var settings = JsonConvert.DeserializeObject<ModuleSettings<T>>(data);
                 return settings.ModuleData;

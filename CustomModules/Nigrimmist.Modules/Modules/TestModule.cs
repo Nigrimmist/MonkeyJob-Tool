@@ -29,16 +29,16 @@ namespace Nigrimmist.Modules.Modules
             {
                 _settings = new TestSettings()
                 {
-                    DiaryList = new List<test>()
-                    {
-                        new test()
-                        {
-                            DiaryList3 = new List<test2>()
-                            {
-                                new test2(){}
-                            }
-                        }
-                    }
+                    //DiaryList = new List<test>()
+                    //{
+                    //    new test()
+                    //    {
+                    //        DiaryList3 = new List<test2>()
+                    //        {
+                    //            new test2(){}
+                    //        }
+                    //    }
+                    //}
                 };
                 _client.SaveSettings(_settings);
             }
@@ -75,16 +75,21 @@ namespace Nigrimmist.Modules.Modules
     [ModuleSettingsFor(typeof(TestModule))]
     public class TestSettings
     {
-        [SettingsNameField("1 уровень.заголовок коллекции номер 1")]
-        public List<test> DiaryList { get; set; }
+        //[SettingsNameField("1 уровень.заголовок коллекции номер 1")]
+        //public List<test> DiaryList { get; set; }
 
         //[SettingsNameField("1 уровень.заголовок коллекции номер 2")]
         //public List<test> DiaryList2 { get; set; }
-        [SettingsNameField("1 уровень. кол-во")]
-        public int Count { get; set; }
+        //[SettingsNameField("1 уровень. кол-во")]
+        //public int Count { get; set; }
+
+        [SettingsNameField("1 уровень.объект")]
+        public test2 Test { get; set; }
+
         public TestSettings()
         {
-            DiaryList = new List<test>();
+            Test = new test2();
+            //DiaryList = new List<test>();
             //DiaryList2 = new List<test>();
         }
     }
@@ -105,9 +110,14 @@ namespace Nigrimmist.Modules.Modules
         [SettingsNameField("2 уровень.заголовок вложенной коллекции")]
         public List<test2> DiaryList3 { get; set; }
 
+
+        [SettingsNameField("2 уровень.объект")]
+        public test2 Test { get; set; }
+
         public test()
         {
             DiaryList3 = new List<test2>();
+            Test = new test2();
         }
     }
 

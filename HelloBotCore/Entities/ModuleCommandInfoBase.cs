@@ -88,6 +88,11 @@ namespace HelloBotCore.Entities
             return toReturn;
 
         }
+
+        public string GetSettingFileFullPath(string settingFolder)
+        {
+            return settingFolder + "/" + ModuleSystemName + ".json";
+        }
     }
 
 

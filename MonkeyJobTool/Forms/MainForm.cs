@@ -117,7 +117,7 @@ namespace MonkeyJobTool.Forms
                 try
                 {   
                     SetLoading(true);
-                    _bot = new HelloBot(App.Instance.ExecutionFolder + "ModuleSettings", AppConstants.AppVersion, botCommandPrefix: "", moduleFolderPath: App.Instance.ExecutionFolder);
+                    _bot = new HelloBot(App.Instance.FolderSettingPath, AppConstants.AppVersion, botCommandPrefix: "", moduleFolderPath: App.Instance.ExecutionFolder);
                     _bot.OnErrorOccured += BotOnOnErrorOccured;
                     _bot.OnMessageRecieved += BotOnMessageRecieved;
                     _bot.SetCurrentLanguage((Language) (int) App.Instance.AppConf.Language);

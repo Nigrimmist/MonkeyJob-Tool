@@ -33,8 +33,6 @@ namespace Nigrimmist.Modules.Modules
         {
             get { return "Модуль проверки наличия новых версий программы"; }
         }
-        
-
 
         public override TimeSpan RunEvery
         {
@@ -44,7 +42,7 @@ namespace Nigrimmist.Modules.Modules
         public override void OnFire(Guid eventToken)
         {
             var settings = _client.GetSettings<ToolUpdateSettings>();
-            if (settings.LastUpdateCheck.AddDays(3) <= DateTime.Now)
+            if (settings != null && settings.LastUpdateCheck.AddDays(3) <= DateTime.Now)
             {
                 settings.LastUpdateCheck = DateTime.Now.Date;
                 _client.SaveSettings(settings);
@@ -66,17 +64,14 @@ namespace Nigrimmist.Modules.Modules
                 }
 
                 hrm.Get(string.Format(LatestVersionFileUrlFormat, langCode));
-                string versionJson = hrm.Html.Replace("\t","");
+                string versionJson = hrm.Html.Replace("\t", "");
                 AppVersionInfo info = JsonConvert.DeserializeObject<AppVersionInfo>(versionJson);
                 var versions = info.Versions.OrderBy(x => x.Version);
                 var latestVersion = versions.Last();
                 if (latestVersion.Version > _client.UiClientVersion)
                 {
-                    string message = "Версия v" + latestVersion.Version + " доступна для скачивания. В новой версии :" + Environment.NewLine + Environment.NewLine + latestVersion.WhatsNew+Environment.NewLine+Environment.NewLine+"Кликните для перехода на новую версию";
-                    _client.ShowMessage(eventToken, message, "Вышла новая версия.").OnClick(() =>
-                    {
-                        _client.ShowMessage(eventToken, "https://github.com/Nigrimmist/MonkeyJob-Tool/releases", answerType: AnswerBehaviourType.OpenLink);
-                    });
+                    string message = "Версия v" + latestVersion.Version + " доступна для скачивания. В новой версии :" + Environment.NewLine + Environment.NewLine + latestVersion.WhatsNew + Environment.NewLine + Environment.NewLine + "Кликните для перехода на новую версию";
+                    _client.ShowMessage(eventToken, message, "Вышла новая версия.").OnClick(() => { _client.ShowMessage(eventToken, "https://github.com/Nigrimmist/MonkeyJob-Tool/releases", answerType: AnswerBehaviourType.OpenLink); });
                 }
             }
         }

@@ -16,32 +16,11 @@ namespace Nigrimmist.Modules.Modules
     public class Diary : ModuleEventBase
     {
         private IClient _client;
-        private DiarySettings _settings;
+        
         
         public override void Init(IClient client)
         {
             _client = client;
-            _settings = _client.GetSettings<DiarySettings>();
-
-            //save empty settings for manual edit
-            if (_settings == null)
-            {
-                _settings = new DiarySettings()
-                {
-                    DiaryList = new List<DiaryItem>()
-                    {
-                        new DiaryItem()
-                        {
-                            CheckDiscussions = true,
-                            CheckNewComments = true,
-                            CheckUmails = true,
-                            Password = "",
-                            UserName = ""
-                        }
-                    }
-                };
-                _client.SaveSettings(_settings);
-            }
         }
 
         public override string ModuleTitle
@@ -65,9 +44,10 @@ namespace Nigrimmist.Modules.Modules
 
         public override void OnFire(Guid eventToken)
         {
-            if (_settings != null)
+            DiarySettings settings = _client.GetSettings<DiarySettings>();
+            if (settings != null)
             {
-                foreach (var diary in _settings.DiaryList.Where(x => !string.IsNullOrEmpty(x.UserName) && !string.IsNullOrEmpty(x.Password)))
+                foreach (var diary in settings.DiaryList.Where(x => !string.IsNullOrEmpty(x.UserName) && !string.IsNullOrEmpty(x.Password)))
                 {
                     HtmlReaderManager hrm;
                     if (!_dict.TryGetValue(diary.UserName, out hrm))

@@ -23,7 +23,7 @@ namespace MonkeyJobTool.Forms
     public partial class ModuleSettingsForm : Form
     {
         public ModuleCommandInfoBase Module { get; set; }
-
+        public string ModuleSettingsPath { get; set; }
 
         public ModuleSettingsForm()
         {
@@ -32,8 +32,8 @@ namespace MonkeyJobTool.Forms
 
         private void ModuleSettingsForm_Load(object sender, EventArgs e)
         {
-            string moduleFileName = Module.ModuleSystemName + ".json";
-            string fullPath = @"E:\My Dream\MonkeyJobTool\MonkeyJob-Tool\MonkeyJobTool\bin\Debug\ModuleSettings\" + moduleFileName;
+            string fullPath = Module.GetSettingFileFullPath(App.Instance.FolderSettingPath);
+            
             string data = File.ReadAllText(fullPath);
             var settingsWrapper = JsonConvert.DeserializeObject(data, typeof(ModuleSettings)) as ModuleSettings;
             var rawSettingsJson = JsonConvert.SerializeObject(settingsWrapper.ModuleData);
@@ -43,7 +43,7 @@ namespace MonkeyJobTool.Forms
             var table = new TableLayoutPanel()
             {
                 AutoSize = true,
-                CellBorderStyle = TableLayoutPanelCellBorderStyle.Single
+                //CellBorderStyle = TableLayoutPanelCellBorderStyle.Single
             };
             pnlSettings.Controls.Add(table);
             BindObject(settings, table);
@@ -62,52 +62,61 @@ namespace MonkeyJobTool.Forms
 
                 if (propTitle != null)
                 {
-                    var objVal = info.GetValue(obj, null) ?? "";
+                    var objVal = info.GetValue(obj, null) ;
                     if (tInfo == typeof (int))
                     {
-                        AddControl(propTitle.Label, new TextBox() { Text = objVal.ToString() }, info.Name, parentControl);
+                        AddControl(propTitle.Label, new TextBox() { Text = objVal!=null?objVal.ToString():"" }, info.Name, parentControl);
                     }
                     else if (tInfo == typeof (string))
                     {
-                        AddControl(propTitle.Label, new TextBox() { Text = objVal.ToString() }, info.Name, parentControl);
+                        AddControl(propTitle.Label, new TextBox() { Text = objVal != null ? objVal.ToString() : "" }, info.Name, parentControl);
                     }
                     else if (tInfo == typeof(bool))
                     {
-                        AddControl("", new CheckBox() { Checked = (bool)objVal, Text = propTitle.Label }, info.Name, parentControl);
+                        AddControl("", new CheckBox() { Checked = objVal != null ? (bool)objVal : false, Text = propTitle.Label }, info.Name, parentControl);
                     }
                     else if (typeof(IList).IsAssignableFrom(info.PropertyType))
                     {
                         var collectionPanel = new TableLayoutPanel()
                         {
                             AutoSize = true,
-                            CellBorderStyle = TableLayoutPanelCellBorderStyle.Single,
+                            //CellBorderStyle = TableLayoutPanelCellBorderStyle.Single,
                         };
-                        AddControlToNewPanelRow(parentControl, new RichTextLabel()
-                        {
-                            Text = propTitle.Label,
-                            Dock = DockStyle.Fill,
-                            BackColor = Color.DarkSalmon
-                        }, 0);
+                        AddControlToNewPanelRow(parentControl, GetTitleControl(propTitle.Label), 0);
                         AddControlToNewPanelRow(parentControl, collectionPanel, 20);
                         
-                        DataButton btnAddNewItem = new DataButton();
-                        
-                        foreach (object item in (IEnumerable)objVal)
+                        DataButton btnAddNewItem = new DataButton()
                         {
-                            BindObject(item, collectionPanel);
+                            BackColor = Color.Moccasin,
+                            FlatStyle = FlatStyle.Popup,
+                            UseVisualStyleBackColor = false
+                        };
+                        btnAddNewItem.ParentPanel = collectionPanel;
+                        btnAddNewItem.ParentParentPanel = parentControl;
+                        btnAddNewItem.Text = "Добавить";
+                        btnAddNewItem.Width = 100;
+
+                        var itemList = ((IEnumerable) objVal).Cast<object>().ToList();
+
+                        if (!itemList.Any())
+                        {
+                            Type listItemType = objVal.GetType().GetGenericArguments().First();
+                            //add one for user input
+                            itemList.Add(Activator.CreateInstance(listItemType));
+                        }
+                        
+                        foreach (var item in itemList)
+                        {
                             btnAddNewItem.Data = new CloneObjData()
                             {
                                 Data = item,
                                 DataType = item.GetType()
                             }; //save last for clone by btn click
+
+                            AddItemCollectionToUI(item, collectionPanel);
                         }
 
                         
-                        btnAddNewItem.ParentPanel = collectionPanel;
-
-                        btnAddNewItem.Text = "Добавить";
-                        btnAddNewItem.AccessibleName = parentControl.AccessibleName;
-                        btnAddNewItem.Width = 100;
                         btnAddNewItem.Click += (sender, args) =>
                         {
                             var clonedObj = ((DataButton)sender).Data as CloneObjData;
@@ -116,23 +125,74 @@ namespace MonkeyJobTool.Forms
                             {
                                 var jsonObj = JsonConvert.SerializeObject(clonedObj.Data);
                                 var materializedObj = JsonConvert.DeserializeObject(jsonObj, clonedObj.DataType);
-                                
-                                BindObject(materializedObj, ((DataButton)sender).ParentPanel);
+                                AddItemCollectionToUI(materializedObj, ((DataButton)sender).ParentPanel);
                             }
                         };
 
                         //button to next row
-                        AddControlToNewPanelRow(parentControl, btnAddNewItem,0);
+                        AddControlToNewPanelRow(parentControl, btnAddNewItem, parentControl.Width - btnAddNewItem.Width);
                     }
-                    else
+                    else //complex object
                     {
-                        BindObject(info, parentControl);
+                        var collectionPanel = new TableLayoutPanel()
+                        {
+                            AutoSize = true,
+                            //CellBorderStyle = TableLayoutPanelCellBorderStyle.Single,
+                        };
+                        AddControlToNewPanelRow(parentControl, GetTitleControl(propTitle.Label), 0);
+                        AddControlToNewPanelRow(parentControl, collectionPanel, 0);
+                        if (objVal == null)
+                        {
+                            objVal = Activator.CreateInstance(tInfo.UnderlyingSystemType);
+                        }
+                        BindObject(objVal, collectionPanel);
                     }
                 }
 
                 
             }
             
+        }
+
+        private void AddItemCollectionToUI(object item,TableLayoutPanel parentControl)
+        {
+            var collectionItemPanel = new TableLayoutPanel()
+            {
+                AutoSize = true
+            };
+            AddControlToNewPanelRow(parentControl, collectionItemPanel, 0);
+            BindObject(item, collectionItemPanel);
+            AddRemoveBtn(collectionItemPanel, parentControl);
+        }
+
+        private void AddRemoveBtn(TableLayoutPanel addToControl, TableLayoutPanel parentControl)
+        {
+            DataButton btnRemoveItem = new DataButton()
+            {
+                BackColor = Color.Moccasin,
+                FlatStyle = FlatStyle.Popup,
+                UseVisualStyleBackColor = false,
+                Text = "Удалить"
+            };
+            btnRemoveItem.ParentPanel = addToControl;
+            btnRemoveItem.ParentParentPanel = parentControl;
+            btnRemoveItem.Click += (sender, args) =>
+            {
+                var parentContainer = ((DataButton)sender).ParentPanel;
+                var parentParentContainer = ((DataButton)sender).ParentParentPanel;
+                parentParentContainer.Controls.Remove(parentContainer);
+            };
+            AddControlToNewPanelRow(addToControl, btnRemoveItem, 0);
+        }
+
+        private Control GetTitleControl(string title)
+        {
+            return new RichTextLabel()
+            {
+                Text = title,
+                Dock = DockStyle.Fill,
+                BackColor = Color.Bisque
+            };
         }
 
         private void AddControl(string label, Control cntrl, string propName, TableLayoutPanel parentControl)
@@ -162,10 +222,20 @@ namespace MonkeyJobTool.Forms
 
         private void AddControlToNewPanelRow(TableLayoutPanel panel, Control cntrl, int leftMargin)
         {
-            cntrl.Margin = new Padding(leftMargin, 0, 0, 0);
+            cntrl.Margin = new Padding(leftMargin, 2, 0, 0);
             panel.RowStyles.Add(new RowStyle());
             panel.Controls.Add(cntrl, 1, panel.RowCount);
             panel.RowCount++;
+        }
+
+        static public Type GetDeclaredType<TSelf>(TSelf self)
+        {
+            return typeof(TSelf);
+        }
+
+        private void btnSaveConfig_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

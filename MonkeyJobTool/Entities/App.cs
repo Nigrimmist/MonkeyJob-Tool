@@ -56,6 +56,7 @@ namespace MonkeyJobTool.Entities
         readonly int _popupMarginTop = 5;
 
         public string ExecutionFolder {get { return _executionFolder; }}
+        public string FolderSettingPath {get { return _executionFolder + "ModuleSettings"; }}
         public string ExecutionPath { get { return _executionPath; } }
 
 
