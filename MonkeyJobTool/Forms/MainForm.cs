@@ -19,6 +19,7 @@ using MonkeyJobTool.Entities;
 using MonkeyJobTool.Entities.Autocomplete;
 using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Helpers;
+using MonkeyJobTool.Managers;
 using MonkeyJobTool.Properties;
 using Newtonsoft.Json;
 using Language = HelloBotCore.Entities.Language;
@@ -70,7 +71,6 @@ namespace MonkeyJobTool.Forms
                             var firstRunSettingForm = new SettingsForm();
                             firstRunSettingForm.Closed += (s, ev) => { Init(); };
                             firstRunSettingForm.ShowDialog();
-                            
                         }
                         else
                             Init();
@@ -82,7 +82,7 @@ namespace MonkeyJobTool.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                LogManager.Error(ex);
             }
 
         }

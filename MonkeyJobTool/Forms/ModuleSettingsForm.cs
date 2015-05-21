@@ -33,24 +33,30 @@ namespace MonkeyJobTool.Forms
         private void ModuleSettingsForm_Load(object sender, EventArgs e)
         {
             string fullPath = Module.GetSettingFileFullPath(App.Instance.FolderSettingPath);
-            
-            string data = File.ReadAllText(fullPath);
-            var settingsWrapper = JsonConvert.DeserializeObject(data, typeof(ModuleSettings)) as ModuleSettings;
-            var rawSettingsJson = JsonConvert.SerializeObject(settingsWrapper.ModuleData);
-            var settings = JsonConvert.DeserializeObject(rawSettingsJson, Module.ModuleSettingsType);
-            pnlSettings.AccessibleName = Guid.NewGuid().ToString();
-
+            object moduleSettings;
+            if (!File.Exists(fullPath))
+            {
+                moduleSettings = Activator.CreateInstance(Module.ModuleSettingsType);
+            }
+            else
+            {
+                string data = File.ReadAllText(fullPath);
+                var settingsWrapper = JsonConvert.DeserializeObject(data, typeof (ModuleSettings)) as ModuleSettings;
+                var rawSettingsJson = JsonConvert.SerializeObject(settingsWrapper.ModuleData);
+                moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.ModuleSettingsType);
+                //pnlSettings.AccessibleName = Guid.NewGuid().ToString();
+            }
             var table = new TableLayoutPanel()
             {
                 AutoSize = true,
                 //CellBorderStyle = TableLayoutPanelCellBorderStyle.Single
             };
             pnlSettings.Controls.Add(table);
-            BindObject(settings, table);
+            BindObject(moduleSettings, table);
         }
 
         
-        public void BindObject(object obj, TableLayoutPanel parentControl)
+        public void BindObject(object obj, TableLayoutPanel parentControl, int deepLevel=1, int? collectionIndex = null)
         {
             var props = obj.GetType().GetProperties();
             
@@ -65,22 +71,21 @@ namespace MonkeyJobTool.Forms
                     var objVal = info.GetValue(obj, null) ;
                     if (tInfo == typeof (int))
                     {
-                        AddControl(propTitle.Label, new TextBox() { Text = objVal!=null?objVal.ToString():"" }, info.Name, parentControl);
+                        AddControl(propTitle.Label, new TextBox() { Text = objVal != null ? objVal.ToString() : "" }, info.Name, parentControl, deepLevel, collectionIndex);
                     }
                     else if (tInfo == typeof (string))
                     {
-                        AddControl(propTitle.Label, new TextBox() { Text = objVal != null ? objVal.ToString() : "" }, info.Name, parentControl);
+                        AddControl(propTitle.Label, new TextBox() { Text = objVal != null ? objVal.ToString() : "" }, info.Name, parentControl, deepLevel, collectionIndex);
                     }
                     else if (tInfo == typeof(bool))
                     {
-                        AddControl("", new CheckBox() { Checked = objVal != null ? (bool)objVal : false, Text = propTitle.Label }, info.Name, parentControl);
+                        AddControl("", new CheckBox() { Checked = objVal != null ? (bool)objVal : false, Text = propTitle.Label }, info.Name, parentControl, deepLevel, collectionIndex);
                     }
                     else if (typeof(IList).IsAssignableFrom(info.PropertyType))
                     {
                         var collectionPanel = new TableLayoutPanel()
                         {
                             AutoSize = true,
-                            //CellBorderStyle = TableLayoutPanelCellBorderStyle.Single,
                         };
                         AddControlToNewPanelRow(parentControl, GetTitleControl(propTitle.Label), 0);
                         AddControlToNewPanelRow(parentControl, collectionPanel, 20);
@@ -93,6 +98,7 @@ namespace MonkeyJobTool.Forms
                         };
                         btnAddNewItem.ParentPanel = collectionPanel;
                         btnAddNewItem.ParentParentPanel = parentControl;
+                        btnAddNewItem.DeepLevel = deepLevel;
                         btnAddNewItem.Text = "Добавить";
                         btnAddNewItem.Width = 100;
 
@@ -104,19 +110,21 @@ namespace MonkeyJobTool.Forms
                             //add one for user input
                             itemList.Add(Activator.CreateInstance(listItemType));
                         }
+
                         
-                        foreach (var item in itemList)
+                        for (int i = 0; i < itemList.Count; i++)
                         {
+                            var item = itemList[i];
                             btnAddNewItem.Data = new CloneObjData()
                             {
                                 Data = item,
                                 DataType = item.GetType()
                             }; //save last for clone by btn click
 
-                            AddItemCollectionToUI(item, collectionPanel);
+                            AddItemCollectionToUI(item, collectionPanel, deepLevel,i);
                         }
 
-                        
+
                         btnAddNewItem.Click += (sender, args) =>
                         {
                             var clonedObj = ((DataButton)sender).Data as CloneObjData;
@@ -125,7 +133,8 @@ namespace MonkeyJobTool.Forms
                             {
                                 var jsonObj = JsonConvert.SerializeObject(clonedObj.Data);
                                 var materializedObj = JsonConvert.DeserializeObject(jsonObj, clonedObj.DataType);
-                                AddItemCollectionToUI(materializedObj, ((DataButton)sender).ParentPanel);
+                                
+                                AddItemCollectionToUI(materializedObj, ((DataButton)sender).ParentPanel, ((DataButton)sender).DeepLevel,);//какой тут индекс? что делать при удалении?
                             }
                         };
 
@@ -137,7 +146,6 @@ namespace MonkeyJobTool.Forms
                         var collectionPanel = new TableLayoutPanel()
                         {
                             AutoSize = true,
-                            //CellBorderStyle = TableLayoutPanelCellBorderStyle.Single,
                         };
                         AddControlToNewPanelRow(parentControl, GetTitleControl(propTitle.Label), 0);
                         AddControlToNewPanelRow(parentControl, collectionPanel, 0);
@@ -145,7 +153,7 @@ namespace MonkeyJobTool.Forms
                         {
                             objVal = Activator.CreateInstance(tInfo.UnderlyingSystemType);
                         }
-                        BindObject(objVal, collectionPanel);
+                        BindObject(objVal, collectionPanel,++deepLevel);
                     }
                 }
 
@@ -154,14 +162,14 @@ namespace MonkeyJobTool.Forms
             
         }
 
-        private void AddItemCollectionToUI(object item,TableLayoutPanel parentControl)
+        private void AddItemCollectionToUI(object item, TableLayoutPanel parentControl, int deepLevel, int? collectionIndex = null)
         {
             var collectionItemPanel = new TableLayoutPanel()
             {
                 AutoSize = true
             };
             AddControlToNewPanelRow(parentControl, collectionItemPanel, 0);
-            BindObject(item, collectionItemPanel);
+            BindObject(item, collectionItemPanel, ++deepLevel, collectionIndex);
             AddRemoveBtn(collectionItemPanel, parentControl);
         }
 
@@ -195,7 +203,7 @@ namespace MonkeyJobTool.Forms
             };
         }
 
-        private void AddControl(string label, Control cntrl, string propName, TableLayoutPanel parentControl)
+        private void AddControl(string label, Control cntrl, string propName, TableLayoutPanel parentControl, int deepLevel, int? collectionIndex=null)
         {
             Panel tPanel = new Panel();
             tPanel.Width = 310;
@@ -214,7 +222,7 @@ namespace MonkeyJobTool.Forms
                 cntrl.Left += lbl.Width;
             }
             cntrl.Width = 200;
-            cntrl.AccessibleName = propName;
+            cntrl.AccessibleName = propName + deepLevel + (collectionIndex!=null?"_"+collectionIndex:"");
             tPanel.Controls.Add(cntrl);
             AddControlToNewPanelRow(parentControl, tPanel, 0);
             tPanel.Height = (from Control control in tPanel.Controls select control.Height).Concat(new[] { 0 }).Max();
@@ -235,7 +243,101 @@ namespace MonkeyJobTool.Forms
 
         private void btnSaveConfig_Click(object sender, EventArgs e)
         {
+            string fullPath = Module.GetSettingFileFullPath(App.Instance.FolderSettingPath);
+            object moduleSettings;
+            ModuleSettings ms = new ModuleSettings(Module.Version,null);
+            if (!File.Exists(fullPath))
+            {
+                moduleSettings = Activator.CreateInstance(Module.ModuleSettingsType);
+            }
+            else
+            {
+                string data = File.ReadAllText(fullPath);
+                ms = JsonConvert.DeserializeObject(data, typeof(ModuleSettings)) as ModuleSettings;
+                var rawSettingsJson = JsonConvert.SerializeObject(ms.ModuleData);
+                moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.ModuleSettingsType);
+            }
 
+            ms.ModuleData = FillObjectFromUI(moduleSettings);
+            var json = JsonConvert.SerializeObject(ms);
+            File.WriteAllText(fullPath,json);
         }
+
+
+        private object FillObjectFromUI(object fillingObject, int deepLevel=1,int? collectionIndex=null)
+        {
+           
+            var props = fillingObject.GetType().GetProperties();
+
+            foreach (var info in props)
+            {
+
+                var tInfo = info.PropertyType;
+                var propTitle = Attribute.GetCustomAttribute(info, typeof(SettingsNameFieldAttribute)) as SettingsNameFieldAttribute;
+
+                if (propTitle != null)
+                {
+                    
+                    if (tInfo == typeof(int) || tInfo == typeof(string) || tInfo == typeof(bool))
+                    {
+                        var filledVal = GetItemValueFromUI(this, info.Name, deepLevel, collectionIndex);
+                        //return null for detecting empty object and non-exist ui-controls for that object
+                        if (filledVal == null) 
+                            return null;
+                        info.SetValue(fillingObject, Convert.ChangeType(filledVal, info.PropertyType), null);
+                    }
+                    else if (typeof(IList).IsAssignableFrom(info.PropertyType))
+                    {
+                        var objVal = info.GetValue(fillingObject, null);
+                        objVal.GetType().GetMethod("Clear").Invoke(objVal, null);//todo:for now, we clear collection. In future [ID] attribute will be required for list entity for mapping, preventing non-editable fields erase
+                        int i = 0;
+                        Type listItemType = objVal.GetType().GetGenericArguments().First();
+                        do
+                        {
+                            var collectionItem = Activator.CreateInstance(listItemType);
+                            var filedCollectionItemValue = FillObjectFromUI(collectionItem, deepLevel + 1, i);
+                            if (filedCollectionItemValue == null) break; //no any new items in collection found on ui
+                            objVal.GetType().GetMethod("Add").Invoke(objVal, new[] { filedCollectionItemValue });
+                            i++;
+                        } while (true);
+                        
+                    }
+                    else //complex object
+                    {
+                        var filledComplexObject = FillObjectFromUI(Activator.CreateInstance(tInfo),deepLevel+1);
+                        info.SetValue(fillingObject, Convert.ChangeType(filledComplexObject, info.PropertyType), null);
+                    }
+                }
+            }
+            return fillingObject;
+        }
+
+        private object GetItemValueFromUI(Control searchControl,string propName, int deepLevel,int? collectionIndex=null)
+        {
+            foreach (Control cntrl in searchControl.Controls)
+            {
+                if (cntrl.AccessibleName == propName + deepLevel + (collectionIndex.HasValue?"_"+collectionIndex.Value:""))
+                {
+                    var box = cntrl as TextBox;
+                    if (box != null)
+                    {
+                        return box.Text;
+                    }
+                    var checkbox = cntrl as CheckBox;
+                    if (checkbox != null)
+                    {
+                        return checkbox.Checked;
+                    }
+                }
+                var val = GetItemValueFromUI(cntrl, propName, deepLevel, collectionIndex);
+                if (val != null)
+                {
+                    return val;
+                }
+            }
+            return null;
+        }
+
+
     }
 }

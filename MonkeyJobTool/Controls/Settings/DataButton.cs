@@ -12,5 +12,6 @@ namespace MonkeyJobTool.Controls.Settings
         public int RowIndex { get; set; }
         public TableLayoutPanel ParentPanel { get; set; }
         public TableLayoutPanel ParentParentPanel { get; set; }
+        public int DeepLevel { get; set; }
     }
 }

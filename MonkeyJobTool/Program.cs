@@ -20,7 +20,7 @@ namespace MonkeyJobTool
                 MessageBox.Show("Извините, но программа уже запущена. Попробуйте проверить трей, возможно она спряталась там.");
                 return;
             }
-
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());

@@ -161,6 +161,7 @@
     <Compile Include="Entities\App.cs" />
     <Compile Include="Managers\DonateManager.cs" />
     <Compile Include="Managers\HelpPopupManager.cs" />
+    <Compile Include="Managers\LogManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\KeyboardLayoutHelper.cs" />

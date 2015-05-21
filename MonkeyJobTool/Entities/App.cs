@@ -6,11 +6,13 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using HelloBotCore;
 using Microsoft.Win32;
 using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Forms;
+using MonkeyJobTool.Managers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -59,7 +61,7 @@ namespace MonkeyJobTool.Entities
         public string FolderSettingPath {get { return _executionFolder + "ModuleSettings"; }}
         public string ExecutionPath { get { return _executionPath; } }
 
-
+        
 
         /// <summary>
         /// Collection of event delegates for hotkeys. one delegate for one hotkeytype
@@ -84,9 +86,20 @@ namespace MonkeyJobTool.Entities
             }
             
         }
+        private static void OnError(object sender, ThreadExceptionEventArgs t)
+        {
+            LogManager.Error(t.Exception);
+        }
+        void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            LogManager.Error(e.ExceptionObject as Exception);
+        }
 
         public void Init(EventHandler<KeyPressedEventArgs> mainFormOpenHotKeyRaisedHandler, MainForm mainForm)
         {
+            Application.ThreadException += (OnError);
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
             //read and load config
             if (!File.Exists(_executionFolder + AppConstants.Paths.MainConfFileName)) throw new Exception("Config missing");
             var json = File.ReadAllText(_executionFolder + AppConstants.Paths.MainConfFileName);
@@ -98,6 +111,8 @@ namespace MonkeyJobTool.Entities
             _hotKeysHadlers.Add(HotKeyType.OpenProgram, mainFormOpenHotKeyRaisedHandler);
             ReInitHotKeys();
         }
+
+       
         
 
         public void ReInitHotKeys()
