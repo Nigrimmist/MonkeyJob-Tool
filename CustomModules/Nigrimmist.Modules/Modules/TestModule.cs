@@ -75,20 +75,12 @@ namespace Nigrimmist.Modules.Modules
     [ModuleSettingsFor(typeof(TestModule))]
     public class TestSettings
     {
-        //[SettingsNameField("1 уровень.заголовок коллекции номер 1")]
-        //public List<test> DiaryList { get; set; }
-
-        //[SettingsNameField("1 уровень.заголовок коллекции номер 2")]
-        //public List<test> DiaryList2 { get; set; }
-        //[SettingsNameField("1 уровень. кол-во")]
-        //public int Count { get; set; }
-
         [SettingsNameField("1 уровень.объект")]
-        public test2 Test { get; set; }
+        public List<test2> Test { get; set; }
 
         public TestSettings()
         {
-            Test = new test2();
+            //Test = new List<test2>();
             //DiaryList = new List<test>();
             //DiaryList2 = new List<test>();
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using MonkeyJobTool.Properties;
@@ -104,7 +105,7 @@ namespace MonkeyJobTool.Forms
 
         private void FullPostForm_Load(object sender, EventArgs e)
         {
-            
+            Debug.WriteLine(this.Location);
         }
 
         private void richTextBox1_MouseEnter(object sender, EventArgs e)

@@ -9,9 +9,9 @@ namespace MonkeyJobTool.Controls.Settings
     public class DataButton : Button
     {
         public object Data { get; set; }
-        public int RowIndex { get; set; }
         public TableLayoutPanel ParentPanel { get; set; }
         public TableLayoutPanel ParentParentPanel { get; set; }
         public int DeepLevel { get; set; }
+        public int CollectionIndex { get; set; }
     }
 }

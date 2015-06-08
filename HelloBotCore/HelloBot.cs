@@ -425,6 +425,7 @@ namespace HelloBotCore
 
         public void RegisterUserReactionCallback(Guid commandToken,UserReactionToCommandType reactionType, Action reactionCallback)
         {
+            
             BotCommandContext commandContext = GetCommandContextByToken(commandToken);
 
             if (commandContext != null)

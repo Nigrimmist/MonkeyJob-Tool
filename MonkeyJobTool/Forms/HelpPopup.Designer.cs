@@ -73,7 +73,7 @@
             this.lblTitle.TabIndex = 3;
             this.lblTitle.Text = "lblTitle";
             // 
-            // FullPostForm
+            // HelpPopup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -87,6 +87,7 @@
             this.Name = "HelpPopup";
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "FullPostForm";
             this.Load += new System.EventHandler(this.FullPostForm_Load);
             this.ResumeLayout(false);

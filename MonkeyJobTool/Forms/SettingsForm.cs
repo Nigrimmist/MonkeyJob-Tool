@@ -299,7 +299,7 @@ namespace MonkeyJobTool.Forms
 
                         if (_commandHelpCommand != null)
                         {
-                            //todo : do not hide, only change text (troble with dynamic border exist). reason : blinking
+                            //todo : do not hide, only change text (trouble with dynamic border exist). reason : blinking
                             _commandHelpCommand.Hide();
                         }
                         _commandHelpCommand = new HelpPopup { FormType = PopupFormType.CommandInfo };
@@ -314,8 +314,9 @@ namespace MonkeyJobTool.Forms
                 }
                 if (_commandHelpCommand != null)
                 {
-                    _commandHelpCommand.MouseCoords = new Point(Cursor.Position.X, Cursor.Position.Y);
-                    _commandHelpCommand.SetupCoords();
+                    var gridLoc = gridModules.PointToScreen(Point.Empty);
+                    gridLoc.Y += gridModules.Height+10;
+                    _commandHelpCommand.Location = gridLoc;
                     _commandHelpCommand.ToTop();
                 }
             }

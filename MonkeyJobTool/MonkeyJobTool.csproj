@@ -79,9 +79,19 @@
     <Compile Include="Controls\Settings\CommandReplaceBlock.Designer.cs">
       <DependentUpon>CommandReplaceBlock.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Settings\DataTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\Settings\DataCheckbox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\Settings\DataButton.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\Settings\DataTableLayoutPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\Settings\IUIDataItem.cs" />
     <Compile Include="Entities\AppConstants.cs" />
     <Compile Include="Entities\ApplicationConfiguration.cs" />
     <Compile Include="Entities\Autocomplete\AutocompletePopupInfo.cs" />

@@ -44,12 +44,11 @@ namespace MonkeyJobTool.Forms
                 var settingsWrapper = JsonConvert.DeserializeObject(data, typeof (ModuleSettings)) as ModuleSettings;
                 var rawSettingsJson = JsonConvert.SerializeObject(settingsWrapper.ModuleData);
                 moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.ModuleSettingsType);
-                //pnlSettings.AccessibleName = Guid.NewGuid().ToString();
+                
             }
             var table = new TableLayoutPanel()
             {
                 AutoSize = true,
-                //CellBorderStyle = TableLayoutPanelCellBorderStyle.Single
             };
             pnlSettings.Controls.Add(table);
             BindObject(moduleSettings, table);
@@ -71,19 +70,19 @@ namespace MonkeyJobTool.Forms
                     var objVal = info.GetValue(obj, null) ;
                     if (tInfo == typeof (int))
                     {
-                        AddControl(propTitle.Label, new TextBox() { Text = objVal != null ? objVal.ToString() : "" }, info.Name, parentControl, deepLevel, collectionIndex);
+                        AddControl(propTitle.Label, new DataTextBox() { Text = objVal != null ? objVal.ToString() : "" }, info.Name, parentControl, deepLevel, collectionIndex);
                     }
                     else if (tInfo == typeof (string))
                     {
-                        AddControl(propTitle.Label, new TextBox() { Text = objVal != null ? objVal.ToString() : "" }, info.Name, parentControl, deepLevel, collectionIndex);
+                        AddControl(propTitle.Label, new DataTextBox() { Text = objVal != null ? objVal.ToString() : "" }, info.Name, parentControl, deepLevel, collectionIndex);
                     }
                     else if (tInfo == typeof(bool))
                     {
-                        AddControl("", new CheckBox() { Checked = objVal != null ? (bool)objVal : false, Text = propTitle.Label }, info.Name, parentControl, deepLevel, collectionIndex);
+                        AddControl("", new DataCheckBox() { Checked = objVal != null ? (bool)objVal : false, Text = propTitle.Label }, info.Name, parentControl, deepLevel, collectionIndex);
                     }
                     else if (typeof(IList).IsAssignableFrom(info.PropertyType))
                     {
-                        var collectionPanel = new TableLayoutPanel()
+                        var collectionPanel = new DataTableLayoutPanel()
                         {
                             AutoSize = true,
                         };
@@ -102,8 +101,13 @@ namespace MonkeyJobTool.Forms
                         btnAddNewItem.Text = "Добавить";
                         btnAddNewItem.Width = 100;
 
-                        var itemList = ((IEnumerable) objVal).Cast<object>().ToList();
+                        if (objVal == null)
+                        {
+                            objVal = Activator.CreateInstance(tInfo.UnderlyingSystemType);
+                        }
 
+                        var itemList = ((IEnumerable) objVal).Cast<object>().ToList();
+                        
                         if (!itemList.Any())
                         {
                             Type listItemType = objVal.GetType().GetGenericArguments().First();
@@ -111,7 +115,7 @@ namespace MonkeyJobTool.Forms
                             itemList.Add(Activator.CreateInstance(listItemType));
                         }
 
-                        
+                        collectionPanel.ChildCount = itemList.Count;
                         for (int i = 0; i < itemList.Count; i++)
                         {
                             var item = itemList[i];
@@ -133,8 +137,9 @@ namespace MonkeyJobTool.Forms
                             {
                                 var jsonObj = JsonConvert.SerializeObject(clonedObj.Data);
                                 var materializedObj = JsonConvert.DeserializeObject(jsonObj, clonedObj.DataType);
-                                
-                                AddItemCollectionToUI(materializedObj, ((DataButton)sender).ParentPanel, ((DataButton)sender).DeepLevel,);//какой тут индекс? что делать при удалении?
+                                var colPanel = (DataTableLayoutPanel) ((DataButton) sender).ParentPanel;
+                                colPanel.ChildCount++;
+                                AddItemCollectionToUI(materializedObj, colPanel, ((DataButton)sender).DeepLevel, colPanel.ChildCount-1);
                             }
                         };
 
@@ -153,7 +158,7 @@ namespace MonkeyJobTool.Forms
                         {
                             objVal = Activator.CreateInstance(tInfo.UnderlyingSystemType);
                         }
-                        BindObject(objVal, collectionPanel,++deepLevel);
+                        BindObject(objVal, collectionPanel,deepLevel+1);
                     }
                 }
 
@@ -162,35 +167,59 @@ namespace MonkeyJobTool.Forms
             
         }
 
-        private void AddItemCollectionToUI(object item, TableLayoutPanel parentControl, int deepLevel, int? collectionIndex = null)
+        private void AddItemCollectionToUI(object item, TableLayoutPanel parentControl, int deepLevel, int collectionIndex)
         {
             var collectionItemPanel = new TableLayoutPanel()
             {
                 AutoSize = true
             };
             AddControlToNewPanelRow(parentControl, collectionItemPanel, 0);
-            BindObject(item, collectionItemPanel, ++deepLevel, collectionIndex);
-            AddRemoveBtn(collectionItemPanel, parentControl);
+            BindObject(item, collectionItemPanel, deepLevel+1, collectionIndex);
+            AddRemoveBtn(collectionItemPanel, parentControl, deepLevel, collectionIndex);
         }
 
-        private void AddRemoveBtn(TableLayoutPanel addToControl, TableLayoutPanel parentControl)
+        private void AddRemoveBtn(TableLayoutPanel addToControl, TableLayoutPanel parentControl, int deepLevel, int collectionIndex)
         {
             DataButton btnRemoveItem = new DataButton()
             {
                 BackColor = Color.Moccasin,
                 FlatStyle = FlatStyle.Popup,
                 UseVisualStyleBackColor = false,
-                Text = "Удалить"
+                Text = "Удалить",
+                DeepLevel = deepLevel,
+                CollectionIndex = collectionIndex
             };
             btnRemoveItem.ParentPanel = addToControl;
             btnRemoveItem.ParentParentPanel = parentControl;
-            btnRemoveItem.Click += (sender, args) =>
-            {
-                var parentContainer = ((DataButton)sender).ParentPanel;
-                var parentParentContainer = ((DataButton)sender).ParentParentPanel;
-                parentParentContainer.Controls.Remove(parentContainer);
-            };
+            btnRemoveItem.Click += OnBtnRemoveItemOnClick;
             AddControlToNewPanelRow(addToControl, btnRemoveItem, 0);
+        }
+
+        private void OnBtnRemoveItemOnClick(object sender, EventArgs args)
+        {
+            var parentContainer = ((DataButton) sender).ParentPanel;
+            var collectionPanel = ((DataButton) sender).ParentParentPanel;
+            var deepLevel = ((DataButton)sender).DeepLevel;
+            var collectionIndex = ((DataButton)sender).CollectionIndex;
+            collectionPanel.Controls.Remove(parentContainer);
+            
+            //забрать collectionPanel.itemsCount
+
+            //reassign collection indexes for correct data grabbing on save
+            ReassignCollectionIndexes(collectionPanel as DataTableLayoutPanel, deepLevel+1, collectionIndex+1);
+        }
+
+        private void ReassignCollectionIndexes(DataTableLayoutPanel collectionPanel,int searchDeepLevel, int fromIndex)
+        {
+            int collectionLength = collectionPanel.ChildCount;
+            for (var i = fromIndex; i < collectionLength; i++)
+            {
+                foreach (IUIDataItem found in FindControlsByCollectionIndex(collectionPanel, searchDeepLevel, i))
+                {
+                    found.CollectionIndex--;
+                }
+            }
+            collectionPanel.ChildCount--;
         }
 
         private Control GetTitleControl(string title)
@@ -222,7 +251,12 @@ namespace MonkeyJobTool.Forms
                 cntrl.Left += lbl.Width;
             }
             cntrl.Width = 200;
-            cntrl.AccessibleName = propName + deepLevel + (collectionIndex!=null?"_"+collectionIndex:"");
+            var uiDataItem = (cntrl as IUIDataItem);
+            
+            uiDataItem.PropName = propName;
+            uiDataItem.DeepLevel = deepLevel;
+            uiDataItem.CollectionIndex = collectionIndex;
+            //cntrl.AccessibleName = propName + deepLevel + (collectionIndex!=null?"_"+collectionIndex:"");
             tPanel.Controls.Add(cntrl);
             AddControlToNewPanelRow(parentControl, tPanel, 0);
             tPanel.Height = (from Control control in tPanel.Controls select control.Height).Concat(new[] { 0 }).Max();
@@ -259,7 +293,7 @@ namespace MonkeyJobTool.Forms
             }
 
             ms.ModuleData = FillObjectFromUI(moduleSettings);
-            var json = JsonConvert.SerializeObject(ms);
+            var json = JsonConvert.SerializeObject(ms, Formatting.Indented);
             File.WriteAllText(fullPath,json);
         }
 
@@ -312,21 +346,28 @@ namespace MonkeyJobTool.Forms
             return fillingObject;
         }
 
-        private object GetItemValueFromUI(Control searchControl,string propName, int deepLevel,int? collectionIndex=null)
+        private object GetItemValueFromUI(Control contentControl, string propName, int deepLevel, int? collectionIndex = null)
         {
-            foreach (Control cntrl in searchControl.Controls)
+            foreach (Control cntrl in contentControl.Controls)
             {
-                if (cntrl.AccessibleName == propName + deepLevel + (collectionIndex.HasValue?"_"+collectionIndex.Value:""))
+                var uiSettingDataControl = cntrl as IUIDataItem;
+                if (uiSettingDataControl != null)
                 {
-                    var box = cntrl as TextBox;
-                    if (box != null)
+                    if (uiSettingDataControl.PropName == propName && uiSettingDataControl.DeepLevel == deepLevel)
                     {
-                        return box.Text;
-                    }
-                    var checkbox = cntrl as CheckBox;
-                    if (checkbox != null)
-                    {
-                        return checkbox.Checked;
+                        if (!collectionIndex.HasValue || uiSettingDataControl.CollectionIndex==collectionIndex)
+                        {
+                            var box = cntrl as TextBox;
+                            if (box != null)
+                            {
+                                return box.Text;
+                            }
+                            var checkbox = cntrl as CheckBox;
+                            if (checkbox != null)
+                            {
+                                return checkbox.Checked;
+                            }
+                        }
                     }
                 }
                 var val = GetItemValueFromUI(cntrl, propName, deepLevel, collectionIndex);
@@ -338,6 +379,24 @@ namespace MonkeyJobTool.Forms
             return null;
         }
 
-
+        private IEnumerable<IUIDataItem> FindControlsByCollectionIndex(Control contentControl, int deepLevel, int collectionIndex)
+        {
+            foreach (Control cntrl in contentControl.Controls)
+            {
+                var uiDataCntrl = (cntrl as IUIDataItem);
+                if ( uiDataCntrl != null && uiDataCntrl.DeepLevel==deepLevel && uiDataCntrl.CollectionIndex==collectionIndex)
+                {
+                    yield return uiDataCntrl;
+                    break;
+                }
+                else
+                {
+                    foreach (var control in FindControlsByCollectionIndex(cntrl, deepLevel, collectionIndex))
+                    {
+                        yield return control;
+                    }
+                }
+            }
+        }
     }
 }
