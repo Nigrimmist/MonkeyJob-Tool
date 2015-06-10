@@ -33,7 +33,14 @@ namespace HelloBotCore.Entities
 
         public override string GetDescriptionText()
         {
-            return "Запускается раз в " + EventRunEvery;
+            string runEveryStr = string.Empty;
+
+            if (EventRunEvery.Days > 0) runEveryStr += EventRunEvery.Days+" д. ";
+            if (EventRunEvery.Hours > 0) runEveryStr += EventRunEvery.Hours + " ч. ";
+            if (EventRunEvery.Minutes > 0) runEveryStr += EventRunEvery.Minutes + " мин. ";
+            if (EventRunEvery.Seconds > 0) runEveryStr += EventRunEvery.Seconds + " сек.";
+
+            return "Запускается раз в " + runEveryStr;
         }
     }
 }

@@ -64,7 +64,7 @@ namespace HelloBotCore.Entities
         {
             string toReturn = string.Empty;
             if (!string.IsNullOrEmpty(CommandDescription.Description))
-                toReturn += "Описание : " + CommandDescription.Description + Environment.NewLine;
+                toReturn +=  CommandDescription.Description + Environment.NewLine + Environment.NewLine;
             if (!string.IsNullOrEmpty(CommandDescription.CommandScheme))
                 toReturn += "Схема команды : " + CommandDescription.CommandScheme + Environment.NewLine;
             if (CommandDescription.SamplesOfUsing != null && CommandDescription.SamplesOfUsing.Any())
@@ -86,7 +86,6 @@ namespace HelloBotCore.Entities
                     toReturn += "Email для связи : " + Author.ContactEmail + Environment.NewLine;
             }
             return toReturn;
-
         }
 
         public string GetSettingFileFullPath(string settingFolder)

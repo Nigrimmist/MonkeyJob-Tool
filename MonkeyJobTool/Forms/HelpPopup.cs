@@ -22,7 +22,7 @@ namespace MonkeyJobTool.Forms
         public HelpPopup()
         {
             InitializeComponent();
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.messageForm_Paint);
+            this.Paint += this.messageForm_Paint;
         }
 
       
@@ -67,6 +67,7 @@ namespace MonkeyJobTool.Forms
             iconBox.Height = Resources.help1.Height;
             iconBox.Width = Resources.help1.Width;
             this.Controls.Add(iconBox);
+            
         }
         
         private void HandleHelp()

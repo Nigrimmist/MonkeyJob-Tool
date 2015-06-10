@@ -15,6 +15,7 @@ using MonkeyJobTool.Controls.Settings;
 using MonkeyJobTool.Entities;
 using MonkeyJobTool.Entities.Json;
 using MonkeyJobTool.Helpers;
+using MonkeyJobTool.Managers;
 using Newtonsoft.Json;
 
 
@@ -277,24 +278,31 @@ namespace MonkeyJobTool.Forms
 
         private void btnSaveConfig_Click(object sender, EventArgs e)
         {
-            string fullPath = Module.GetSettingFileFullPath(App.Instance.FolderSettingPath);
-            object moduleSettings;
-            ModuleSettings ms = new ModuleSettings(Module.Version,null);
-            if (!File.Exists(fullPath))
+            try
             {
-                moduleSettings = Activator.CreateInstance(Module.ModuleSettingsType);
-            }
-            else
-            {
-                string data = File.ReadAllText(fullPath);
-                ms = JsonConvert.DeserializeObject(data, typeof(ModuleSettings)) as ModuleSettings;
-                var rawSettingsJson = JsonConvert.SerializeObject(ms.ModuleData);
-                moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.ModuleSettingsType);
-            }
+                string fullPath = Module.GetSettingFileFullPath(App.Instance.FolderSettingPath);
+                object moduleSettings;
+                ModuleSettings ms = new ModuleSettings(Module.Version, null);
+                if (!File.Exists(fullPath))
+                {
+                    moduleSettings = Activator.CreateInstance(Module.ModuleSettingsType);
+                }
+                else
+                {
+                    string data = File.ReadAllText(fullPath);
+                    ms = JsonConvert.DeserializeObject(data, typeof (ModuleSettings)) as ModuleSettings;
+                    var rawSettingsJson = JsonConvert.SerializeObject(ms.ModuleData);
+                    moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.ModuleSettingsType);
+                }
 
-            ms.ModuleData = FillObjectFromUI(moduleSettings);
-            var json = JsonConvert.SerializeObject(ms, Formatting.Indented);
-            File.WriteAllText(fullPath,json);
+                ms.ModuleData = FillObjectFromUI(moduleSettings);
+                var json = JsonConvert.SerializeObject(ms, Formatting.Indented);
+                File.WriteAllText(fullPath, json);
+            }
+            catch(Exception ex)
+            {
+                LogManager.Error(ex,message:"save config from ui");
+            }
         }
 
 

@@ -38,7 +38,7 @@ namespace Nigrimmist.Modules
             {
                 new Diary(),
                 new ToolUpdate(),
-                new TestModule()
+                //new TestModule()
             };
         }
 

@@ -268,6 +268,7 @@
             this.gridModules.CellMouseLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridModules_CellMouseLeave);
             this.gridModules.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.gridModules_CellMouseMove);
             this.gridModules.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridModules_RowEnter);
+            this.gridModules.MouseLeave += new System.EventHandler(this.gridModules_MouseLeave);
             this.gridModules.MouseMove += new System.Windows.Forms.MouseEventHandler(this.gridModules_MouseMove);
             // 
             // ModuleName

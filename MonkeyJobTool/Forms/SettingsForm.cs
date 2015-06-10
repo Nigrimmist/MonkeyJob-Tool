@@ -10,6 +10,7 @@ using Microsoft.Win32;
 using MonkeyJobTool.Controls.Settings;
 using MonkeyJobTool.Entities;
 using MonkeyJobTool.Extensions;
+using MonkeyJobTool.Managers;
 using MonkeyJobTool.Properties;
 
 namespace MonkeyJobTool.Forms
@@ -25,6 +26,7 @@ namespace MonkeyJobTool.Forms
         
         private void SettingsForm_Load(object sender, EventArgs e)
         {
+            
             chkIsWithWindowsStart.Checked = IsStartupShortcutExist();
             chkIsHideDonateBtn.Checked = !App.Instance.AppConf.ShowDonateButton;
             chkIsDenyCollectingStats.Checked = !App.Instance.AppConf.AllowUsingGoogleAnalytics;
@@ -245,6 +247,7 @@ namespace MonkeyJobTool.Forms
             {
                 AddModuleInfoToGrid(mod.GetModuleName(), mod.ModuleType == ModuleType.Handler ? "Команда" : "Событийный", mod.IsEnabled, mod.ModuleSystemName,mod.ModuleSettingsType!=null);
             }
+            gridModules.Rows[0].Selected = true;
         }
 
         private void AddModuleInfoToGrid(string name, string type, bool enabled, string uniqueName, bool isWithSettings)
@@ -278,7 +281,12 @@ namespace MonkeyJobTool.Forms
 
         private void gridModules_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-           
+            if(gridModules.SelectedRows.Count==1)
+            {
+                var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
+                var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
+                btnEnabledDisableModule.Text = (!module.IsEnabled ? "В" : "Вы") + "ключить модуль";
+            }
         }
 
         private HelpPopup _commandHelpCommand = null;
@@ -316,6 +324,7 @@ namespace MonkeyJobTool.Forms
                 {
                     var gridLoc = gridModules.PointToScreen(Point.Empty);
                     gridLoc.Y += gridModules.Height+10;
+                    gridLoc.X -= 10;
                     _commandHelpCommand.Location = gridLoc;
                     _commandHelpCommand.ToTop();
                 }
@@ -368,7 +377,7 @@ namespace MonkeyJobTool.Forms
                     {
                         Module = module
                     };
-                    setMod.Show();
+                    setMod.ShowDialog();
                 }
             }
         }
@@ -384,6 +393,14 @@ namespace MonkeyJobTool.Forms
             else
             {
                 gridModules.Cursor = Cursors.Default;
+            }
+        }
+
+        private void gridModules_MouseLeave(object sender, EventArgs e)
+        {
+            if (_commandHelpCommand != null)
+            {
+                _commandHelpCommand.Hide();
             }
         }
 

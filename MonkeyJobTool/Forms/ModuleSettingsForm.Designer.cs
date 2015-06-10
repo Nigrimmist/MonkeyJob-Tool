@@ -63,7 +63,9 @@
             this.ClientSize = new System.Drawing.Size(483, 328);
             this.Controls.Add(this.btnSaveConfig);
             this.Controls.Add(this.pnlSettings);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "ModuleSettingsForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Настройки модуля";
             this.Load += new System.EventHandler(this.ModuleSettingsForm_Load);
             this.ResumeLayout(false);
