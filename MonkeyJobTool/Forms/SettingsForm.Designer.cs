@@ -55,6 +55,8 @@
             this.htStatsCollect = new MonkeyJobTool.Controls.HelpTooltip();
             this.htHotKey = new MonkeyJobTool.Controls.HelpTooltip();
             this.htReplace = new MonkeyJobTool.Controls.HelpTooltip();
+            this.hsSendErrorReport = new MonkeyJobTool.Controls.HelpTooltip();
+            this.chkDenyErrorInfoSend = new System.Windows.Forms.CheckBox();
             this.tsCommands.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -115,6 +117,8 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.hsSendErrorReport);
+            this.tabPage1.Controls.Add(this.chkDenyErrorInfoSend);
             this.tabPage1.Controls.Add(this.htDonateBtn);
             this.tabPage1.Controls.Add(this.htStatsCollect);
             this.tabPage1.Controls.Add(this.chkIsDenyCollectingStats);
@@ -344,6 +348,24 @@
             this.htReplace.Size = new System.Drawing.Size(19, 19);
             this.htReplace.TabIndex = 6;
             // 
+            // hsSendErrorReport
+            // 
+            this.hsSendErrorReport.AutoSize = true;
+            this.hsSendErrorReport.Location = new System.Drawing.Point(334, 84);
+            this.hsSendErrorReport.Name = "hsSendErrorReport";
+            this.hsSendErrorReport.Size = new System.Drawing.Size(19, 19);
+            this.hsSendErrorReport.TabIndex = 6;
+            // 
+            // chkDenyErrorInfoSend
+            // 
+            this.chkDenyErrorInfoSend.AutoSize = true;
+            this.chkDenyErrorInfoSend.Location = new System.Drawing.Point(6, 84);
+            this.chkDenyErrorInfoSend.Name = "chkDenyErrorInfoSend";
+            this.chkDenyErrorInfoSend.Size = new System.Drawing.Size(322, 17);
+            this.chkDenyErrorInfoSend.TabIndex = 5;
+            this.chkDenyErrorInfoSend.Text = "Запретить отсылать информацию об ошибках программы";
+            this.chkDenyErrorInfoSend.UseVisualStyleBackColor = true;
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -398,5 +420,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn moduleTypeColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn colIsEnabled;
         private System.Windows.Forms.DataGridViewImageColumn settingsCol;
+        private Controls.HelpTooltip hsSendErrorReport;
+        private System.Windows.Forms.CheckBox chkDenyErrorInfoSend;
     }
 }

@@ -26,10 +26,10 @@ namespace MonkeyJobTool.Forms
         
         private void SettingsForm_Load(object sender, EventArgs e)
         {
-            
             chkIsWithWindowsStart.Checked = IsStartupShortcutExist();
             chkIsHideDonateBtn.Checked = !App.Instance.AppConf.ShowDonateButton;
             chkIsDenyCollectingStats.Checked = !App.Instance.AppConf.AllowUsingGoogleAnalytics;
+            chkDenyErrorInfoSend.Checked = !App.Instance.AppConf.AllowSendCrashReports;
             HotKeysDatabind();
             CommandReplaceDatabind();
             DatabindCommandGrid();
@@ -49,6 +49,7 @@ namespace MonkeyJobTool.Forms
                                  @"Аргументы записываются фигурными скобками, начиная с нуля. {0},{1},{2} и так далее. Разделителем между ними при вводе должен быть ""=>"" (если их 2 и более)."+Environment.NewLine + Environment.NewLine +
                                  @"Таким образом можно строить целые цепочки замен. Допустим, если первая замена ""лулу >> калькулятор 1+{0}"", то вписав следующую замену в виде ""лала >> лулу 5"" и набрав ""лала"" вы получите эквивалент ""лулу 5""."+Environment.NewLine+
                                  "Поддерживается не более 20 связных перенаправлений.";
+            hsSendErrorReport.HelpText = @"Если в приложении случается ошибка, то программа автоматически отсылает лог ошибки с базовой информацией о системе (тип ОС, версия .net Framework, версия программы). Пожалуйста, не отключайте эту опцию, отчёты об ошибках позволяют делать программу стабильнее";
         }
 
 
@@ -184,6 +185,7 @@ namespace MonkeyJobTool.Forms
 
             App.Instance.AppConf.ShowDonateButton = !chkIsHideDonateBtn.Checked;
             App.Instance.AppConf.AllowUsingGoogleAnalytics = !chkIsDenyCollectingStats.Checked;
+            App.Instance.AppConf.AllowSendCrashReports = !chkDenyErrorInfoSend.Checked;
             App.Instance.AppConf.HotKeys.ProgramOpen = string.Join("+", new List<string>() { cmbKey1.Text, cmbKey2.Text, cmbKey3.Text }.Where(x=>!string.IsNullOrEmpty(x)).ToArray());
             App.Instance.AppConf.CommandReplaces = GetCommandReplaces();
             App.Instance.AppConf.Save();

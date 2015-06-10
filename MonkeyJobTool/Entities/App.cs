@@ -60,7 +60,7 @@ namespace MonkeyJobTool.Entities
         public string ExecutionFolder {get { return _executionFolder; }}
         public string FolderSettingPath {get { return _executionFolder + "ModuleSettings"; }}
         public string ExecutionPath { get { return _executionPath; } }
-
+        public Guid? UserID = null;
         
 
         /// <summary>
@@ -373,5 +373,7 @@ namespace MonkeyJobTool.Entities
                 AppConf.Save();
             }
         }
+
+        
     }
 }

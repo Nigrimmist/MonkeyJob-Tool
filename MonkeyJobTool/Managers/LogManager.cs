@@ -6,6 +6,7 @@ using System.Management;
 using System.Text;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using MonkeyJobTool.Entities;
 using NLog;
 using NLog.Internal;
 
@@ -14,16 +15,23 @@ namespace MonkeyJobTool.Managers
     public class LogManager
     {
         private static Logger _log = NLog.LogManager.GetCurrentClassLogger();
+        private static string _systemInfo;
+
         public static void Error(Exception ex, string message = "")
         {
             if (Convert.ToBoolean(System.Configuration.ConfigurationManager.AppSettings["DevelopmentModeEnabled"]))
                 MessageBox.Show(ex.ToString());
 
+            if (App.Instance.AppConf.AllowSendCrashReports)
+            {
+                if (_systemInfo == null)
+                {
+                    _systemInfo = CollectSystemInfo();
+                }
 
-
-            string errorInfo = string.Format("{0} : \r\n {1} \r\n {2}", message, ex, CollectSystemInfo());
-
-            _log.Error(errorInfo);
+                string errorInfo = string.Format("{0} : \r\n {1} \r\n {2}\r\n App version : {3}\r\n BotCore version : {3}", message, ex, _systemInfo, AppConstants.AppVersion, App.Instance.Bot.Version);
+                _log.Error(errorInfo);
+            }
         }
 
         private static string CollectSystemInfo()
@@ -70,8 +78,8 @@ namespace MonkeyJobTool.Managers
             {
                 osInfo += "none";
             }
-
-            return frameworkInfo + " " + Environment.NewLine + osInfo + " " + Environment.NewLine;
+            string pcId = "pcId : " + App.Instance.UserID;
+            return frameworkInfo + " " + Environment.NewLine + osInfo + " " + Environment.NewLine + pcId+Environment.NewLine;
         }
     }
 }

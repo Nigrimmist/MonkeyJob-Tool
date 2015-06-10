@@ -4,6 +4,7 @@
 	},	
     CommandReplaces: [],
 	AllowUsingGoogleAnalytics : true,
+	AllowSendCrashReports : true,
 	ShowDonateButton : true,
 	Language : 2,
 	SystemData : {

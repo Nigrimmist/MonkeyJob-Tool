@@ -45,18 +45,26 @@ namespace MonkeyJobTool.Forms
         {
             try
             {
+                App.Instance.Init(openFormHotKeyRaised, this);
+                App.Instance.OnSettingsChanged += Instance_OnSettingsChanged;
+                App.Instance.OnNotificationCountChanged += Instance_OnNotificationCountChanged;
+
                 RegistryKey appRegistry = Registry.CurrentUser.CreateSubKey(AppConstants.AppName);
                 if (appRegistry != null)
                 {
                     var firstRunKeyVal = appRegistry.GetValue(AppConstants.Registry.FirstRun);
                     _isFirstRun = firstRunKeyVal == null;
-                    if(_isFirstRun)
-                        appRegistry.SetValue(AppConstants.Registry.FirstRun,"1");
+                    if (_isFirstRun)
+                    {
+                        App.Instance.UserID = Guid.NewGuid();
+                        appRegistry.SetValue(AppConstants.Registry.FirstRun, App.Instance.UserID);
+                    }
+                    else
+                    {
+                        App.Instance.UserID = new Guid(firstRunKeyVal.ToString());
+                    }
                 }
 
-                App.Instance.Init(openFormHotKeyRaised, this);
-                App.Instance.OnSettingsChanged += Instance_OnSettingsChanged;
-                App.Instance.OnNotificationCountChanged += Instance_OnNotificationCountChanged;
                 var screen = Screen.FromPoint(this.Location);
                 this.tsCheckAllAsDisplayed.Visible = false;
                 this.ShowInTaskbar = false;
@@ -82,7 +90,7 @@ namespace MonkeyJobTool.Forms
             }
             catch (Exception ex)
             {
-                LogManager.Error(ex);
+                LogManager.Error(ex, "MainForm_Load error");
             }
 
         }
