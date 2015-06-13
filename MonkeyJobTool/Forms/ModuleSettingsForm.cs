@@ -298,10 +298,11 @@ namespace MonkeyJobTool.Forms
                 ms.ModuleData = FillObjectFromUI(moduleSettings);
                 var json = JsonConvert.SerializeObject(ms, Formatting.Indented);
                 File.WriteAllText(fullPath, json);
+                this.Close();
             }
             catch(Exception ex)
             {
-                LogManager.Error(ex,message:"save config from ui");
+                LogManager.Error(ex,"save config from ui");
             }
         }
 

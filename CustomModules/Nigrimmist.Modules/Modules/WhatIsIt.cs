@@ -51,8 +51,11 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-       
-        
+
+        public override string ModuleTitle
+        {
+            get { return "What is it?"; }
+        }
 
         public override DescriptionInfo ModuleDescription
         {
@@ -60,7 +63,13 @@ namespace Nigrimmist.Modules.Modules
             {
                 return new DescriptionInfo()
                 {
-                    Description = "Бот знает всё. Ну или почти всё."
+                    Description = "Даёт ответ на любое определение используя википедию в качестве источника.",
+                    CommandScheme = "(что такое|кто такой) <термин|личность>",
+                    SamplesOfUsing = new List<string>()
+                    {
+                        "кто такой лукашенко",
+                        "что такое картошка"
+                    }
                 };
             }
         }
@@ -106,7 +115,10 @@ namespace Nigrimmist.Modules.Modules
                 answer += ". " + hrm.ResponseUri;
             }
 
-            _client.ShowMessage(commandToken,answer);
+            _client.ShowMessage(commandToken,answer).OnClick(() =>
+            {
+                _client.ShowMessage(commandToken, hrm.ResponseUri, answerType: AnswerBehaviourType.OpenLink);
+            });
         }
     }
 }

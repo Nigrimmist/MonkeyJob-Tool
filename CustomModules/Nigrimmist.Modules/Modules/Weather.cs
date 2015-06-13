@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Web;
 using HelloBotCommunication;
 using HelloBotCommunication.Interfaces;
 using HelloBotModuleHelper;
@@ -41,7 +42,12 @@ namespace Nigrimmist.Modules.Modules
             {
                 return new DescriptionInfo()
                 {
-                    Description = @"Погода с тутбая для Минска. ""!погода"" = текущая+завтра"
+                    Description = @"Текущая погода в вашем городе",
+                    CommandScheme = "погода <город>",
+                    SamplesOfUsing = new List<string>()
+                    {
+                        "погода минск"
+                    }
                 };
             }
         }
@@ -49,7 +55,7 @@ namespace Nigrimmist.Modules.Modules
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
             HtmlReaderManager hrm = new HtmlReaderManager();
-            hrm.Get("http://pogoda.tut.by/");
+            hrm.Get("https://pogoda.yandex.ru/"+HttpUtility.UrlEncode(args));
             string html = hrm.Html;
             HtmlDocument htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(html);

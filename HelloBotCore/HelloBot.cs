@@ -106,7 +106,7 @@ namespace HelloBotCore
                         }
                         catch (Exception ex)
                         {
-                            ShowInternalMessage("Ошибка",ex.ToString());
+                            ShowInternalMessage("Ошибка в модуле",ex.ToString());
                             //todo:log module exception to module exception file
                         }
                         

@@ -29,6 +29,11 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
+        public override string ModuleTitle
+        {
+            get { return "Program Update checker"; }
+        }
+
         public override string ModuleDescription
         {
             get { return "Модуль проверки наличия новых версий программы"; }
