@@ -10,6 +10,7 @@ using Microsoft.Win32;
 using MonkeyJobTool.Controls.Settings;
 using MonkeyJobTool.Entities;
 using MonkeyJobTool.Extensions;
+using MonkeyJobTool.Helpers;
 using MonkeyJobTool.Managers;
 using MonkeyJobTool.Properties;
 
@@ -134,7 +135,7 @@ namespace MonkeyJobTool.Forms
          
         private void CommandReplaceDatabind()
         {
-            var replaces = App.Instance.AppConf.CommandReplaces;
+            var replaces = App.Instance.AppConf.CommandReplaces.CloneJson();
             replaces.Add(new CommandReplace() { From = "", To = "" });
             
             foreach (CommandReplace replace in replaces)

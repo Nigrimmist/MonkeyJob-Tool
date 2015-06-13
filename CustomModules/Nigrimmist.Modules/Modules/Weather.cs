@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using HelloBotCommunication;
 using HelloBotCommunication.Interfaces;
@@ -34,7 +37,11 @@ namespace Nigrimmist.Modules.Modules
                 });
             }
         }
-        
+
+        public override string ModuleTitle
+        {
+            get { return "Погода"; }
+        }
 
         public override DescriptionInfo ModuleDescription
         {
@@ -42,11 +49,15 @@ namespace Nigrimmist.Modules.Modules
             {
                 return new DescriptionInfo()
                 {
-                    Description = @"Текущая погода в вашем городе",
-                    CommandScheme = "погода <город>",
+                    Description = @"Показывает погоду в любом городе, используя данные с Яндекс.Погода.",
+                    CommandScheme = "погода <город> (?:сегодня|завтра|послезавтра|пн|вт|ср|чт|пт|сб|вс|<ближайшее число в течении недели>)",
                     SamplesOfUsing = new List<string>()
                     {
-                        "погода минск"
+                        "погода минск",
+                        "погода питер завтра",
+                        "погода москва пт",
+                        "погода брест послезавтра",
+                        "погода могилёв 14",
                     }
                 };
             }
@@ -54,22 +65,178 @@ namespace Nigrimmist.Modules.Modules
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
+            if (string.IsNullOrEmpty(args))
+                args = "минск";
+
+            var queryInfo = new WeatherQueryInfo();
+            args = queryInfo.ParseQuery(args);
+
             HtmlReaderManager hrm = new HtmlReaderManager();
-            hrm.Get("https://pogoda.yandex.ru/"+HttpUtility.UrlEncode(args));
+
+            try
+            {
+                hrm.Get(string.Format("http://pogoda.yandex.by/{0}", HttpUtility.UrlEncode(args)));
+            }
+            catch (WebException wex)
+            {
+                if (((HttpWebResponse) wex.Response).StatusCode == HttpStatusCode.NotFound)
+                {
+                    _client.ShowMessage(commandToken, string.Format(@"Погоды для ""{0}"" нет, проверьте правильность написания города.", args));
+                    return;
+                }
+            }
+
             string html = hrm.Html;
             HtmlDocument htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(html);
-            var tds = htmlDoc.DocumentNode.SelectNodes(@"//./td[@class='fcurrent-top' or @class='fcurrent-s']");
+
             StringBuilder sb = new StringBuilder();
-            sb.Append("Погода в Минске :");
-            foreach (var td in tds)
+
+            string title = htmlDoc.DocumentNode.SelectSingleNode("//./div[@class='navigation-city']/h1").InnerText;
+            sb.AppendLine(title);
+
+            if (queryInfo.Type == WeatherQueryType.NotDefined)
             {
-                sb.Append(td.SelectSingleNode(".//./div[@class='fcurrent-h']").InnerText + " ");
-                sb.Append(td.SelectSingleNode(".//./span[@class='temp-i']").InnerText + " ");
-                sb.Append(td.SelectSingleNode(".//./div[@class='fcurrent-descr']").InnerText + " ");
+                string currTemp = htmlDoc.DocumentNode.SelectSingleNode("//./div[@class='current-weather__thermometer current-weather__thermometer_type_now']").InnerText;
+                string currTempDescr = htmlDoc.DocumentNode.SelectSingleNode("//./span[@class='current-weather__comment']").InnerText;
+                string windSpeed = htmlDoc.DocumentNode.SelectSingleNode("//./div[@class='current-weather__info-row current-weather__info-row_type_wind']").InnerText;
+                windSpeed = ClearText(windSpeed);
+                
+                sb.Append(Environment.NewLine);
+                sb.AppendFormat("Сейчас {0} {1}", currTemp, currTempDescr, windSpeed);
                 sb.Append(Environment.NewLine);
             }
-            _client.ShowMessage(commandToken,sb.ToString().Replace("&deg;", "°"));
+            
+
+            var detailedItems = htmlDoc.DocumentNode.SelectNodes("//./dl[@class='forecast-detailed forecast-item']/*");
+            for (int i = 0; i < detailedItems.Count; i += 2)
+            {
+                
+                var dateBlock = detailedItems[i];
+                var detailsBlock = detailedItems[i + 1];
+
+                var dayOfWeek = dateBlock.SelectSingleNode("small").InnerText;
+                var date = dateBlock.SelectSingleNode("strong").InnerText;
+                var dayDetailRows = detailsBlock.SelectNodes(".//./tr[contains(@class,'weather-table__row')]");
+
+                switch (queryInfo.Type)
+                {
+                    case WeatherQueryType.DayOfWeek:
+                    {
+                        if (dayOfWeek != queryInfo.Data.ToString()) continue;
+                        break;
+                    }
+                    case WeatherQueryType.Today:
+                    {
+                        if(i!=0) continue; //0 iteration always will be first day
+                        break;   
+                    }
+                    case WeatherQueryType.Tomorrow:
+                    {
+                        if(i!=2) continue;
+                        break;
+                    }
+                    case WeatherQueryType.Aftertomorrow:
+                    {
+                        if(i!=4) continue;
+                        break;
+                    }
+                    case WeatherQueryType.DayOfMonth:
+                    {
+                        int day = Convert.ToInt32(Regex.Match(date, @"\d+").Value.Trim());
+                        if(day!=(int)queryInfo.Data) continue;
+                        break;
+                    }
+                }
+                sb.Append(Environment.NewLine);
+                sb.AppendFormat("{0} ({1}) : ", date, dayOfWeek);
+                sb.Append(Environment.NewLine);
+
+                foreach (var detailRow in dayDetailRows)
+                {
+                    var dayPart = detailRow.SelectSingleNode(".//./div[@class='weather-table__daypart']").InnerText;
+                    var dayTempRange = detailRow.SelectSingleNode(".//./div[@class='weather-table__temp']").InnerText.Replace("&hellip;", "...");
+                    var dayWDescr = detailRow.SelectSingleNode("td[@class='weather-table__body-cell weather-table__body-cell_type_condition']").InnerText;
+                    var dayWindSpeed = detailRow.SelectSingleNode(".//./span[@class='weather-table__wind']").InnerText;
+                    var dayWindDirection = detailRow.SelectSingleNode(".//./abbr").InnerText;
+                    var dayHumidity = detailRow.SelectSingleNode("td[@class='weather-table__body-cell weather-table__body-cell_type_humidity']").InnerText;
+                    sb.AppendLine(string.Format("{0} {1}. {2}.", dayPart, dayTempRange, dayWDescr, dayWindSpeed, dayWindDirection, dayHumidity));
+                }
+
+            }
+
+            _client.ShowMessage(commandToken, sb.ToString().Replace("&deg;", "°"));
+        }
+
+        private string ClearText(string str)
+        {
+            RegexOptions options = RegexOptions.None;
+            Regex regex = new Regex(@"[ ]{2,}", options);
+            return regex.Replace(str, @" ").Replace("\n", "").Trim();
+        }
+    }
+
+    public enum WeatherQueryType
+    {
+        DayOfWeek,
+        Today,
+        Tomorrow,
+        Aftertomorrow,
+        DayOfMonth,
+        NotDefined
+    }
+
+    public class WeatherQueryInfo
+    {
+        public WeatherQueryType Type { get; set; }
+        public object Data { get; set; }
+
+        public string ParseQuery(string query)
+        {
+            List<string> daysOfWeek = new List<string>() {"пн", "вт", "ср", "чт", "пт", "сб", "вс"};
+            query = query.ToLower().Trim();
+            var endWith = daysOfWeek.SingleOrDefault(x => query.EndsWith(" " + x));
+            if (endWith != null)
+            {
+                Type = WeatherQueryType.DayOfWeek;
+                Data = endWith;
+            }
+            else
+            {
+                 if (query.EndsWith("послезавтра"))
+                {
+                    Type = WeatherQueryType.Aftertomorrow;
+                    Data = "послезавтра";
+                } else if (query.EndsWith("завтра"))
+                {
+                    Type = WeatherQueryType.Tomorrow;
+                    Data = "завтра";
+                }
+                else if (query.EndsWith("сегодня"))
+                {
+                    Type = WeatherQueryType.Today;
+                    Data = "сегодня";
+                }
+                else
+                {
+                    if (query.Contains(" "))
+                    {
+                        string numberOfMonth = query.Split(' ').Last();
+                        int numOfMonth;
+                        if (int.TryParse(numberOfMonth, out numOfMonth))
+                        {
+                            Type = WeatherQueryType.DayOfMonth;
+                            Data = numOfMonth;
+                        }
+                    }
+                }
+            }
+            if (Data == null)
+            {
+                Type = WeatherQueryType.NotDefined;
+                Data = "";
+            }
+            return query.TrimEnd(Data.ToString().ToCharArray()).TrimEnd();
         }
     }
 }

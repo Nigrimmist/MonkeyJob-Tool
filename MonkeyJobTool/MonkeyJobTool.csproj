@@ -190,36 +190,46 @@
     <Compile Include="Helpers\KeyboardLayoutHelper.cs" />
     <EmbeddedResource Include="Controls\Autocomplete\AutoCompleteControl.resx">
       <DependentUpon>AutoCompleteControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Autocomplete\AutocompletePopupItemControl.resx">
       <DependentUpon>AutocompletePopupItemControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Autocomplete\AutocompletePopupControl.resx">
       <DependentUpon>AutocompletePopupControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\HelpTooltip.resx">
       <DependentUpon>HelpTooltip.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Settings\CommandReplaceBlock.resx">
       <DependentUpon>CommandReplaceBlock.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\DonateListForm.resx">
       <DependentUpon>DonateListForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\DonateForm.resx">
       <DependentUpon>DonateForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\HelpPopup.resx">
       <DependentUpon>HelpPopup.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\InfoPopup.resx">
       <DependentUpon>InfoPopup.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ModuleSettingsForm.resx">
       <DependentUpon>ModuleSettingsForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>
