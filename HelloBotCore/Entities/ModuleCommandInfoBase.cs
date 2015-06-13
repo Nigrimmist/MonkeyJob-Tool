@@ -66,24 +66,24 @@ namespace HelloBotCore.Entities
             if (!string.IsNullOrEmpty(CommandDescription.Description))
                 toReturn +=  CommandDescription.Description + Environment.NewLine + Environment.NewLine;
             if (!string.IsNullOrEmpty(CommandDescription.CommandScheme))
-                toReturn += "Схема команды : " + CommandDescription.CommandScheme + Environment.NewLine;
+                toReturn += "Схема команды : " + Environment.NewLine + CommandDescription.CommandScheme + Environment.NewLine + Environment.NewLine;
             if (CommandDescription.SamplesOfUsing != null && CommandDescription.SamplesOfUsing.Any())
-                toReturn += "Примеры использования : " + string.Join(Environment.NewLine, CommandDescription.SamplesOfUsing.ToArray()) + Environment.NewLine;
+                toReturn += "Примеры использования : " + Environment.NewLine + string.Join(Environment.NewLine, CommandDescription.SamplesOfUsing.ToArray()) + Environment.NewLine + Environment.NewLine;
             
             string moduleDescription = GetDescriptionText();
 
             if (!string.IsNullOrEmpty(moduleDescription))
             {
-                toReturn += moduleDescription+Environment.NewLine;
+                toReturn += moduleDescription + Environment.NewLine + Environment.NewLine;
             }
             
             
             if (Author != null)
             {
                 if (!string.IsNullOrEmpty(Author.Name))
-                    toReturn += "Автор : " + Author.Name + Environment.NewLine;
+                    toReturn += "Автор : " + Author.Name + Environment.NewLine + Environment.NewLine;
                 if (!string.IsNullOrEmpty(Author.ContactEmail))
-                    toReturn += "Email для связи : " + Author.ContactEmail + Environment.NewLine;
+                    toReturn += "Email для связи : " + Author.ContactEmail + Environment.NewLine + Environment.NewLine;
             }
             return toReturn;
         }
