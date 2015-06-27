@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -42,7 +43,7 @@ namespace HelloBotCore
 
         private readonly Dictionary<Guid, BotCommandContext> _commandContexts;
         private readonly object _commandContextLock = new object();
-        public delegate void OnErrorOccuredDelegate(Exception ex);
+        public delegate void OnErrorOccuredDelegate(Exception ex, ModuleCommandInfoBase module);
         
         /// <param name="clientCommandContext">Can be null</param>
         public delegate void OnMessageRecievedDelegate(Guid commandToken,AnswerInfo answer,ClientCommandContext clientCommandContext);
@@ -106,8 +107,10 @@ namespace HelloBotCore
                         }
                         catch (Exception ex)
                         {
-                            ShowInternalMessage("Ошибка в модуле",ex.ToString());
-                            //todo:log module exception to module exception file
+                            if (OnErrorOccured != null)
+                            {
+                                OnErrorOccured(ex,tEv);
+                            }
                         }
                         
                         Thread.Sleep(tEv.EventRunEvery);
@@ -248,9 +251,9 @@ namespace HelloBotCore
                                         {
                                             if (OnErrorOccured != null)
                                             {
-                                                OnErrorOccured(ex);
+                                                OnErrorOccured(ex,hnd);
                                             }
-                                            ShowInternalMessage(command,"Увы, что-то пошло не так и модуль сломался, попробуйте как-нибудь по другому.");
+                                            
                                         }
                                     }
                                 }, TimeSpan.FromSeconds(_commandTimeoutSec)))
@@ -282,7 +285,7 @@ namespace HelloBotCore
         }
         
 
-        private ModuleCommandInfo FindModule(string phrase, out string command, out string args)
+        public ModuleCommandInfo FindModule(string phrase, out string command, out string args)
         {
             ModuleCommandInfo toReturn = null;
             command = string.Empty;

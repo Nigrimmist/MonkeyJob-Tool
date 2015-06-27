@@ -8,6 +8,7 @@
 	ShowDonateButton : true,
 	Language : 2,
 	SystemData : {
-		DisabledModules : []			
-	}
+		DisabledModules : []					
+	},
+	DevelopmentModeEnabled : true
 }

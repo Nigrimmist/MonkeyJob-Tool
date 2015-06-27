@@ -15,6 +15,7 @@ namespace MonkeyJobTool.Entities
         public bool ShowDonateButton { get; set; }
         public SystemData SystemData { get; set; }
         public Language Language { get; set; }
+        public bool DevelopmentModeEnabled { get; set; }
 
         public ApplicationConfiguration()
         {

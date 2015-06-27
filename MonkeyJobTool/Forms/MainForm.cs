@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Management;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
@@ -111,12 +112,31 @@ namespace MonkeyJobTool.Forms
             };
             _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
             _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
+            _autocomplete.OnTextChanged += _autocomplete_OnTextChanged;
             this.Controls.Add(_autocomplete);
 
             
             this.ToTop(true);
             LogAnalytic();
         }
+
+        void _autocomplete_OnTextChanged(string text)
+        {
+            string args;
+            bool commandReplaceCountExceed;
+            string command = TryToReplaceCommand(text, out commandReplaceCountExceed);
+
+            var foundCommand = _bot.FindModule(command, out command, out args);
+            if (foundCommand != null && foundCommand.Icon!=null)
+            {
+                MainIcon.Image = foundCommand.Icon;
+            }
+            else
+            {
+                MainIcon.Image = _defaultIcon;
+            }
+        }
+
 
         private void InitBot(Action afterInitActionClbck=null)
         {
@@ -126,7 +146,7 @@ namespace MonkeyJobTool.Forms
                 {   
                     SetLoading(true);
                     _bot = new HelloBot(App.Instance.FolderSettingPath, AppConstants.AppVersion, botCommandPrefix: "", moduleFolderPath: App.Instance.ExecutionFolder);
-                    _bot.OnErrorOccured += BotOnOnErrorOccured;
+                    _bot.OnErrorOccured +=BotOnOnErrorOccured;
                     _bot.OnMessageRecieved += BotOnMessageRecieved;
                     _bot.SetCurrentLanguage((Language) (int) App.Instance.AppConf.Language);
                     _bot.Start(App.Instance.AppConf.SystemData.DisabledModules);
@@ -142,6 +162,44 @@ namespace MonkeyJobTool.Forms
                     MessageBox.Show(ex.ToString());
                 }
             }).Start();
+        }
+
+        private void BotOnOnErrorOccured(Exception exception, ModuleCommandInfoBase module)
+        {
+            string errorMessage = "Неизвестная ошибка.";
+            bool logError = true;
+            if (module.ModuleType == ModuleType.Handler)
+            {
+                errorMessage = "Увы, что-то пошло не так и модуль сломался, попробуйте как-нибудь по другому.";
+
+                if (exception is WebException)
+                {
+                    logError = false;
+                    if (!InternetChecker.IsInternetEnabled())
+                    {
+                        errorMessage = "Ошибка. Модуль требует подключения к интернета. Пожалуйста, попробуйте ещё раз через некоторое время, когда интернет-соединение появится.";
+                    }
+                    else
+                    {
+                        errorMessage = "Увы, какой-то из интернет-сервисов, необходимых для модуля - в данный момент не работает. Пожалуйста, попробуйте чуть позже.";
+                    }
+                }
+                App.Instance.ShowInternalPopup("Ошибка модуля", errorMessage, TimeSpan.FromSeconds(10));
+            }
+
+            if (module.ModuleType == ModuleType.Event)
+            {
+                if (exception is WebException)
+                {
+                    if (!InternetChecker.IsInternetEnabled())
+                    {
+                        logError = false;
+                    }
+                }
+            }
+
+            if (logError && !string.IsNullOrEmpty(module.Author.EmailForLogs) && !string.IsNullOrEmpty(errorMessage))
+                EmailHelper.SendModuleErrorEmail(exception, module.Author.EmailForLogs,"MonkeyJob error report for "+module.GetModuleName()+" module");
         }
 
         void Instance_OnNotificationCountChanged(int notificationCount)
@@ -305,6 +363,8 @@ namespace MonkeyJobTool.Forms
             
         }
 
+        
+
         private DataFilterInfo GetCommandListByTerm(string term)
         {
            var foundItems = _bot.FindCommands(term).Select(x => x.Command.ToLower()).ToList();
@@ -321,10 +381,7 @@ namespace MonkeyJobTool.Forms
             ShowMain();
         }
 
-        private void BotOnOnErrorOccured(Exception exception)
-        {
-           
-        }
+        
         
         private void tsExit_Click(object sender, EventArgs e)
         {

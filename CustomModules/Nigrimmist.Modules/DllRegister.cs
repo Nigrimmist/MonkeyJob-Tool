@@ -44,7 +44,7 @@ namespace Nigrimmist.Modules
 
         public override AuthorInfo AuthorInfo
         {
-            get { return new AuthorInfo("Nikita Vasileusky", "Nigrimmist@gmail.com"); }
+            get { return new AuthorInfo("Nikita Vasileusky", "Nigrimmist@gmail.com", "Nigrimmist+MJ-ModuleLogs@gmail.com"); }
         }
     }
 }

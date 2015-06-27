@@ -19,10 +19,10 @@ namespace MonkeyJobTool.Managers
 
         public static void Error(Exception ex, string message = "")
         {
-            if (Convert.ToBoolean(System.Configuration.ConfigurationManager.AppSettings["DevelopmentModeEnabled"]))
+            if (App.Instance.AppConf.DevelopmentModeEnabled)
                 MessageBox.Show(ex.ToString());
 
-            if (App.Instance.AppConf.AllowSendCrashReports)
+            if (App.Instance.AppConf.AllowSendCrashReports && !App.Instance.AppConf.DevelopmentModeEnabled)
             {
                 if (_systemInfo == null)
                 {
@@ -34,7 +34,7 @@ namespace MonkeyJobTool.Managers
             }
         }
 
-        private static string CollectSystemInfo()
+        public static string CollectSystemInfo()
         {
             string frameworkInfo = ".net framework info : ";
             try

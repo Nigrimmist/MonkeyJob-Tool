@@ -168,6 +168,8 @@
     <Compile Include="Forms\SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\EmailHelper.cs" />
+    <Compile Include="Helpers\InternetChecker.cs" />
     <Compile Include="Helpers\ObjectCopier.cs" />
     <Compile Include="Helpers\FormHelper.cs" />
     <Compile Include="Helpers\GoogleAnalytics.cs" />
@@ -263,7 +265,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CustomModules\Alex\VariousHandlersLib.csproj">

@@ -26,6 +26,9 @@ namespace MonkeyJobTool.Controls.Autocomplete
         public delegate void OnCommandReceivedDelegate(string command);
         public event OnCommandReceivedDelegate OnCommandReceived;
 
+        public delegate void OnTextChangeDelegate(string text);
+        public event OnTextChangeDelegate OnTextChanged;
+
         public delegate void OnKeyPressedDelegate(Keys key);
         public event OnKeyPressedDelegate OnKeyPressed;
         public int StartSuggestFrom = 1;
@@ -72,12 +75,17 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         private void txtCommand_TextChanged(object sender, EventArgs e)
         {
-            if (_popup.IsAnyitemHighlighted) return; //no any suggestions if selectMode enabled
             string term = txtCommand.Text;
+            if (OnTextChanged != null)
+                OnTextChanged(term);
+
+            if (_popup.IsAnyitemHighlighted) return; //no any suggestions if selectMode enabled
+            
             
             _lastPreSelectText = term;
             if (!string.IsNullOrEmpty(term) && term.Length >= StartSuggestFrom)
             {
+                
                 var filterResult = DataFilterFunc(term);
                 term = filterResult.FoundByTerm; //incoming and outgoing term can be different
                 if (filterResult.FoundItems.Any())

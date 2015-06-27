@@ -9,16 +9,19 @@ namespace HelloBotCommunication
     {
         public string Name { get; set; }
         public string ContactEmail { get; set; }
-
-        public AuthorInfo(string name)
-        {
-            Name = name;
-        }
-
-        public AuthorInfo(string name, string contactEmail)
+        public string EmailForLogs { get; set; }
+        
+        /// <summary>
+        /// Author information for user/system
+        /// </summary>
+        /// <param name="name">Your name or nickname</param>
+        /// <param name="contactEmail">Your contact email. It will be visible to all users</param>
+        /// <param name="emailForErrorLogs">Email for error reports, every single error will be send from MonkeyJobSender@gmail.com service email. Use it, Luke!</param>
+        public AuthorInfo(string name, string contactEmail, string emailForErrorLogs)
         {
             Name = name;
             ContactEmail = contactEmail;
+            EmailForLogs = emailForErrorLogs;
         }
     }
 }

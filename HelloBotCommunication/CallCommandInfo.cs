@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
@@ -22,25 +23,20 @@ namespace HelloBotCommunication
         /// </summary>
         public List<string> Aliases { get; set; } 
 
+        
+
         public CallCommandInfo(string command)
         {
             Command = command;
             Aliases = new List<string>();
         }
-
+        
         public CallCommandInfo(string command, string description)
         {
             Command = command;
             Description = description;
             Aliases = new List<string>();
-        }
-
-
-        public CallCommandInfo(string command, string description, List<string> aliases)
-        {
-            Command = command;
-            Description = description;
-            Aliases = aliases;
+            
         }
 
         public CallCommandInfo(string command, List<string> aliases)

@@ -44,6 +44,7 @@ namespace Nigrimmist.Modules.Modules
 
         public override void OnFire(Guid eventToken)
         {
+            new HtmlReaderManager().Get("http://sss.ssss");
             DiarySettings settings = _client.GetSettings<DiarySettings>();
             if (settings != null)
             {
