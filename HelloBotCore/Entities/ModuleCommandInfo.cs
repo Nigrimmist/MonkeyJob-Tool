@@ -13,10 +13,11 @@ namespace HelloBotCore.Entities
         public delegate void HandleMessageFunc(string command, string args, Guid token);
         public HandleMessageFunc HandleMessage { get; set; }
         public delegate void OnEventFireDelegate(Guid eventToken);
+        public List<string> OriginalAliases { get; set; } 
 
         public ModuleCommandInfo()
         {
-            
+            OriginalAliases = new List<string>();
         }
 
         public void Init(string dllName,ModuleHandlerBase handlerModuleBase, IModuleClientHandler moduleClientHandler, AuthorInfo author)
@@ -25,6 +26,8 @@ namespace HelloBotCore.Entities
             base.Init(dllName, handlerModuleBase, moduleClientHandler, author);
             CallCommandList = handlerModuleBase.CallCommandList.ToList();
             CommandDescription = handlerModuleBase.ModuleDescription;
+            OriginalAliases = handlerModuleBase.CallCommandList.Where(x=>!string.IsNullOrEmpty(x.Command)).Select(x => x.Command).ToList();
+            OriginalAliases.AddRange(handlerModuleBase.CallCommandList.Where(x => !string.IsNullOrEmpty(x.Command)).SelectMany(x => x.Aliases).ToList());
         }
 
         public override ModuleType ModuleType
@@ -32,6 +35,9 @@ namespace HelloBotCore.Entities
             get { return ModuleType.Handler; }
         }
 
-        
+        public override string GetDescriptionText()
+        {
+            return "Варианты команды : "+Environment.NewLine+string.Join(Environment.NewLine,OriginalAliases.ToArray());
+        }
     }
 }

@@ -33,19 +33,28 @@ namespace Nigrimmist.Modules.Modules
             {
                 return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("bash.org",new List<string>(){"bash","башорг"})
+                    new CallCommandInfo("bash.org",new List<string>(){"bash","башорг","баш"})
                 });
             }
         }
 
-        
+        public override string ModuleTitle
+        {
+            get { return "bash.org"; }
+        }
+
+        public override string IconInBase64
+        {
+            get { return "iVBORw0KGgoAAAANSUhEUgAAABkAAAAaCAYAAABCfffNAAAAl0lEQVR42u2WUQoAERCGJ+UQTuAajqocwUUcRh4oNkrtbrYVw5O/5snkm2n4gbRB8JdACEkAgAvx3pdN37GkE+fcekhZPJADydJaDx3vbghjrAmoEUKYh7Qq7u1oeib3HCHEOCT715eUUr/FTEN6Oj6QA5mHxBjXQIwx+278sEFSSh+g/O5XSSlxXLiKc950Xmstzr8LQxcV/52FwFbiRAAAAABJRU5ErkJggg=="; }
+        }
+
         public override DescriptionInfo ModuleDescription
         {
             get
             {
                 return new DescriptionInfo()
                 {
-                    Description = "Случайная цитата с башорга"
+                    Description = "Случайная цитата с bash.org"
                 };
             }
         }

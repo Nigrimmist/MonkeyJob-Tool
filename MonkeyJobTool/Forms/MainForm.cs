@@ -395,9 +395,13 @@ namespace MonkeyJobTool.Forms
             new SettingsForm().Show();
         }
 
+        private Image _preLoadingImg;
         private void SetLoading(bool isLoading)
         {
-            MainIcon.Image = isLoading ? _loadingIcon : _defaultIcon;
+            if (isLoading)
+                _preLoadingImg = MainIcon.Image;
+
+            MainIcon.Image = isLoading ? _loadingIcon : _preLoadingImg ?? _defaultIcon;
         }
 
         private void _autocomplete_OnKeyPressed(Keys key)

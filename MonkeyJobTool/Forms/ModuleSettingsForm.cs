@@ -45,7 +45,6 @@ namespace MonkeyJobTool.Forms
                 var settingsWrapper = JsonConvert.DeserializeObject(data, typeof (ModuleSettings)) as ModuleSettings;
                 var rawSettingsJson = JsonConvert.SerializeObject(settingsWrapper.ModuleData);
                 moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.ModuleSettingsType);
-                
             }
             var table = new TableLayoutPanel()
             {

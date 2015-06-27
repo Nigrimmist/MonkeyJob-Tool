@@ -22,7 +22,7 @@ namespace Nigrimmist.Modules.Modules
             {
                 return new DescriptionInfo()
                 {
-                    Description = "Открывает ссылку в браузере"
+                    Description = "Открывает вашу ссылку ссылку в браузере"
                 };
             }
         }

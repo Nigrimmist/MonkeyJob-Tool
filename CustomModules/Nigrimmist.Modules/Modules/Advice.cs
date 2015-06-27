@@ -55,7 +55,12 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-            public override void HandleMessage(string command, string args, Guid commandToken)
+        public override string ModuleTitle
+        {
+            get { return "Лучший совет"; }
+        }
+
+        public override void HandleMessage(string command, string args, Guid commandToken)
         {
             HtmlReaderManager hrm = new HtmlReaderManager();
             hrm.Encoding = Encoding.GetEncoding(1251);

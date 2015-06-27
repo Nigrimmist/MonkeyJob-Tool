@@ -28,7 +28,7 @@ namespace HelloBotCommunication
         public virtual string ModuleTitle { get { return null; } }
 
         /// <summary>
-        /// Your icon in base64 string. Should be 26x26 px. Can be in png format (transparency supported). Please, remove from result string "data:image/x-icon;base64," if exist.
+        /// Your icon in base64 string. Should be 26x26 px. Can be in png format (transparency supported). Please, remove from result string "data:image/x-icon;base64," or similiar if exist.
         /// </summary>
         public virtual string IconInBase64{get { return null; }}
        

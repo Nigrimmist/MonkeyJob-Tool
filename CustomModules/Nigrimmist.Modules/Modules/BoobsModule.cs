@@ -41,13 +41,20 @@ namespace Nigrimmist.Modules.Modules
             {
                 return new DescriptionInfo()
                 {
-                    Description = "Ну а что тут объяснять. Сиськи.",
-                    SamplesOfUsing = new List<string>(){"сиськи"},
-                    CommandScheme = "сиськи"
+                    Description = "Ну а что тут объяснять. Сиськи. Показывает фотку рандомной женской груди."
                 };
             }
         }
 
+        public override string ModuleTitle
+        {
+            get { return "Сиськи"; }
+        }
+
+        public override string IconInBase64
+        {
+            get { return "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABHklEQVRIie3ULVNCURDG8V8wEG4wEAgEg8FoMBgNBIPBaCAYDESC0RmiwUA0GPwABIPRYDAQDQYigWjkCxjO3pl7z8AMDBgc+c+csrtnX57zwo5/SxFrq/F7GOAL3+iuUaCLWewdRK4aB/jECO01Eue08Ry5DquOd9xukDinh7GY5AZvW0xeMkIfXnD5CwU6ovGZ1XVvxVqFAvN1Czzgad0CyyTaX2D7kG7Iotj8anYiXg+vmbMvvYUqx5jGOs18U+n+VxnhTlQeR6GSVnRQUkTn17jCRH3CM3WZuxHTKA1HYXhEM+vkPDocVmx96exyaYuIm0oT12jgPjZOJP3m0fmiM7oI31xSoPxihlb4l5qSzvk0y2JPbPbF7PjL/ADFWTbx04MzRAAAAABJRU5ErkJggg=="; }
+        }
 
         private Random _r = new Random();
         private List<string> _images = new List<string>();

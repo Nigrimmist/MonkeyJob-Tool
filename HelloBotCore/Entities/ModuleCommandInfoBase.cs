@@ -49,6 +49,7 @@ namespace HelloBotCore.Entities
             BodyBackgroundColor = handlerModuleBase.BodyBackgroundColor;
             HeaderBackgroundColor = handlerModuleBase.HeaderBackGroundColor;
             Author = author;
+            
             IClient client = new ModuleToClientAdapter(moduleClientHandler, this);
             handlerModuleBase.Init(client);
         }
