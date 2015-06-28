@@ -24,6 +24,11 @@ namespace Nigrimmist.Modules.Modules
             get { return 1.0; }
         }
 
+        public override string ModuleTitle
+        {
+            get { return "Цитатник"; }
+        }
+
         public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
@@ -41,7 +46,7 @@ namespace Nigrimmist.Modules.Modules
             {
                 return new DescriptionInfo()
                 {
-                    Description = "Случайная цитата c http://online-generators.ru"
+                    Description = "Случайная цитата c http://online-generators.ru",
                 };
             }
         }

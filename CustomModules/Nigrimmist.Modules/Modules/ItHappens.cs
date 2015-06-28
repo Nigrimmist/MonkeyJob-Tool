@@ -50,6 +50,11 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
+        public override string ModuleTitle
+        {
+            get { return "История ItHappens"; }
+        }
+
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
             if (!_jokes.Any())

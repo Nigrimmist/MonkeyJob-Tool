@@ -29,7 +29,7 @@ namespace Nigrimmist.Modules.Modules
             {
                 return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("translate",new List<string>(){"t","перевод","переведи"}),
+                    new CallCommandInfo("translate",new List<string>(){"перевод","переведи"}),
                     
                 });
             }
@@ -41,12 +41,21 @@ namespace Nigrimmist.Modules.Modules
             {
                 return new DescriptionInfo()
                 {
-                    Description = "Переводчик. Язык определяет автоматически, поддерживаются только русский/английский"
+                    Description = "Переводчик. Язык определяет автоматически, на данный момент поддерживаются только русский и английский",
+                    SamplesOfUsing = new List<string>()
+                    {
+                        "перевод house",
+                        "переведи дом"
+                    },
+                    CommandScheme = "переведи <фраза или слово>"
                 };
             }
         }
 
-        
+        public override string ModuleTitle
+        {
+            get { return "Переводчик"; }
+        }
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

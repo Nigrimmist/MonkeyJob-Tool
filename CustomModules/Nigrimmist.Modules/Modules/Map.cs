@@ -23,6 +23,11 @@ namespace Nigrimmist.Modules.Modules
             get { return 1.0; }
         }
 
+        public override string ModuleTitle
+        {
+            get { return "Карта"; }
+        }
+
         public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
@@ -33,6 +38,8 @@ namespace Nigrimmist.Modules.Modules
                 });
             }
         }
+
+
         
         public override DescriptionInfo ModuleDescription
         {
@@ -40,7 +47,14 @@ namespace Nigrimmist.Modules.Modules
             {
                 return new DescriptionInfo()
                 {
-                    Description = "Генерирует ссылку на карту по адресу. Добавьте help для просмотра справки."
+                    Description = "Генерирует и открывает ссылку на карту по адресу. Умеет прокладывать маршруты. Карты goolge и yandex.",
+                    CommandScheme = "карта ?<g|y> <адрес>, где g=google,y=yandex." + Environment.NewLine + "карта ?<g|y> <адрес_из> => <адрес_куда> - проложит маршрут из 'адрес_из' в 'адрес_в'.",
+                    SamplesOfUsing = new List<string>()
+                    {
+                        "карта минск ул. Якуба Коласа 6",
+                        "карта y минск ул. Якуба Коласа 6",
+                        "карта ул якуба коласа 6 => ул игнатовского 4"
+                    }
                 };
             }
         }
@@ -60,9 +74,6 @@ namespace Nigrimmist.Modules.Modules
         private const string _defaultProvider = "g";
         private const string _fromToDelimeter = "=>";
 
-        private string helpMsg = string.Format(@"""!map <опционально:поисковик> <адрес>"", где поисковик может быть y(yandex) или g(google).
-Проложить маршрут : ""!map <опционально:поисковик> <из>{0}<в>""", _fromToDelimeter);
-
         public override void HandleMessage(string command, string args, Guid commandToken)
        {
            
@@ -71,11 +82,7 @@ namespace Nigrimmist.Modules.Modules
             {
                 string inputProvider = args.Split(' ').First();
 
-                if (inputProvider == "help")
-                {
-                    _client.ShowMessage(commandToken,helpMsg);
-                }
-                else if (args.Contains(_fromToDelimeter))
+                if (args.Contains(_fromToDelimeter))
                 {
                     var addressParts = args.Split(new []{_fromToDelimeter},StringSplitOptions.RemoveEmptyEntries);
                     if (addressParts.Count() == 2)

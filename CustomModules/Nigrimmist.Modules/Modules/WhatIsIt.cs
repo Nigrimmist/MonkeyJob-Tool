@@ -54,7 +54,7 @@ namespace Nigrimmist.Modules.Modules
 
         public override string ModuleTitle
         {
-            get { return "What is it?"; }
+            get { return "Что это? Кто это?"; }
         }
 
         public override DescriptionInfo ModuleDescription

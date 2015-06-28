@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using HelloBotCommunication;
+using HelloBotCommunication.Attributes.SettingAttributes;
 using HelloBotCommunication.Interfaces;
 
 namespace Nigrimmist.Modules.Modules
@@ -22,11 +23,16 @@ namespace Nigrimmist.Modules.Modules
             {
                 return new DescriptionInfo()
                 {
-                    Description = "Открывает вашу ссылку ссылку в браузере"
+                    Description = @"Открывает вашу ссылку ссылку в браузере. Поддерживаются форматированные урлы вида http://url/?blabla={0}. Любые изменения настроек требуют перезапуска программы."
                 };
             }
         }
         public override double ModuleVersion { get { return 1.0; } }
+
+        public override string ModuleTitle
+        {
+            get { return "Ссылкооткрыватель"; }
+        }
 
         public override void Init(IClient client)
         {
@@ -71,9 +77,11 @@ namespace Nigrimmist.Modules.Modules
         }
     }
 
+    [ModuleSettingsFor(typeof(BrowserUrlsOpen))]
     public class BrowserUrlsOpenSettings
     {
-        public List<CommandKeyValue> Commands = new List<CommandKeyValue>();
+        [SettingsNameField("Команды")]
+        public List<CommandKeyValue> Commands { get;set; }
 
         public BrowserUrlsOpenSettings()
         {
@@ -83,7 +91,9 @@ namespace Nigrimmist.Modules.Modules
 
     public class CommandKeyValue
     {
+        [SettingsNameField("Команда")]
         public string Command { get; set; }
+        [SettingsNameField("URL")]
         public string Url { get; set; }
     }
 }

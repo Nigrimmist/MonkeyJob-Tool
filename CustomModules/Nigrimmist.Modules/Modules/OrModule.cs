@@ -27,9 +27,14 @@ namespace Nigrimmist.Modules.Modules
             {
                 return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("Выбери")
+                    new CallCommandInfo("Выбери", new List<string>(){"или"})
                 });
             }
+        }
+
+        public override string ModuleTitle
+        {
+            get { return "Или?"; }
         }
 
         public override DescriptionInfo ModuleDescription
@@ -38,7 +43,14 @@ namespace Nigrimmist.Modules.Modules
             {
                 return new DescriptionInfo()
                 {
-                    Description = @"Выбирает между чем-то. Использует ""Или"" в качестве разделителя"
+                    Description = @"Выбирает между чем-то. Использует ""Или"" в качестве разделителя",
+                    CommandScheme = "выбери <аргумент1> или <аргумент2> или <аргумент_n>",
+                    SamplesOfUsing = new List<string>()
+                    {
+                        "выбери да или нет",
+                        "выбери лукашенко или лукашенко",
+                        "выбери 1 или 2 или 3 или 4"
+                    }
                 };
             }
         }

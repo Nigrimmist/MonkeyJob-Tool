@@ -11,9 +11,7 @@ namespace SmartAssHandlerLib
         {
             return new List<ModuleHandlerBase>()
             {
-                new SmartAssStuffHandlerHandlerBase(),
-                new YesNoHandlerHandlerBase(),
-                new FckinWeatherModuleHandlerBase()
+                new YesNoHandlerHandlerBase()
             };
         }
 

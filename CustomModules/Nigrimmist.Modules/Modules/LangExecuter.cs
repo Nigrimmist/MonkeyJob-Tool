@@ -12,7 +12,7 @@ namespace Nigrimmist.Modules.Modules
 {
     public class LangExecuter : ModuleHandlerBase
     {
-        private class tempClass
+        private class RexTesterResponse
         {
             public string Result { get; set; }
             public string Errors { get; set; }
@@ -36,31 +36,37 @@ namespace Nigrimmist.Modules.Modules
             {
                 return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("execute", new List<string>( ){"C#"})
+                    new CallCommandInfo("execute", new List<string>() {"C#"})
                 });
             }
         }
 
-       public override DescriptionInfo ModuleDescription
+        public override string ModuleTitle
+        {
+            get { return "C# компилятор"; }
+        }
+
+        public override DescriptionInfo ModuleDescription
         {
             get
             {
                 return new DescriptionInfo()
                 {
-                    Description = "Выполняет код на C#. Добавьте help для вызова справки."
+                    Description = "Исполняет и выводит C# код. За основу взят сайт http://rextester.com/runcode. Для вывода использовать Out() метод",
+                    SamplesOfUsing = new List<string>()
+                    {
+                        "Out(1+2);",
+                        @"string str = ""hello world"";string str2=""!""; Out(str+str2);"
+                    },
+                    CommandScheme = "C# <C# код>"
                 };
             }
         }
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
-            if (args.StartsWith("help"))
-            {
-                _client.ShowMessage(commandToken,GetHelpText());
-            }
-            else
-            {
-                string templateCode = @"using System;
+
+            string templateCode = @"using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -79,39 +85,32 @@ namespace Rextester
     }}
 }}";
 
-                HtmlReaderManager hrm = new HtmlReaderManager();
+            HtmlReaderManager hrm = new HtmlReaderManager();
 
-                hrm.Post("http://rextester.com/rundotnet/Run", string.Format("LanguageChoiceWrapper=1&EditorChoiceWrapper=1&Program={0}&Input=&ShowWarnings=false&Title=&SavedOutput=&WholeError=&WholeWarning=&StatsToSave=&CodeGuid=&IsInEditMode=False&IsLive=False"
-                    , HttpUtility.UrlEncode(string.Format(templateCode, args))));
-                var response = JsonConvert.DeserializeObject<tempClass>(hrm.Html);
-                string toReturn = response.Result;
+            hrm.Post("http://rextester.com/rundotnet/Run", string.Format("LanguageChoiceWrapper=1&EditorChoiceWrapper=1&Program={0}&Input=&ShowWarnings=false&Title=&SavedOutput=&WholeError=&WholeWarning=&StatsToSave=&CodeGuid=&IsInEditMode=False&IsLive=False"
+                , HttpUtility.UrlEncode(string.Format(templateCode, args))));
+            var response = JsonConvert.DeserializeObject<RexTesterResponse>(hrm.Html);
+            string toReturn = response.Result;
 
-                if (string.IsNullOrEmpty(toReturn))
-                {
-                    toReturn = response.Errors;
-                }
-
-                if (!string.IsNullOrEmpty(toReturn))
-                {
-                    toReturn = toReturn.Replace(Environment.NewLine," ").Trim();
-                    _client.ShowMessage(commandToken,toReturn.Length > 200 ? toReturn.Substring(0, 50) + "..." : toReturn);
-                }
-                else
-                {
-                    _client.ShowMessage(commandToken,"Что-то пошло не так");
-                }
-                
-                
+            if (string.IsNullOrEmpty(toReturn))
+            {
+                toReturn = response.Errors;
             }
+
+            if (!string.IsNullOrEmpty(toReturn))
+            {
+                toReturn = toReturn.Replace(Environment.NewLine, " ").Trim();
+                _client.ShowMessage(commandToken, toReturn.Length > 200 ? toReturn.Substring(0, 50) + "..." : toReturn);
+            }
+            else
+            {
+                _client.ShowMessage(commandToken, "Что-то пошло не так");
+            }
+
+
         }
 
-        public string GetHelpText()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("За основу взят сайт http://rextester.com/runcode.");
-            sb.AppendLine("Поддерживает многострочность. Для вывода использовать Out() метод. Например, Out(1+2);");
-            sb.AppendLine("Вывод ограничен 50 символами.");
-            return sb.ToString();
-        }
+
+
     }
 }

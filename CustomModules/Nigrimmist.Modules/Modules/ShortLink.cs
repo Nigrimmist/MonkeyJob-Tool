@@ -24,6 +24,11 @@ namespace Nigrimmist.Modules.Modules
             get { return 1.0; }
         }
 
+        public override string ModuleTitle
+        {
+            get { return "Сокращатель ссылок"; }
+        }
+
         public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get
@@ -40,11 +45,15 @@ namespace Nigrimmist.Modules.Modules
             {
                 return new DescriptionInfo()
                 {
-                    Description = "Сокращалка ссылок"
+                    Description = "Преобразует длинные ссылки в короткие",
+                    CommandScheme = "сократи <url>",
+                    SamplesOfUsing = new List<string>()
+                    {
+                        "сократи http://longlonglongurl.ru/longlonglonglonglonglonglong.html"
+                    }
                 };
             }
         }
-        
 
         public override void HandleMessage(string command, string args, Guid commandToken)
         {

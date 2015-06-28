@@ -17,7 +17,6 @@ namespace Nigrimmist.Modules
                 new Calculator(),
                 new Weather(),
                 new Boobs(),
-                new Say(),
                 new Translate(),
                 new Bash(),
                 new ItHappens(),
@@ -37,8 +36,7 @@ namespace Nigrimmist.Modules
             return new List<ModuleEventBase>()
             {
                 new Diary(),
-                new ToolUpdate(),
-                //new TestModule()
+                new ToolUpdate()
             };
         }
 

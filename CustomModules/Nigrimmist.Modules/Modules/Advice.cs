@@ -16,7 +16,7 @@ namespace Nigrimmist.Modules.Modules
     /// </summary>
     public class Advice : ModuleHandlerBase
     {
-        private class textClass
+        private class AdviceResponse
         {
             public string text { get; set; }
         }
@@ -65,7 +65,7 @@ namespace Nigrimmist.Modules.Modules
             HtmlReaderManager hrm = new HtmlReaderManager();
             hrm.Encoding = Encoding.GetEncoding(1251);
             hrm.Get("http://fucking-great-advice.ru/api/random");
-            var json = JsonConvert.DeserializeObject<textClass>(hrm.Html);
+            var json = JsonConvert.DeserializeObject<AdviceResponse>(hrm.Html);
             string advice = json.text;
             _client.ShowMessage(commandToken,HttpUtility.HtmlDecode(advice.RemoveAllTags()));
         }

@@ -43,12 +43,18 @@ namespace SmartAssHandlerLib
             {
                 return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("бот", new List<string>(){"бот,"}),
-                    
+                    new CallCommandInfo("ответь",new List<string>()
+                    {
+                        "ответь,"
+                    }),
                 });
             }
         }
-        
+
+        public override string ModuleTitle
+        {
+            get { return "Простой ответ"; }
+        }
 
         public override DescriptionInfo ModuleDescription
         {
@@ -56,7 +62,13 @@ namespace SmartAssHandlerLib
             {
                 return new DescriptionInfo()
                 {
-                    Description = "Лаконичный ответ на простой вопрос."
+                    Description = "Лаконичный ответ на простой вопрос.",
+                    SamplesOfUsing = new List<string>()
+                    {
+                        "ответь, будет ли сегодня дождь?",
+                        "ответь, мне повезёт в лотерею?"
+                    },
+                    CommandScheme = "ответь, <вопрос>?"
                 };
             }
         }

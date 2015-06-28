@@ -40,9 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FckinWeatherHandler.cs" />
-    <Compile Include="MoviesHandler.cs" />
-    <Compile Include="SmartAssStuffHandler.cs" />
     <Compile Include="VariousHandlersRegister.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="YesNoHandler.cs" />
