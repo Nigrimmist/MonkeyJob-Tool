@@ -32,7 +32,11 @@ namespace Yushko.Modules
                 });
             }
         }
-        
+
+        public override string ModuleTitle
+        {
+            get { return "Интересный факт"; }
+        }
 
         public override DescriptionInfo ModuleDescription
         {
@@ -40,7 +44,7 @@ namespace Yushko.Modules
             {
                 return new DescriptionInfo()
                 {
-                    Description = "Интересный факт одной строкой"
+                    Description = "Интересный факт одной строкой с сайта know-that.ru"
                 };
             }
         }

@@ -242,8 +242,11 @@ namespace HelloBotCore
                                             CommandName = !string.IsNullOrEmpty(hnd.ProvidedTitle) ? hnd.ProvidedTitle : command,
                                             CommandType = ModuleType.Handler
                                         });
+
                                         
                                         hnd.HandleMessage(command, args, commandTempGuid);
+                                        
+                                        
                                     }
                                     catch (Exception ex)
                                     {

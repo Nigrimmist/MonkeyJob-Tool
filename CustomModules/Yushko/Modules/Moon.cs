@@ -32,7 +32,11 @@ namespace Yushko.Modules
                 });
             }
         }
-        
+
+        public override string ModuleTitle
+        {
+            get { return "Лунный календарь"; }
+        }
 
         public override DescriptionInfo ModuleDescription
         {
@@ -40,7 +44,7 @@ namespace Yushko.Modules
             {
                 return new DescriptionInfo()
                 {
-                    Description = "лунный календарь"
+                    Description = "Лунный календарь"
                 };
             }
         }

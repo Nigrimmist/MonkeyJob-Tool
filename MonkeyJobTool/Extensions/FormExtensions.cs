@@ -11,16 +11,26 @@ namespace MonkeyJobTool.Extensions
     {
         public static void ToTop(this Form form, bool isWithFocus=false)
         {
-            if (form.WindowState == FormWindowState.Minimized)
+            Action act = () =>
             {
-                form.WindowState = FormWindowState.Normal;
+                if (form.WindowState == FormWindowState.Minimized)
+                {
+                    form.WindowState = FormWindowState.Normal;
+                }
+                form.Show();
+                if (!isWithFocus)
+                    ShowInactiveTopmost(form);
+                else
+                    form.Activate();
+            };
+            if (form.InvokeRequired)
+            {
+                form.Invoke(act);
             }
-            form.Show();
-            if (!isWithFocus)
-                ShowInactiveTopmost(form);
             else
-                form.Activate();
-            
+            {
+                act();
+            }
         }
 
         private const int SW_SHOWNOACTIVATE = 4;

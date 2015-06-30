@@ -29,11 +29,15 @@ namespace Yushko.Modules
             {
                 return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("Курс валюты", new List<string>(){"курс","exrate"}),
+                    new CallCommandInfo("Курсы валют", new List<string>(){"курс","exrate"}),
                 });
             }
         }
 
+        public override string ModuleTitle
+        {
+            get { return "Курсы валют"; }
+        }
 
         public override DescriptionInfo ModuleDescription
         {
@@ -69,10 +73,23 @@ namespace Yushko.Modules
                                   "\r\nCHF - швейцарский франк" +
                                   "\r\nJPY - йен" +
                                   "\r\nIRR - иранских риалов",
-                    CommandScheme = "курс <кол-во> <код_валюты_из> " дописать
+                    CommandScheme = "курс <кол-во> <код_валюты_из> <код_валюты_в>",
+                    SamplesOfUsing = new List<string>()
+                    {
+                        "курс 1 usd byr",
+                        "курс ставкареф",
+                        "курс коды",
+                        "курс все",
+                        "курс help"
+                    }
 
                 };
             }
+        }
+
+        public override string IconInBase64
+        {
+            get { return "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAB1UlEQVRIid2VIUiDURSFv7CwsGAwGAyGCUaD4oKCgjCDgojBYBCTwbBoEAwiIoYFbSILSyqITUREZBZBsQgiC4YJIgaDiMLCb3jv8d9d735m1AsPtnvuOee9t3vf4L9FJ1ABcr/gjALHwDLQm1SYAW6BCHgGsi0aTHpOWDVgBxgH0rKwrArnWjRoUzy5dkLRFPAlgGug3xDr80vHpSF+BUyEgnMFThsiWYHr69syDI4COKCAbUN8BngTNW+4Ow4xbxjUgTzAggLalXgH8O6xKvAqPqd8TZfP3SutdYCSSFwYuw9d8o7rijSuyyIa23LMbyZ0YoRrX6oiUTQMhgW+4E/YJnavoyjqHwHuRGLDIKRwwyePnjSMBVH3AvAgEqtNSBncpMrjf+LuPsngCRp/mJJBaMcN3Zj/Poyb1sib6lhBXdGBSmS8SIgl4q4Jcepzm4bBntA71I4R8TX0eIIcsCquM8L3USWeJm7pyG+OEeBDmUTAoiAWFFbH7rg1VZcPwL5hsKvIuYSdB7yuTpsCGAJODIMbQ6QPGDTy3cCZ4s8HsMRP8bC6DDErZhWvIsGMLygTvzNhzbRokCV+Pmq4J8OMFO4KVnHdZD3bzSLnOYl/m38vvgExuNOCw1vhrQAAAABJRU5ErkJggg=="; }
         }
 
         public ExRatesSoapClient rates = new ExRatesSoapClient();

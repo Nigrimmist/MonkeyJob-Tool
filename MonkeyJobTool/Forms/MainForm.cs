@@ -184,7 +184,17 @@ namespace MonkeyJobTool.Forms
                         errorMessage = "Увы, какой-то из интернет-сервисов, необходимых для модуля - в данный момент не работает. Пожалуйста, попробуйте чуть позже.";
                     }
                 }
-                App.Instance.ShowInternalPopup("Ошибка модуля", errorMessage, TimeSpan.FromSeconds(10));
+                Action act = () =>
+                {
+                    SetLoading(false);
+                    App.Instance.ShowInternalPopup("Ошибка модуля", errorMessage, TimeSpan.FromSeconds(10));
+
+                };
+                if (this.InvokeRequired)
+                {
+                    this.Invoke(act);
+                }
+                else act();
             }
 
             if (module.ModuleType == ModuleType.Event)
@@ -353,14 +363,16 @@ namespace MonkeyJobTool.Forms
                 }
                 SetLoading(true);
 
-                if (!_bot.HandleMessage(command, new ClientCommandContext() { IsToBuffer = toBuffer }))
-                {
-                    App.Instance.ShowFixedPopup(AppConstants.AppName, "Команда не найдена", null);
+                
+                    if (!_bot.HandleMessage(command, new ClientCommandContext() {IsToBuffer = toBuffer}))
+                    {
+                        App.Instance.ShowFixedPopup(AppConstants.AppName, "Команда не найдена", null);
 
-                    SetLoading(false);
-                }
+                        SetLoading(false);
+                    }
+                
             }
-            
+
         }
 
         

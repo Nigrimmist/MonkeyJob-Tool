@@ -48,10 +48,6 @@
   <ItemGroup>
     <Compile Include="Modules\Kstati.cs" />
     <Compile Include="Modules\Moon.cs" />
-    <Compile Include="Modules\Horoscope.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Modules\Sorry.cs" />
     <Compile Include="Modules\ExchangeRate.cs" />
     <Compile Include="HandlerRegister.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

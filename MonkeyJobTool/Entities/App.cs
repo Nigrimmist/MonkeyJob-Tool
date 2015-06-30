@@ -248,7 +248,6 @@ namespace MonkeyJobTool.Entities
                     popup.Location = new Point(xPos, yPos);
                 }
 
-                
             }
         }
 

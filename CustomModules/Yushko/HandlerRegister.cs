@@ -12,16 +12,14 @@ namespace Yushko
             return new List<ModuleHandlerBase>()
             {
                 new ExchangeRate(),
-                new Sorry(),
-                //new Horoscope(),
-                new Moon(),
+               new Moon(),
                 new Kstati()
             };
         }
 
         public override AuthorInfo AuthorInfo
         {
-            get { return null; }
+            get { return new AuthorInfo("Dmitry Yushko","",""); }
         }
     }
 }
