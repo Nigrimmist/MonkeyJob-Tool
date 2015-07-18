@@ -49,11 +49,14 @@
     <Compile Include="DescriptionInfo.cs" />
     <Compile Include="Interfaces\IClient.cs" />
     <Compile Include="Interfaces\IBotCallback.cs" />
+    <Compile Include="Interfaces\ITrayClient.cs" />
     <Compile Include="ModuleBase.cs" />
     <Compile Include="Interfaces\ModuleRegister.cs" />
     <Compile Include="Interfaces\ITimerRegister.cs" />
     <Compile Include="MessageType.cs" />
     <Compile Include="ModuleEventBase.cs" />
+    <Compile Include="ModulePopupableBase.cs" />
+    <Compile Include="ModuleTrayBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ModuleHandlerBase.cs" />
   </ItemGroup>

@@ -40,6 +40,14 @@ namespace Nigrimmist.Modules
             };
         }
 
+        public override List<ModuleTrayBase> GetTrayModules()
+        {
+            return new List<ModuleTrayBase>()
+            {
+                new PingModule()
+            };
+        }
+
         public override AuthorInfo AuthorInfo
         {
             get { return new AuthorInfo("Nikita Vasileusky", "Nigrimmist@gmail.com", "Nigrimmist+MJ-ModuleLogs@gmail.com"); }

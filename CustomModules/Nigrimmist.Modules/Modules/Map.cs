@@ -28,6 +28,11 @@ namespace Nigrimmist.Modules.Modules
             get { return "Карта"; }
         }
 
+        public override string IconInBase64
+        {
+            get { return "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAACEElEQVRIia2VEXQcURSGPygEBgoLgUChUAgEAoHCQGAhsDBQCAwEFgKBhULOCRQWFgIDC4VAoVBYCAQDgcBCYKFQKBQChUKhUNjC/8/27eS9l9OT/ufMOTPv3vffe9/93x1I4wXwAfgG3AOfgJ2M/z9hF/gJLIGvwGe//wb6/yPAncmqYK0EfqCKiqeQb6Nsm4htaNvBUwJUJqkjttK2UbD28jHCzc73Lo9XUAEDYA7c+jlDwniABlh4cwE883eqB9+BHnBq0tp7DpDSrry26tPI5CNnMgb2nenShPfBdx0EPXPgED3gGLgGTnCW4Zn2gS07LDvPF2fb4j3wKnYs6Kgn7cs04lBGAtQdn5kzjqFyJTxH5xZDWEU3e4CbxD7QqazkPE84laSzbxNIoUF3KhugJYllD/kKLgmUNCOhYVRFHVkvyFewFnyG+jBBkn3N3wtYmqy07dzZLYBfaG7Nvb9BZz/oBligZu+ZZGKSuR2PTTxEd6QNfhdw9JAiK6T/tepCxy5uM7ZFxraqoCDfrFyAa1R5NsA2+nOlkKvugvQ0vcSXsI/mTwybdkxhzMNZ1GKKesIRal4MO8THSIsT4E3CdorUxDvgMOHURxMzhgJ4iwbeHrDRsR86AQbAR9TMG6TlI1TeEF2yHporIzTzW/meIwlPg/1jcw5sX8NGQNx40wL1YYI0nvtFFkHVV8DFH8wvjA5BxAlMAAAAAElFTkSuQmCC"; }
+        }
+
         public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get

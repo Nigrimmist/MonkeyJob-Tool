@@ -36,6 +36,8 @@ namespace MonkeyJobTool.Forms
         private readonly Bitmap _defaultIcon = Resources.monkey_highres_img;
         private readonly Bitmap _loadingIcon = Resources.loading;
         private bool _isFirstRun;
+        private object _trayIconLocker = new object();
+        private Dictionary<Guid, NotifyIcon> _trayModuleIcons = new Dictionary<Guid, NotifyIcon>();
 
         public MainForm()
         {
@@ -113,9 +115,8 @@ namespace MonkeyJobTool.Forms
             _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
             _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
             _autocomplete.OnTextChanged += _autocomplete_OnTextChanged;
-            this.Controls.Add(_autocomplete);
 
-            
+            this.Controls.Add(_autocomplete);
             this.ToTop(true);
             LogAnalytic();
         }
@@ -148,8 +149,11 @@ namespace MonkeyJobTool.Forms
                     _bot = new HelloBot(App.Instance.FolderSettingPath, AppConstants.AppVersion, botCommandPrefix: "", moduleFolderPath: App.Instance.ExecutionFolder);
                     _bot.OnErrorOccured +=BotOnOnErrorOccured;
                     _bot.OnMessageRecieved += BotOnMessageRecieved;
+                    _bot.OnTrayIconSetupRequired += OnTrayIconSetupRequired;
+                    _bot.OnTrayIconStateChangeRequested += OnTrayIconStateChangeRequested;
                     _bot.SetCurrentLanguage((Language) (int) App.Instance.AppConf.Language);
                     _bot.Start(App.Instance.AppConf.SystemData.DisabledModules);
+                    
                     App.Instance.Bot = _bot;
                     SetLoading(false);
                     if (afterInitActionClbck != null)
@@ -164,7 +168,33 @@ namespace MonkeyJobTool.Forms
             }).Start();
         }
 
-        private void BotOnOnErrorOccured(Exception exception, ModuleCommandInfoBase module)
+        private void OnTrayIconStateChangeRequested(Guid moduleId, Icon originalIcon, string text, Color? backgroundColor = null)
+        {
+            NotifyIcon notifyIcon;
+            lock (_trayIconLocker)
+            {
+                _trayModuleIcons.TryGetValue(moduleId, out notifyIcon);
+            }
+            if (notifyIcon != null)
+            {
+                notifyIcon.Icon = ImageHelper.GetIconWithNotificationCount(text, originalIcon, Color.White, Color.Black);
+            }
+        }
+
+        private void OnTrayIconSetupRequired(Guid moduleId, Icon icon, string title)
+        {
+            lock (_trayIconLocker)
+            {
+                _trayModuleIcons.Add(moduleId, new NotifyIcon
+                {
+                    Text = title,
+                    Icon = icon,
+                    Visible = true
+                });
+            }
+        }
+
+        private void BotOnOnErrorOccured(Exception exception, ModuleInfoBase module)
         {
             string errorMessage = "Неизвестная ошибка.";
             bool logError = true;
@@ -214,7 +244,7 @@ namespace MonkeyJobTool.Forms
 
         void Instance_OnNotificationCountChanged(int notificationCount)
         {
-            trayIcon.Icon = notificationCount > 0 ? GetIconWithNotificationCount(notificationCount) : Resources.MonkeyJob_ico;
+            trayIcon.Icon = notificationCount > 0 ? ImageHelper.GetIconWithNotificationCount(notificationCount.ToString(), Resources.MonkeyJob_ico, Color.OrangeRed, Color.White) : Resources.MonkeyJob_ico;
             tsCheckAllAsDisplayed.Visible = notificationCount > 0;
         }
 
@@ -516,31 +546,7 @@ namespace MonkeyJobTool.Forms
             trayIcon.ShowBalloonTip(30000);
         }
 
-        public static Icon GetIconWithNotificationCount(int notificationCount)
-        {
-            Icon createdIcon;
-            using (Bitmap bitmap = new Bitmap(32, 32))
-            {
-                Icon icon = Resources.MonkeyJob_ico;
-                using (Graphics graphics = Graphics.FromImage(bitmap))
-                {
-                    using (SolidBrush drawBrush = new SolidBrush(Color.White))
-                    {
-                        using (Font drawFont = new Font("Comic Sans MS", 14, FontStyle.Regular))
-                        {
-                            graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixel;
-                            graphics.DrawIcon(icon, 0, 0);
-                            int ellipseRadius = notificationCount < 10 ? 22 : 26;
-                            graphics.FillEllipse(new SolidBrush(Color.OrangeRed), notificationCount < 10?10:7, 12, ellipseRadius, ellipseRadius);
-                            graphics.DrawString(notificationCount.ToString(), drawFont, drawBrush, notificationCount<10?14:8, 10);
-                            createdIcon = Icon.FromHandle(bitmap.GetHicon());
-                        }
-                    }
-                }
-            }
-
-            return createdIcon;
-        }
+        
 
         private void tsCheckAllAsDisplayed_Click(object sender, EventArgs e)
         {

@@ -12,6 +12,11 @@ namespace HelloBotCommunication.Interfaces
         {
             return new List<ModuleEventBase>();
         }
+        public virtual List<ModuleTrayBase> GetTrayModules()
+        {
+            return new List<ModuleTrayBase>();
+        }
+
         public abstract AuthorInfo AuthorInfo { get; }
     }
 }

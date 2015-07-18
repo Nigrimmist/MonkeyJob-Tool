@@ -41,6 +41,13 @@ namespace HelloBotCore.Helpers
             return destImage;
         }
 
+        public static Icon ConvertoToIcon(Bitmap bmp)
+        {
+            bmp.MakeTransparent(Color.White);
+            System.IntPtr icH = bmp.GetHicon();
+            return Icon.FromHandle(icH);
+        }
+
         public static Image GetFromBase64(string base64String)
         {
             byte[] data = Convert.FromBase64String(base64String);

@@ -5,7 +5,7 @@ using HelloBotCommunication.Interfaces;
 
 namespace HelloBotCommunication
 {
-    public abstract class ModuleHandlerBase : ModuleBase
+    public abstract class ModuleHandlerBase : ModulePopupableBase
     {
         /// <summary>
         /// Call command list.

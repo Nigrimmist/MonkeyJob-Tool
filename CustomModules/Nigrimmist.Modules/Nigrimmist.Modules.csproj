@@ -59,6 +59,7 @@
     <Compile Include="Modules\Calculator.cs" />
     <Compile Include="Modules\Bash.cs" />
     <Compile Include="Modules\Diary.cs" />
+    <Compile Include="Modules\PingModule.cs" />
     <Compile Include="Modules\ShortLink.cs" />
     <Compile Include="Modules\Quote.cs" />
     <Compile Include="Modules\Advice.cs" />

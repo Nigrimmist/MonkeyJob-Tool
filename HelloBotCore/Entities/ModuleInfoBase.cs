@@ -9,7 +9,7 @@ using HelloBotCore.Helpers;
 
 namespace HelloBotCore.Entities
 {
-    public abstract class ModuleCommandInfoBase
+    public abstract class ModuleInfoBase
     {
         public bool IsEnabled { get; set; }
         public Guid Id { get; set; }
@@ -18,13 +18,12 @@ namespace HelloBotCore.Entities
         public string ModuleSystemName { get; set; }
         public string ProvidedTitle { get; set; }
         public Image Icon { get; set; }
-        public Color? BodyBackgroundColor { get; set; }
-        public Color? HeaderBackgroundColor { get; set; }
+        
         public AuthorInfo Author { get; set; }
         public Type ModuleSettingsType { get; set; }
         
 
-        public ModuleCommandInfoBase()
+        public ModuleInfoBase()
         {
             Id = Guid.NewGuid();
         }
@@ -34,7 +33,7 @@ namespace HelloBotCore.Entities
             return string.IsNullOrEmpty(this.ProvidedTitle) ? this.ModuleSystemName : this.ProvidedTitle;
         }
 
-        public void Init(string dllName, ModuleBase handlerModuleBase, IModuleClientHandler moduleClientHandler, AuthorInfo author)
+        public void Init(string dllName, ModuleBase handlerModuleBase, AuthorInfo author)
         {
             Version = handlerModuleBase.ModuleVersion;
             ProvidedTitle = handlerModuleBase.ModuleTitle;
@@ -46,12 +45,10 @@ namespace HelloBotCore.Entities
                 Icon = ImageHelper.ResizeImage(ImageHelper.GetFromBase64(handlerModuleBase.IconInBase64), 26, 26);
             }
 
-            BodyBackgroundColor = handlerModuleBase.BodyBackgroundColor;
-            HeaderBackgroundColor = handlerModuleBase.HeaderBackGroundColor;
+            
             Author = author;
             
-            IClient client = new ModuleToClientAdapter(moduleClientHandler, this);
-            handlerModuleBase.Init(client);
+            
         }
 
         public abstract ModuleType ModuleType { get; }

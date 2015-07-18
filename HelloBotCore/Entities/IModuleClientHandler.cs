@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using HelloBotCommunication;
@@ -9,12 +10,14 @@ namespace HelloBotCore.Entities
 {
     public interface IModuleClientHandler
     {
-        void SaveSettings<T>(ModuleCommandInfoBase commandInfo, T serializableSettingObject) where T : class;
-        T GetSettings<T>(ModuleCommandInfoBase commandInfo) where T : class;
-        void ShowMessage(Guid commandToken, ModuleCommandInfoBase commandInfo, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default);
+        void SaveSettings<T>(ModuleInfoBase info, T serializableSettingObject) where T : class;
+        T GetSettings<T>(ModuleInfoBase info) where T : class;
+        void ShowMessage(Guid commandToken, ModuleInfoBase info, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default);
         void RegisterUserReactionCallback(Guid commandToken, UserReactionToCommandType userCallbackType, Action callback);
         Language GetCurrentLanguage();
         double GetCurrentVersion();
         double GetUIClientVersion();
+        void SetTrayText(Guid trayToken, string text);
+        void SetTrayColor(Guid trayToken, Color color);
     }
 }

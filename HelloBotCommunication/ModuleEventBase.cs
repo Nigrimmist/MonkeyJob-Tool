@@ -7,11 +7,10 @@ using HelloBotCommunication.Interfaces;
 
 namespace HelloBotCommunication
 {
-    public abstract class ModuleEventBase : ModuleBase
+    public abstract class ModuleEventBase : ModulePopupableBase
     {
-
         /// <summary>
-        /// Required field for events. You OnFire method will be executed every "RunEvery" time + time, that will be elapsed for handle you OnFire method implementation.
+        /// Your OnFire method will be executed every "RunEvery" time + time, that will be elapsed for handle you OnFire method implementation.
         /// </summary>
         public abstract TimeSpan RunEvery { get; }
 
@@ -25,5 +24,7 @@ namespace HelloBotCommunication
         /// General event description
         /// </summary>
         public virtual string ModuleDescription { get { return null; } }
+
+        
     }
 }

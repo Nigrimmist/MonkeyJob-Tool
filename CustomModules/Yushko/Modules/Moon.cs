@@ -33,6 +33,11 @@ namespace Yushko.Modules
             }
         }
 
+        public override string IconInBase64
+        {
+            get { return "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABMklEQVRIibXWIUsDYRyA8Z+wsDCwyUDjugaRhQWbIgY/woIfQFBkwSrGBYNxQcEwwWAwyYJBm4hxYUFFxCoYX8PtYIzb7tydD/zLHe/z3MG9L0c6K2jjHgPUM6xJpYQmHhBGpotyXnkF12PigFZeMazhKkHeLkJeQT9B3h/ey81xgjxgvwj5Bt4T5J9YLiJwkyAPok8zNwt4mxC4KyJQnyAP6BURaE0JPGIub6AzJRBQ++/AXt7AWUrgC0t5ArspgYALzM8aqGYIBFzKfmSUcIKD+EIvY2SARop8VbRBg+jIB+sZA/G84hTbw7WbOBoRx4dkabR8+8dI2jSNUcVHQfLu+NPHNAqITJTH1PAyo7yTJo9ZxCGeM0i/h+KtLOJxytjB+fCtvvCDJ9G+aIl+aybyCyzO4UDqYWU/AAAAAElFTkSuQmCC"; }
+        }
+
         public override string ModuleTitle
         {
             get { return "Лунный календарь"; }

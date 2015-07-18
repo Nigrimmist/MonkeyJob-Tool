@@ -39,6 +39,11 @@ namespace Nigrimmist.Modules.Modules
             get { return 1.0; }
         }
 
+        public override string IconInBase64
+        {
+            get { return "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAB50lEQVRIia3VIWxUQRAG4E+cOIGoqDiBOIE4UYGoQCAqEIiKJiAqKhAViIqKCgTJkVQgKipOVFQ0oSQVFQgciIoKHEeCOIEAV4GoRNQgZnp3Cfu2j6Z/srl77/0zOzP77wx1dPECR5jgZ64xTrGJhRt8FNHBEBf4iJdYQj/Xcm48xp/kdto6v5fRfcCDFvwVnOVmvTbOz3H4PxEltvElfRSxIOq82/B9EU+xJspUwtsMsBjcvjjMEl6LMrzKACbJL+G45KePKzwsGKziJP8/zucuRtgo8LtCHIP5l7viUEvYw7pQzUFmcZibnTbY7CR3igmeNJDf4w2+iQPsmNX5c4PNQNwXREpXmlWzkBks5/OW0P2KyK4JF1IMffyoEOcxFKnfF1ksVrhnGYS+uXQq2BNa76fxoMq+xQZnc7/9FvzJdRAdXLr5mn9K7tcWzokeNT3XE2VNz2Md3zVfsHmsiTOa4rlZCe4CY9GB/3n5rGK0mkHUpElEf6EwJ3bwrmJ4JGbCeYXTE5Ivlntbvb5LopGtN3wfCOUcNjkY5roNHomynKrMkaEoU1t0zDrtpahAFUeiYxL9aS0j+iVSPzbLcoTf6Xhfi1F5vcFI1PBSKGZT9Jue6LZbol1vKM+OKg6EVLdFM7sT/AWSgmcooT1SZwAAAABJRU5ErkJggg=="; }
+        }
+
         public override ReadOnlyCollection<CallCommandInfo> CallCommandList
         {
             get

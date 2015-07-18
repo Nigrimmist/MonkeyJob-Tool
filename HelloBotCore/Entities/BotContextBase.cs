@@ -5,10 +5,9 @@ using System.Text;
 
 namespace HelloBotCore.Entities
 {
-    public enum ModuleType
+    public class BotContextBase 
     {
-        Handler,
-        Event,
-        Tray
+        public ModuleType ModuleType { get; set; }
+        public Guid ModuleId { get; set; }
     }
 }

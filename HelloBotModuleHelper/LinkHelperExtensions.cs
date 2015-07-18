@@ -15,10 +15,10 @@ namespace HelloBotModuleHelper
             string shortenerPostUrl = string.Format("http://tinyurl.com/create.php?source=indexpage&url={0}&submit=Make+TinyURL%21&alias=", Uri.EscapeUriString(url));
            
             HtmlReaderManager hrm = new HtmlReaderManager();
-            hrm.Get(shortenerPostUrl);
+            hrm.Post(shortenerPostUrl,"");
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(hrm.Html);
-            return doc.DocumentNode.SelectSingleNode("//blockquote[2]/b").InnerText;
+            return doc.DocumentNode.SelectSingleNode("//div[@class='indent']/b").InnerText;
         }
     }
 }

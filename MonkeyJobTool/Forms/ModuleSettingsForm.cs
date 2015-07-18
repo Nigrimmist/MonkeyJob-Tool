@@ -23,7 +23,7 @@ namespace MonkeyJobTool.Forms
 {
     public partial class ModuleSettingsForm : Form
     {
-        public ModuleCommandInfoBase Module { get; set; }
+        public ModuleInfoBase Module { get; set; }
         public string ModuleSettingsPath { get; set; }
 
         public ModuleSettingsForm()

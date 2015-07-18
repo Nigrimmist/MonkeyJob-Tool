@@ -53,5 +53,32 @@ namespace MonkeyJobTool.Helpers
                 return image;
             }
         }
+
+        public static Icon GetIconWithNotificationCount(string text, Icon sourceIcon, Color ellipseColor, Color textColor)
+        {
+            Icon createdIcon;
+            using (Bitmap bitmap = new Bitmap(32, 32))
+            {
+                Icon icon = sourceIcon;
+                using (Graphics graphics = Graphics.FromImage(bitmap))
+                {
+                    using (SolidBrush drawBrush = new SolidBrush(textColor))
+                    {
+                        using (Font drawFont = new Font("Comic Sans MS", 14, FontStyle.Regular))
+                        {
+                            graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixel;
+                            graphics.DrawIcon(icon, 0, 0);
+                            //todo:dynamic calculation params required
+                            int ellipseRadius = text.Length == 1 ? 22 : 26;
+                            graphics.FillEllipse(new SolidBrush(ellipseColor), text.Length == 1 ? 10 : 7, 12, ellipseRadius, ellipseRadius);
+                            graphics.DrawString(text, drawFont, drawBrush, text.Length == 1 ? 14 : 8, 10);
+                            createdIcon = Icon.FromHandle(bitmap.GetHicon());
+                        }
+                    }
+                }
+            }
+
+            return createdIcon;
+        }
     }
 }

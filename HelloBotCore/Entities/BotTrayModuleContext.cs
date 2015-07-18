@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
 namespace HelloBotCore.Entities
 {
-    public enum ModuleType
+    public class BotTrayModuleContext:BotContextBase
     {
-        Handler,
-        Event,
-        Tray
+        public Icon TrayIcon { get; set; }
     }
 }
