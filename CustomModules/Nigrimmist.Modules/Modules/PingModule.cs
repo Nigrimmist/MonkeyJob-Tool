@@ -99,7 +99,7 @@ namespace Nigrimmist.Modules.Modules
             [SettingsNameField("Url или IP для пинга")]
             public string PingTo { get; set; }
 
-            [SettingsNameField("Показывать цветные рамку")]
+            [SettingsNameField("Показывать цветные рамки")]
             public bool ShowBorder { get; set; }
 
             [SettingsNameField("Показывать зелёную рамку")]
