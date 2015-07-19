@@ -248,7 +248,7 @@ namespace MonkeyJobTool.Forms
         {
             foreach (var mod in App.Instance.Bot.AllModules.OrderByDescending(x=>x.ModuleType).ThenBy(x=>x.ModuleSystemName))
             {
-                AddModuleInfoToGrid(mod.GetModuleName(), mod.ModuleType == ModuleType.Handler ? "Команда" : "Событийный", mod.IsEnabled, mod.ModuleSystemName,mod.ModuleSettingsType!=null);
+                AddModuleInfoToGrid(mod.GetModuleName(), mod.GetTypeDescription(), mod.IsEnabled, mod.ModuleSystemName,mod.ModuleSettingsType!=null);
             }
             gridModules.Rows[0].Selected = true;
         }

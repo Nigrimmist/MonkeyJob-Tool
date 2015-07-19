@@ -21,7 +21,7 @@ namespace HelloBotCore.Entities
         
         public AuthorInfo Author { get; set; }
         public Type ModuleSettingsType { get; set; }
-        
+        public abstract ModuleType ModuleType { get; }
 
         public ModuleInfoBase()
         {
@@ -44,14 +44,11 @@ namespace HelloBotCore.Entities
             {
                 Icon = ImageHelper.ResizeImage(ImageHelper.GetFromBase64(handlerModuleBase.IconInBase64), 26, 26);
             }
-
             
             Author = author;
-            
-            
         }
 
-        public abstract ModuleType ModuleType { get; }
+        
 
         public virtual string GetDescriptionText()
         {
@@ -89,6 +86,26 @@ namespace HelloBotCore.Entities
         public string GetSettingFileFullPath(string settingFolder)
         {
             return settingFolder + "/" + ModuleSystemName + ".json";
+        }
+
+        public string GetTypeDescription()
+        {
+            string toReturn;
+            switch (ModuleType)
+            {
+                case ModuleType.Handler:
+                    toReturn = "Команда";
+                    break;
+                case ModuleType.Event:
+                    toReturn = "Событийный";
+                    break;
+                case ModuleType.Tray:
+                    toReturn = "Трей";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            return toReturn;
         }
     }
 

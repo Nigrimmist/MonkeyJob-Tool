@@ -46,11 +46,11 @@ namespace Nigrimmist.Modules.Modules
                 var pingResult = ping.Send(settings.PingTo);
                 if (pingResult != null)
                 {
-                    Random r = new Random();
+                    
                     if (pingResult.Status == System.Net.NetworkInformation.IPStatus.Success)
                     {
                         long result = pingResult.RoundtripTime;
-                        result = r.Next(0, 500);
+                        
                         Color? borderColor=null;
                         if (settings.ShowBorder)
                         {
