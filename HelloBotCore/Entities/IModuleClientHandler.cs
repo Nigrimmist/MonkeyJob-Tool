@@ -17,7 +17,6 @@ namespace HelloBotCore.Entities
         Language GetCurrentLanguage();
         double GetCurrentVersion();
         double GetUIClientVersion();
-        void SetTrayText(Guid trayToken, string text);
-        void SetTrayColor(Guid trayToken, Color color);
+        void UpdateTrayText(Guid token, string text, Color? textColor = null, Color? backgroundColor = null, int fontSize = 12, string fontName = "Tahoma", Color? iconBorderColor = null);
     }
 }

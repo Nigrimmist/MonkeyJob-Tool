@@ -65,14 +65,9 @@ namespace HelloBotCore.Entities
             get { return _moduleClientHandler.GetUIClientVersion(); }
         }
 
-        public void UpdateTrayText(Guid token,string text)
+        public void UpdateTrayText(Guid token, string text, Color? textColor = null, Color? backgroundColor = null, int fontSize = 12, string fontName = "Tahoma", Color? iconBorderColor = null)
         {
-            _moduleClientHandler.SetTrayText(token,text);
-        }
-
-        public void UpdateTrayColor(Guid token,Color color)
-        {
-            _moduleClientHandler.SetTrayColor(token,color);
+            _moduleClientHandler.UpdateTrayText(token,text,textColor,backgroundColor,fontSize,fontName,iconBorderColor);
         }
     }
 }

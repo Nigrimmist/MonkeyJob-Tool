@@ -8,7 +8,7 @@ namespace HelloBotCommunication.Interfaces
 {
     public interface ITrayClient : IClient
     {
-        void UpdateTrayText(Guid token,string text);
-        void UpdateTrayColor(Guid token,Color color);
+        void UpdateTrayText(Guid token, string text, Color? textColor = null, Color? backgroundColor = null, int fontSize = 12, string fontName="Tahoma", Color? iconBorderColor=null);
+        
     }
 }

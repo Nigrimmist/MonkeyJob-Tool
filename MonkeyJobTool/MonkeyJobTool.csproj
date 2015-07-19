@@ -321,6 +321,7 @@
     <None Include="Resources\help1.png" />
     <None Include="Resources\question %281%29.gif" />
     <None Include="Resources\settings_small.png" />
+    <None Include="Resources\MonkeyJob_16x16.ico" />
     <Content Include="Res\mj.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

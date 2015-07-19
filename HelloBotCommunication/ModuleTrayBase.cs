@@ -21,7 +21,7 @@ namespace HelloBotCommunication
         public abstract void OnFire(Guid trayModuleToken);
 
         /// <summary>
-        /// Your tray icon in base64 string. Should be 32x32 px. Can be in png format (transparency supported). Please, remove from result string "data:image/x-icon;base64," or similiar if exist. You can use http://xaviesteve.com//pro/base64.php or similiar to convert your icon to base64.
+        /// Your tray icon in base64 string. Should be 16x16 px. Can be in png format (transparency supported). Please, remove from result string "data:image/x-icon;base64," or similiar if exist. You can use http://xaviesteve.com//pro/base64.php or similiar to convert your icon to base64.
         /// </summary>
         public abstract string TrayIconIn64Base { get; }
 

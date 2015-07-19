@@ -54,8 +54,8 @@ namespace HelloBotCore
 
         public delegate void TrayIconSetupRequiredDelegate(Guid moduleId, Icon icon, string title);
         public event TrayIconSetupRequiredDelegate OnTrayIconSetupRequired;
-
-        public delegate void TrayIconStateChangeRequestedDelegate(Guid moduleId, Icon originalIcon, string text, Color? backgroundColor = null);
+        
+        public delegate void TrayIconStateChangeRequestedDelegate(Guid moduleId, Icon originalIcon, string text, Color? textColor = null, Color? backgroundColor = null, int fontSize = 12, string fontName="Tahoma", Color? iconBorderColor=null);
         public event TrayIconStateChangeRequestedDelegate OnTrayIconStateChangeRequested;
 
         /// <summary>
@@ -535,6 +535,16 @@ namespace HelloBotCore
                 
             }
         }
+
+        public void UpdateTrayText(Guid token, string text, Color? textColor = null, Color? backgroundColor = null, int fontSize = 12, string fontName = "Tahoma", Color? iconBorderColor = null)
+        {
+            var trayModuleContext = GetCommandContextByToken(token) as BotTrayModuleContext;
+            if (trayModuleContext != null)
+            {
+                if (OnTrayIconStateChangeRequested != null)
+                    OnTrayIconStateChangeRequested(trayModuleContext.ModuleId, trayModuleContext.TrayIcon, text,textColor,backgroundColor,fontSize,fontName,iconBorderColor);
+            }
+        }
         #endregion
 
         private BotContextBase GetCommandContextByToken(Guid commandToken)
@@ -600,25 +610,7 @@ namespace HelloBotCore
             return _currentUIClientVersion;
         }
 
-        public void SetTrayText(Guid trayToken, string text)
-        {
-            var trayModuleContext = GetCommandContextByToken(trayToken) as BotTrayModuleContext;
-            if (trayModuleContext != null)
-            {
-                if (OnTrayIconStateChangeRequested != null)
-                    OnTrayIconStateChangeRequested(trayModuleContext.ModuleId,trayModuleContext.TrayIcon, text);
-            }
-        }
-
-        public void SetTrayColor(Guid trayToken, Color color)
-        {
-            var trayModuleContext = GetCommandContextByToken(trayToken) as BotTrayModuleContext;
-            if (trayModuleContext != null)
-            {
-                if (OnTrayIconStateChangeRequested != null)
-                    OnTrayIconStateChangeRequested(trayModuleContext.ModuleId, trayModuleContext.TrayIcon, null, color);
-            }
-        }
+        
 
         public IEnumerable<ModuleEventInfo> Events { get { return _allModules.OfType<ModuleEventInfo>(); } }
         public IEnumerable<ModuleCommandInfo> EnabledCommands { get { return _allModules.OfType<ModuleCommandInfo>().Where(x=>x.IsEnabled); } }

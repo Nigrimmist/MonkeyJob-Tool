@@ -6,6 +6,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
 namespace MonkeyJobTool.Helpers
 {
@@ -54,24 +55,45 @@ namespace MonkeyJobTool.Helpers
             }
         }
 
-        public static Icon GetIconWithNotificationCount(string text, Icon sourceIcon, Color ellipseColor, Color textColor)
+        public static Icon GetIconWithNotificationCount(string text, Icon sourceIcon, Color? textColor = null, Color? backgroundColor = null, int fontSize = 12, string fontName = "Tahoma", Color? iconBorderColor = null, bool useEllipseAsBackground=false)
         {
             Icon createdIcon;
-            using (Bitmap bitmap = new Bitmap(32, 32))
+            using (Bitmap bitmap = new Bitmap(16, 16))
             {
                 Icon icon = sourceIcon;
                 using (Graphics graphics = Graphics.FromImage(bitmap))
                 {
-                    using (SolidBrush drawBrush = new SolidBrush(textColor))
+                    using (SolidBrush drawBrush = new SolidBrush(textColor??Color.White))
                     {
-                        using (Font drawFont = new Font("Comic Sans MS", 14, FontStyle.Regular))
+                        using (Font drawFont = new Font(fontName, fontSize, FontStyle.Regular))
                         {
-                            graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixel;
+
+                            graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
                             graphics.DrawIcon(icon, 0, 0);
-                            //todo:dynamic calculation params required
-                            int ellipseRadius = text.Length == 1 ? 22 : 26;
-                            graphics.FillEllipse(new SolidBrush(ellipseColor), text.Length == 1 ? 10 : 7, 12, ellipseRadius, ellipseRadius);
-                            graphics.DrawString(text, drawFont, drawBrush, text.Length == 1 ? 14 : 8, 10);
+                            if (useEllipseAsBackground)
+                            {
+                                int ellipseRadius = text.Length == 1 ? 22 : 26;
+                                graphics.FillEllipse(new SolidBrush(backgroundColor??Color.Black), text.Length == 1 ? 10 : 7, 12, ellipseRadius, ellipseRadius);
+                                graphics.DrawString(text, drawFont, drawBrush, text.Length == 1 ? 14 : 8, 10);
+                            }
+                            else
+                            {
+                                var measure = TextRenderer.MeasureText(text, drawFont);
+                                var x = sourceIcon.Width - measure.Width;
+
+                                if (x < -1)
+                                    x = -1;
+                                else
+                                    x += iconBorderColor.HasValue ? 3 : 4;
+
+                                if (backgroundColor.HasValue)
+                                    graphics.FillRectangle(new SolidBrush(backgroundColor.Value), x, sourceIcon.Height - measure.Height + 2, measure.Width, measure.Height - 1);
+                                graphics.DrawString(text, drawFont, drawBrush, x, sourceIcon.Height - measure.Height + 1);
+                                if(iconBorderColor.HasValue)
+                                    graphics.DrawRectangle(new Pen(iconBorderColor.Value,1), 0, 0, 15, 15);
+                                
+                            }
+                            
                             createdIcon = Icon.FromHandle(bitmap.GetHicon());
                         }
                     }

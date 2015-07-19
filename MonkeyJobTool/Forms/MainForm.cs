@@ -168,16 +168,19 @@ namespace MonkeyJobTool.Forms
             }).Start();
         }
 
-        private void OnTrayIconStateChangeRequested(Guid moduleId, Icon originalIcon, string text, Color? backgroundColor = null)
+        private void OnTrayIconStateChangeRequested(Guid moduleId, Icon originalIcon, string text, Color? textColor = null, Color? backgroundColor = null, int fontSize = 12, string fontName = "Tahoma", Color? iconBorderColor = null)
         {
-            NotifyIcon notifyIcon;
-            lock (_trayIconLocker)
+            if (!string.IsNullOrEmpty(text))
             {
-                _trayModuleIcons.TryGetValue(moduleId, out notifyIcon);
-            }
-            if (notifyIcon != null)
-            {
-                notifyIcon.Icon = ImageHelper.GetIconWithNotificationCount(text, originalIcon, Color.White, Color.Black);
+                NotifyIcon notifyIcon;
+                lock (_trayIconLocker)
+                {
+                    _trayModuleIcons.TryGetValue(moduleId, out notifyIcon);
+                }
+                if (notifyIcon != null)
+                {
+                    notifyIcon.Icon = ImageHelper.GetIconWithNotificationCount(text, originalIcon,textColor,backgroundColor,fontSize,fontName,iconBorderColor);
+                }
             }
         }
 
@@ -244,7 +247,7 @@ namespace MonkeyJobTool.Forms
 
         void Instance_OnNotificationCountChanged(int notificationCount)
         {
-            trayIcon.Icon = notificationCount > 0 ? ImageHelper.GetIconWithNotificationCount(notificationCount.ToString(), Resources.MonkeyJob_ico, Color.OrangeRed, Color.White) : Resources.MonkeyJob_ico;
+            trayIcon.Icon = notificationCount > 0 ? ImageHelper.GetIconWithNotificationCount(notificationCount.ToString(), Resources.MonkeyJob_16x16, Color.OrangeRed, Color.White,14,useEllipseAsBackground:true) : Resources.MonkeyJob_16x16;
             tsCheckAllAsDisplayed.Visible = notificationCount > 0;
         }
 

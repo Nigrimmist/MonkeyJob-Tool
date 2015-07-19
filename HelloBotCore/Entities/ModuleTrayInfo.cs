@@ -25,7 +25,7 @@ namespace HelloBotCore.Entities
             base.Init(dllName, trayModuleBase, author);
             if (!string.IsNullOrEmpty(trayModuleBase.TrayIconIn64Base))
             {
-                TrayIcon = ImageHelper.ConvertoToIcon(ImageHelper.ResizeImage(ImageHelper.GetFromBase64(trayModuleBase.TrayIconIn64Base), 32, 32));
+                TrayIcon = ImageHelper.ConvertoToIcon(ImageHelper.ResizeImage(ImageHelper.GetFromBase64(trayModuleBase.TrayIconIn64Base), 16, 16));
             }
 
             ITrayClient client = new ModuleToClientAdapter(moduleClientHandler, this);
