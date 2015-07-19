@@ -23,7 +23,7 @@ namespace HelloBotCommunication
         /// <summary>
         /// Your tray icon in base64 string. Should be 16x16 px. Can be in png format (transparency supported). Please, remove from result string "data:image/x-icon;base64," or similiar if exist. You can use http://xaviesteve.com//pro/base64.php or similiar to convert your icon to base64.
         /// </summary>
-        public abstract string TrayIconIn64Base { get; }
+        public abstract string TrayIconInBase64 { get; }
 
         /// <summary>
         /// Init method for retrieving client functionality if required. Will be called after constructor.

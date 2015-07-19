@@ -23,7 +23,7 @@ namespace MonkeyJobTool.Forms
         private TimeSpan? _timeToClose;
         private readonly object _sessionData;
         private TimeSpan _timeToTimerEventFire;
-        public bool AlreadyNotified { get; private set; }
+        public bool AlreadyNotified { get; set; }
 
         public delegate void OnPopupCloseDelegate(ClosePopupReasonType reason, object sessionData);
         public event OnPopupCloseDelegate OnPopupClosedBy;
@@ -78,11 +78,15 @@ namespace MonkeyJobTool.Forms
             pnlCloseHint.Top = pnlMain.Height - pnlCloseHint.Height-1;
             rtTitle.BackColor = pnlHeader.BackColor = TitleColor;
             this.BackColor = txtMessage.BackColor=  BodyColor;
-            
+
             if (_timeToClose.HasValue)
             {
                 _timeToTimerEventFire = _timeToClose.Value;
                 closeTimer.Start();
+            }
+            else
+            {
+                AlreadyNotified = true;
             }
         }
 

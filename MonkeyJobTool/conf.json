@@ -8,7 +8,8 @@
 	ShowDonateButton : true,
 	Language : 2,
 	SystemData : {
-		DisabledModules : []					
+		DisabledModules : ["Nigrimmist.Modules.PingModule"],
+		DoNotNotifyUntilDate : null	
 	},
 	DevelopmentModeEnabled : true
 }

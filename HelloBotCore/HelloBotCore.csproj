@@ -82,6 +82,10 @@
       <Project>{5b94e739-fad8-4a23-ab11-3edd24f57d35}</Project>
       <Name>HelloBotModuleHelper</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SharedHelper\SharedHelper.csproj">
+      <Project>{1eed6356-2e6b-460a-9be6-5e394be532b7}</Project>
+      <Name>SharedHelper</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

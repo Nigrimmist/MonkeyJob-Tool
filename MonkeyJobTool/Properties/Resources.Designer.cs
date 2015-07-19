@@ -223,6 +223,16 @@ namespace MonkeyJobTool.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
+        public static System.Drawing.Icon MonkeyJob_16x16_gray {
+            get {
+                object obj = ResourceManager.GetObject("MonkeyJob_16x16_gray", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
         public static System.Drawing.Icon MonkeyJob_ico {
             get {
                 object obj = ResourceManager.GetObject("MonkeyJob_ico", resourceCulture);
@@ -286,6 +296,16 @@ namespace MonkeyJobTool.Properties {
         public static System.Drawing.Bitmap settings_small {
             get {
                 object obj = ResourceManager.GetObject("settings_small", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Speaker_Muted_Mode_16 {
+            get {
+                object obj = ResourceManager.GetObject("Speaker_Muted_Mode_16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

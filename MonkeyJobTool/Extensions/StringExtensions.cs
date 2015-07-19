@@ -9,7 +9,6 @@ namespace MonkeyJobTool.Extensions
 {
     public static class StringExtensions
     {
-
         
     }
 }

@@ -33,7 +33,7 @@ namespace MonkeyJobTool.Entities
         private object _openedPopupsLock = new object();
         private MainForm _mainForm;
         private int _notificationCount;
-        private int NotificationCount
+        public int NotificationCount
         {
             get { return _notificationCount; }
             set
@@ -174,11 +174,18 @@ namespace MonkeyJobTool.Entities
             {
                 displayTime = TimeSpan.FromSeconds(10);
             }
-
+            if (AppConf.SystemData.DoNotNotify && popupType == PopupType.Notification)
+            {
+                //null bcse it will be hided and showing only by user request
+                displayTime = null;
+            }
             InfoPopup popup = new InfoPopup(popupType, title, text, displayTime, commandToken,icon,titleBackgroundColor,bodyBackgroundColor);
             popup.Width = _mainForm.Width;
             var totalPopupY = _openedPopups.Sum(x => x.Height);
-            popup.ToTop();
+            if (!AppConf.SystemData.DoNotNotify || popupType != PopupType.Notification)
+            {
+                popup.ToTop();
+            }
             popup.Location = new Point(_mainForm.Location.X, _mainForm.Location.Y - popup.Height - totalPopupY);
             popup.FormClosed += popup_FormClosed;
             popup.OnPopupClosedBy += PopupOnPopupClosedBy;
@@ -293,6 +300,17 @@ namespace MonkeyJobTool.Entities
                 if (_openedPopups.Any())
                 {
                     _openedPopups.Where(x=>x.AlreadyNotified).ToList().ForEach(p => p.Hide());
+                }
+            }
+        }
+
+        public void SetAllPopupsAsNotified()
+        {
+            lock (_openedPopupsLock)
+            {
+                if (_openedPopups.Any())
+                {
+                    _openedPopups.ForEach(p => p.AlreadyNotified=true);
                 }
             }
         }

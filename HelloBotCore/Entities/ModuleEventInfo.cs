@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using HelloBotCommunication;
 using HelloBotCommunication.Interfaces;
+using SharedHelper;
 
 namespace HelloBotCore.Entities
 {
@@ -40,14 +41,7 @@ namespace HelloBotCore.Entities
 
         public override string GetDescriptionText()
         {
-            string runEveryStr = string.Empty;
-
-            if (EventRunEvery.Days > 0) runEveryStr += EventRunEvery.Days+" д. ";
-            if (EventRunEvery.Hours > 0) runEveryStr += EventRunEvery.Hours + " ч. ";
-            if (EventRunEvery.Minutes > 0) runEveryStr += EventRunEvery.Minutes + " мин. ";
-            if (EventRunEvery.Seconds > 0) runEveryStr += EventRunEvery.Seconds + " сек.";
-
-            return "Запускается раз в " + runEveryStr;
+            return "Запускается раз в " + EventRunEvery.Humanize();
         }
     }
 }

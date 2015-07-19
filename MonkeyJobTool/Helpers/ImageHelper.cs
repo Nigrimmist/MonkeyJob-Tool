@@ -67,25 +67,23 @@ namespace MonkeyJobTool.Helpers
                     {
                         using (Font drawFont = new Font(fontName, fontSize, FontStyle.Regular))
                         {
+                            var measure = TextRenderer.MeasureText(text, drawFont);
+                            var x = sourceIcon.Width - measure.Width;
+                            if (x < -1)
+                                x = -1;
+                            else
+                                x += iconBorderColor.HasValue ? 3 : 4;
+
 
                             graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
                             graphics.DrawIcon(icon, 0, 0);
                             if (useEllipseAsBackground)
                             {
-                                int ellipseRadius = text.Length == 1 ? 22 : 26;
-                                graphics.FillEllipse(new SolidBrush(backgroundColor??Color.Black), text.Length == 1 ? 10 : 7, 12, ellipseRadius, ellipseRadius);
-                                graphics.DrawString(text, drawFont, drawBrush, text.Length == 1 ? 14 : 8, 10);
+                                graphics.FillEllipse(new SolidBrush(backgroundColor ?? Color.Black), x-4, sourceIcon.Height - measure.Height + 1, measure.Width, measure.Height);
+                                graphics.DrawString(text, drawFont, drawBrush, x-2, sourceIcon.Height - measure.Height + 1);
                             }
                             else
                             {
-                                var measure = TextRenderer.MeasureText(text, drawFont);
-                                var x = sourceIcon.Width - measure.Width;
-
-                                if (x < -1)
-                                    x = -1;
-                                else
-                                    x += iconBorderColor.HasValue ? 3 : 4;
-
                                 if (backgroundColor.HasValue)
                                     graphics.FillRectangle(new SolidBrush(backgroundColor.Value), x, sourceIcon.Height - measure.Height + 2, measure.Width, measure.Height - 1);
                                 graphics.DrawString(text, drawFont, drawBrush, x, sourceIcon.Height - measure.Height + 1);

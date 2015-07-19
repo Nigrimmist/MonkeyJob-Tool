@@ -290,6 +290,10 @@
       <Project>{f9500b18-085e-4a3d-b215-75ec409e05da}</Project>
       <Name>HelloBotCore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SharedHelper\SharedHelper.csproj">
+      <Project>{1eed6356-2e6b-460a-9be6-5e394be532b7}</Project>
+      <Name>SharedHelper</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -322,6 +326,10 @@
     <None Include="Resources\question %281%29.gif" />
     <None Include="Resources\settings_small.png" />
     <None Include="Resources\MonkeyJob_16x16.ico" />
+    <None Include="Resources\Mute_Sign_32.png" />
+    <None Include="Resources\Mute_Sign_16.png" />
+    <None Include="Resources\Speaker_Muted_Mode_16.png" />
+    <None Include="Resources\MonkeyJob_16x16_gray.ico" />
     <Content Include="Res\mj.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

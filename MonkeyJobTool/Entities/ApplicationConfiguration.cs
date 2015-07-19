@@ -43,7 +43,10 @@ namespace MonkeyJobTool.Entities
     public class SystemData
     {
         public List<string>  DisabledModules { get; set; }
+        public DateTime? DoNotNotifyUntilDate { get; set; }
 
+        [JsonIgnore]
+        public bool DoNotNotify {get { return DoNotNotifyUntilDate.HasValue && DoNotNotifyUntilDate > DateTime.UtcNow; }}
         public SystemData()
         {
             DisabledModules = new List<string>();

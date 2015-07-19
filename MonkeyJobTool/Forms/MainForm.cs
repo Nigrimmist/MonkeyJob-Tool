@@ -23,6 +23,7 @@ using MonkeyJobTool.Helpers;
 using MonkeyJobTool.Managers;
 using MonkeyJobTool.Properties;
 using Newtonsoft.Json;
+using SharedHelper;
 using Language = HelloBotCore.Entities.Language;
 
 namespace MonkeyJobTool.Forms
@@ -88,7 +89,7 @@ namespace MonkeyJobTool.Forms
                     }));
                     
                 });
-                
+                SetupNotifyOffMode();
 
             }
             catch (Exception ex)
@@ -160,6 +161,7 @@ namespace MonkeyJobTool.Forms
                     {
                         afterInitActionClbck();
                     }
+                    
                 }
                 catch (Exception ex)
                 {
@@ -245,10 +247,23 @@ namespace MonkeyJobTool.Forms
                 EmailHelper.SendModuleErrorEmail(exception, module.Author.EmailForLogs,"MonkeyJob error report for "+module.GetModuleName()+" module");
         }
 
+        
         void Instance_OnNotificationCountChanged(int notificationCount)
         {
-            trayIcon.Icon = notificationCount > 0 ? ImageHelper.GetIconWithNotificationCount(notificationCount.ToString(), Resources.MonkeyJob_16x16, Color.OrangeRed, Color.White,14,useEllipseAsBackground:true) : Resources.MonkeyJob_16x16;
+            UpdateTrayicon(notificationCount);
             tsCheckAllAsDisplayed.Visible = notificationCount > 0;
+        }
+
+        private void UpdateTrayicon(int? notificationCount=null)
+        {
+            if (!notificationCount.HasValue)
+                notificationCount = App.Instance.NotificationCount;
+            trayIcon.Icon = notificationCount > 0 ? ImageHelper.GetIconWithNotificationCount(notificationCount.Value.ToString(), GetCurrentClearTrayIcon(), Color.White, Color.OrangeRed, 6, useEllipseAsBackground: true) : GetCurrentClearTrayIcon();
+        }
+
+        private Icon GetCurrentClearTrayIcon()
+        {
+            return App.Instance.AppConf.SystemData.DoNotNotify ? Resources.MonkeyJob_16x16_gray : Resources.MonkeyJob_16x16;
         }
 
         void Instance_OnSettingsChanged()
@@ -263,6 +278,7 @@ namespace MonkeyJobTool.Forms
             if (!App.ApplicationIsActivated())
             {
                 HideMain();
+                App.Instance.HideAllPopupsAvailableForHiding();
                 App.Instance.CloseFixedPopup();
                 App.Instance.ReorderPopupsPositions();
             }
@@ -572,6 +588,84 @@ namespace MonkeyJobTool.Forms
                 e.Graphics.DrawLine(p, this.ClientSize.Width - borderSize, 0, this.ClientSize.Width - borderSize, this.ClientSize.Height - borderSize);
                 e.Graphics.DrawLine(p, this.ClientSize.Width - borderSize, this.ClientSize.Height - borderSize, 0, this.ClientSize.Height - borderSize);
             }
+        }
+
+        private void tsNotificationOffFiveMin_Click(object sender, EventArgs e)
+        {
+            SetDoNotNotifyStatus(TimeSpan.FromMinutes(5));
+        }
+
+        private void tsNotificationOffTenMin_Click(object sender, EventArgs e)
+        {
+            SetDoNotNotifyStatus(TimeSpan.FromMinutes(10));
+        }
+
+        private void tsNotificationOffThirtyMin_Click(object sender, EventArgs e)
+        {
+            SetDoNotNotifyStatus(TimeSpan.FromMinutes(30));
+        }
+
+        private void tsNotificationOffOneHourMin_Click(object sender, EventArgs e)
+        {
+            SetDoNotNotifyStatus(TimeSpan.FromHours(1));
+        }
+
+        private void tsNotificationOffBillionYears_Click(object sender, EventArgs e)
+        {
+            SetDoNotNotifyStatus(TimeSpan.FromDays(1234321)); 
+        }
+
+        private void SetDoNotNotifyStatus(TimeSpan timeToIgnoreAllMessages)
+        {
+            App.Instance.AppConf.SystemData.DoNotNotifyUntilDate = DateTime.UtcNow.Add(timeToIgnoreAllMessages);
+            App.Instance.AppConf.Save();
+            SetupNotifyOffMode();
+        }
+
+        private void SetupNotifyOffMode()
+        {
+            if (App.Instance.AppConf.SystemData.DoNotNotify)
+            {
+                tsCancelNotifyOff.Visible = true;
+                DoNotNotifyTimer.Start();
+                
+                App.Instance.SetAllPopupsAsNotified();
+                App.Instance.HideAllPopupsAvailableForHiding();
+            }
+            else
+            {
+                tsCancelNotifyOff.Visible = false;
+                DoNotNotifyTimer.Stop();
+                tsNotificationOff.Text = "Не тревожить";
+            }
+            UpdateTrayicon();
+        }
+
+        private void DoNotNotifyTimer_Tick(object sender, EventArgs e)
+        {
+            if (App.Instance.AppConf.SystemData.DoNotNotify && App.Instance.AppConf.SystemData.DoNotNotifyUntilDate.HasValue)
+            {
+                var ts = App.Instance.AppConf.SystemData.DoNotNotifyUntilDate.Value - DateTime.UtcNow;
+                if (ts.TotalDays < 1)
+                {
+                    tsNotificationOff.Text = "✓ Не тревожить (ещё " + ts.Humanize() + ")";
+                }
+                else
+                {
+                    tsNotificationOff.Text = "✓ Не тревожить";
+                }
+            }
+            else
+            {
+                SetupNotifyOffMode();
+            }
+        }
+
+        private void tsCancelNotifyOff_Click(object sender, EventArgs e)
+        {
+            App.Instance.AppConf.SystemData.DoNotNotifyUntilDate = null;
+            App.Instance.AppConf.Save();
+            SetupNotifyOffMode();
         }
     }
 }
