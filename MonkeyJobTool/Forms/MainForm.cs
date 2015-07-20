@@ -356,13 +356,16 @@ namespace MonkeyJobTool.Forms
         private string TryToReplaceCommand(string command, out bool replaceCountExceed)
         {
             int replaceChainCount = 0;
+            var commandReplacesToUse = new List<CommandReplace>();
+            commandReplacesToUse.AddRange(App.Instance.AppConf.CommandReplaces);
             replaceCountExceed = false;
             while (true)
             {
                 string toReturn = command;
-                var bestMatchReplace = App.Instance.AppConf.CommandReplaces.Where(x => command.StartsWith(x.From)).OrderByDescending(x => x.From.Length).FirstOrDefault();
+                var bestMatchReplace = commandReplacesToUse.Where(x => command.StartsWith(x.From + " ") || (command.StartsWith(x.From) && command.Length == x.From.Length)).OrderByDescending(x => x.From.Length).FirstOrDefault();
                 if (bestMatchReplace != null)
                 {
+                    commandReplacesToUse.Remove(bestMatchReplace);
                     var args = command.Substring(bestMatchReplace.From.Length);
                     if (args.Length == 0 || args.StartsWith(" ")) //not part of other word
                     {
