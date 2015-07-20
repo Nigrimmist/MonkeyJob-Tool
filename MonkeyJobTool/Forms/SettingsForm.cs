@@ -59,7 +59,7 @@ namespace MonkeyJobTool.Forms
            
         }
 
-        private Dictionary<string, Keys> specialKeys = new Dictionary<string, Keys>()
+        private Dictionary<string, Keys> _specialKeys = new Dictionary<string, Keys>()
         {
             {"", Keys.None},
             {"CTRL", Keys.Control},
@@ -67,7 +67,7 @@ namespace MonkeyJobTool.Forms
             {"SHIFT", Keys.Shift}
         };
 
-        private Dictionary<string, Keys> ordinalKeys = new Dictionary<string, Keys>()
+        private Dictionary<string, Keys> _ordinalKeys = new Dictionary<string, Keys>()
         {
             {"", Keys.None},
             {"Q", Keys.Q},
@@ -112,18 +112,18 @@ namespace MonkeyJobTool.Forms
 
         private void HotKeysDatabind()
         {
-            cmbKey1.DataSource = new BindingSource(specialKeys, null);
+            cmbKey1.DataSource = new BindingSource(_specialKeys, null);
             cmbKey1.DisplayMember = "Key";
             cmbKey1.ValueMember = "Value";
 
-            cmbKey2.DataSource = new BindingSource(specialKeys, null);
+            cmbKey2.DataSource = new BindingSource(_specialKeys, null);
             cmbKey2.DisplayMember = "Key";
             cmbKey2.ValueMember = "Value";
 
-            cmbKey3.DataSource = new BindingSource(ordinalKeys, null);
+            cmbKey3.DataSource = new BindingSource(_ordinalKeys, null);
             cmbKey3.DisplayMember = "Key";
             cmbKey3.ValueMember = "Value";
-
+            
             var openAppHotKeys = App.Instance.AppConf.HotKeys.ProgramOpen;
             var oahkParts = openAppHotKeys.Split('+');
             cmbKey3.SelectedIndex = cmbKey3.FindString(oahkParts.Last()); 
@@ -187,7 +187,7 @@ namespace MonkeyJobTool.Forms
             App.Instance.AppConf.ShowDonateButton = !chkIsHideDonateBtn.Checked;
             App.Instance.AppConf.AllowUsingGoogleAnalytics = !chkIsDenyCollectingStats.Checked;
             App.Instance.AppConf.AllowSendCrashReports = !chkDenyErrorInfoSend.Checked;
-            App.Instance.AppConf.HotKeys.ProgramOpen = string.Join("+", new List<string>() { cmbKey1.Text, cmbKey2.Text, cmbKey3.Text }.Where(x=>!string.IsNullOrEmpty(x)).ToArray());
+            App.Instance.AppConf.HotKeys.ProgramOpen = string.Join("+", new List<string>() { ((KeyValuePair<string, Keys>)cmbKey1.SelectedItem).Key, ((KeyValuePair<string, Keys>)cmbKey2.SelectedItem).Key, ((KeyValuePair<string, Keys>)cmbKey3.SelectedItem).Key }.Where(x => !string.IsNullOrEmpty(x)).ToArray());
             App.Instance.AppConf.CommandReplaces = GetCommandReplaces();
             App.Instance.AppConf.Save();
             App.Instance.ReInitHotKeys();

@@ -81,9 +81,8 @@ namespace HelloBotCore
             
         }
 
-        public void Start(List<string> disabledModules=null)
+        public void RunEventBasedModules()
         {
-            RegisterModules(disabledModules);
             RunEventModuleTimers();
             RunTrayModuleTimers();
         }
@@ -180,7 +179,7 @@ namespace HelloBotCore
             }
         }
 
-        private void RegisterModules(List<string> disabledModules=null)
+        public void RegisterModules(List<string> disabledModules=null)
         {
 
             var allModules = LoadModules(disabledModules);

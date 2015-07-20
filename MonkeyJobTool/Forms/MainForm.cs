@@ -74,18 +74,25 @@ namespace MonkeyJobTool.Forms
                 this.ShowInTaskbar = false;
                 this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
 
-                InitBot(() =>
+                InitBot((continueClbck) =>
                 {
                     this.Invoke(new MethodInvoker(delegate
                     {
                         if (_isFirstRun)
                         {
                             var firstRunSettingForm = new SettingsForm();
-                            firstRunSettingForm.Closed += (s, ev) => { Init(); };
+                            firstRunSettingForm.Closed += (s, ev) =>
+                            {
+                                Init();
+                                continueClbck();
+                            };
                             firstRunSettingForm.ShowDialog();
                         }
                         else
+                        {
                             Init();
+                            continueClbck(); 
+                        }
                     }));
                     
                 });
@@ -140,7 +147,7 @@ namespace MonkeyJobTool.Forms
         }
 
 
-        private void InitBot(Action afterInitActionClbck=null)
+        private void InitBot(Action<Action> afterInitActionClbck=null)
         {
             new Thread(() =>
             {
@@ -153,13 +160,17 @@ namespace MonkeyJobTool.Forms
                     _bot.OnTrayIconSetupRequired += OnTrayIconSetupRequired;
                     _bot.OnTrayIconStateChangeRequested += OnTrayIconStateChangeRequested;
                     _bot.SetCurrentLanguage((Language) (int) App.Instance.AppConf.Language);
-                    _bot.Start(App.Instance.AppConf.SystemData.DisabledModules);
+                    _bot.RegisterModules(App.Instance.AppConf.SystemData.DisabledModules);
                     
                     App.Instance.Bot = _bot;
                     SetLoading(false);
                     if (afterInitActionClbck != null)
                     {
-                        afterInitActionClbck();
+                        afterInitActionClbck(() =>{ _bot.RunEventBasedModules(); });
+                    }
+                    else
+                    {
+                        _bot.RunEventBasedModules();
                     }
                     
                 }
