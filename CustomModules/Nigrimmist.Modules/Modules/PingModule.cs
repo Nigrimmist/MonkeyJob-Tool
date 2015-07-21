@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using HelloBotCommunication;
 using HelloBotCommunication.Attributes.SettingAttributes;
@@ -41,32 +42,42 @@ namespace Nigrimmist.Modules.Modules
             var settings = _client.GetSettings<PingSettings>();
             if (settings != null)
             {
-                var ping = new System.Net.NetworkInformation.Ping();
-
-                var pingResult = ping.Send(settings.PingTo);
-                if (pingResult != null)
+                try
                 {
-                    if (pingResult.Status == System.Net.NetworkInformation.IPStatus.Success)
-                    {
-                        long result = pingResult.RoundtripTime;
-                        
-                        Color? borderColor=null;
-                        if (settings.ShowBorder)
-                        {
-                            if (result <= settings.GreenBorderBefore && settings.ShowGreenBorder)
-                                borderColor = Color.Green;
-                            else if (result >= settings.RedBorderAfter && settings.ShowRedBorder)
-                                borderColor = Color.DarkRed;
-                            else if (result > settings.GreenBorderBefore && result < settings.RedBorderAfter && settings.ShowYellowBorder)
-                                borderColor = Color.Gold;
-                        }
 
-                        _client.UpdateTrayText(trayModuleToken, result.ToString(), Color.White, Color.Black, 6, "Tahoma", borderColor);
-                    }
-                    else
+
+                    var ping = new System.Net.NetworkInformation.Ping();
+
+                    var pingResult = ping.Send(settings.PingTo);
+                    if (pingResult != null)
                     {
-                        _client.UpdateTrayText(trayModuleToken,"---", Color.White, Color.Black, 6, "Tahoma", settings.ShowBorder?Color.Red:(Color?)null);
+                        if (pingResult.Status == System.Net.NetworkInformation.IPStatus.Success)
+                        {
+                            long result = pingResult.RoundtripTime;
+
+                            Color? borderColor = null;
+                            if (settings.ShowBorder)
+                            {
+                                if (result <= settings.GreenBorderBefore && settings.ShowGreenBorder)
+                                    borderColor = Color.Green;
+                                else if (result >= settings.RedBorderAfter && settings.ShowRedBorder)
+                                    borderColor = Color.DarkRed;
+                                else if (result > settings.GreenBorderBefore && result < settings.RedBorderAfter && settings.ShowYellowBorder)
+                                    borderColor = Color.Gold;
+                            }
+
+                            _client.UpdateTrayText(trayModuleToken, result.ToString(), Color.White, Color.Black, 6, "Tahoma", borderColor);
+                        }
+                        else
+                        {
+                            _client.UpdateTrayText(trayModuleToken, "---", Color.White, Color.Black, 6, "Tahoma", settings.ShowBorder ? Color.Red : (Color?) null);
+                        }
                     }
+                    
+                }
+                catch (PingException ex)
+                {
+                    _client.UpdateTrayText(trayModuleToken, "ERR", Color.White, Color.Black, 6, "Tahoma", settings.ShowBorder ? Color.Red : (Color?) null);
                 }
             }
         }
