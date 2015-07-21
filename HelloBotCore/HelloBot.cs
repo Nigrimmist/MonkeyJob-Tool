@@ -118,6 +118,7 @@ namespace HelloBotCore
                             {
                                 OnErrorOccured(ex,tEv);
                             }
+                            Thread.Sleep(TimeSpan.FromSeconds(30));
                         }
                         
                         Thread.Sleep(tEv.EventRunEvery);
@@ -162,6 +163,7 @@ namespace HelloBotCore
                             {
                                 OnErrorOccured(ex, tTm);
                             }
+                            Thread.Sleep(TimeSpan.FromSeconds(30));
                         }
 
                         Thread.Sleep(tTm.EventRunEvery);

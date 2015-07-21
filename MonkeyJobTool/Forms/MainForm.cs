@@ -176,7 +176,7 @@ namespace MonkeyJobTool.Forms
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.ToString());
+                    LogManager.Error(ex, "InitBot error");
                 }
             }).Start();
         }
@@ -195,6 +195,7 @@ namespace MonkeyJobTool.Forms
                     notifyIcon.Icon = ImageHelper.GetIconWithNotificationCount(text, originalIcon,textColor,backgroundColor,fontSize,fontName,iconBorderColor);
                 }
             }
+            throw new ApplicationException("test");
         }
 
         private void OnTrayIconSetupRequired(Guid moduleId, Icon icon, string title)
@@ -242,12 +243,11 @@ namespace MonkeyJobTool.Forms
                 }
                 else act();
             }
-
-            if (module.ModuleType == ModuleType.Event)
+            else
             {
                 if (exception is WebException)
                 {
-                    if (!InternetChecker.IsInternetEnabled())
+                    if (InternetChecker.IsInternetEnabled())
                     {
                         logError = false;
                     }

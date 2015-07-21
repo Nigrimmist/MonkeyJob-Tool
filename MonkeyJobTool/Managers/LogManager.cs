@@ -21,8 +21,7 @@ namespace MonkeyJobTool.Managers
         {
             if (App.Instance.AppConf.DevelopmentModeEnabled)
                 MessageBox.Show(ex.ToString());
-
-            if (App.Instance.AppConf.AllowSendCrashReports && !App.Instance.AppConf.DevelopmentModeEnabled)
+            else if (App.Instance.AppConf.AllowSendCrashReports)
             {
                 if (_systemInfo == null)
                 {
