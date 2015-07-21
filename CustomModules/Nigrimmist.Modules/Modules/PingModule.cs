@@ -68,6 +68,8 @@ namespace Nigrimmist.Modules.Modules
                         _client.UpdateTrayText(trayModuleToken,"---", Color.White, Color.Black, 6, "Tahoma", settings.ShowBorder?Color.Red:(Color?)null);
                     }
                 }
+
+                
             }
         }
 

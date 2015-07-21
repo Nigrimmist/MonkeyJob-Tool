@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Mail;
 using System.Threading;
+using System.Windows.Forms;
 using MonkeyJobTool.Entities;
 using MonkeyJobTool.Managers;
 
@@ -37,6 +38,10 @@ namespace MonkeyJobTool.Helpers
                     };
                     smtp.Send(message);
                 }).Start();
+            }
+            else
+            {
+                MessageBox.Show(ex.ToString());
             }
         }
     }
