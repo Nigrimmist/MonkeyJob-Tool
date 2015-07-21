@@ -6,6 +6,7 @@ using System.Text;
 using HelloBotCommunication;
 using HelloBotCommunication.Interfaces;
 using HelloBotCore.Helpers;
+using SharedHelper;
 
 namespace HelloBotCore.Entities
 {

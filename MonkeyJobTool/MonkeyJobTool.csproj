@@ -174,7 +174,6 @@
     <Compile Include="Helpers\FormHelper.cs" />
     <Compile Include="Helpers\GoogleAnalytics.cs" />
     <Compile Include="Helpers\HtmlReaderManager.cs" />
-    <Compile Include="Helpers\ImageHelper.cs" />
     <Compile Include="HotKeyRegister.cs" />
     <Compile Include="KeyboardHook.cs" />
     <Compile Include="Forms\MainForm.cs">
