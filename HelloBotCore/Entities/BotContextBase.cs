@@ -9,5 +9,6 @@ namespace HelloBotCore.Entities
     {
         public ModuleType ModuleType { get; set; }
         public Guid ModuleId { get; set; }
+        public string CommandName { get; set; }
     }
 }

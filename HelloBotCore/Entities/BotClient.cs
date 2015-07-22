@@ -69,5 +69,12 @@ namespace HelloBotCore.Entities
         {
             _moduleClientHandler.UpdateTrayText(token,text,textColor,backgroundColor,fontSize,fontName,iconBorderColor);
         }
+
+        public void ShowTrayBalloonTip(Guid token, string text, TimeSpan? timeout = null, TooltipType? tooltipType = null)
+        {
+            _moduleClientHandler.ShowTrayBalloonTip(token, text, timeout, tooltipType);
+        }
+
+        
     }
 }

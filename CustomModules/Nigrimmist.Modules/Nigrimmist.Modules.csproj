@@ -55,9 +55,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\AppVersionInfo.cs" />
+    <Compile Include="Helpers\WeatherHelper.cs" />
     <Compile Include="Modules\BoobsModule.cs" />
     <Compile Include="Modules\Calculator.cs" />
     <Compile Include="Modules\Bash.cs" />
+    <Compile Include="Modules\WeatherTrayModule.cs" />
     <Compile Include="Modules\Diary.cs" />
     <Compile Include="Modules\PingModule.cs" />
     <Compile Include="Modules\ShortLink.cs" />

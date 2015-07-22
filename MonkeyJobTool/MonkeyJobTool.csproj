@@ -129,6 +129,7 @@
     <Compile Include="Entities\Language.cs" />
     <Compile Include="Entities\PopupType.cs" />
     <Compile Include="Entities\SelectableWordPart.cs" />
+    <Compile Include="Extensions\CustomExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\FormExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />

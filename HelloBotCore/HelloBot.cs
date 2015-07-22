@@ -58,6 +58,9 @@ namespace HelloBotCore
         public delegate void TrayIconStateChangeRequestedDelegate(Guid moduleId, Icon originalIcon, string text, Color? textColor = null, Color? backgroundColor = null, int fontSize = 12, string fontName="Tahoma", Color? iconBorderColor=null);
         public event TrayIconStateChangeRequestedDelegate OnTrayIconStateChangeRequested;
 
+        public delegate void OnTrayPopupShowRequestedDelegate(Guid moduleId, string title, string body, TimeSpan timeout, TooltipType tooltipType);
+        public event OnTrayPopupShowRequestedDelegate OnTrayBalloonTipRequested;
+
         /// <summary>
         /// Bot costructor
         /// </summary>
@@ -141,7 +144,8 @@ namespace HelloBotCore
                     {
                         ModuleType = ModuleType.Tray,
                         ModuleId = tTm.Id,
-                        TrayIcon = tTm.TrayIcon
+                        TrayIcon = tTm.TrayIcon,
+                        CommandName = tTm.GetModuleName(),
                     });
                     if (tTm.IsEnabled)
                     {
@@ -546,6 +550,19 @@ namespace HelloBotCore
                     OnTrayIconStateChangeRequested(trayModuleContext.ModuleId, trayModuleContext.TrayIcon, text,textColor,backgroundColor,fontSize,fontName,iconBorderColor);
             }
         }
+
+        public void ShowTrayBalloonTip(Guid token, string text, TimeSpan? timeout = null, TooltipType? tooltipType = null)
+        {
+            var trayModuleContext = GetCommandContextByToken(token) as BotTrayModuleContext;
+            if (trayModuleContext != null)
+            {
+                string title = trayModuleContext.CommandName;
+                
+                if (OnTrayBalloonTipRequested != null)
+                    OnTrayBalloonTipRequested(trayModuleContext.ModuleId, title, text, timeout??TimeSpan.FromSeconds(10),tooltipType??TooltipType.None);
+            }
+        }
+
         #endregion
 
         private BotContextBase GetCommandContextByToken(Guid commandToken)

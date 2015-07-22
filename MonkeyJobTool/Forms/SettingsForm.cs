@@ -123,13 +123,27 @@ namespace MonkeyJobTool.Forms
             cmbKey3.DataSource = new BindingSource(_ordinalKeys, null);
             cmbKey3.DisplayMember = "Key";
             cmbKey3.ValueMember = "Value";
-            
+
+
+            //hack ¯\_(ツ)_/¯
+            cmbKey1.SelectedIndex = 1;
+            cmbKey1.SelectedIndex = 0;
+
+            cmbKey2.SelectedIndex = 1;
+            cmbKey2.SelectedIndex = 0;
+
+            cmbKey3.SelectedIndex = 1;
+            cmbKey3.SelectedIndex = 0;
+
             var openAppHotKeys = App.Instance.AppConf.HotKeys.ProgramOpen;
             var oahkParts = openAppHotKeys.Split('+');
             cmbKey3.SelectedIndex = cmbKey3.FindString(oahkParts.Last()); 
             if(oahkParts.Length==3)
                 cmbKey2.SelectedIndex = cmbKey2.FindString(oahkParts[1]); 
             cmbKey1.SelectedIndex = cmbKey1.FindString(oahkParts.First());
+
+
+            
         }
 
          
@@ -187,7 +201,7 @@ namespace MonkeyJobTool.Forms
             App.Instance.AppConf.ShowDonateButton = !chkIsHideDonateBtn.Checked;
             App.Instance.AppConf.AllowUsingGoogleAnalytics = !chkIsDenyCollectingStats.Checked;
             App.Instance.AppConf.AllowSendCrashReports = !chkDenyErrorInfoSend.Checked;
-            App.Instance.AppConf.HotKeys.ProgramOpen = string.Join("+", new List<string>() { ((KeyValuePair<string, Keys>)cmbKey1.SelectedItem).Key, ((KeyValuePair<string, Keys>)cmbKey2.SelectedItem).Key, ((KeyValuePair<string, Keys>)cmbKey3.SelectedItem).Key }.Where(x => !string.IsNullOrEmpty(x)).ToArray());
+            App.Instance.AppConf.HotKeys.ProgramOpen = string.Join("+", new List<string>() { cmbKey1.Text,cmbKey2.Text ,cmbKey3.Text }.Where(x => !string.IsNullOrEmpty(x)).ToArray());
             App.Instance.AppConf.CommandReplaces = GetCommandReplaces();
             App.Instance.AppConf.Save();
             App.Instance.ReInitHotKeys();

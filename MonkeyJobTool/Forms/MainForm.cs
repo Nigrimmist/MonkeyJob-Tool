@@ -159,6 +159,7 @@ namespace MonkeyJobTool.Forms
                     _bot.OnMessageRecieved += BotOnMessageRecieved;
                     _bot.OnTrayIconSetupRequired += OnTrayIconSetupRequired;
                     _bot.OnTrayIconStateChangeRequested += OnTrayIconStateChangeRequested;
+                    _bot.OnTrayBalloonTipRequested += BotOnOnTrayBalloonTipRequested;
                     _bot.SetCurrentLanguage((Language) (int) App.Instance.AppConf.Language);
                     _bot.RegisterModules(App.Instance.AppConf.SystemData.DisabledModules);
                     
@@ -180,6 +181,24 @@ namespace MonkeyJobTool.Forms
                 }
             }).Start();
         }
+
+        private void BotOnOnTrayBalloonTipRequested(Guid moduleId, string title, string body, TimeSpan timeout, TooltipType tooltipType)
+        {
+            NotifyIcon notifyIcon;
+            lock (_trayIconLocker)
+            {
+                _trayModuleIcons.TryGetValue(moduleId, out notifyIcon);
+            }
+            if (notifyIcon != null)
+            {
+                Action act = () => notifyIcon.ShowBalloonTip((int)timeout.TotalMilliseconds, title, body, tooltipType.ToTooltipType());
+                if (this.InvokeRequired)
+                    this.Invoke(act);
+                else
+                    act();
+            }
+        }
+
 
         private void OnTrayIconStateChangeRequested(Guid moduleId, Icon originalIcon, string text, Color? textColor = null, Color? backgroundColor = null, int fontSize = 12, string fontName = "Tahoma", Color? iconBorderColor = null)
         {
