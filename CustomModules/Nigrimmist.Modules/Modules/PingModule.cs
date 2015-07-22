@@ -44,14 +44,12 @@ namespace Nigrimmist.Modules.Modules
             {
                 try
                 {
-
-
-                    var ping = new System.Net.NetworkInformation.Ping();
+                    var ping = new Ping();
 
                     var pingResult = ping.Send(settings.PingTo);
                     if (pingResult != null)
                     {
-                        if (pingResult.Status == System.Net.NetworkInformation.IPStatus.Success)
+                        if (pingResult.Status == IPStatus.Success)
                         {
                             long result = pingResult.RoundtripTime;
 

@@ -192,10 +192,14 @@ namespace MonkeyJobTool.Forms
                 }
                 if (notifyIcon != null)
                 {
-                    notifyIcon.Icon = ImageHelper.GetIconWithNotificationCount(text, originalIcon,textColor,backgroundColor,fontSize,fontName,iconBorderColor);
+                    Action act = () => notifyIcon.Icon = ImageHelper.GetIconWithNotificationCount(text, originalIcon,textColor,backgroundColor,fontSize,fontName,iconBorderColor);
+                    if (this.InvokeRequired)
+                        this.Invoke(act);
+                    else
+                        act();
                 }
             }
-            throw new ApplicationException("test");
+            
         }
 
         private void OnTrayIconSetupRequired(Guid moduleId, Icon icon, string title)
@@ -265,11 +269,22 @@ namespace MonkeyJobTool.Forms
             tsCheckAllAsDisplayed.Visible = notificationCount > 0;
         }
 
-        private void UpdateTrayicon(int? notificationCount=null)
+        private void UpdateTrayicon(int? notificationCount = null)
         {
             if (!notificationCount.HasValue)
                 notificationCount = App.Instance.NotificationCount;
-            trayIcon.Icon = notificationCount > 0 ? ImageHelper.GetIconWithNotificationCount(notificationCount.Value.ToString(), GetCurrentClearTrayIcon(), Color.White, Color.OrangeRed, 6, useEllipseAsBackground: true) : GetCurrentClearTrayIcon();
+            Action act =
+                () =>
+                    trayIcon.Icon =
+                        notificationCount > 0
+                            ? ImageHelper.GetIconWithNotificationCount(notificationCount.Value.ToString(), GetCurrentClearTrayIcon(), Color.White, Color.OrangeRed, 6, useEllipseAsBackground: true)
+                            : GetCurrentClearTrayIcon();
+            if (InvokeRequired)
+                Invoke(act);
+            else
+                act();
+
+
         }
 
         private Icon GetCurrentClearTrayIcon()
