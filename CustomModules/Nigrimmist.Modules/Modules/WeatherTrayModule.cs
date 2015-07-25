@@ -33,8 +33,6 @@ namespace Nigrimmist.Modules.Modules
             var settings = _client.GetSettings<WeatherTraySettings>();
             if (settings != null && !string.IsNullOrEmpty(settings.City))
             {
-                
-
                 HtmlReaderManager hrm = new HtmlReaderManager();
 
                 try

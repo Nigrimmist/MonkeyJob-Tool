@@ -47,6 +47,7 @@
     <Compile Include="CallCommandInfo.cs" />
     <Compile Include="ClientLanguage.cs" />
     <Compile Include="DescriptionInfo.cs" />
+    <Compile Include="Interfaces\IBaseClient.cs" />
     <Compile Include="Interfaces\IClient.cs" />
     <Compile Include="Interfaces\IBotCallback.cs" />
     <Compile Include="Interfaces\ITrayClient.cs" />

@@ -9,6 +9,7 @@ namespace HelloBotCore.Entities
     {
         public double ModuleVersion { get; set; }
         public T ModuleData { get; set; }
+        public DateTime? LastRunDate { get; set; }
 
         public ModuleSettings(double moduleVersion, T moduleData)
         {
@@ -21,6 +22,7 @@ namespace HelloBotCore.Entities
     {
         public double ModuleVersion { get; set; }
         public object ModuleData { get; set; }
+        public DateTime? LastRunDate { get; set; }
 
         public ModuleSettings(double moduleVersion, object moduleData)
         {
