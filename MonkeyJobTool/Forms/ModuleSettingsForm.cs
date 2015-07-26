@@ -281,7 +281,7 @@ namespace MonkeyJobTool.Forms
             {
                 string fullPath = Module.GetSettingFileFullPath(App.Instance.FolderSettingPath);
                 object moduleSettings;
-                ModuleSettings ms = new ModuleSettings(Module.Version, null);
+                ModuleSettings ms;
                 if (!File.Exists(fullPath))
                 {
                     moduleSettings = Activator.CreateInstance(Module.ModuleSettingsType);
@@ -294,7 +294,8 @@ namespace MonkeyJobTool.Forms
                     moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.ModuleSettingsType);
                 }
 
-                ms.ModuleData = FillObjectFromUI(moduleSettings);
+                ms = new ModuleSettings(Module.Version, Module.ActualSettingsModuleVersion, FillObjectFromUI(moduleSettings));
+                
                 var json = JsonConvert.SerializeObject(ms, Formatting.Indented);
                 File.WriteAllText(fullPath, json);
                 this.Close();

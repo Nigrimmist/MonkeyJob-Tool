@@ -33,17 +33,23 @@
             this.cmbKey1 = new System.Windows.Forms.ComboBox();
             this.cmbKey2 = new System.Windows.Forms.ComboBox();
             this.cmbKey3 = new System.Windows.Forms.ComboBox();
-            this.tsCommands = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.TPCommandReplace = new System.Windows.Forms.TabControl();
+            this.TPGeneral = new System.Windows.Forms.TabPage();
+            this.hsSendErrorReport = new MonkeyJobTool.Controls.HelpTooltip();
+            this.chkDenyErrorInfoSend = new System.Windows.Forms.CheckBox();
+            this.htDonateBtn = new MonkeyJobTool.Controls.HelpTooltip();
+            this.htStatsCollect = new MonkeyJobTool.Controls.HelpTooltip();
             this.chkIsDenyCollectingStats = new System.Windows.Forms.CheckBox();
             this.chkIsHideDonateBtn = new System.Windows.Forms.CheckBox();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.TPHotkeys = new System.Windows.Forms.TabPage();
+            this.htHotKey = new MonkeyJobTool.Controls.HelpTooltip();
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.htReplace = new MonkeyJobTool.Controls.HelpTooltip();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.pnlCommandReplaces = new System.Windows.Forms.FlowLayoutPanel();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.TPModuleSettings = new System.Windows.Forms.TabPage();
             this.btnEnabledDisableModule = new System.Windows.Forms.Button();
             this.gridModules = new System.Windows.Forms.DataGridView();
             this.ModuleName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -51,17 +57,11 @@
             this.colIsEnabled = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.settingsCol = new System.Windows.Forms.DataGridViewImageColumn();
             this.btnSaveConfig = new System.Windows.Forms.Button();
-            this.htDonateBtn = new MonkeyJobTool.Controls.HelpTooltip();
-            this.htStatsCollect = new MonkeyJobTool.Controls.HelpTooltip();
-            this.htHotKey = new MonkeyJobTool.Controls.HelpTooltip();
-            this.htReplace = new MonkeyJobTool.Controls.HelpTooltip();
-            this.hsSendErrorReport = new MonkeyJobTool.Controls.HelpTooltip();
-            this.chkDenyErrorInfoSend = new System.Windows.Forms.CheckBox();
-            this.tsCommands.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
+            this.TPCommandReplace.SuspendLayout();
+            this.TPGeneral.SuspendLayout();
+            this.TPHotkeys.SuspendLayout();
             this.tabPage3.SuspendLayout();
-            this.tabPage4.SuspendLayout();
+            this.TPModuleSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridModules)).BeginInit();
             this.SuspendLayout();
             // 
@@ -103,34 +103,68 @@
             this.cmbKey3.Size = new System.Drawing.Size(55, 21);
             this.cmbKey3.TabIndex = 3;
             // 
-            // tsCommands
+            // TPCommandReplace
             // 
-            this.tsCommands.Controls.Add(this.tabPage1);
-            this.tsCommands.Controls.Add(this.tabPage2);
-            this.tsCommands.Controls.Add(this.tabPage3);
-            this.tsCommands.Controls.Add(this.tabPage4);
-            this.tsCommands.Location = new System.Drawing.Point(13, 13);
-            this.tsCommands.Name = "tsCommands";
-            this.tsCommands.SelectedIndex = 0;
-            this.tsCommands.Size = new System.Drawing.Size(580, 240);
-            this.tsCommands.TabIndex = 4;
+            this.TPCommandReplace.Controls.Add(this.TPGeneral);
+            this.TPCommandReplace.Controls.Add(this.TPHotkeys);
+            this.TPCommandReplace.Controls.Add(this.tabPage3);
+            this.TPCommandReplace.Controls.Add(this.TPModuleSettings);
+            this.TPCommandReplace.Location = new System.Drawing.Point(13, 13);
+            this.TPCommandReplace.Name = "TPCommandReplace";
+            this.TPCommandReplace.SelectedIndex = 0;
+            this.TPCommandReplace.Size = new System.Drawing.Size(580, 240);
+            this.TPCommandReplace.TabIndex = 4;
             // 
-            // tabPage1
+            // TPGeneral
             // 
-            this.tabPage1.Controls.Add(this.hsSendErrorReport);
-            this.tabPage1.Controls.Add(this.chkDenyErrorInfoSend);
-            this.tabPage1.Controls.Add(this.htDonateBtn);
-            this.tabPage1.Controls.Add(this.htStatsCollect);
-            this.tabPage1.Controls.Add(this.chkIsDenyCollectingStats);
-            this.tabPage1.Controls.Add(this.chkIsHideDonateBtn);
-            this.tabPage1.Controls.Add(this.chkIsWithWindowsStart);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(572, 214);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Общие";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.TPGeneral.Controls.Add(this.hsSendErrorReport);
+            this.TPGeneral.Controls.Add(this.chkDenyErrorInfoSend);
+            this.TPGeneral.Controls.Add(this.htDonateBtn);
+            this.TPGeneral.Controls.Add(this.htStatsCollect);
+            this.TPGeneral.Controls.Add(this.chkIsDenyCollectingStats);
+            this.TPGeneral.Controls.Add(this.chkIsHideDonateBtn);
+            this.TPGeneral.Controls.Add(this.chkIsWithWindowsStart);
+            this.TPGeneral.Location = new System.Drawing.Point(4, 22);
+            this.TPGeneral.Name = "TPGeneral";
+            this.TPGeneral.Padding = new System.Windows.Forms.Padding(3);
+            this.TPGeneral.Size = new System.Drawing.Size(572, 214);
+            this.TPGeneral.TabIndex = 0;
+            this.TPGeneral.Text = "Общие";
+            this.TPGeneral.UseVisualStyleBackColor = true;
+            // 
+            // hsSendErrorReport
+            // 
+            this.hsSendErrorReport.AutoSize = true;
+            this.hsSendErrorReport.Location = new System.Drawing.Point(334, 84);
+            this.hsSendErrorReport.Name = "hsSendErrorReport";
+            this.hsSendErrorReport.Size = new System.Drawing.Size(19, 19);
+            this.hsSendErrorReport.TabIndex = 6;
+            // 
+            // chkDenyErrorInfoSend
+            // 
+            this.chkDenyErrorInfoSend.AutoSize = true;
+            this.chkDenyErrorInfoSend.Location = new System.Drawing.Point(6, 84);
+            this.chkDenyErrorInfoSend.Name = "chkDenyErrorInfoSend";
+            this.chkDenyErrorInfoSend.Size = new System.Drawing.Size(322, 17);
+            this.chkDenyErrorInfoSend.TabIndex = 5;
+            this.chkDenyErrorInfoSend.Text = "Запретить отсылать информацию об ошибках программы";
+            this.chkDenyErrorInfoSend.UseVisualStyleBackColor = true;
+            // 
+            // htDonateBtn
+            // 
+            this.htDonateBtn.AutoSize = true;
+            this.htDonateBtn.Location = new System.Drawing.Point(255, 38);
+            this.htDonateBtn.Name = "htDonateBtn";
+            this.htDonateBtn.Size = new System.Drawing.Size(19, 19);
+            this.htDonateBtn.TabIndex = 4;
+            // 
+            // htStatsCollect
+            // 
+            this.htStatsCollect.AutoSize = true;
+            this.htStatsCollect.Location = new System.Drawing.Point(370, 61);
+            this.htStatsCollect.Name = "htStatsCollect";
+            this.htStatsCollect.Size = new System.Drawing.Size(19, 19);
+            this.htStatsCollect.TabIndex = 3;
             // 
             // chkIsDenyCollectingStats
             // 
@@ -152,20 +186,28 @@
             this.chkIsHideDonateBtn.Text = "Скрыть кнопку \"Сказать спасибо\" из трея";
             this.chkIsHideDonateBtn.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
+            // TPHotkeys
             // 
-            this.tabPage2.Controls.Add(this.htHotKey);
-            this.tabPage2.Controls.Add(this.label1);
-            this.tabPage2.Controls.Add(this.cmbKey1);
-            this.tabPage2.Controls.Add(this.cmbKey3);
-            this.tabPage2.Controls.Add(this.cmbKey2);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(572, 214);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Хоткеи";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.TPHotkeys.Controls.Add(this.htHotKey);
+            this.TPHotkeys.Controls.Add(this.label1);
+            this.TPHotkeys.Controls.Add(this.cmbKey1);
+            this.TPHotkeys.Controls.Add(this.cmbKey3);
+            this.TPHotkeys.Controls.Add(this.cmbKey2);
+            this.TPHotkeys.Location = new System.Drawing.Point(4, 22);
+            this.TPHotkeys.Name = "TPHotkeys";
+            this.TPHotkeys.Padding = new System.Windows.Forms.Padding(3);
+            this.TPHotkeys.Size = new System.Drawing.Size(572, 214);
+            this.TPHotkeys.TabIndex = 1;
+            this.TPHotkeys.Text = "Хоткеи";
+            this.TPHotkeys.UseVisualStyleBackColor = true;
+            // 
+            // htHotKey
+            // 
+            this.htHotKey.AutoSize = true;
+            this.htHotKey.Location = new System.Drawing.Point(318, 14);
+            this.htHotKey.Name = "htHotKey";
+            this.htHotKey.Size = new System.Drawing.Size(19, 19);
+            this.htHotKey.TabIndex = 5;
             // 
             // label1
             // 
@@ -189,6 +231,14 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Сокращения команд";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // htReplace
+            // 
+            this.htReplace.AutoSize = true;
+            this.htReplace.Location = new System.Drawing.Point(395, 43);
+            this.htReplace.Name = "htReplace";
+            this.htReplace.Size = new System.Drawing.Size(19, 19);
+            this.htReplace.TabIndex = 6;
             // 
             // label3
             // 
@@ -220,17 +270,17 @@
             this.pnlCommandReplaces.TabIndex = 0;
             this.pnlCommandReplaces.WrapContents = false;
             // 
-            // tabPage4
+            // TPModuleSettings
             // 
-            this.tabPage4.Controls.Add(this.btnEnabledDisableModule);
-            this.tabPage4.Controls.Add(this.gridModules);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(572, 214);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "Управление модулями";
-            this.tabPage4.UseVisualStyleBackColor = true;
+            this.TPModuleSettings.Controls.Add(this.btnEnabledDisableModule);
+            this.TPModuleSettings.Controls.Add(this.gridModules);
+            this.TPModuleSettings.Location = new System.Drawing.Point(4, 22);
+            this.TPModuleSettings.Name = "TPModuleSettings";
+            this.TPModuleSettings.Padding = new System.Windows.Forms.Padding(3);
+            this.TPModuleSettings.Size = new System.Drawing.Size(572, 214);
+            this.TPModuleSettings.TabIndex = 3;
+            this.TPModuleSettings.Text = "Управление модулями";
+            this.TPModuleSettings.UseVisualStyleBackColor = true;
             // 
             // btnEnabledDisableModule
             // 
@@ -316,77 +366,28 @@
             this.btnSaveConfig.UseVisualStyleBackColor = false;
             this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
             // 
-            // htDonateBtn
-            // 
-            this.htDonateBtn.AutoSize = true;
-            this.htDonateBtn.Location = new System.Drawing.Point(255, 38);
-            this.htDonateBtn.Name = "htDonateBtn";
-            this.htDonateBtn.Size = new System.Drawing.Size(19, 19);
-            this.htDonateBtn.TabIndex = 4;
-            // 
-            // htStatsCollect
-            // 
-            this.htStatsCollect.AutoSize = true;
-            this.htStatsCollect.Location = new System.Drawing.Point(370, 61);
-            this.htStatsCollect.Name = "htStatsCollect";
-            this.htStatsCollect.Size = new System.Drawing.Size(19, 19);
-            this.htStatsCollect.TabIndex = 3;
-            // 
-            // htHotKey
-            // 
-            this.htHotKey.AutoSize = true;
-            this.htHotKey.Location = new System.Drawing.Point(318, 14);
-            this.htHotKey.Name = "htHotKey";
-            this.htHotKey.Size = new System.Drawing.Size(19, 19);
-            this.htHotKey.TabIndex = 5;
-            // 
-            // htReplace
-            // 
-            this.htReplace.AutoSize = true;
-            this.htReplace.Location = new System.Drawing.Point(395, 43);
-            this.htReplace.Name = "htReplace";
-            this.htReplace.Size = new System.Drawing.Size(19, 19);
-            this.htReplace.TabIndex = 6;
-            // 
-            // hsSendErrorReport
-            // 
-            this.hsSendErrorReport.AutoSize = true;
-            this.hsSendErrorReport.Location = new System.Drawing.Point(334, 84);
-            this.hsSendErrorReport.Name = "hsSendErrorReport";
-            this.hsSendErrorReport.Size = new System.Drawing.Size(19, 19);
-            this.hsSendErrorReport.TabIndex = 6;
-            // 
-            // chkDenyErrorInfoSend
-            // 
-            this.chkDenyErrorInfoSend.AutoSize = true;
-            this.chkDenyErrorInfoSend.Location = new System.Drawing.Point(6, 84);
-            this.chkDenyErrorInfoSend.Name = "chkDenyErrorInfoSend";
-            this.chkDenyErrorInfoSend.Size = new System.Drawing.Size(322, 17);
-            this.chkDenyErrorInfoSend.TabIndex = 5;
-            this.chkDenyErrorInfoSend.Text = "Запретить отсылать информацию об ошибках программы";
-            this.chkDenyErrorInfoSend.UseVisualStyleBackColor = true;
-            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(602, 296);
             this.Controls.Add(this.btnSaveConfig);
-            this.Controls.Add(this.tsCommands);
+            this.Controls.Add(this.TPCommandReplace);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SettingsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Настройки";
             this.Load += new System.EventHandler(this.SettingsForm_Load);
-            this.tsCommands.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
+            this.Shown += new System.EventHandler(this.SettingsForm_Shown);
+            this.TPCommandReplace.ResumeLayout(false);
+            this.TPGeneral.ResumeLayout(false);
+            this.TPGeneral.PerformLayout();
+            this.TPHotkeys.ResumeLayout(false);
+            this.TPHotkeys.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
-            this.tabPage4.ResumeLayout(false);
+            this.TPModuleSettings.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gridModules)).EndInit();
             this.ResumeLayout(false);
 
@@ -398,9 +399,9 @@
         private System.Windows.Forms.ComboBox cmbKey1;
         private System.Windows.Forms.ComboBox cmbKey2;
         private System.Windows.Forms.ComboBox cmbKey3;
-        private System.Windows.Forms.TabControl tsCommands;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabControl TPCommandReplace;
+        private System.Windows.Forms.TabPage TPGeneral;
+        private System.Windows.Forms.TabPage TPHotkeys;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnSaveConfig;
         private System.Windows.Forms.TabPage tabPage3;
@@ -408,7 +409,7 @@
         private System.Windows.Forms.CheckBox chkIsHideDonateBtn;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.TabPage TPModuleSettings;
         private System.Windows.Forms.DataGridView gridModules;
         private System.Windows.Forms.Button btnEnabledDisableModule;
         private System.Windows.Forms.CheckBox chkIsDenyCollectingStats;

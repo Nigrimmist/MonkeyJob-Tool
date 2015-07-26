@@ -16,6 +16,7 @@ namespace HelloBotCore.Entities
         public Guid Id { get; set; }
         public DescriptionInfo CommandDescription { get; set; }
         public double Version { get; set; }
+        public double ActualSettingsModuleVersion { get; set; }
         public string ModuleSystemName { get; set; }
         public string ProvidedTitle { get; set; }
         public Image Icon { get; set; }
@@ -37,6 +38,7 @@ namespace HelloBotCore.Entities
         public void Init(string dllName, ModuleBase handlerModuleBase, AuthorInfo author)
         {
             Version = handlerModuleBase.ModuleVersion;
+            ActualSettingsModuleVersion = handlerModuleBase.ActualSettingsModuleVersion;
             ProvidedTitle = handlerModuleBase.ModuleTitle;
             var handType = handlerModuleBase.GetType();
             ModuleSystemName = dllName + "." + handType.Name;
