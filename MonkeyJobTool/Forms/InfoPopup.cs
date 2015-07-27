@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -163,6 +164,14 @@ namespace MonkeyJobTool.Forms
                     e.Graphics.DrawLine(p, pnlMain.ClientSize.Width - borderSize, pnlMain.ClientSize.Height - borderSize, 0, pnlMain.ClientSize.Height - borderSize);
                 
                 
+            }
+        }
+
+        private void InfoPopup_Deactivate(object sender, EventArgs e)
+        {
+            if (!App.ApplicationIsActivated())
+            {
+                this.Hide();
             }
         }
         

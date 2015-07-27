@@ -59,6 +59,7 @@
     <Compile Include="Modules\BoobsModule.cs" />
     <Compile Include="Modules\Calculator.cs" />
     <Compile Include="Modules\Bash.cs" />
+    <Compile Include="Modules\MemoryUsageTrayModule.cs" />
     <Compile Include="Modules\WeatherTrayModule.cs" />
     <Compile Include="Modules\Diary.cs" />
     <Compile Include="Modules\PingModule.cs" />

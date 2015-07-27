@@ -6,8 +6,10 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using MonkeyJobTool.Entities;
+using MonkeyJobTool.Helpers;
 using MonkeyJobTool.Managers;
 using MonkeyJobTool.Properties;
 
@@ -129,6 +131,11 @@ namespace MonkeyJobTool.Forms
         private void DonateForm_Activated(object sender, EventArgs e)
         {
             
+        }
+
+        private void DonateListForm_Shown(object sender, EventArgs e)
+        {
+            new Thread(GoogleAnalytics.LogOpenDonateListForm).Start();
         }
 
         
