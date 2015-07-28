@@ -270,7 +270,7 @@ namespace MonkeyJobTool.Forms
             {
                 if (exception is WebException)
                 {
-                    if (InternetChecker.IsInternetEnabled())
+                    if (!InternetChecker.IsInternetEnabled())
                     {
                         logError = false;
                     }
