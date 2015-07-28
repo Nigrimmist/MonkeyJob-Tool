@@ -147,6 +147,7 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "InfoPopup";
+            this.Deactivate += new System.EventHandler(this.InfoPopup_Deactivate);
             this.Load += new System.EventHandler(this.InfoPopup_Load);
             ((System.ComponentModel.ISupportInitialize)(this.IconPic)).EndInit();
             this.pnlHeader.ResumeLayout(false);

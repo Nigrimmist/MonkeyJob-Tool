@@ -6,14 +6,23 @@ namespace HelloBotCommunication
     public abstract class ModuleBase
     {
         /// <summary>
-        /// Using for settings version tracking.
+        /// Please, override it if any new functionality provided to your code
         /// </summary>
         public virtual double ModuleVersion
         {
             get { return 1.0; }
         }
 
-        
+
+        /// <summary>
+        /// Please, setup it to current module version if your settings are incompatible with previous version.
+        /// </summary>
+        public virtual double ActualSettingsModuleVersion
+        {
+            get { return 1.0; }
+        }
+
+
         /// <summary>
         /// Will be displayed in UI title. If null, title will be retrieved from command, otherwise from  module assembly
         /// </summary>

@@ -45,7 +45,8 @@ namespace Nigrimmist.Modules
             return new List<ModuleTrayBase>()
             {
                 new PingModule(),
-                new WeatherTrayModule()
+                new WeatherTrayModule(),
+                new MemoryUsageTrayModule()
             };
         }
 

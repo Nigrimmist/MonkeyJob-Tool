@@ -14,6 +14,21 @@ namespace MonkeyJobTool.Helpers
         private const string GATrackId = "UA-38211218-5";
         private static Random _rnd = new Random();
 
+        public static void LogOpenDonateListForm()
+        {
+            GACall(GATrackId, "donate_list_open");
+        }
+
+        public static void LogDonateLinkClicked()
+        {
+            GACall(GATrackId, "donate_click");
+        }
+
+        public static void LogOpenDonateForm()
+        {
+            GACall(GATrackId, "donate_open");
+        }
+
         public static void LogFirstUse()
         {
             GACall(GATrackId, "first_run");

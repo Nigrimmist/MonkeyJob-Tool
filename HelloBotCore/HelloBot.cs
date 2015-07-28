@@ -241,7 +241,9 @@ namespace HelloBotCore
                 foreach (Type type in typesInAssembly)
                 {
                     object obj = Activator.CreateInstance(type);
+
                     
+
                     var modules = ((ModuleRegister)obj).GetModules().Select(module =>
                     {
                         var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == module.GetType());
@@ -437,7 +439,7 @@ namespace HelloBotCore
         {
             lock (_commandDictLocks[info.Id])
             {
-                var settings = new ModuleSettings<T>(info.Version, serializableSettingObject);
+                var settings = new ModuleSettings<T>(info.Version,info.ActualSettingsModuleVersion, serializableSettingObject);
                 var json = JsonConvert.SerializeObject(settings, Formatting.Indented);
                 File.WriteAllText(info.GetSettingFileFullPath(_settingsFolderAbsolutePath), json);
             }
@@ -645,6 +647,29 @@ namespace HelloBotCore
         public void EnableModule(string moduleSystemName)
         {
             AllModules.Single(x => x.ModuleSystemName == moduleSystemName).IsEnabled = true;
+        }
+
+        public List<ModuleInfoBase> GetIncompatibleSettingModules()
+        {
+            List<ModuleInfoBase> toReturn = new List<ModuleInfoBase>();
+            foreach (ModuleInfoBase module in AllModules.Where(x=>x.ModuleSettingsType!=null))
+            {
+                lock (_commandDictLocks[module.Id])
+                {
+                    string fullPath = module.GetSettingFileFullPath(_settingsFolderAbsolutePath);
+                    if (File.Exists(fullPath))
+                    {
+                        string data = File.ReadAllText(fullPath);
+                        var settings = JsonConvert.DeserializeObject<ModuleSettings>(data);
+                        if (settings.SettingsVersion < module.ActualSettingsModuleVersion)
+                        {
+                            toReturn.Add(module);
+                        }
+                    }
+                    
+                }
+            }
+            return toReturn;
         }
     }
 }

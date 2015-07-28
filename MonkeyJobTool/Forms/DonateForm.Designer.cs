@@ -242,6 +242,7 @@ namespace MonkeyJobTool.Forms
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "фыв";
             this.Load += new System.EventHandler(this.DonateRequisitesForm_Load);
+            this.Shown += new System.EventHandler(this.DonateForm_Shown);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.DonateRequisitesForm_Paint);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).EndInit();

@@ -30,7 +30,7 @@ namespace Nigrimmist.Modules.Modules
 
         public override string ModuleDescription
         {
-            get { return "Оповещения о новых дискуссиях, u-mail'ах и комментариях на сайте Diary.ru"; }
+            get { return "Оповещения о новых дискуссиях, u-mail'ах и комментариях с сайта Diary.ru"; }
         }
 
         public override TimeSpan RunEvery

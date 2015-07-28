@@ -18,10 +18,13 @@ namespace MonkeyJobTool.Forms
 {
     public partial class SettingsForm : Form
     {
-       private List<CommandReplaceBlock> _replaceBlocks = new List<CommandReplaceBlock>();
+        private List<CommandReplaceBlock> _replaceBlocks = new List<CommandReplaceBlock>();
+        public List<ModuleInfoBase> ChangedModules { get; set; }
+
 
         public SettingsForm()
         {
+            ChangedModules = new List<ModuleInfoBase>();
             InitializeComponent();
         }
         
@@ -208,6 +211,7 @@ namespace MonkeyJobTool.Forms
             App.Instance.NotifyAboutSettingsChanged();
             this.Close();
         }
+
         private void AppShortcutToStartup()
         {
             string linkName = AppConstants.AppName;
@@ -260,17 +264,27 @@ namespace MonkeyJobTool.Forms
         #region command grid
         private void DatabindCommandGrid()
         {
-            foreach (var mod in App.Instance.Bot.AllModules.OrderByDescending(x=>x.ModuleType).ThenBy(x=>x.ModuleSystemName))
+            var orderedModules = App.Instance.Bot.AllModules.OrderByDescending(x => ChangedModules.Contains(x)).ThenByDescending(x=>x.ModuleType).ThenBy(x => x.ModuleSystemName).ToList();
+
+            foreach (var mod in orderedModules)
             {
-                AddModuleInfoToGrid(mod.GetModuleName(), mod.GetTypeDescription(), mod.IsEnabled, mod.ModuleSystemName,mod.ModuleSettingsType!=null);
+                Color? rowColor = null;
+                if(ChangedModules.Any(x=>x.Id==mod.Id))
+                    rowColor = Color.PaleVioletRed;
+                
+                AddModuleInfoToGrid(mod.GetModuleName(), mod.GetTypeDescription(), mod.IsEnabled, mod.ModuleSystemName, mod.ModuleSettingsType != null,rowColor);
             }
+
             gridModules.Rows[0].Selected = true;
         }
 
-        private void AddModuleInfoToGrid(string name, string type, bool enabled, string uniqueName, bool isWithSettings)
+        private void AddModuleInfoToGrid(string name, string type, bool enabled, string uniqueName, bool isWithSettings, Color? rowColor=null)
         {
             DataGridViewRow r = new DataGridViewRow {ErrorText = uniqueName};
-            
+            if (rowColor.HasValue)
+            {
+                r.DefaultCellStyle.BackColor = rowColor.Value;
+            }
             r.Cells.Add(new DataGridViewTextBoxCell()
             {
                 Value = name,
@@ -362,9 +376,6 @@ namespace MonkeyJobTool.Forms
         }
         #endregion
 
-        
-
-
         private void btnEnabledDisableModule_Click(object sender, EventArgs e)
         {
             var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
@@ -418,6 +429,16 @@ namespace MonkeyJobTool.Forms
             if (_commandHelpCommand != null)
             {
                 _commandHelpCommand.Hide();
+            }
+        }
+
+        private void SettingsForm_Shown(object sender, EventArgs e)
+        {
+            if (ChangedModules.Any())
+            {
+                TPCommandReplace.SelectedTab = TPModuleSettings;
+                MessageBox.Show("Внимание!\r\nСледующие модули изменили свои настройки ввиду новой версии модуля, проверьте пожалуйста, что все ваши настройки верны для этих модулей. Изменённые настройки модулей подсвечены красным цветом.\r\n" +
+                                "Для того, чтобы это сообщение больше не появлялось, зайдите в настройки и пересохраните их в обновлённых модулях.", AppConstants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 

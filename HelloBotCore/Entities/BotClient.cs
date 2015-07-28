@@ -8,7 +8,7 @@ using HelloBotCommunication.Interfaces;
 
 namespace HelloBotCore.Entities
 {
-    public class ModuleToClientAdapter : ITrayClient, IBotCallback
+    public class ModuleToClientAdapter : ITrayClient, IBotCallback, IClient
     {
         private IModuleClientHandler _moduleClientHandler;
         private ModuleInfoBase _moduleInfo;

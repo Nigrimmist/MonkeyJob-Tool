@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -76,17 +77,19 @@ namespace MonkeyJobTool.Forms
 
                 InitBot((continueClbck) =>
                 {
+                    var changedSettingModules = _bot.GetIncompatibleSettingModules();
                     this.Invoke(new MethodInvoker(delegate
                     {
-                        if (_isFirstRun)
+                        if (_isFirstRun || changedSettingModules.Any())
                         {
-                            var firstRunSettingForm = new SettingsForm();
-                            firstRunSettingForm.Closed += (s, ev) =>
+                            var settingForm = new SettingsForm();
+                            settingForm.ChangedModules = changedSettingModules;
+                            settingForm.Closed += (s, ev) =>
                             {
                                 Init();
                                 continueClbck();
                             };
-                            firstRunSettingForm.ShowDialog();
+                            settingForm.ShowDialog();
                         }
                         else
                         {
@@ -319,6 +322,7 @@ namespace MonkeyJobTool.Forms
         private bool _isHelpBalloonDisplayed;
         void MainForm_Deactivate(object sender, EventArgs e)
         {
+            
             //hack check. Required in case when user click right click to popup to close it. We not hide main form. But hide if another application get focus.
             if (!App.ApplicationIsActivated())
             {
@@ -715,5 +719,7 @@ namespace MonkeyJobTool.Forms
             App.Instance.AppConf.Save();
             SetupNotifyOffMode();
         }
+
+
     }
 }
