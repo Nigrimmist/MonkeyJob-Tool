@@ -35,9 +35,9 @@ namespace Nigrimmist.Modules.Modules
 
                 Color? borderColor = null;
 
-                if (percentFree > 80)
+                if (percentOccupied > 80)
                     borderColor = Color.DarkRed;
-                else if (percentFree > 70)
+                else if (percentOccupied > 70)
                     borderColor = Color.Orange;
                 
                 _client.UpdateTrayText(trayModuleToken, (int)percentOccupied + "%", Color.White, Color.Black, 6, "Tahoma", borderColor);

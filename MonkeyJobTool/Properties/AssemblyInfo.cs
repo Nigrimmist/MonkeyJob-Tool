@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCompany("Nigrimmist")]
 [assembly: AssemblyProduct("MonkeyJob Tool")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2015")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("Nigrimmist")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
