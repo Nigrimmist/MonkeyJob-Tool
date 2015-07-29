@@ -153,17 +153,13 @@ namespace MonkeyJobTool.Forms
         private void pnlMain_Paint(object sender, PaintEventArgs e)
         {
             int borderSize = 1;
-            
+
             using (Pen p = new Pen(Color.Black, borderSize))
             {
-                
-                    e.Graphics.DrawLine(p, 0, 0, 0, pnlMain.ClientSize.Height);
-                    e.Graphics.DrawLine(p, 0, 0, pnlMain.ClientSize.Width, 0);
-                    e.Graphics.DrawLine(p, pnlMain.ClientSize.Width - borderSize, 0, pnlMain.ClientSize.Width - borderSize, pnlMain.ClientSize.Height - borderSize);
-
-                    e.Graphics.DrawLine(p, pnlMain.ClientSize.Width - borderSize, pnlMain.ClientSize.Height - borderSize, 0, pnlMain.ClientSize.Height - borderSize);
-                
-                
+                e.Graphics.DrawLine(p, 0, 0, 0, pnlMain.ClientSize.Height);
+                e.Graphics.DrawLine(p, 0, 0, pnlMain.ClientSize.Width, 0);
+                e.Graphics.DrawLine(p, pnlMain.ClientSize.Width - borderSize, 0, pnlMain.ClientSize.Width - borderSize, pnlMain.ClientSize.Height - borderSize);
+                e.Graphics.DrawLine(p, pnlMain.ClientSize.Width - borderSize, pnlMain.ClientSize.Height - borderSize, 0, pnlMain.ClientSize.Height - borderSize);
             }
         }
 

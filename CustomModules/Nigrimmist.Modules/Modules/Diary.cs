@@ -74,7 +74,8 @@ namespace Nigrimmist.Modules.Modules
                     int newDiscussions;
                     int newComments;
 
-                    GetNotifies(hrm.Html, out newUmails, out newComments, out newDiscussions);
+                    string goToUrl= "http://diary.ru";
+                    GetNotifies(hrm.Html, out newUmails, out newComments, out newDiscussions,ref goToUrl);
                     StringBuilder sbMessage = new StringBuilder();
                     if (newUmails > 0 && diary.CheckUmails)
                     {
@@ -96,7 +97,7 @@ namespace Nigrimmist.Modules.Modules
 
                         _client.ShowMessage(eventToken, toReturn).OnClick(() =>
                         {
-                            _client.ShowMessage(eventToken, "http://diary.ru", answerType: AnswerBehaviourType.OpenLink);
+                            _client.ShowMessage(eventToken, goToUrl, answerType: AnswerBehaviourType.OpenLink);
                         });
                     }
                 }
@@ -140,13 +141,13 @@ namespace Nigrimmist.Modules.Modules
             return true;
         }
 
-        private void GetNotifies(string html, out int newUmails, out int newComments, out int newDiscussions)
+        private void GetNotifies(string html, out int newUmails, out int newComments, out int newDiscussions, ref string goToUrl)
         {
             //html = html.Replace("\r", "").Replace("\n", "").Replace("\t", ""); ;
             newUmails = 0;
             newComments = 0;
             newDiscussions = 0;
-
+            
 
             HtmlDocument htmlDoc = new HtmlDocument();
             htmlDoc.OptionFixNestedTags = true;
@@ -156,19 +157,23 @@ namespace Nigrimmist.Modules.Modules
             if (href != null)
             {
                 newUmails = Convert.ToInt32(href.InnerText);
+                goToUrl = href.Attributes["href"].Value;
             }
-
-            var comNode =
-                htmlDoc.DocumentNode.SelectSingleNode("//li[@id='new_comments_count']/*/a[1]");
-
-            if (comNode != null)
-                newComments = Convert.ToInt32(comNode.InnerText);
-
+            
             var disNode =
                 htmlDoc.DocumentNode.SelectSingleNode("//a[@id='menuNewDescussions'][1]");
             if (disNode != null)
             {
                 newDiscussions = Convert.ToInt32(disNode.InnerText);
+                goToUrl = disNode.Attributes["href"].Value;
+            }
+
+            var comNode = htmlDoc.DocumentNode.SelectSingleNode("//li[@id='new_comments_count']/*/a[1]");
+
+            if (comNode != null)
+            {
+                newComments = Convert.ToInt32(comNode.InnerText);
+                goToUrl = comNode.Attributes["href"].Value;
             }
         }
 
