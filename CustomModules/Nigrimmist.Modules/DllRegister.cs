@@ -27,7 +27,8 @@ namespace Nigrimmist.Modules
                 new Or(),
                 new Quote(),
                 new ShortLink(),
-                new BrowserUrlsOpen()
+                new BrowserUrlsOpen(),
+                new IpChecker()
             };
         }
 
