@@ -64,7 +64,7 @@ namespace Nigrimmist.Modules.Modules
             if (foundCommand!=null)
             {
                 var url = foundCommand.Url;
-                if (string.IsNullOrEmpty(args.Trim()))
+                if (string.IsNullOrEmpty(args.Trim()) && foundCommand.Url.Contains("{0}"))
                 {
                     Uri uri;
                     if (Uri.TryCreate(url, UriKind.Absolute, out uri))
