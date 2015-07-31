@@ -109,6 +109,8 @@ namespace MonkeyJobTool.Forms
 
         }
 
+        
+
 
         private void Init()
         {
@@ -641,35 +643,11 @@ namespace MonkeyJobTool.Forms
                 e.Graphics.DrawLine(p, this.ClientSize.Width - borderSize, this.ClientSize.Height - borderSize, 0, this.ClientSize.Height - borderSize);
             }
         }
+        
 
-        private void tsNotificationOffFiveMin_Click(object sender, EventArgs e)
+        private void tsNotificationOff_Click(object sender, EventArgs e)
         {
-            SetDoNotNotifyStatus(TimeSpan.FromMinutes(5));
-        }
-
-        private void tsNotificationOffTenMin_Click(object sender, EventArgs e)
-        {
-            SetDoNotNotifyStatus(TimeSpan.FromMinutes(10));
-        }
-
-        private void tsNotificationOffThirtyMin_Click(object sender, EventArgs e)
-        {
-            SetDoNotNotifyStatus(TimeSpan.FromMinutes(30));
-        }
-
-        private void tsNotificationOffOneHourMin_Click(object sender, EventArgs e)
-        {
-            SetDoNotNotifyStatus(TimeSpan.FromHours(1));
-        }
-
-        private void tsNotificationOffBillionYears_Click(object sender, EventArgs e)
-        {
-            SetDoNotNotifyStatus(TimeSpan.FromDays(1234321)); 
-        }
-
-        private void SetDoNotNotifyStatus(TimeSpan timeToIgnoreAllMessages)
-        {
-            App.Instance.AppConf.SystemData.DoNotNotifyUntilDate = DateTime.UtcNow.Add(timeToIgnoreAllMessages);
+            App.Instance.AppConf.SystemData.DoNotNotify = !App.Instance.AppConf.SystemData.DoNotNotify;
             App.Instance.AppConf.Save();
             SetupNotifyOffMode();
         }
@@ -678,48 +656,17 @@ namespace MonkeyJobTool.Forms
         {
             if (App.Instance.AppConf.SystemData.DoNotNotify)
             {
-                tsCancelNotifyOff.Visible = true;
-                DoNotNotifyTimer.Start();
-                
+                tsNotificationOff.Image = Resources.NotificationOn;
+                tsNotificationOff.Text = "Беспокоить";
                 App.Instance.SetAllPopupsAsNotified();
                 App.Instance.HideAllPopupsAvailableForHiding();
             }
             else
             {
-                tsCancelNotifyOff.Visible = false;
-                DoNotNotifyTimer.Stop();
-                tsNotificationOff.Text = "Не тревожить";
+                tsNotificationOff.Image = Resources.NotificationOff;
+                tsNotificationOff.Text = "Не беспокоить";
             }
             UpdateTrayicon();
         }
-
-        private void DoNotNotifyTimer_Tick(object sender, EventArgs e)
-        {
-            if (App.Instance.AppConf.SystemData.DoNotNotify && App.Instance.AppConf.SystemData.DoNotNotifyUntilDate.HasValue)
-            {
-                var ts = App.Instance.AppConf.SystemData.DoNotNotifyUntilDate.Value - DateTime.UtcNow;
-                if (ts.TotalDays < 1)
-                {
-                    tsNotificationOff.Text = "✓ Не тревожить (ещё " + ts.Humanize() + ")";
-                }
-                else
-                {
-                    tsNotificationOff.Text = "✓ Не тревожить";
-                }
-            }
-            else
-            {
-                SetupNotifyOffMode();
-            }
-        }
-
-        private void tsCancelNotifyOff_Click(object sender, EventArgs e)
-        {
-            App.Instance.AppConf.SystemData.DoNotNotifyUntilDate = null;
-            App.Instance.AppConf.Save();
-            SetupNotifyOffMode();
-        }
-
-
     }
 }

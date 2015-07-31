@@ -190,10 +190,13 @@
   <data name="question__1_" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\question (1).gif;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Speaker_Muted_Mode_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="NotificationOff" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Speaker_Muted_Mode_16.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="MonkeyJob_16x16_gray" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\MonkeyJob_16x16_gray.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NotificationOn" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\audio49.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
