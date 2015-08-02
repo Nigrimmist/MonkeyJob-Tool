@@ -172,7 +172,16 @@ namespace MonkeyJobTool.Forms
                     SetLoading(false);
                     if (afterInitActionClbck != null)
                     {
-                        afterInitActionClbck(() =>{ _bot.RunEventBasedModules(); });
+                        afterInitActionClbck(() =>
+                        {
+                            _bot.RunEventBasedModules();
+                            if (App.Instance.AppConf.InstalledAppVersion < AppConstants.AppVersion)
+                            {
+                                App.Instance.AppConf.InstalledAppVersion = AppConstants.AppVersion;
+                                App.Instance.AppConf.Save();
+                                App.Instance.ShowFixedPopup("Обновление", "MonkeyJob Tool успешно обновилась до версии " + App.Instance.AppConf.InstalledAppVersion+".\r\n\r\nПриятного пользования, камрад!",null);
+                            }
+                        });
                     }
                     else
                     {

@@ -101,8 +101,12 @@ namespace MonkeyJobTool.Entities
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
             //read and load config
-            if (!File.Exists(_executionFolder + AppConstants.Paths.MainConfFileName)) throw new Exception("Config missing");
-            var json = File.ReadAllText(_executionFolder + AppConstants.Paths.MainConfFileName);
+            if (!File.Exists(ExecutionFolder + AppConstants.Paths.MainConfFileName))
+            {
+                _appConf = new ApplicationConfiguration(true);
+                _appConf.Save();
+            };
+            var json = File.ReadAllText(ExecutionFolder + AppConstants.Paths.MainConfFileName);
             var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = AppConstants.DateTimeFormat };
             _appConf = JsonConvert.DeserializeObject<ApplicationConfiguration>(json, dateTimeConverter);
             _mainForm = mainForm;

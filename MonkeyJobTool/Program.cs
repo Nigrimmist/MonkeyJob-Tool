@@ -11,7 +11,7 @@ namespace MonkeyJobTool
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             bool isAlreadyRunning = IsSyncMutexExists();
 
@@ -20,6 +20,7 @@ namespace MonkeyJobTool
                 MessageBox.Show("Извините, но программа уже запущена. Попробуйте проверить трей, возможно она спряталась там.");
                 return;
             }
+            
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

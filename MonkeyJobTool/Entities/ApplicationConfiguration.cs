@@ -16,16 +16,45 @@ namespace MonkeyJobTool.Entities
         public SystemData SystemData { get; set; }
         public Language Language { get; set; }
         public bool DevelopmentModeEnabled { get; set; }
+        public double InstalledAppVersion { get; set; }
 
-        public ApplicationConfiguration()
+
+        /// <summary>
+        /// Defaults will be used for clear first installation
+        /// </summary>
+        public ApplicationConfiguration(bool initDefaults=false)
         {
+            
             CommandReplaces = new List<CommandReplace>();
+            SystemData = new SystemData() {DisabledModules = new List<string>()};
+            if (initDefaults)
+            {
+                HotKeys = new AppConfHotkeys()
+                {
+                    ProgramOpen = "CTRL+M"
+                };
+                AllowUsingGoogleAnalytics = true;
+                AllowSendCrashReports = true;
+                ShowDonateButton = true;
+                Language = Language.ru;
+                SystemData = new SystemData()
+                {
+                    DisabledModules = new List<string>()
+                    {
+                        "Nigrimmist.Modules.PingModule",
+                        "Nigrimmist.Modules.WeatherTrayModule",
+                        "Nigrimmist.Modules.MemoryUsageTrayModule"
+                    }
+                };
+                DevelopmentModeEnabled = true;
+                InstalledAppVersion = AppConstants.AppVersion;
+            }
         }
 
         public void Save()
         {
             string json = JsonConvert.SerializeObject(this, Formatting.Indented);
-            File.WriteAllText(AppConstants.Paths.MainConfFileName, json);
+            File.WriteAllText(App.Instance.ExecutionFolder + AppConstants.Paths.MainConfFileName, json);
         }
     }
     
@@ -44,9 +73,5 @@ namespace MonkeyJobTool.Entities
     {
         public List<string>  DisabledModules { get; set; }
         public bool DoNotNotify { get; set; }
-        public SystemData()
-        {
-            DisabledModules = new List<string>();
-        }
     }
 }

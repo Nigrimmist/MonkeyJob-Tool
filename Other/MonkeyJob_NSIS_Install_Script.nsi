@@ -2,9 +2,9 @@
 
 ; Define your application name
 !define APPNAME "MonkeyJob Tool"
-!define APPNAMEANDVERSION "MonkeyJob Tool 0.6 beta"
 !define APP_EXE "monkeyjobtool.exe"
 !define PRODUCT_VERSION "6.0b"
+!define APPNAMEANDVERSION "MonkeyJob Tool ${PRODUCT_VERSION}"
 ; Main Install settings
 Name "${APPNAMEANDVERSION}"
 InstallDir "$PROGRAMFILES\MonkeyJob Tool"
@@ -56,7 +56,6 @@ ${nsProcess::Unload}
 	; Set Section Files and Shortcuts
 	SetOutPath "$INSTDIR\"
 
-	File "E:\My Dream\MonkeyJobTool\MonkeyJob-Tool\MonkeyJobTool\bin\Debug\conf.json"
 	File "E:\My Dream\MonkeyJobTool\MonkeyJob-Tool\MonkeyJobTool\bin\Debug\HelloBotCommunication.dll"
 	File "E:\My Dream\MonkeyJobTool\MonkeyJob-Tool\MonkeyJobTool\bin\Debug\HelloBotCore.dll"
 	File "E:\My Dream\MonkeyJobTool\MonkeyJob-Tool\MonkeyJobTool\bin\Debug\HelloBotModuleHelper.dll"
@@ -112,8 +111,20 @@ Section Uninstall
 	Delete "$SMPROGRAMS\MonkeyJob Tool\MonkeyJob Tool.lnk"
 	Delete "$SMPROGRAMS\MonkeyJob Tool\Uninstall.lnk"
 
-	; Clean up MonkeyJob Tool
-	Delete "$INSTDIR\conf.json"
+${nsProcess::FindProcess} "${APP_EXE}" $R0
+
+${If} $R0 == 0
+    DetailPrint "${AppName} is running. Closing it down"
+    ${nsProcess::CloseProcess} "${APP_EXE}" $R0
+    DetailPrint "Waiting for ${AppName} to close"
+    Sleep 2000
+${Else}
+    DetailPrint "${APP_EXE} was not found to be running"
+${EndIf}
+
+${nsProcess::Unload}
+
+	; Clean up MonkeyJob Tool	
 	Delete "$INSTDIR\HelloBotCommunication.dll"
 	Delete "$INSTDIR\HelloBotCore.dll"
 	Delete "$INSTDIR\HelloBotModuleHelper.dll"
