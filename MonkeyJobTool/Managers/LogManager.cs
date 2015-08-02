@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Management;
+using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using MonkeyJobTool.Entities;
+using MonkeyJobTool.Helpers;
 using NLog;
 using NLog.Internal;
 
@@ -19,17 +21,28 @@ namespace MonkeyJobTool.Managers
 
         public static void Error(Exception ex, string message = "")
         {
-            if (App.Instance.AppConf.DevelopmentModeEnabled)
-                MessageBox.Show(ex.ToString());
-            else if (App.Instance.AppConf.AllowSendCrashReports)
+            var logError = true;
+            if (ex is WebException)
             {
-                if (_systemInfo == null)
+                if (!InternetChecker.IsInternetEnabled())
                 {
-                    _systemInfo = CollectSystemInfo();
+                    logError = false;
                 }
+            }
+            if (logError)
+            {
+                if (App.Instance.AppConf.DevelopmentModeEnabled)
+                    MessageBox.Show(ex.ToString());
+                else if (App.Instance.AppConf.AllowSendCrashReports)
+                {
+                    if (_systemInfo == null)
+                    {
+                        _systemInfo = CollectSystemInfo();
+                    }
 
-                string errorInfo = string.Format("{0} : \r\n {1} \r\n {2}\r\n App version : {3}\r\n BotCore version : {3}", message, ex, _systemInfo, AppConstants.AppVersion, App.Instance.Bot.Version);
-                _log.Error(errorInfo);
+                    string errorInfo = string.Format("{0} : \r\n {1} \r\n {2}\r\n App version : {3}\r\n BotCore version : {4}", message, ex, _systemInfo, AppConstants.AppVersion, App.Instance.Bot.Version);
+                    _log.Error(errorInfo);
+                }
             }
         }
 

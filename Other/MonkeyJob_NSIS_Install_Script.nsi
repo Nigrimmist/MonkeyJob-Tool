@@ -17,6 +17,7 @@ SetCompressor Zlib
 ; Modern interface settings
 !include "MUI.nsh"
 !include "nsProcess.nsh"
+!include "DotNetChecker.nsh"
 
 !define MUI_ABORTWARNING
 
@@ -35,7 +36,9 @@ SetCompressor Zlib
 
 
 Section "MonkeyJob Tool" Section1
-	${nsProcess::FindProcess} "${APP_EXE}" $R0
+
+!insertmacro CheckNetFramework 35
+${nsProcess::FindProcess} "${APP_EXE}" $R0
 
 ${If} $R0 == 0
     DetailPrint "${AppName} is running. Closing it down"
@@ -61,6 +64,7 @@ ${nsProcess::Unload}
 	File "E:\My Dream\MonkeyJobTool\MonkeyJob-Tool\MonkeyJobTool\bin\Debug\LogentriesCore.dll"
 	File "E:\My Dream\MonkeyJobTool\MonkeyJob-Tool\MonkeyJobTool\bin\Debug\LogentriesNLog.dll"
 	File "E:\My Dream\MonkeyJobTool\MonkeyJob-Tool\MonkeyJobTool\bin\Debug\MonkeyJobTool.exe"
+	File "E:\My Dream\MonkeyJobTool\MonkeyJob-Tool\MonkeyJobTool\bin\Debug\MonkeyJobTool.exe.config"
 	File "E:\My Dream\MonkeyJobTool\MonkeyJob-Tool\MonkeyJobTool\bin\Debug\NCalc.dll"
 	File "E:\My Dream\MonkeyJobTool\MonkeyJob-Tool\MonkeyJobTool\bin\Debug\Newtonsoft.Json.dll"
 	File "E:\My Dream\MonkeyJobTool\MonkeyJob-Tool\MonkeyJobTool\bin\Debug\Nigrimmist.Modules.dll"
@@ -117,6 +121,7 @@ Section Uninstall
 	Delete "$INSTDIR\LogentriesCore.dll"
 	Delete "$INSTDIR\LogentriesNLog.dll"
 	Delete "$INSTDIR\MonkeyJobTool.exe"
+	Delete "$INSTDIR\MonkeyJobTool.exe.config"
 	Delete "$INSTDIR\NCalc.dll"
 	Delete "$INSTDIR\Newtonsoft.Json.dll"
 	Delete "$INSTDIR\Nigrimmist.Modules.dll"
