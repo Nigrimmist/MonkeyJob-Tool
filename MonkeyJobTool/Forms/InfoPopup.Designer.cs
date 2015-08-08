@@ -91,7 +91,7 @@
             this.rtTitle.Location = new System.Drawing.Point(33, 4);
             this.rtTitle.Name = "rtTitle";
             this.rtTitle.ReadOnly = true;
-            this.rtTitle.Size = new System.Drawing.Size(221, 21);
+            this.rtTitle.Size = new System.Drawing.Size(884, 21);
             this.rtTitle.TabIndex = 11;
             this.rtTitle.TabStop = false;
             this.rtTitle.Text = "Title";

@@ -55,16 +55,98 @@ namespace MonkeyJobTool.Forms
             if (bodyBackgroundColor.HasValue)
                 BodyColor = bodyBackgroundColor.Value;
         }
-        
-        
+
+        //n->0
+        private Point FindOptimalWidthHeight(int maxHeight, int minWidth, string text, Font textFont, int heightTolerance, float currWidth, float? prevLeftBorder = null, float? prevRightBorder = null)
+        {
+
+            var textSize = this.CreateGraphics().MeasureString(text, textFont, new SizeF(currWidth, Int32.MaxValue));
+            currWidth = textSize.Width;
+            prevLeftBorder = prevLeftBorder ?? currWidth;
+            prevRightBorder = prevRightBorder ?? 0;
+            if (maxHeight - heightTolerance <= textSize.Height && maxHeight + heightTolerance >= textSize.Height || (currWidth < minWidth && textSize.Height <= maxHeight))
+            {
+                if (currWidth < minWidth)
+                {
+                    currWidth = minWidth;
+                }
+                textSize = this.CreateGraphics().MeasureString(text, textFont, new SizeF(currWidth, Int32.MaxValue));
+                return new Point((int)currWidth, (int)textSize.Height);
+            }
+
+            if (textSize.Height < maxHeight)
+            {
+                prevLeftBorder = currWidth;
+                currWidth = (currWidth / 2);
+            }
+            else
+            {
+                prevRightBorder = currWidth;
+                currWidth += (prevLeftBorder.Value - currWidth) / 2;
+            }
+
+            return FindOptimalWidthHeight(maxHeight, minWidth, text, textFont, heightTolerance, currWidth, prevLeftBorder, prevRightBorder);
+        }
+
         private void InfoPopup_Load(object sender, EventArgs e)
         {
             if (Icon!=null)
                 IconPic.BackgroundImage = Icon;
+            //Text = "test";
+
+            int textInitialWidth = txtMessage.Width;
+            txtMessage.Text = Text;
+            
+            int screenHeight = Screen.FromPoint(this.Location).WorkingArea.Height;
+            int screenWidth = Screen.FromPoint(this.Location).WorkingArea.Width;
+
+            var textSize = this.CreateGraphics().MeasureString(Text, txtMessage.Font, new SizeF(Int32.MaxValue,Int32.MaxValue));
+            int height = (int)textSize.Height;
+            int width = (int)textSize.Width;
+            //textInitialWidth = (int) textSize.Width < textInitialWidth ? textInitialWidth : (int) textSize.Width;
+
+
+
+            if (textSize.Height <= screenHeight / 2) //wide text
+            {
+                if (textSize.Width > textInitialWidth)
+                {
+                    var optimalPoint = FindOptimalWidthHeight(screenHeight / 2, textInitialWidth, Text, txtMessage.Font, 50, textSize.Width);
+                    height = optimalPoint.Y;
+                    width = optimalPoint.X;
+                }
+                else
+                {
+                    height = (int)textSize.Height;
+                    width = textInitialWidth;
+                }
+            }
+            else //tall text
+            {
+                if (textSize.Width > textInitialWidth)
+                {
+                    textSize = this.CreateGraphics().MeasureString(Text, txtMessage.Font, new SizeF(Int32.MaxValue, screenHeight/2));
+                    height = (int)textSize.Height;
+                    width = (int)textSize.Width;
+
+                    //too big text, scrollbar will be shown
+                    if (width > screenWidth/2) width = screenWidth/2;
+                }
+                else
+                {
+                    height = (int)textSize.Height;
+                    width = textInitialWidth;
+                }
+            }
+
+            this.Width = width+20;
+            txtMessage.Width = width;
+            txtMessage.Height = height;
+            
 
             int pnlMainWidth = this.Width; 
             pnlMain.Width = pnlMainWidth;
-            txtMessage.Text = Text;
+            
             rtTitle.Text = Title;
             txtMessage.Top = rtTitle.Height + 15; 
             this.Height = txtMessage.Height + 55 + rtTitle.Height;

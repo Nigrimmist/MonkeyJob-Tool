@@ -105,7 +105,7 @@ namespace MonkeyJobTool.Entities
             {
                 _appConf = new ApplicationConfiguration(true);
                 _appConf.Save();
-            };
+            }
             var json = File.ReadAllText(ExecutionFolder + AppConstants.Paths.MainConfFileName);
             var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = AppConstants.DateTimeFormat };
             _appConf = JsonConvert.DeserializeObject<ApplicationConfiguration>(json, dateTimeConverter);
@@ -184,13 +184,15 @@ namespace MonkeyJobTool.Entities
                 displayTime = null;
             }
             InfoPopup popup = new InfoPopup(popupType, title, text, displayTime, commandToken,icon,titleBackgroundColor,bodyBackgroundColor);
-            popup.Width = _mainForm.Width;
+            //popup.Width = _mainForm.Width;
             var totalPopupY = _openedPopups.Sum(x => x.Height);
             if (!AppConf.SystemData.DoNotNotify || popupType != PopupType.Notification)
             {
                 popup.ToTop();
             }
-            popup.Location = new Point(_mainForm.Location.X, _mainForm.Location.Y - popup.Height - totalPopupY);
+            
+            popup.Location = new Point(_mainForm.Location.X+(_mainForm.Width-popup.Width), _mainForm.Location.Y - popup.Height - totalPopupY);
+            
             popup.FormClosed += popup_FormClosed;
             popup.OnPopupClosedBy += PopupOnPopupClosedBy;
             popup.OnPopupHided += popup_OnPopupHided;
@@ -236,7 +238,7 @@ namespace MonkeyJobTool.Entities
             
             lock (_openedPopups)
             {
-                int xPos = _mainForm.Location.X;
+                //int xPos = _mainForm.Location.X;
                 int yPos = Screen.PrimaryScreen.WorkingArea.Bottom;
                 if (_mainForm.Visible)
                 {
@@ -247,7 +249,7 @@ namespace MonkeyJobTool.Entities
                 if (fixedPopup != null && fixedPopup.Visible)
                 {
                     yPos -= fixedPopup.Height; //+ _popupMarginTop;
-                    fixedPopup.Location = new Point(xPos, yPos);
+                    fixedPopup.Location = new Point(fixedPopup.Location.X, yPos);
                 }
                 if (!_mainForm.Visible)
                 {
@@ -256,7 +258,7 @@ namespace MonkeyJobTool.Entities
                 foreach (var popup in _openedPopups.Where(x => x.PopupType != PopupType.Fixed && x.Visible))
                 {
                     yPos -= popup.Height + _popupMarginTop;
-                    popup.Location = new Point(xPos, yPos);
+                    popup.Location = new Point(popup.Location.X, yPos);
                 }
 
             }
