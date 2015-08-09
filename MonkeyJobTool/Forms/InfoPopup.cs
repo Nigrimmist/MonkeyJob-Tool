@@ -90,23 +90,22 @@ namespace MonkeyJobTool.Forms
 
         private void InfoPopup_Load(object sender, EventArgs e)
         {
+
+            txtMessage.Visible = false;
             if (Icon!=null)
                 IconPic.BackgroundImage = Icon;
-            //Text = "test";
-
             int textInitialWidth = txtMessage.Width;
             txtMessage.Text = Text;
             
             int screenHeight = Screen.FromPoint(this.Location).WorkingArea.Height;
             int screenWidth = Screen.FromPoint(this.Location).WorkingArea.Width;
 
+            //find free size of text
             var textSize = this.CreateGraphics().MeasureString(Text, txtMessage.Font, new SizeF(Int32.MaxValue,Int32.MaxValue));
             int height = (int)textSize.Height;
             int width = (int)textSize.Width;
-            //textInitialWidth = (int) textSize.Width < textInitialWidth ? textInitialWidth : (int) textSize.Width;
-
-
-
+            
+            //calculating text height/width with height as priority.
             if (textSize.Height <= screenHeight / 2) //wide text
             {
                 if (textSize.Width > textInitialWidth)
@@ -125,12 +124,12 @@ namespace MonkeyJobTool.Forms
             {
                 if (textSize.Width > textInitialWidth)
                 {
-                    textSize = this.CreateGraphics().MeasureString(Text, txtMessage.Font, new SizeF(Int32.MaxValue, screenHeight/2));
+                    textSize = this.CreateGraphics().MeasureString(Text, txtMessage.Font, new SizeF(Int32.MaxValue, screenHeight / 2));
                     height = (int)textSize.Height;
                     width = (int)textSize.Width;
 
                     //too big text, scrollbar will be shown
-                    if (width > screenWidth/2) width = screenWidth/2;
+                    if (width > screenWidth / 2) width = screenWidth / 2;
                 }
                 else
                 {
@@ -139,11 +138,28 @@ namespace MonkeyJobTool.Forms
                 }
             }
 
-            this.Width = width+20;
+            int rightMargin = 20;
+            this.Width = width + rightMargin;
             txtMessage.Width = width;
             txtMessage.Height = height;
-            
 
+            //remove scrollbar fix
+            int realScrollBarHeightMargin = 16; //magic people woodoo people!
+            var realHeight  = txtMessage.GetPositionFromCharIndex(txtMessage.Text.Length).Y;
+            if (realHeight + realScrollBarHeightMargin >= height)
+            {
+                var pr = (realHeight + realScrollBarHeightMargin) / (double)height;
+                if (pr < 1.3F) //if real is more than 30% - convert scroll to height
+                {
+                    txtMessage.Height = realHeight +16;
+                }
+            }
+            if (txtMessage.Width > screenWidth/2)
+            {
+                txtMessage.Width = screenWidth/2;
+                this.Width = txtMessage.Width + rightMargin;
+            }
+            
             int pnlMainWidth = this.Width; 
             pnlMain.Width = pnlMainWidth;
             
@@ -159,6 +175,7 @@ namespace MonkeyJobTool.Forms
             pnlHeader.Height = rtTitle.Height + 8;
             lblCloseHint.Text = _closeHint;
             pnlCloseHint.Top = pnlMain.Height - pnlCloseHint.Height-1;
+            pnlCloseHint.Left = this.Width - pnlCloseHint.Width-10;
             rtTitle.BackColor = pnlHeader.BackColor = TitleColor;
             this.BackColor = txtMessage.BackColor=  BodyColor;
 
@@ -171,6 +188,7 @@ namespace MonkeyJobTool.Forms
             {
                 AlreadyNotified = true;
             }
+            txtMessage.Visible = true;
         }
 
         

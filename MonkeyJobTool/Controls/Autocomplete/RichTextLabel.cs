@@ -52,16 +52,11 @@ namespace MonkeyJobTool.Controls.Autocomplete
             //}
         }
 
-        public ScrollBars GetVisibleScrollbars()
+        public bool IsVerticalScrollbarVisible()
         {
             int wndStyle = Win32.GetWindowLong(this.Handle, Win32.GWL_STYLE);
-            bool hsVisible = (wndStyle & Win32.WS_HSCROLL) != 0;
             bool vsVisible = (wndStyle & Win32.WS_VSCROLL) != 0;
-
-            if (hsVisible)
-                return vsVisible ? System.Windows.Forms.ScrollBars.Both : System.Windows.Forms.ScrollBars.Horizontal;
-            else
-                return vsVisible ? System.Windows.Forms.ScrollBars.Vertical : System.Windows.Forms.ScrollBars.None;
+            return vsVisible;
         }
     }
 
