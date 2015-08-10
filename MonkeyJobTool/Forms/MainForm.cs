@@ -457,34 +457,37 @@ namespace MonkeyJobTool.Forms
 
         void autocomplete_OnCommandReceived(string command)
         {
-            _autocomplete.HidePopup();
-            bool commandReplaceCountExceed;
-            command = TryToReplaceCommand(command, out commandReplaceCountExceed);
+            Debug.WriteLine(_formBusy);
+            if (!_formBusy)
+            {
+                _autocomplete.HidePopup();
+                bool commandReplaceCountExceed;
+                command = TryToReplaceCommand(command, out commandReplaceCountExceed);
 
-            if (commandReplaceCountExceed)
-            {
-                App.Instance.ShowFixedPopup(AppConstants.AppName, "Обнаружено зацикливание в заменах команд, проверьте их на корректность.", null);
-            }
-            else
-            {
-                bool toBuffer = false;
-                if (command.Trim().EndsWith(_copyToBufferPostFix, StringComparison.InvariantCultureIgnoreCase))
+                if (commandReplaceCountExceed)
                 {
-                    command = command.Substring(0, command.Length - _copyToBufferPostFix.Length);
-                    toBuffer = true;
+                    App.Instance.ShowFixedPopup(AppConstants.AppName, "Обнаружено зацикливание в заменах команд, проверьте их на корректность.", null);
                 }
-                SetLoading(true);
+                else
+                {
+                    bool toBuffer = false;
+                    if (command.Trim().EndsWith(_copyToBufferPostFix, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        command = command.Substring(0, command.Length - _copyToBufferPostFix.Length);
+                        toBuffer = true;
+                    }
+                    SetLoading(true);
 
-                
+
                     if (!_bot.HandleMessage(command, new ClientCommandContext() {IsToBuffer = toBuffer}))
                     {
                         App.Instance.ShowFixedPopup(AppConstants.AppName, "Команда не найдена", null);
 
                         SetLoading(false);
                     }
-                
-            }
 
+                }
+            }
         }
 
         
@@ -520,11 +523,12 @@ namespace MonkeyJobTool.Forms
         }
 
         private Image _preLoadingImg;
+        private bool _formBusy = false;
         private void SetLoading(bool isLoading)
         {
             if (isLoading)
                 _preLoadingImg = MainIcon.Image;
-
+            _formBusy = isLoading;
             MainIcon.Image = isLoading ? _loadingIcon : _preLoadingImg ?? _defaultIcon;
         }
 

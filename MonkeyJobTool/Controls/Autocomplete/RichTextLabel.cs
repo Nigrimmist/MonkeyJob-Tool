@@ -33,31 +33,20 @@ namespace MonkeyJobTool.Controls.Autocomplete
             base.WndProc(ref m);
         }
 
-        private bool _isResized = false;
+        
         //richtextlabel resize hack
         private void cntrl_ContentsResized(object sender, ContentsResizedEventArgs e)
         {
-            //if (!_isResized)
-            //{
-            //    this.Height = e.NewRectangle.Height + 1;
+            //this.Height = e.NewRectangle.Height + 1;
 
-            //    int screenHeight = Screen.FromPoint(this.Location).WorkingArea.Height;
-            //    if (this.Height > screenHeight/2)
-            //    {
-            //        this.Height = screenHeight/2;
-            //    }
-            //    //this.Width = 500;
-                
-            //    _isResized = true;
+            //int screenHeight = Screen.FromPoint(this.Location).WorkingArea.Height;
+            //if (this.Height > screenHeight / 2)
+            //{
+            //    this.Height = screenHeight / 2;
             //}
         }
 
-        public bool IsVerticalScrollbarVisible()
-        {
-            int wndStyle = Win32.GetWindowLong(this.Handle, Win32.GWL_STYLE);
-            bool vsVisible = (wndStyle & Win32.WS_VSCROLL) != 0;
-            return vsVisible;
-        }
+        
     }
 
 

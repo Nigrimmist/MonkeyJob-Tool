@@ -90,7 +90,8 @@ namespace MonkeyJobTool.Forms
 
         private void InfoPopup_Load(object sender, EventArgs e)
         {
-
+            
+            Clipboard.SetText(Text);
             txtMessage.Visible = false;
             if (Icon!=null)
                 IconPic.BackgroundImage = Icon;
@@ -154,6 +155,7 @@ namespace MonkeyJobTool.Forms
                     txtMessage.Height = realHeight +16;
                 }
             }
+
             if (txtMessage.Width > screenWidth/2)
             {
                 txtMessage.Width = screenWidth/2;
@@ -161,7 +163,7 @@ namespace MonkeyJobTool.Forms
             }
             
             int pnlMainWidth = this.Width; 
-            pnlMain.Width = pnlMainWidth;
+            pnlMain.Width = pnlMainWidth+1;
             
             rtTitle.Text = Title;
             txtMessage.Top = rtTitle.Height + 15; 
@@ -171,7 +173,7 @@ namespace MonkeyJobTool.Forms
             {
                 c.MouseUp += InfoPopup_MouseUp;
             }
-            pnlHeader.Width = pnlMainWidth-2; 
+            pnlHeader.Width = pnlMainWidth-1; 
             pnlHeader.Height = rtTitle.Height + 8;
             lblCloseHint.Text = _closeHint;
             pnlCloseHint.Top = pnlMain.Height - pnlCloseHint.Height-1;
@@ -189,6 +191,7 @@ namespace MonkeyJobTool.Forms
                 AlreadyNotified = true;
             }
             txtMessage.Visible = true;
+            
         }
 
         

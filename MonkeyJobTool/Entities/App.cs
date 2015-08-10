@@ -186,12 +186,12 @@ namespace MonkeyJobTool.Entities
             InfoPopup popup = new InfoPopup(popupType, title, text, displayTime, commandToken,icon,titleBackgroundColor,bodyBackgroundColor);
             //popup.Width = _mainForm.Width;
             var totalPopupY = _openedPopups.Sum(x => x.Height);
+            
             if (!AppConf.SystemData.DoNotNotify || popupType != PopupType.Notification)
             {
                 popup.ToTop();
             }
-            
-            popup.Location = new Point(_mainForm.Location.X+(_mainForm.Width-popup.Width), _mainForm.Location.Y - popup.Height - totalPopupY);
+            popup.Location = new Point(_mainForm.Location.X + (_mainForm.Width - popup.Width), _mainForm.Location.Y - popup.Height - totalPopupY);
             
             popup.FormClosed += popup_FormClosed;
             popup.OnPopupClosedBy += PopupOnPopupClosedBy;

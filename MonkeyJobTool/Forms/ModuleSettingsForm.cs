@@ -224,7 +224,7 @@ namespace MonkeyJobTool.Forms
 
         private Control GetTitleControl(string title)
         {
-            return new RichTextLabel()
+            return new RichTextLabelResizeable()
             {
                 Text = title,
                 Dock = DockStyle.Fill,
@@ -238,7 +238,7 @@ namespace MonkeyJobTool.Forms
             tPanel.Width = 310;
             if (!string.IsNullOrEmpty(label))
             {
-                var lbl = new RichTextLabel()
+                var lbl = new RichTextLabelResizeable()
                 {
                     Text = label,
                     AutoSize = false,

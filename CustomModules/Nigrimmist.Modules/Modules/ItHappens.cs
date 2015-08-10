@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using HelloBotCommunication;
 using HelloBotCommunication.Interfaces;
 using HelloBotModuleHelper;
@@ -75,6 +76,7 @@ namespace Nigrimmist.Modules.Modules
             int rPos = _r.Next(0, _jokes.Count );
             string joke = _jokes[rPos];
             _jokes.RemoveAt(rPos);
+            
             _client.ShowMessage(commandToken,joke);
         }
     }

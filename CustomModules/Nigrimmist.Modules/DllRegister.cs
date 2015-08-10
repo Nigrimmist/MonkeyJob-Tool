@@ -37,7 +37,8 @@ namespace Nigrimmist.Modules
             return new List<ModuleEventBase>()
             {
                 new Diary(),
-                new ToolUpdate()
+                new ToolUpdate(),
+                new MtsEthernetBYModule()
             };
         }
 
