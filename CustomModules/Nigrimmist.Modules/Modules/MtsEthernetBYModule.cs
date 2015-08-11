@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using HelloBotCommunication;
 using HelloBotCommunication.Attributes.SettingAttributes;
@@ -38,18 +39,18 @@ namespace Nigrimmist.Modules.Modules
 
         public override string ModuleDescription
         {
-            get { return ""; }
+            get { return "Для Беларуси. Позволяет оповещать вас о нехватке средств интернет провайдера МТС. Для начала работы нужно задать логин/пароль, а так же границы оповещений. Например, если задать границы 40000 и 10000, то уведомление покажется как минимум дважды - при достижении баланса менее чем 40000 и 10000 рублей соответственно."; }
         }
 
         public override TimeSpan RunEvery
         {
-            get { return TimeSpan.FromHours(1); }
+            get { return TimeSpan.FromHours(10); }
         }
 
         public override void OnFire(Guid eventToken)
         {
             var settings = _client.GetSettings<MtsEthernetByModuleSettings>();
-            if (settings != null )
+            if (settings != null && settings.WarningBorders.Any())
             {
                 if (string.IsNullOrEmpty(settings.Login) || string.IsNullOrEmpty(settings.Password))
                 {
@@ -61,10 +62,35 @@ namespace Nigrimmist.Modules.Modules
                 hrm.Get("https://internet.mts.by/login?referer=%2F");
                 HtmlDocument htmlDoc = new HtmlDocument {OptionFixNestedTags = true};
                 htmlDoc.LoadHtml(hrm.Html);
-                string token = htmlDoc.DocumentNode.SelectSingleNode("//*/input[@name='authenticity_token']").InnerText;
-                hrm.Post("https://internet.mts.by/login", string.Format("utf8=%E2%9C%93&authenticity_token={0}&referer=%2F&login=001012917&password=8293229&commit=", HttpUtility.UrlEncode(token)));
+                string token = htmlDoc.DocumentNode.SelectSingleNode("//*/input[@name='authenticity_token']").Attributes["value"].Value;
+                hrm.Post("https://internet.mts.by/login", string.Format("utf8=%E2%9C%93&authenticity_token={0}&referer=%2F&login={1}&password={2}&commit=", HttpUtility.UrlEncode(token),settings.Login,settings.Password));
+                if (hrm.Html.Contains("Неверный логин или пароль."))
+                {
+                    _client.ShowMessage(eventToken, "Неправильные логин/пароль", messageType: MessageType.Error);
+                    return;
+                }
+                
                 htmlDoc.LoadHtml(hrm.Html);
-                string amount = htmlDoc.DocumentNode.SelectSingleNode("//./div[@class='full-column']/table/tbody/tr[3]/td[2]").InnerText;
+                string amountStr = htmlDoc.DocumentNode.SelectSingleNode("//./div[@class='full-column']/table/tr[3]/td[2]").InnerText;
+                amountStr = Regex.Match(amountStr, @"\d+").Value;
+                int amount = Int32.Parse(amountStr);
+
+                var topBorders = settings.WarningBorders.Where(x => x.Border >= amount).OrderBy(x => x.Border);
+                if (topBorders.Any())
+                {
+                    var topBorder = topBorders.Last();
+                    if (topBorder != null)
+                    {
+                        var shouldNotify = !settings.LastWarningBorder.HasValue || settings.LastWarningBorder.Value != topBorder.Border || (!settings.LastScannedAmount.HasValue || settings.LastScannedAmount.Value < amount);
+                        if (shouldNotify)
+                        {
+                            settings.LastWarningBorder = topBorder.Border;
+                            settings.LastScannedAmount = amount;
+                            _client.ShowMessage(eventToken, "Время пополнить балланс! На счету осталось " + amount + " руб");
+                            _client.SaveSettings(settings);
+                        }
+                    }
+                }
             }
         }
     }
@@ -81,8 +107,9 @@ namespace Nigrimmist.Modules.Modules
         [SettingsNameField("Границы оповещений")]
         public List<MtsEthernetWarningBorder> WarningBorders { get; set; }
 
-        public int? LastScannedValue { get; set; }
-        public int? LastWarningAmount { get; set; }
+       
+        public int? LastWarningBorder { get; set; }
+        public int? LastScannedAmount { get; set; }
 
         public MtsEthernetByModuleSettings()
         {
