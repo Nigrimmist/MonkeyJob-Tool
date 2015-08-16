@@ -64,7 +64,7 @@ namespace HelloBotModuleHelper
         }
 
         private string _userAgent =
-            @"Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2";
+            @"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:39.0) Gecko/20100101 Firefox/39.0";
 
         public string UserAgent
         {
@@ -262,36 +262,34 @@ namespace HelloBotModuleHelper
         {
             Request(requestUri, "POST", postData);
 
-            for (int i = 0; i < 10; i++)
+
+            bool post = false;
+
+            switch (StatusCode)
             {
-                bool post = false;
-
-                switch (StatusCode)
-                {
-                    case HttpStatusCode.MultipleChoices: // 300
-                    case HttpStatusCode.MovedPermanently: // 301
-                    case HttpStatusCode.Found: // 302
-                    case HttpStatusCode.SeeOther: // 303
-                        break;
-
-                    case HttpStatusCode.TemporaryRedirect: // 307
-                        post = true;
-                        break;
-
-                    default:
-                        return StatusCode;
-                }
-                if (Location != null)
-                    LastPostLocation = Location;
-                if (Location == null)
+                case HttpStatusCode.MultipleChoices: // 300
+                case HttpStatusCode.MovedPermanently: // 301
+                case HttpStatusCode.Found: // 302
+                case HttpStatusCode.SeeOther: // 303
                     break;
 
-                Uri uri = new Uri(new Uri(PreviousUri), Location);
+                case HttpStatusCode.TemporaryRedirect: // 307
+                    post = true;
+                    break;
 
-                //BaseUri = uri.Scheme + "://" + uri.Host;
-                //requestUri = uri.AbsolutePath + uri.Query;
-
-                Request(requestUri, post ? "POST" : "GET", post ? postData : null);
+                default:
+                    return StatusCode;
+            }
+            if (Location != null)
+            {
+                if (Location.StartsWith("/"))
+                {
+                    Uri uri = new Uri(requestUri);
+                    //BaseUri = ;
+                    _location = uri.Scheme + "://" + uri.Host + Location;
+                }
+                LastPostLocation = Location;
+                return Request(Location, post ? "POST" : "GET", post ? postData : null);
             }
 
             return StatusCode;

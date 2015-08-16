@@ -22,14 +22,6 @@ namespace Nigrimmist.Modules.Modules
         public override void Init(IClient client)
         {
             _client = client;
-            var settings = _client.GetSettings<ToolUpdateSettings>();
-            if (settings == null)
-            {
-                _client.SaveSettings(new ToolUpdateSettings()
-                {
-                    LastUpdateCheck = new DateTime(1988, 06, 22)
-                });
-            }
         }
 
         public override string ModuleTitle
@@ -78,7 +70,7 @@ namespace Nigrimmist.Modules.Modules
                 var topBorders = settings.WarningBorders.Where(x => x.Border >= amount).OrderBy(x => x.Border);
                 if (topBorders.Any())
                 {
-                    var topBorder = topBorders.Last();
+                    var topBorder = topBorders.First();
                     if (topBorder != null)
                     {
                         var shouldNotify = !settings.LastWarningBorder.HasValue || settings.LastWarningBorder.Value != topBorder.Border || (!settings.LastScannedAmount.HasValue || settings.LastScannedAmount.Value < amount);
@@ -86,7 +78,7 @@ namespace Nigrimmist.Modules.Modules
                         {
                             settings.LastWarningBorder = topBorder.Border;
                             settings.LastScannedAmount = amount;
-                            _client.ShowMessage(eventToken, "Время пополнить балланс! На счету осталось " + amount + " руб");
+                            _client.ShowMessage(eventToken, string.Format("Время пополнить баланс интернета! На счету осталось {0} руб", amount));
                             _client.SaveSettings(settings);
                         }
                     }
