@@ -39,6 +39,11 @@ namespace Nigrimmist.Modules.Modules
             get { return TimeSpan.FromHours(10); }
         }
 
+        public override string IconInBase64
+        {
+            get { return "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDoAABSCAABFVgAADqXAAAXb9daH5AAAAJtSURBVHjalJPLb01hFMV/33lxq73aom3qkSplIAYEaSIpEREa/gMdSky0o0okpiKpEMGESAxEjEwMiJlJEyOJAVKPcLkNbW/Pvec+zrnfOd/DoNXWY8Ae7uy11l4rWeL5gcEAuAKcBjr5tykD94FxD5ho6e8f7Tp+HKtiVDXExlUq798xP/MdmzTJ1eu0SBdVqCBrkkbgdPjbukZXt+UTBxjZcPQIQhislDjWMjs1RW1tN3uv3mH/3YeIoWOEc3MIwCDQKiMsfgE44wGdViWopgIlqRQ+Iju6OHT1Bq7nATB07SaTmaJ+6x4ObRjHkqkUoNMBULV5VK2MikJmit/Yd/7iEthaC8CeS5fROwfISDAYjFjYOwBZVEE3apTeTbHh4GHyGzf9kphWily+nS3nztIgQQmDEiwT6KiCiUIaYZm+Eyf/GnuqFD3Dw3jre0iNRDkrPtDVMnL2O25rnvbtA78Af1rQacqq3o3kd++iqTXZSgumUiWdKZFb14Xn+3+ArbVYrbG+R2tfHxJIF288AFWuoqIIH/ev71trMdaCMbh+gAQUdplAT0cQx6QfC1hA/EZgjCFTGW5TUi98QrrgstLCdAQlSfPFSyqv3yyBjDFIKYnjmEwIzNci0x9eYYJlEQcgbmqSDLJajbfjF2jGCYnjUE1iqnGMFIJVuBQfPaBY+obnsqi/YCGsr7adRmVAQPT0MenwKfpHx8jtGMDLBehyyOdnT5i8e5ssNbi+wPd8gFA8PzB4Pa5FY6XpAkplaAFZkhFYWNPbjbt5PfVGwuyXAjrVuIEgcAP6e7bS3to+IVbUeQTo+N86/xgAQQ1ECVf8o84AAAAASUVORK5CYII="; }
+        }
+
         public override void OnFire(Guid eventToken)
         {
             var settings = _client.GetSettings<MtsEthernetByModuleSettings>();
@@ -83,6 +88,12 @@ namespace Nigrimmist.Modules.Modules
                         }
                     }
                 }
+                if (settings.LastScannedAmount.HasValue && settings.LastScannedAmount<amount && settings.IsNotifyAboutRefill)
+                {
+                    settings.LastScannedAmount = amount;
+                    _client.ShowMessage(eventToken, string.Format("Баланс интернета успешно пополнен до {0} руб", amount));
+                    _client.SaveSettings(settings);
+                }
             }
         }
     }
@@ -90,6 +101,9 @@ namespace Nigrimmist.Modules.Modules
     [ModuleSettingsFor(typeof(MtsEthernetBYModule))]
     public class MtsEthernetByModuleSettings
     {
+        [SettingsNameField("Уведомлять о пополнениях баланса")]
+        public bool IsNotifyAboutRefill { get; set; }
+
         [SettingsNameField("Логин")]
         public string Login { get; set; }
 
@@ -106,6 +120,7 @@ namespace Nigrimmist.Modules.Modules
         public MtsEthernetByModuleSettings()
         {
             WarningBorders = new List<MtsEthernetWarningBorder>();
+            IsNotifyAboutRefill = true;
         }
     }
 

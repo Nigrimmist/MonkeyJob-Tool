@@ -43,8 +43,6 @@ namespace Nigrimmist.Modules.Modules
                 });
             }
         }
-
-
         
         public override DescriptionInfo ModuleDescription
         {
@@ -105,7 +103,7 @@ namespace Nigrimmist.Modules.Modules
                             leftPart = leftPart.Substring(inputProvider.Length).Trim();
                         }
                         string url = string.Format(foundProvider, HttpUtility.UrlEncode(leftPart), HttpUtility.UrlEncode(rightPart));
-                        _client.ShowMessage(commandToken,url.ToShortUrl(),answerType: AnswerBehaviourType.OpenLink);
+                        _client.ShowMessage(commandToken,url,answerType: AnswerBehaviourType.OpenLink);
                     }
                 }
                 else
@@ -122,7 +120,7 @@ namespace Nigrimmist.Modules.Modules
                         address = args.Substring(inputProvider.Length).Trim();    
                     }
                     string url = string.Format(foundProvider, HttpUtility.UrlEncode(address));
-                    _client.ShowMessage(commandToken,url.ToShortUrl(),answerType: AnswerBehaviourType.OpenLink);
+                    _client.ShowMessage(commandToken,url,answerType: AnswerBehaviourType.OpenLink);
                 }
             }
         }

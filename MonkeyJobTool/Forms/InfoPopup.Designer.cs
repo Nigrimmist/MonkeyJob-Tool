@@ -33,9 +33,9 @@
             this.IconPic = new System.Windows.Forms.PictureBox();
             this.lblCloseHint = new System.Windows.Forms.Label();
             this.pnlHeader = new System.Windows.Forms.Panel();
+            this.rtTitle = new MonkeyJobTool.Controls.Autocomplete.RichTextLabel();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.pnlCloseHint = new System.Windows.Forms.Panel();
-            this.rtTitle = new MonkeyJobTool.Controls.Autocomplete.RichTextLabel();
             this.txtMessage = new MonkeyJobTool.Controls.Autocomplete.RichTextLabel();
             ((System.ComponentModel.ISupportInitialize)(this.IconPic)).BeginInit();
             this.pnlHeader.SuspendLayout();
@@ -83,6 +83,19 @@
             this.pnlHeader.Size = new System.Drawing.Size(258, 38);
             this.pnlHeader.TabIndex = 12;
             // 
+            // rtTitle
+            // 
+            this.rtTitle.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rtTitle.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.rtTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rtTitle.Location = new System.Drawing.Point(33, 4);
+            this.rtTitle.Name = "rtTitle";
+            this.rtTitle.ReadOnly = true;
+            this.rtTitle.Size = new System.Drawing.Size(884, 21);
+            this.rtTitle.TabIndex = 11;
+            this.rtTitle.TabStop = false;
+            this.rtTitle.Text = "Title";
+            // 
             // pnlMain
             // 
             this.pnlMain.Controls.Add(this.pnlCloseHint);
@@ -103,19 +116,6 @@
             this.pnlCloseHint.Name = "pnlCloseHint";
             this.pnlCloseHint.Size = new System.Drawing.Size(187, 19);
             this.pnlCloseHint.TabIndex = 13;
-            // 
-            // rtTitle
-            // 
-            this.rtTitle.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.rtTitle.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.rtTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rtTitle.Location = new System.Drawing.Point(33, 4);
-            this.rtTitle.Name = "rtTitle";
-            this.rtTitle.ReadOnly = true;
-            this.rtTitle.Size = new System.Drawing.Size(884, 21);
-            this.rtTitle.TabIndex = 11;
-            this.rtTitle.TabStop = false;
-            this.rtTitle.Text = "Title";
             // 
             // txtMessage
             // 

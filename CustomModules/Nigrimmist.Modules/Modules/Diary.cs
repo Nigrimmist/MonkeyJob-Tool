@@ -44,7 +44,7 @@ namespace Nigrimmist.Modules.Modules
 
         public override void OnFire(Guid eventToken)
         {
-            
+
             DiarySettings settings = _client.GetSettings<DiarySettings>();
             if (settings != null)
             {

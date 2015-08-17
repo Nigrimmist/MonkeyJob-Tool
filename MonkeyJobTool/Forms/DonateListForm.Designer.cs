@@ -175,30 +175,30 @@ namespace MonkeyJobTool.Forms
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label3.ForeColor = System.Drawing.Color.Black;
-            this.label3.Location = new System.Drawing.Point(166, 423);
+            this.label3.Location = new System.Drawing.Point(150, 423);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(702, 17);
+            this.label3.Size = new System.Drawing.Size(717, 17);
             this.label3.TabIndex = 54;
-            this.label3.Text = "Спасибо за поддержку, которую вы даёте мне. Не одна бессонная ночь уходит на то ч" +
-    "тобы";
+            this.label3.Text = "Спасибо за поддержку, которую вы даёте мне. Много бессонных ночей уже ушло и ещё " +
+    "уйдёт";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label4.ForeColor = System.Drawing.Color.Black;
-            this.label4.Location = new System.Drawing.Point(166, 440);
+            this.label4.Location = new System.Drawing.Point(150, 440);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(617, 17);
+            this.label4.Size = new System.Drawing.Size(639, 17);
             this.label4.TabIndex = 55;
-            this.label4.Text = "писать её, но с вашей поддержкой код пишется легче,приятней и осмысленней.";
+            this.label4.Text = "на написание monkeyjob tool. С вашей поддержкой это делается легче и приятней.";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label6.ForeColor = System.Drawing.Color.DarkRed;
-            this.label6.Location = new System.Drawing.Point(35, 423);
+            this.label6.Location = new System.Drawing.Point(19, 423);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(131, 17);
             this.label6.TabIndex = 57;

@@ -12,7 +12,7 @@ namespace MonkeyJobTool.Helpers
     {
         public static void SendModuleErrorEmail(Exception ex, string toEmail, string subj)
         {
-            if (!App.Instance.AppConf.DevelopmentModeEnabled)
+            if (!App.Instance.AppConf.DevelopmentModeEnabled && App.Instance.AppConf.AllowSendCrashReports)
             {
                 new Thread(() =>
                 {

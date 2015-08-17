@@ -38,6 +38,11 @@ namespace Nigrimmist.Modules.Modules
             get { return TimeSpan.FromHours(3); }
         }
 
+        public override string IconInBase64
+        {
+            get { return "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDoAABSCAABFVgAADqXAAAXb9daH5AAAAJtSURBVHjalJPLb01hFMV/33lxq73aom3qkSplIAYEaSIpEREa/gMdSky0o0okpiKpEMGESAxEjEwMiJlJEyOJAVKPcLkNbW/Pvec+zrnfOd/DoNXWY8Ae7uy11l4rWeL5gcEAuAKcBjr5tykD94FxD5ho6e8f7Tp+HKtiVDXExlUq798xP/MdmzTJ1eu0SBdVqCBrkkbgdPjbukZXt+UTBxjZcPQIQhislDjWMjs1RW1tN3uv3mH/3YeIoWOEc3MIwCDQKiMsfgE44wGdViWopgIlqRQ+Iju6OHT1Bq7nATB07SaTmaJ+6x4ObRjHkqkUoNMBULV5VK2MikJmit/Yd/7iEthaC8CeS5fROwfISDAYjFjYOwBZVEE3apTeTbHh4GHyGzf9kphWily+nS3nztIgQQmDEiwT6KiCiUIaYZm+Eyf/GnuqFD3Dw3jre0iNRDkrPtDVMnL2O25rnvbtA78Af1rQacqq3o3kd++iqTXZSgumUiWdKZFb14Xn+3+ArbVYrbG+R2tfHxJIF288AFWuoqIIH/ev71trMdaCMbh+gAQUdplAT0cQx6QfC1hA/EZgjCFTGW5TUi98QrrgstLCdAQlSfPFSyqv3yyBjDFIKYnjmEwIzNci0x9eYYJlEQcgbmqSDLJajbfjF2jGCYnjUE1iqnGMFIJVuBQfPaBY+obnsqi/YCGsr7adRmVAQPT0MenwKfpHx8jtGMDLBehyyOdnT5i8e5ssNbi+wPd8gFA8PzB4Pa5FY6XpAkplaAFZkhFYWNPbjbt5PfVGwuyXAjrVuIEgcAP6e7bS3to+IVbUeQTo+N86/xgAQQ1ECVf8o84AAAAASUVORK5CYII="; }
+        }
+
         public override void OnFire(Guid eventToken)
         {
             var settings = _client.GetSettings<MtsGsmByModuleModule>();
@@ -55,7 +60,7 @@ namespace Nigrimmist.Modules.Modules
 
                         HtmlReaderManager hrm = new HtmlReaderManager();
                         hrm.Get("https://ihelper.mts.by/Selfcare/logon.aspx");
-                        HtmlDocument htmlDoc = new HtmlDocument { OptionFixNestedTags = true };
+                        HtmlDocument htmlDoc = new HtmlDocument {OptionFixNestedTags = true};
                         htmlDoc.LoadHtml(hrm.Html);
                         string viewstate = htmlDoc.DocumentNode.SelectSingleNode("//*/input[@id='__VIEWSTATE']").Attributes["value"].Value;
                         hrm.Post("https://ihelper.mts.by/Selfcare/logon.aspx", string.Format(@"__VIEWSTATE={0}&ctl00%24MainContent%24tbPhoneNumber={1}&ctl00%24MainContent%24tbPassword={2}&ctl00%24MainContent%24btnEnter=%D0%92%D0%BE%D0%B9%D1%82%D0%B8", HttpUtility.UrlEncode(viewstate), account.Login, account.Password));
@@ -64,7 +69,7 @@ namespace Nigrimmist.Modules.Modules
                             _client.ShowMessage(eventToken, "Неправильные логин/пароль", messageType: MessageType.Error);
                             return;
                         }
-                        
+
                         htmlDoc.LoadHtml(hrm.Html);
                         string amountStr = htmlDoc.DocumentNode.SelectSingleNode("//./span[@id='customer-info-balance']/strong").InnerText;
                         if (amountStr.Contains(","))
@@ -91,6 +96,13 @@ namespace Nigrimmist.Modules.Modules
                                 }
                             }
                         }
+
+                        if (account.LastScannedAmount.HasValue && account.LastScannedAmount < amount && settings.IsNotifyAboutRefill)
+                        {
+                            account.LastScannedAmount = amount;
+                            _client.ShowMessage(eventToken, string.Format("Баланс аккаунта {1} успешно пополнен до {0} руб", amount, account.Login));
+                            _client.SaveSettings(settings);
+                        }
                     }
                 }
             }
@@ -104,9 +116,12 @@ namespace Nigrimmist.Modules.Modules
         [SettingsNameField("Аккаунты")]
         public List<MtsGsmByModuleAccount> Accounts { get; set; }
 
+        public bool IsNotifyAboutRefill { get; set; }
+
         public MtsGsmByModuleModule()
         {
             Accounts = new List<MtsGsmByModuleAccount>();
+            IsNotifyAboutRefill = true;
         }
     }
     

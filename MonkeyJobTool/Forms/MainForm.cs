@@ -149,6 +149,12 @@ namespace MonkeyJobTool.Forms
             {
                 MainIcon.Image = _defaultIcon;
             }
+            if (string.IsNullOrEmpty(text))
+            {
+                App.Instance.CloseFixedPopup();
+            }
+            
+            
         }
 
 
@@ -333,13 +339,12 @@ namespace MonkeyJobTool.Forms
         private bool _isHelpBalloonDisplayed;
         void MainForm_Deactivate(object sender, EventArgs e)
         {
-            
             //hack check. Required in case when user click right click to popup to close it. We not hide main form. But hide if another application get focus.
             if (!App.ApplicationIsActivated())
             {
                 HideMain();
                 App.Instance.HideAllPopupsAvailableForHiding();
-                App.Instance.CloseFixedPopup();
+                //App.Instance.CloseFixedPopup();
                 App.Instance.ReorderPopupsPositions();
             }
 

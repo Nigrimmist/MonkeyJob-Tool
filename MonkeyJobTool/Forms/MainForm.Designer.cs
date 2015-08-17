@@ -53,7 +53,7 @@ namespace MonkeyJobTool.Forms
             this.tsDonate,
             this.tsExit});
             this.trayMenu.Name = "trayMenu";
-            this.trayMenu.Size = new System.Drawing.Size(262, 136);
+            this.trayMenu.Size = new System.Drawing.Size(262, 114);
             // 
             // tsCheckAllAsDisplayed
             // 
