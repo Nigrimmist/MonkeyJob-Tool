@@ -30,7 +30,7 @@ namespace HelloBotCore
 
     public class HelloBot : IModuleClientHandler
     {
-        public readonly double Version = 0.4;
+        public readonly double Version = 0.6;
         
         private List<ModuleInfoBase> _allModules = new List<ModuleInfoBase>();
 
