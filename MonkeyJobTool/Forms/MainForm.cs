@@ -106,11 +106,7 @@ namespace MonkeyJobTool.Forms
             {
                 LogManager.Error(ex, "MainForm_Load error");
             }
-
         }
-
-        
-
 
         private void Init()
         {
@@ -153,8 +149,6 @@ namespace MonkeyJobTool.Forms
             {
                 App.Instance.CloseFixedPopup();
             }
-            
-            
         }
 
 

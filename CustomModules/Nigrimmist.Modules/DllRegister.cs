@@ -28,7 +28,8 @@ namespace Nigrimmist.Modules
                 new Quote(),
                 new ShortLink(),
                 new BrowserUrlsOpen(),
-                new IpChecker()
+                new IpChecker(),
+                new CopyToBufferModule()
             };
         }
 

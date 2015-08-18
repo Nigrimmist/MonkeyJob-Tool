@@ -91,7 +91,6 @@ namespace MonkeyJobTool.Forms
         private void InfoPopup_Load(object sender, EventArgs e)
         {
             
-            Clipboard.SetText(Text);
             txtMessage.Visible = false;
             if (Icon!=null)
                 IconPic.BackgroundImage = Icon;

@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="Entities\AppVersionInfo.cs" />
     <Compile Include="Helpers\WeatherHelper.cs" />
+    <Compile Include="Modules\CopyToBufferModule.cs" />
     <Compile Include="Modules\MtsGsmByModule.cs" />
     <Compile Include="Modules\IPChecker.cs" />
     <Compile Include="Modules\BoobsModule.cs" />

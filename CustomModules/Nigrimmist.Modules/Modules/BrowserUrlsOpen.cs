@@ -34,6 +34,11 @@ namespace Nigrimmist.Modules.Modules
             get { return "Ссылкооткрыватель"; }
         }
 
+        public override string IconInBase64
+        {
+            get { return "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABeklEQVRYhe2XL0/EMBiHH3Fi4sQJBAJxkhBIEJdgJxGIEwgEYh8AyTdAnEAgEYiTJ5aAAIc4cR8BgUAgEAjEBOLExCHaZs1ouvb2LoTAL3mT/Xm739N37drBv+TVB66AeUM8AsddABwCq8BY1hsPgBTIIuMU1XOABFhEQADQAyZAGdGwHqnVkR0gjwG4ty6UwGtkvAC7tWruAbchAJl1cmGVUkKjEADT+1zQGNQrmYcAvOmD7AfMVwCFPhgLmW8D7w6jHPfsEAXwmfdQ46sOIQbQZG5kQ5RSAKHmNsQNcCYBkOIecNfAZsgD2gC0Nm8DIGK+LoCYOVbjVNg8Ae50eD/vsRWYOcxdo31o3d+XBDgAHmgue2cAaMMnVDVc87xzgBD9HoBPnXTUIcDQl2gWhokwwJhqwUl8iZc6seD7vm5dbQDP+rmLpuQB1a5oiZrT0xYxAz6oeu99/0Yj1M42ZAsVGgVwEmJu1Eetz1Oaf6t8kQPnwFaM+d/VF2W+L0z1r0vkAAAAAElFTkSuQmCC"; }
+        }
+
         public override void Init(IClient client)
         {
             _client = client;
