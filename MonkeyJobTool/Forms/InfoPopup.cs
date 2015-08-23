@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -102,6 +103,9 @@ namespace MonkeyJobTool.Forms
 
             //find free size of text
             var textSize = this.CreateGraphics().MeasureString(Text, txtMessage.Font, new SizeF(Int32.MaxValue,Int32.MaxValue));
+            
+
+
             int height = (int)textSize.Height;
             int width = (int)textSize.Width;
             
@@ -148,11 +152,7 @@ namespace MonkeyJobTool.Forms
             var realHeight  = txtMessage.GetPositionFromCharIndex(txtMessage.Text.Length).Y;
             if (realHeight + realScrollBarHeightMargin >= height)
             {
-                var pr = (realHeight + realScrollBarHeightMargin) / (double)height;
-                if (pr < 1.3F) //if real is more than 30% - convert scroll to height
-                {
-                    txtMessage.Height = realHeight +16;
-                }
+                txtMessage.Height = realHeight + 16;
             }
 
             if (txtMessage.Width > screenWidth/2)
@@ -274,6 +274,4 @@ namespace MonkeyJobTool.Forms
         }
         
     }
-
-
 }
