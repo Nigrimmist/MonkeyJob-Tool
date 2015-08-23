@@ -27,7 +27,9 @@ SetCompressor Zlib
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
 
+
 !insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_COMPONENTS
 !insertmacro MUI_UNPAGE_INSTFILES
 
 ; Set languages (first is default language)
@@ -166,6 +168,6 @@ Function un.onInit
 SectionSetText ${secidx01} "Remove application" 
 FunctionEnd
 
-BrandingText "test ss"
+BrandingText "by Nigrimmist"
 
 ; eof
