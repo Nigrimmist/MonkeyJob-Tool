@@ -10,6 +10,7 @@ Name "${APPNAMEANDVERSION}"
 InstallDir "$PROGRAMFILES\MonkeyJob Tool"
 InstallDirRegKey HKLM "Software\${APPNAME}" ""
 OutFile "MonkeyJobTool_${PRODUCT_VERSION}_Installer.exe"
+InstType "un.Full remove ${APPNAME}"
 
 ; Use compression
 SetCompressor Zlib
@@ -97,7 +98,8 @@ SectionEnd
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;Uninstall section
-Section Uninstall
+Section Uninstall secidx01 
+SectionIn 1 RO 
 
 	;Remove from registry...
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
@@ -150,8 +152,18 @@ ${nsProcess::Unload}
 
 SectionEnd
 
+Section "Un.Remove settings" 
+SectionIn 1 
+	SetShellVarContext current 
+	RMDir /r "$INSTDIR\"
+SectionEnd 
+
 Function .oninstsuccess
 Exec "$INSTDIR\${APP_EXE}"
+FunctionEnd
+
+Function un.onInit 
+SectionSetText ${secidx01} "Remove application" 
 FunctionEnd
 
 BrandingText "test ss"
