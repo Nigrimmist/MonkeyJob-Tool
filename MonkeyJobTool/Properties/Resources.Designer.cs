@@ -123,6 +123,16 @@ namespace MonkeyJobTool.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap enter5 {
+            get {
+                object obj = ResourceManager.GetObject("enter5", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap exit {
             get {
                 object obj = ResourceManager.GetObject("exit", resourceCulture);
@@ -186,6 +196,16 @@ namespace MonkeyJobTool.Properties {
         public static System.Drawing.Bitmap ice_cream {
             get {
                 object obj = ResourceManager.GetObject("ice_cream", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap keyboard25 {
+            get {
+                object obj = ResourceManager.GetObject("keyboard25", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

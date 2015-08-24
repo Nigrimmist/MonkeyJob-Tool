@@ -14,7 +14,7 @@ namespace Nigrimmist.Modules.Entities
 
     public class VersionInfo
     {
-        public float Version { get; set; }
+        public double Version { get; set; }
         public string WhatsNew { get; set; }
         public string InstallerLink { get; set; }
     }

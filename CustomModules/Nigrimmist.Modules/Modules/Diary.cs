@@ -218,5 +218,12 @@ namespace Nigrimmist.Modules.Modules
         public bool CheckNewComments { get; set; }
         [SettingsNameField("Проверять дискуссии?")]
         public bool CheckDiscussions { get; set; }
+
+        public DiaryItem()
+        {
+            CheckUmails = true;
+            CheckNewComments = true;
+            CheckDiscussions = true;
+        }
     }
 }

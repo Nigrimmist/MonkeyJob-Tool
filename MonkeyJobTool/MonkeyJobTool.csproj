@@ -332,6 +332,8 @@
     <None Include="Resources\MonkeyJob_16x16_gray.ico" />
     <None Include="Resources\audio49.png" />
     <None Include="Resources\up38.png" />
+    <None Include="Resources\keyboard25.png" />
+    <None Include="Resources\enter5.png" />
     <Content Include="Res\mj.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

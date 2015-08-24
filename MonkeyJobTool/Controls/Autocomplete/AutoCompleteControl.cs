@@ -218,5 +218,13 @@ namespace MonkeyJobTool.Controls.Autocomplete
         {
             return !string.IsNullOrEmpty(txtCommand.SelectedText);
         }
+
+        private void pbEnter_Click(object sender, EventArgs e)
+        {
+            if (OnCommandReceived != null)
+            {
+                OnCommandReceived(txtCommand.Text);
+            }
+        }
     }
 }
