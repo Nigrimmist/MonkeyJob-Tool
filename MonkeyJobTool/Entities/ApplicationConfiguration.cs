@@ -46,7 +46,7 @@ namespace MonkeyJobTool.Entities
                         "Nigrimmist.Modules.MemoryUsageTrayModule"
                     }
                 };
-                DevelopmentModeEnabled = false;
+                DevelopmentModeEnabled = true;
                 InstalledAppVersion = AppConstants.AppVersion;
             }
         }

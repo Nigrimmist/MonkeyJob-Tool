@@ -369,8 +369,7 @@ namespace MonkeyJobTool.Forms
                     
                     this.Invoke(new MethodInvoker(delegate
                     {
-                        Clipboard.SetText(answer);
-                        App.Instance.ShowInternalPopup(title,"Результат команды скопирован в буфер обмена", TimeSpan.FromSeconds(3));
+                        CopyToClipboard(title, answer);
                     }));
                 }
                 else
@@ -412,6 +411,11 @@ namespace MonkeyJobTool.Forms
                 }
         }
 
+        private void CopyToClipboard(string popupTitle,string text)
+        {
+            Clipboard.SetText(text);
+            App.Instance.ShowInternalPopup(popupTitle, "Результат команды скопирован в буфер обмена", TimeSpan.FromSeconds(3));
+        }
         private string TryToReplaceCommand(string command, out bool replaceCountExceed)
         {
             int replaceChainCount = 0;
@@ -531,7 +535,7 @@ namespace MonkeyJobTool.Forms
             MainIcon.Image = isLoading ? _loadingIcon : _preLoadingImg ?? _defaultIcon;
         }
 
-        private void _autocomplete_OnKeyPressed(Keys key)
+        private void _autocomplete_OnKeyPressed(Keys key,KeyEventArgs e)
         {
             switch (key)
             {
@@ -545,6 +549,20 @@ namespace MonkeyJobTool.Forms
                 default:
                 {
                     break;
+                }
+            }
+
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                if (!_autocomplete.IsTextSelected())
+                {
+                    var fixedAnswerPopup = App.Instance.GetOpenedFixedPopup();
+                    if (fixedAnswerPopup != null)
+                    {
+                        CopyToClipboard("Буфер обмена", fixedAnswerPopup.Text);
+                        e.SuppressKeyPress = true;
+                    }
+                    
                 }
             }
         }

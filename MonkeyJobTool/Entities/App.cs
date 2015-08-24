@@ -232,6 +232,13 @@ namespace MonkeyJobTool.Entities
             }
         }
 
+        public InfoPopup GetOpenedFixedPopup()
+        {
+            lock (_openedPopups)
+            {
+                return _openedPopups.SingleOrDefault(x => x.PopupType == PopupType.Fixed);
+            }
+        }
         
         public void ReorderPopupsPositions()
         {

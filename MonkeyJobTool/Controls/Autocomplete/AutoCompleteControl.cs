@@ -29,7 +29,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
         public delegate void OnTextChangeDelegate(string text);
         public event OnTextChangeDelegate OnTextChanged;
 
-        public delegate void OnKeyPressedDelegate(Keys key);
+        public delegate void OnKeyPressedDelegate(Keys key, KeyEventArgs e);
         public event OnKeyPressedDelegate OnKeyPressed;
         public int StartSuggestFrom = 1;
         public bool IsPopupOpen
@@ -196,7 +196,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
                 }
             }
             if (OnKeyPressed != null)
-                OnKeyPressed(e.KeyCode);
+                OnKeyPressed(e.KeyCode,e);
         }
 
         public void HidePopup()
@@ -212,6 +212,11 @@ namespace MonkeyJobTool.Controls.Autocomplete
         public void SelectAllText()
         {
             txtCommand.SelectAll();
+        }
+
+        public bool IsTextSelected()
+        {
+            return !string.IsNullOrEmpty(txtCommand.SelectedText);
         }
     }
 }
