@@ -167,10 +167,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
             {
                 case Keys.Enter:
                 {
-                    if (OnCommandReceived != null)
-                    {
-                        OnCommandReceived(txtCommand.Text);
-                    }
+                    SendCommand();
                     
                     e.SuppressKeyPress = true;
 
@@ -221,10 +218,55 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         private void pbEnter_Click(object sender, EventArgs e)
         {
+            SendCommand();
+        }
+
+        private void ChangeEnterIconColor(bool defaultIcon, TimeSpan? showTime=null)
+        {
+            this.pbEnter.BackgroundImage = defaultIcon?Properties.Resources.enter5:Properties.Resources.enter5_gray;
+        }
+
+        private void pbEnter_MouseEnter(object sender, EventArgs e)
+        {
+            ChangeEnterIconColor(false);
+        }
+
+        private void pbEnter_MouseLeave(object sender, EventArgs e)
+        {
+            ChangeEnterIconColor(true);
+        }
+
+        private void pnlEnterIconHolder_MouseEnter(object sender, EventArgs e)
+        {
+            ChangeEnterIconColor(false);
+        }
+
+        private void pnlEnterIconHolder_MouseLeave(object sender, EventArgs e)
+        {
+            ChangeEnterIconColor(true);
+        }
+
+        private void pnlEnterIconHolder_Click(object sender, EventArgs e)
+        {
+            SendCommand();
+        }
+
+        private void SendCommand()
+        {
             if (OnCommandReceived != null)
             {
                 OnCommandReceived(txtCommand.Text);
+                timerEnterIconChange.Stop();
+                timerEnterIconChange.Interval = 200;
+                ChangeEnterIconColor(false);
+                timerEnterIconChange.Start();
             }
+        }
+
+        private void timerEnterIconChange_Tick(object sender, EventArgs e)
+        {
+            ChangeEnterIconColor(true);
+            timerEnterIconChange.Stop();
         }
     }
 }

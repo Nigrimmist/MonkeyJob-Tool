@@ -76,7 +76,11 @@ namespace Nigrimmist.Modules.Modules
             int rPos = _r.Next(0, _jokes.Count );
             string joke = _jokes[rPos];
             _jokes.RemoveAt(rPos);
-            
+
+
+            joke = Regex.Replace(joke, "[\r\n]{3,}", "\r\n\r\n"); 
+
+
             _client.ShowMessage(commandToken,joke);
         }
     }
