@@ -104,7 +104,7 @@ namespace Rextester
             }
             else
             {
-                _client.ShowMessage(commandToken, "Что-то пошло не так");
+                _client.ShowMessage(commandToken, "Что-то скомпилилось не так, попробуйте по другому");
             }
 
 

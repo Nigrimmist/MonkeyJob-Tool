@@ -76,10 +76,10 @@ namespace Nigrimmist.Modules.Modules
                         {
                             amountStr = amountStr.Split(',').First();
                         }
-
-                        amountStr = Regex.Match(amountStr, @"\d+").Value;
+                        
+                        amountStr = Regex.Match(amountStr, @"(-|\d)+").Value;
                         int amount = Int32.Parse(amountStr);
-
+                        
                         var topBorders = account.WarningBorders.Where(x => x.Border >= amount).OrderBy(x => x.Border);
                         if (topBorders.Any())
                         {

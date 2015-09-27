@@ -165,7 +165,7 @@ namespace Nigrimmist.Modules.Modules
             if (disNode != null)
             {
                 newDiscussions = Convert.ToInt32(disNode.InnerText);
-                goToUrl = disNode.Attributes["href"].Value;
+                goToUrl = disNode.Attributes["href"].Value + "#msg_form";
             }
 
             var comNode = htmlDoc.DocumentNode.SelectSingleNode("//li[@id='new_comments_count']/*/a[1]");
@@ -173,7 +173,7 @@ namespace Nigrimmist.Modules.Modules
             if (comNode != null)
             {
                 newComments = Convert.ToInt32(comNode.InnerText);
-                goToUrl = comNode.Attributes["href"].Value;
+                goToUrl = comNode.Attributes["href"].Value + "#msg_form";
             }
         }
 

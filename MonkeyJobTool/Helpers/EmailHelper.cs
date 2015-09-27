@@ -16,27 +16,38 @@ namespace MonkeyJobTool.Helpers
             {
                 new Thread(() =>
                 {
-                    string email = "monkeyjobsender@gmail.com";
-                    string password = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String("ZnBtampxdXl5endkdndocGF3ZXNvbWVzYWx0LWRqYXNoZGxod2JAKjcwMTIzNw==")).Replace("awesomesalt-djashdlhwb@*701237", string.Empty);
-
-                    var fromAddress = new MailAddress(email);
-                    var toAddress = new MailAddress(toEmail);
-
-                    var smtp = new SmtpClient
+                    try
                     {
-                        Host = "smtp.gmail.com",
-                        Port = 587,
-                        EnableSsl = true,
-                        DeliveryMethod = SmtpDeliveryMethod.Network,
-                        Credentials = new NetworkCredential(fromAddress.Address, password),
-                        Timeout = 20000
-                    };
-                    var message = new MailMessage(fromAddress, toAddress)
+                        string email = "monkeyjobsender@gmail.com";
+                        string password = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String("ZnBtampxdXl5endkdndocGF3ZXNvbWVzYWx0LWRqYXNoZGxod2JAKjcwMTIzNw==")).Replace("awesomesalt-djashdlhwb@*701237", string.Empty);
+
+                        var fromAddress = new MailAddress(email);
+                        var toAddress = new MailAddress(toEmail);
+
+                        var smtp = new SmtpClient
+                        {
+                            Host = "smtp.gmail.com",
+                            Port = 587,
+                            EnableSsl = true,
+                            DeliveryMethod = SmtpDeliveryMethod.Network,
+                            Credentials = new NetworkCredential(fromAddress.Address, password),
+                            Timeout = 20000
+                        };
+                        var message = new MailMessage(fromAddress, toAddress)
+                        {
+                            Subject = subj,
+                            Body = ex + Environment.NewLine + LogManager.CollectSystemInfo()
+                        };
+                        smtp.Send(message);
+                    }
+                    catch (SmtpException inEx)
                     {
-                        Subject = subj,
-                        Body = ex + Environment.NewLine + LogManager.CollectSystemInfo()
-                    };
-                    smtp.Send(message);
+                        if (InternetChecker.IsInternetEnabled())
+                        {
+                            throw new ApplicationException("SmtpException with inner exception: " + ex + "\r\nInner exception : "+inEx);
+                        }
+                    }
+
                 }).Start();
             }
             else

@@ -150,7 +150,7 @@ namespace MonkeyJobTool.Forms
             //remove scrollbar fix
             int realScrollBarHeightMargin = 16; //magic people woodoo people!
             var realHeight  = txtMessage.GetPositionFromCharIndex(txtMessage.Text.Length).Y;
-            if (realHeight + realScrollBarHeightMargin >= height)
+            if (realHeight + realScrollBarHeightMargin >= height && realHeight + realScrollBarHeightMargin < screenHeight/2+100)
             {
                 txtMessage.Height = realHeight + 16;
             }

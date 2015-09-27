@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Management;
 using System.Net;
+using System.Net.Mail;
 using System.Text;
 using System.Windows.Forms;
 using Microsoft.Win32;
@@ -22,7 +23,7 @@ namespace MonkeyJobTool.Managers
         public static void Error(Exception ex, string message = "")
         {
             var logError = true;
-            if (ex is WebException)
+            if (ex is WebException || ex is SmtpException)
             {
                 if (!InternetChecker.IsInternetEnabled())
                 {

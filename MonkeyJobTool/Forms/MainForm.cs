@@ -106,7 +106,7 @@ namespace MonkeyJobTool.Forms
             {
                 LogManager.Error(ex, "MainForm_Load error");
             }
-        }
+            }
 
         private void Init()
         {

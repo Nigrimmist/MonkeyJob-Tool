@@ -113,7 +113,7 @@ namespace Nigrimmist.Modules.Modules
             }
             
 
-            var detailedItems = htmlDoc.DocumentNode.SelectNodes("//./dl[@class='forecast-detailed forecast-item']/*");
+            var detailedItems = htmlDoc.DocumentNode.SelectNodes("//./dl[@class='forecast-detailed']/*");
             for (int i = 0; i < detailedItems.Count; i += 2)
             {
                 
