@@ -160,6 +160,12 @@
     <Compile Include="Forms\InfoPopup.Designer.cs">
       <DependentUpon>InfoPopup.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\ModuleLogsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ModuleLogsForm.Designer.cs">
+      <DependentUpon>ModuleLogsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ModuleSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -231,6 +237,9 @@
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ModuleLogsForm.resx">
+      <DependentUpon>ModuleLogsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ModuleSettingsForm.resx">
       <DependentUpon>ModuleSettingsForm.cs</DependentUpon>

@@ -21,11 +21,12 @@ using MonkeyJobTool.Entities;
 using MonkeyJobTool.Entities.Autocomplete;
 using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Helpers;
-using MonkeyJobTool.Managers;
 using MonkeyJobTool.Properties;
 using Newtonsoft.Json;
+using NLog;
 using SharedHelper;
 using Language = HelloBotCore.Entities.Language;
+using LogManager = MonkeyJobTool.Managers.LogManager;
 
 namespace MonkeyJobTool.Forms
 {
@@ -159,8 +160,9 @@ namespace MonkeyJobTool.Forms
                 try
                 {   
                     SetLoading(true);
-                    _bot = new HelloBot(App.Instance.FolderSettingPath, AppConstants.AppVersion, botCommandPrefix: "", moduleFolderPath: App.Instance.ExecutionFolder);
-                    _bot.OnErrorOccured +=BotOnOnErrorOccured;
+                    _bot = new HelloBot(App.Instance.FolderSettingPath, App.Instance.FolderLogPath, AppConstants.AppVersion, botCommandPrefix: "", moduleFolderPath: App.Instance.ExecutionFolder);
+                    _bot.OnModuleErrorOccured +=BotOnModuleOnModuleErrorOccured;
+                    _bot.OnErrorOccured+= BotOnGeneralErrorOccured;
                     _bot.OnMessageRecieved += BotOnMessageRecieved;
                     _bot.OnTrayIconSetupRequired += OnTrayIconSetupRequired;
                     _bot.OnTrayIconStateChangeRequested += OnTrayIconStateChangeRequested;
@@ -194,6 +196,11 @@ namespace MonkeyJobTool.Forms
                     LogManager.Error(ex, "InitBot error");
                 }
             }).Start();
+        }
+
+        private void BotOnGeneralErrorOccured(Exception ex)
+        {
+            LogManager.Error(ex);
         }
 
         private void BotOnOnTrayBalloonTipRequested(Guid moduleId, string title, string body, TimeSpan timeout, TooltipType tooltipType)
@@ -248,7 +255,7 @@ namespace MonkeyJobTool.Forms
             }
         }
 
-        private void BotOnOnErrorOccured(Exception exception, ModuleInfoBase module)
+        private void BotOnModuleOnModuleErrorOccured(Exception exception, ModuleInfoBase module)
         {
             string errorMessage = "Неизвестная ошибка.";
             bool logError = true;

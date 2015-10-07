@@ -317,6 +317,7 @@ namespace MonkeyJobTool.Forms
                 var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
                 var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
                 btnEnabledDisableModule.Text = (!module.IsEnabled ? "В" : "Вы") + "ключить модуль";
+                btnShowLogs.Enabled = module.Trace.TraceMessages.Any();
             }
         }
 
@@ -442,9 +443,15 @@ namespace MonkeyJobTool.Forms
             }
         }
 
-        
-
-
-
+        private void btnShowLogs_Click(object sender, EventArgs e)
+        {
+            if(gridModules.SelectedRows.Count==1)
+            {
+                var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
+                var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
+                var mlForm = new ModuleLogsForm(){Module = module};
+                mlForm.ShowDialog();
+            }
+        }
     }
 }

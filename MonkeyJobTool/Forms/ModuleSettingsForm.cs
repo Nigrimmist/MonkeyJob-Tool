@@ -24,7 +24,6 @@ namespace MonkeyJobTool.Forms
     public partial class ModuleSettingsForm : Form
     {
         public ModuleInfoBase Module { get; set; }
-        public string ModuleSettingsPath { get; set; }
 
         public ModuleSettingsForm()
         {
@@ -33,7 +32,7 @@ namespace MonkeyJobTool.Forms
 
         private void ModuleSettingsForm_Load(object sender, EventArgs e)
         {
-            string fullPath = Module.GetSettingFileFullPath(App.Instance.FolderSettingPath);
+            string fullPath = Module.GetSettingFileFullPath();
             object moduleSettings;
             if (!File.Exists(fullPath))
             {
@@ -279,7 +278,7 @@ namespace MonkeyJobTool.Forms
         {
             try
             {
-                string fullPath = Module.GetSettingFileFullPath(App.Instance.FolderSettingPath);
+                string fullPath = Module.GetSettingFileFullPath();
                 object moduleSettings;
                 ModuleSettings ms;
                 if (!File.Exists(fullPath))

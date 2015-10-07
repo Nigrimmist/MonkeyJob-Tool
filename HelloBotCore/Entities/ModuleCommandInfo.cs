@@ -18,7 +18,7 @@ namespace HelloBotCore.Entities
         public Color? BodyBackgroundColor { get; set; }
         public Color? HeaderBackgroundColor { get; set; }
 
-        public ModuleCommandInfo()
+        public ModuleCommandInfo(string settingsFolderAbsolutePath, string logsFolderAbsolutePath) : base(settingsFolderAbsolutePath, logsFolderAbsolutePath)
         {
             OriginalAliases = new List<string>();
         }
@@ -35,6 +35,7 @@ namespace HelloBotCore.Entities
             CommandDescription = handlerModuleBase.ModuleDescription;
             OriginalAliases = handlerModuleBase.CallCommandList.Where(x=>!string.IsNullOrEmpty(x.Command)).Select(x => x.Command).ToList();
             OriginalAliases.AddRange(handlerModuleBase.CallCommandList.Where(x => !string.IsNullOrEmpty(x.Command)).SelectMany(x => x.Aliases).ToList());
+            
         }
 
         public override ModuleType ModuleType

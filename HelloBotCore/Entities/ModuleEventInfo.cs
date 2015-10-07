@@ -14,6 +14,13 @@ namespace HelloBotCore.Entities
         public delegate void OnEventFireDelegate(Guid eventToken);
         public TimeSpan EventRunEvery { get; set; }
         public OnEventFireDelegate EventFireCallback;
+
+        public ModuleEventInfo(string settingsFolderAbsolutePath, string logsFolderAbsolutePath)
+            : base(settingsFolderAbsolutePath, logsFolderAbsolutePath)
+        {
+            
+        }
+
         public Color? BodyBackgroundColor { get; set; }
         public Color? HeaderBackgroundColor { get; set; }
 

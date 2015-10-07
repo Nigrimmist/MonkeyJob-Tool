@@ -28,5 +28,11 @@
         /// Determine ui app version
         /// </summary>
         double UiClientVersion { get; }
+
+        /// <summary>
+        /// Log trace info. Last 30 can be visible from UI. Please, do not store here personal user data.
+        /// </summary>
+        /// <param name="message"></param>
+        void LogTrace(string message);
     }
 }

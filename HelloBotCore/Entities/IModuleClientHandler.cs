@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using HelloBotCommunication;
 using HelloBotCommunication.Interfaces;
+using Newtonsoft.Json.Bson;
 
 namespace HelloBotCore.Entities
 {
@@ -19,5 +20,6 @@ namespace HelloBotCore.Entities
         double GetUIClientVersion();
         void UpdateTrayText(Guid token, string text, Color? textColor = null, Color? backgroundColor = null, int fontSize = 12, string fontName = "Tahoma", Color? iconBorderColor = null);
         void ShowTrayBalloonTip(Guid token, string text, TimeSpan? timeout = null, TooltipType? tooltipType = null);
+        void LogModuleTraceRequest(ModuleInfoBase moduleInfo, string message);
     }
 }

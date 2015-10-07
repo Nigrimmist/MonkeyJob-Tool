@@ -57,6 +57,7 @@
             this.colIsEnabled = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.settingsCol = new System.Windows.Forms.DataGridViewImageColumn();
             this.btnSaveConfig = new System.Windows.Forms.Button();
+            this.btnShowLogs = new System.Windows.Forms.Button();
             this.TPCommandReplace.SuspendLayout();
             this.TPGeneral.SuspendLayout();
             this.TPHotkeys.SuspendLayout();
@@ -272,6 +273,7 @@
             // 
             // TPModuleSettings
             // 
+            this.TPModuleSettings.Controls.Add(this.btnShowLogs);
             this.TPModuleSettings.Controls.Add(this.btnEnabledDisableModule);
             this.TPModuleSettings.Controls.Add(this.gridModules);
             this.TPModuleSettings.Location = new System.Drawing.Point(4, 22);
@@ -366,6 +368,19 @@
             this.btnSaveConfig.UseVisualStyleBackColor = false;
             this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
             // 
+            // btnShowLogs
+            // 
+            this.btnShowLogs.BackColor = System.Drawing.Color.Moccasin;
+            this.btnShowLogs.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnShowLogs.ForeColor = System.Drawing.Color.Black;
+            this.btnShowLogs.Location = new System.Drawing.Point(436, 42);
+            this.btnShowLogs.Name = "btnShowLogs";
+            this.btnShowLogs.Size = new System.Drawing.Size(118, 39);
+            this.btnShowLogs.TabIndex = 7;
+            this.btnShowLogs.Text = "Просмотреть лог активности";
+            this.btnShowLogs.UseVisualStyleBackColor = false;
+            this.btnShowLogs.Click += new System.EventHandler(this.btnShowLogs_Click);
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -423,5 +438,6 @@
         private System.Windows.Forms.DataGridViewImageColumn settingsCol;
         private Controls.HelpTooltip hsSendErrorReport;
         private System.Windows.Forms.CheckBox chkDenyErrorInfoSend;
+        private System.Windows.Forms.Button btnShowLogs;
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Web;
 using HelloBotCommunication;
@@ -38,69 +39,84 @@ namespace Nigrimmist.Modules.Modules
             get { return TimeSpan.FromMinutes(5);}
         }
 
-
-
-        private Dictionary<string, HtmlReaderManager> _dict = new Dictionary<string, HtmlReaderManager>(); 
+        private Dictionary<string, HtmlReaderManager> _dict = new Dictionary<string, HtmlReaderManager>();
 
         public override void OnFire(Guid eventToken)
         {
-
-            DiarySettings settings = _client.GetSettings<DiarySettings>();
-            if (settings != null)
+            try
             {
-                foreach (var diary in settings.DiaryList.Where(x => !string.IsNullOrEmpty(x.UserName) && !string.IsNullOrEmpty(x.Password)))
+                DiarySettings settings = _client.GetSettings<DiarySettings>();
+                if (settings != null)
                 {
-                    HtmlReaderManager hrm;
-                    if (!_dict.TryGetValue(diary.UserName, out hrm))
+                    foreach (var diary in settings.DiaryList.Where(x => !string.IsNullOrEmpty(x.UserName) && !string.IsNullOrEmpty(x.Password)))
                     {
-                        hrm = new HtmlReaderManager();
-                        hrm.Encoding = Encoding.GetEncoding(1251);
-                        _dict.Add(diary.UserName, hrm);
-                        if (!Login(eventToken,diary.UserName,diary.Password,hrm))
+                        HtmlReaderManager hrm;
+
+                        if (!_dict.TryGetValue(diary.UserName, out hrm))
                         {
-                            continue;
+                            hrm = new HtmlReaderManager();
+                            hrm.Encoding = Encoding.GetEncoding(1251);
+                            _dict.Add(diary.UserName, hrm);
+                            if (!Login(eventToken, diary.UserName, diary.Password, hrm))
+                            {
+                                continue;
+                            }
                         }
-                    }
 
-                    if (!IsAuthenticated(hrm))
-                    {
-                        if (!Login(eventToken, diary.UserName, diary.Password, hrm))
+                        if (!IsAuthenticated(hrm))
                         {
-                            continue;
+                            if (!Login(eventToken, diary.UserName, diary.Password, hrm))
+                            {
+                                _client.LogTrace(string.Format("Login failed for {0}", diary.UserName));
+                                continue;
+                            }
                         }
-                    }
 
-                    int newUmails;
-                    int newDiscussions;
-                    int newComments;
+                        int newUmails;
+                        int newDiscussions;
+                        int newComments;
 
-                    string goToUrl= "http://diary.ru";
-                    GetNotifies(hrm.Html, out newUmails, out newComments, out newDiscussions,ref goToUrl);
-                    StringBuilder sbMessage = new StringBuilder();
-                    if (newUmails > 0 && diary.CheckUmails)
-                    {
-                        sbMessage.Append("Новые U-Mail (" + newUmails + ")" + Environment.NewLine);
-                    }
-                    if (newDiscussions > 0 && diary.CheckDiscussions)
-                    {
-                        sbMessage.Append("Новые дискуссии (" + newDiscussions + ")" + Environment.NewLine);
-                    }
-                    if (newComments > 0 && diary.CheckNewComments)
-                    {
-                        sbMessage.Append("Новые комментарии (" + newComments + ")");
-                    }
-
-                    string toReturn = sbMessage.ToString();
-                    if (!string.IsNullOrEmpty(toReturn))
-                    {
-                        toReturn = (@"На дневнике """+diary.UserName+@""" : " + Environment.NewLine + Environment.NewLine) + toReturn;
-
-                        _client.ShowMessage(eventToken, toReturn).OnClick(() =>
+                        string goToUrl = "http://diary.ru";
+                        _client.LogTrace(string.Format("Retrieving data..."));
+                        GetNotifies(hrm.Html, out newUmails, out newComments, out newDiscussions, ref goToUrl);
+                        _client.LogTrace(string.Format("Retrieving data successfull"));
+                        StringBuilder sbMessage = new StringBuilder();
+                        if (newUmails > 0 && diary.CheckUmails)
                         {
-                            _client.ShowMessage(eventToken, goToUrl, answerType: AnswerBehaviourType.OpenLink);
-                        });
+                            sbMessage.Append("Новые U-Mail (" + newUmails + ")" + Environment.NewLine);
+                        }
+                        if (newDiscussions > 0 && diary.CheckDiscussions)
+                        {
+                            sbMessage.Append("Новые дискуссии (" + newDiscussions + ")" + Environment.NewLine);
+                        }
+                        if (newComments > 0 && diary.CheckNewComments)
+                        {
+                            sbMessage.Append("Новые комментарии (" + newComments + ")");
+                        }
+
+                        string toReturn = sbMessage.ToString();
+                        if (!string.IsNullOrEmpty(toReturn))
+                        {
+                            toReturn = (@"На дневнике """ + diary.UserName + @""" : " + Environment.NewLine + Environment.NewLine) + toReturn;
+
+                            _client.ShowMessage(eventToken, toReturn).OnClick(() =>
+                            {
+                                _client.ShowMessage(eventToken, goToUrl, answerType: AnswerBehaviourType.OpenLink);
+                            });
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                if (ex is WebException)
+                {
+                    if (((WebException)ex).Status == WebExceptionStatus.ProtocolError)
+                    {
+
+                    }
+                }
+                throw;
             }
         }
 
@@ -114,7 +130,7 @@ namespace Nigrimmist.Modules.Modules
 
         private bool Login(Guid eventToken, string username, string password, HtmlReaderManager hrm)
         {
-            
+            _client.LogTrace(string.Format("Trying login...[{0}]", username));
             string postUrl = String.Format("user_pass={1}&user_login={0}",
                                                                HttpUtility.UrlEncode(username, Encoding.GetEncoding(1251)),
                                                                HttpUtility.UrlEncode(password, Encoding.GetEncoding(1251)));
@@ -138,6 +154,7 @@ namespace Nigrimmist.Modules.Modules
                 return false;
             }
             hrm.Get("http://diary.ru");
+            _client.LogTrace("Login successfull");
             return true;
         }
 

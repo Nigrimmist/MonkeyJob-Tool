@@ -31,34 +31,45 @@ namespace HelloBotCore
     public class HelloBot : IModuleClientHandler
     {
         public readonly double Version = 0.6;
-        
+        private const int RunTraceSaveEveryMin = 5;
+
         private List<ModuleInfoBase> _allModules = new List<ModuleInfoBase>();
 
+        
         private readonly string _moduleDllmask;
         private readonly string _botCommandPrefix;
         private readonly string _moduleFolderPath;
         private readonly int _commandTimeoutSec;
-        private readonly Dictionary<Guid, object> _commandDictLocks;
+        private readonly Dictionary<Guid, ModuleLocker> _commandDictLocks;
         private readonly string _settingsFolderAbsolutePath;
+        private readonly string _logsFolderAbsolutePath;
         private Language _currentLanguage = Language.English;
 
         private readonly Dictionary<Guid, BotContextBase> _commandContexts;
         private readonly object _commandContextLock = new object();
-        public delegate void OnErrorOccuredDelegate(Exception ex, ModuleInfoBase module);
-        
+
+        public delegate void OnModuleErrorOccuredDelegate(Exception ex, ModuleInfoBase module);
+        public delegate void OnGeneralErrorOccuredDelegate(Exception ex);
+
         /// <param name="clientCommandContext">Can be null</param>
-        public delegate void OnMessageRecievedDelegate(Guid commandToken,AnswerInfo answer,ClientCommandContext clientCommandContext);
-        public event OnErrorOccuredDelegate OnErrorOccured;
+        public delegate void OnMessageRecievedDelegate(Guid commandToken, AnswerInfo answer, ClientCommandContext clientCommandContext);
+
+        public event OnGeneralErrorOccuredDelegate OnErrorOccured;
+        public event OnModuleErrorOccuredDelegate OnModuleErrorOccured;
         public event OnMessageRecievedDelegate OnMessageRecieved;
         private readonly double _currentUIClientVersion;
+        
 
         public delegate void TrayIconSetupRequiredDelegate(Guid moduleId, Icon icon, string title);
+
         public event TrayIconSetupRequiredDelegate OnTrayIconSetupRequired;
-        
-        public delegate void TrayIconStateChangeRequestedDelegate(Guid moduleId, Icon originalIcon, string text, Color? textColor = null, Color? backgroundColor = null, int fontSize = 12, string fontName="Tahoma", Color? iconBorderColor=null);
+
+        public delegate void TrayIconStateChangeRequestedDelegate(Guid moduleId, Icon originalIcon, string text, Color? textColor = null, Color? backgroundColor = null, int fontSize = 12, string fontName = "Tahoma", Color? iconBorderColor = null);
+
         public event TrayIconStateChangeRequestedDelegate OnTrayIconStateChangeRequested;
 
         public delegate void OnTrayPopupShowRequestedDelegate(Guid moduleId, string title, string body, TimeSpan timeout, TooltipType tooltipType);
+
         public event OnTrayPopupShowRequestedDelegate OnTrayBalloonTipRequested;
 
         /// <summary>
@@ -67,21 +78,23 @@ namespace HelloBotCore
         /// <param name="settingsFolderAbsolutePath">folder for module settings, will be created if not exist</param>
         /// <param name="moduleDllmask">File mask for retrieving client command dlls</param>
         /// <param name="botCommandPrefix">Prefix for bot commands. Only messages with that prefix will be handled</param>
-        public HelloBot(string settingsFolderAbsolutePath,double currentUIClientVersion,string moduleDllmask = "*.dll", string botCommandPrefix = "!", string moduleFolderPath = ".")
+        public HelloBot(string settingsFolderAbsolutePath, string logsFolderAbsolutePath,double currentUIClientVersion, string moduleDllmask = "*.dll", string botCommandPrefix = "!", string moduleFolderPath = ".")
         {
             _currentUIClientVersion = currentUIClientVersion;
             _settingsFolderAbsolutePath = settingsFolderAbsolutePath;
+            _logsFolderAbsolutePath = logsFolderAbsolutePath;
             if (!Directory.Exists(settingsFolderAbsolutePath))
                 Directory.CreateDirectory(settingsFolderAbsolutePath);
-
+            if (!Directory.Exists(logsFolderAbsolutePath))
+                Directory.CreateDirectory(logsFolderAbsolutePath);
+            
             _moduleDllmask = moduleDllmask;
             _botCommandPrefix = botCommandPrefix;
             _moduleFolderPath = moduleFolderPath;
             _commandTimeoutSec = 30;
-            _commandDictLocks = new Dictionary<Guid, object>();
-
+            _commandDictLocks = new Dictionary<Guid, ModuleLocker>();
             _commandContexts = new Dictionary<Guid, BotContextBase>();
-            
+            new Thread(SaveModuleTraces).Start();
         }
 
         public void RunEventBasedModules()
@@ -97,7 +110,7 @@ namespace HelloBotCore
                 var tEv = ev;
                 new Thread(() =>
                 {
-                    
+
                     Guid commandToken = Guid.NewGuid();
                     AddNewCommandContext(commandToken, new BotCommandContext()
                     {
@@ -117,13 +130,13 @@ namespace HelloBotCore
                         }
                         catch (Exception ex)
                         {
-                            if (OnErrorOccured != null)
+                            if (OnModuleErrorOccured != null)
                             {
-                                OnErrorOccured(ex,tEv);
+                                OnModuleErrorOccured(ex, tEv);
                             }
                             Thread.Sleep(TimeSpan.FromSeconds(30));
                         }
-                        
+
                         Thread.Sleep(tEv.EventRunEvery);
                     }
 
@@ -149,8 +162,8 @@ namespace HelloBotCore
                     });
                     if (tTm.IsEnabled)
                     {
-                        if (OnTrayIconSetupRequired!=null)
-                            OnTrayIconSetupRequired(tTm.Id,tTm.TrayIcon,tTm.GetModuleName());
+                        if (OnTrayIconSetupRequired != null)
+                            OnTrayIconSetupRequired(tTm.Id, tTm.TrayIcon, tTm.GetModuleName());
                     }
                     while (true)
                     {
@@ -163,9 +176,9 @@ namespace HelloBotCore
                         }
                         catch (Exception ex)
                         {
-                            if (OnErrorOccured != null)
+                            if (OnModuleErrorOccured != null)
                             {
-                                OnErrorOccured(ex, tTm);
+                                OnModuleErrorOccured(ex, tTm);
                             }
                             Thread.Sleep(TimeSpan.FromSeconds(30));
                         }
@@ -185,15 +198,15 @@ namespace HelloBotCore
             }
         }
 
-        public void RegisterModules(List<string> disabledModules=null)
+        public void RegisterModules(List<string> disabledModules = null)
         {
 
             var allModules = LoadModules(disabledModules);
 
             var handlerModules = allModules.OfType<ModuleCommandInfo>().Where(x => x.CallCommandList.Any()).ToList();
-            var baseList = ExtendAliases(handlerModules).Select(x => (ModuleInfoBase)x).ToList();//extend aliases for autocomplete wrong keyboard layout search
-            baseList.AddRange(allModules.OfType<ModuleEventInfo>().Select(x => (ModuleInfoBase)x));
-            baseList.AddRange(allModules.OfType<ModuleTrayInfo>().Select(x => (ModuleInfoBase)x));
+            var baseList = ExtendAliases(handlerModules).Select(x => (ModuleInfoBase) x).ToList(); //extend aliases for autocomplete wrong keyboard layout search
+            baseList.AddRange(allModules.OfType<ModuleEventInfo>().Select(x => (ModuleInfoBase) x));
+            baseList.AddRange(allModules.OfType<ModuleTrayInfo>().Select(x => (ModuleInfoBase) x));
             AllModules.AddRange(baseList);
         }
 
@@ -212,7 +225,7 @@ namespace HelloBotCore
                     command.Aliases.AddRange(command.Command.GetOtherKeyboardLayoutWords(command.Command.DetectLanguage()));
                 }
             }
-            
+
             return modules;
         }
 
@@ -220,9 +233,9 @@ namespace HelloBotCore
         {
             List<ModuleInfoBase> toReturn = new List<ModuleInfoBase>();
             var dlls = Directory.GetFiles(_moduleFolderPath, _moduleDllmask);
-            var i = typeof(ModuleRegister);
+            var i = typeof (ModuleRegister);
             var settingsAttr = typeof (ModuleSettingsForAttribute);
-            
+
             if (disabledModules == null) disabledModules = new List<string>();
             foreach (var dll in dlls)
             {
@@ -235,49 +248,49 @@ namespace HelloBotCore
                     new
                     {
                         moduleSettingsClass = x,
-                        moduleForParentClass = ((ModuleSettingsForAttribute)(Attribute.GetCustomAttribute(x, settingsAttr))).ModuleType
+                        moduleForParentClass = ((ModuleSettingsForAttribute) (Attribute.GetCustomAttribute(x, settingsAttr))).ModuleType
                     }).ToList();
 
                 foreach (Type type in typesInAssembly)
                 {
                     object obj = Activator.CreateInstance(type);
 
-                    
 
-                    var modules = ((ModuleRegister)obj).GetModules().Select(module =>
+
+                    var modules = ((ModuleRegister) obj).GetModules().Select(module =>
                     {
                         var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == module.GetType());
-                        var tModule = new ModuleCommandInfo();
-                        _commandDictLocks.Add(tModule.Id, new object());
-                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this, ((ModuleRegister)obj).AuthorInfo);
+                        var tModule = new ModuleCommandInfo(_settingsFolderAbsolutePath,_logsFolderAbsolutePath);
+                        _commandDictLocks.Add(tModule.Id, new ModuleLocker());
+                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this, ((ModuleRegister) obj).AuthorInfo);
                         tModule.IsEnabled = !disabledModules.Contains(tModule.ModuleSystemName);
                         if (settingClass != null)
                             tModule.ModuleSettingsType = settingClass.moduleSettingsClass;
-                        return (ModuleInfoBase)tModule;
+                        return (ModuleInfoBase) tModule;
                     });
 
-                    var events = ((ModuleRegister)obj).GetEvents().Select(ev =>
+                    var events = ((ModuleRegister) obj).GetEvents().Select(ev =>
                     {
                         var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == ev.GetType());
-                        var tModule = new ModuleEventInfo();
-                        _commandDictLocks.Add(tModule.Id, new object());
-                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this, ((ModuleRegister)obj).AuthorInfo);
+                        var tModule = new ModuleEventInfo(_settingsFolderAbsolutePath, _logsFolderAbsolutePath);
+                        _commandDictLocks.Add(tModule.Id, new ModuleLocker());
+                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this, ((ModuleRegister) obj).AuthorInfo);
                         tModule.IsEnabled = !disabledModules.Contains(tModule.ModuleSystemName);
                         if (settingClass != null)
                             tModule.ModuleSettingsType = settingClass.moduleSettingsClass;
-                        return (ModuleInfoBase)tModule;
+                        return (ModuleInfoBase) tModule;
                     });
 
-                    var trayModules = ((ModuleRegister)obj).GetTrayModules().Select(ev =>
+                    var trayModules = ((ModuleRegister) obj).GetTrayModules().Select(ev =>
                     {
                         var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == ev.GetType());
-                        var tModule = new ModuleTrayInfo();
-                        _commandDictLocks.Add(tModule.Id, new object());
-                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this, ((ModuleRegister)obj).AuthorInfo);
+                        var tModule = new ModuleTrayInfo(_settingsFolderAbsolutePath, _logsFolderAbsolutePath);
+                        _commandDictLocks.Add(tModule.Id, new ModuleLocker());
+                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this, ((ModuleRegister) obj).AuthorInfo);
                         tModule.IsEnabled = !disabledModules.Contains(tModule.ModuleSystemName);
                         if (settingClass != null)
                             tModule.ModuleSettingsType = settingClass.moduleSettingsClass;
-                        return (ModuleInfoBase)tModule;
+                        return (ModuleInfoBase) tModule;
                     });
 
                     toReturn.AddRange(modules);
@@ -285,10 +298,10 @@ namespace HelloBotCore
                     toReturn.AddRange(trayModules);
                 }
             }
-            
+
             return toReturn;
         }
-        
+
         public bool HandleMessage(string incomingMessage, ClientCommandContext clientCommandContext)
         {
             if (incomingMessage.Contains(_botCommandPrefix))
@@ -296,56 +309,56 @@ namespace HelloBotCore
                 var command = incomingMessage.Substring(incomingMessage.IndexOf(_botCommandPrefix, StringComparison.InvariantCulture) + _botCommandPrefix.Length);
                 if (!string.IsNullOrEmpty(command))
                 {
-                        string args;
-                        ModuleCommandInfo foundModuleCommand = FindModule(command, out command, out args);
-                        if (foundModuleCommand != null)
+                    string args;
+                    ModuleCommandInfo foundModuleCommand = FindModule(command, out command, out args);
+                    if (foundModuleCommand != null)
+                    {
+                        ModuleCommandInfo hnd = foundModuleCommand;
+                        new Thread(() => //running in separate thread
                         {
-                            ModuleCommandInfo hnd = foundModuleCommand;
-                            new Thread(() => //running in separate thread
+                            if (!RunWithTimeout(() => //check for timing
                             {
-                                if (!RunWithTimeout(() => //check for timing
+                                try
                                 {
-                                    try
-                                    {
-                                        var commandTempGuid = Guid.NewGuid();
+                                    var commandTempGuid = Guid.NewGuid();
 
-                                        AddNewCommandContext(commandTempGuid, new BotCommandContext()
-                                        {
-                                            ClientCommandContext = clientCommandContext,
-                                            CommandName = !string.IsNullOrEmpty(hnd.ProvidedTitle) ? hnd.ProvidedTitle : command,
-                                            ModuleType = ModuleType.Handler,
-                                            ModuleId = hnd.Id
-                                        });
-                                        
-                                        hnd.HandleMessage(command, args, commandTempGuid);
-                                    }
-                                    catch (Exception ex)
+                                    AddNewCommandContext(commandTempGuid, new BotCommandContext()
                                     {
-                                        if (!(ex is ThreadAbortException))
-                                        {
-                                            if (OnErrorOccured != null)
-                                            {
-                                                OnErrorOccured(ex,hnd);
-                                            }
-                                            
-                                        }
-                                    }
-                                }, TimeSpan.FromSeconds(_commandTimeoutSec)))
-                                {
-                                    ShowInternalMessage(command,"модуль сломался. Причина : время модуля на выполнение команды истекло");
+                                        ClientCommandContext = clientCommandContext,
+                                        CommandName = !string.IsNullOrEmpty(hnd.ProvidedTitle) ? hnd.ProvidedTitle : command,
+                                        ModuleType = ModuleType.Handler,
+                                        ModuleId = hnd.Id
+                                    });
+
+                                    hnd.HandleMessage(command, args, commandTempGuid);
                                 }
-                            }).Start();
-                            return true;
-                        }
-                        return false;
-                    
+                                catch (Exception ex)
+                                {
+                                    if (!(ex is ThreadAbortException))
+                                    {
+                                        if (OnModuleErrorOccured != null)
+                                        {
+                                            OnModuleErrorOccured(ex, hnd);
+                                        }
+
+                                    }
+                                }
+                            }, TimeSpan.FromSeconds(_commandTimeoutSec)))
+                            {
+                                ShowInternalMessage(command, "модуль сломался. Причина : время модуля на выполнение команды истекло");
+                            }
+                        }).Start();
+                        return true;
+                    }
+                    return false;
+
                 }
                 return false;
             }
             return false;
         }
-        
-        static bool RunWithTimeout(ThreadStart threadStart, TimeSpan timeout)
+
+        private static bool RunWithTimeout(ThreadStart threadStart, TimeSpan timeout)
         {
             Thread workerThread = new Thread(threadStart);
             workerThread.SetApartmentState(ApartmentState.STA);
@@ -357,7 +370,7 @@ namespace HelloBotCore
 
             return finished;
         }
-        
+
 
         public ModuleCommandInfo FindModule(string phrase, out string command, out string args)
         {
@@ -373,7 +386,7 @@ namespace HelloBotCore
                     {
                         args = phrase.Substring(com.Command.Length);
                         if (string.IsNullOrEmpty(args) || args.StartsWith(" "))
-                        foundCommands.Add(com.Command);
+                            foundCommands.Add(com.Command);
                     }
                 }
             }
@@ -399,7 +412,7 @@ namespace HelloBotCore
             if (foundCommands.Any())
             {
                 string foundCommand = foundCommands.OrderByDescending(x => x).First();
-                toReturn = EnabledCommands.FirstOrDefault(x => x.CallCommandList.Select(y=>y.Command).Contains(foundCommand,StringComparer.OrdinalIgnoreCase));
+                toReturn = EnabledCommands.FirstOrDefault(x => x.CallCommandList.Select(y => y.Command).Contains(foundCommand, StringComparer.OrdinalIgnoreCase));
                 if (toReturn != null)
                 {
                     command = foundCommand;
@@ -412,45 +425,40 @@ namespace HelloBotCore
         public List<string> GetUserDefinedCommandList()
         {
             List<string> toReturn = new List<string>();
-            foreach (var commandList in EnabledCommands.Select(x=>x.CallCommandList))
+            foreach (var commandList in EnabledCommands.Select(x => x.CallCommandList))
             {
-                toReturn.AddRange(commandList.Select(x=>x.Command));
+                toReturn.AddRange(commandList.Select(x => x.Command));
             }
             return toReturn;
         }
-        
+
         public List<CallCommandInfo> FindCommands(string incCommand)
         {
             return (
                 from module in EnabledCommands
-                from cmd in module.CallCommandList where
-                cmd.Command.StartsWith(incCommand, StringComparison.InvariantCultureIgnoreCase) ||
-                cmd.Aliases.Any(y => y.StartsWith(incCommand, StringComparison.InvariantCultureIgnoreCase))
+                from cmd in module.CallCommandList
+                where
+                    cmd.Command.StartsWith(incCommand, StringComparison.InvariantCultureIgnoreCase) ||
+                    cmd.Aliases.Any(y => y.StartsWith(incCommand, StringComparison.InvariantCultureIgnoreCase))
                 let descr = !string.IsNullOrEmpty(cmd.Description) ? cmd.Description : module.CommandDescription.Description
                 select new CallCommandInfo(cmd.Command, descr)).ToList();
         }
 
         #region methods for modules
-        
+
         public void SaveSettings<T>(ModuleInfoBase info, T serializableSettingObject) where T : class
         {
-            lock (_commandDictLocks[info.Id])
+            lock (_commandDictLocks[info.Id].SettingsLock)
             {
-                var settings = new ModuleSettings<T>(info.Version,info.ActualSettingsModuleVersion, serializableSettingObject);
-                var json = JsonConvert.SerializeObject(settings, Formatting.Indented);
-                File.WriteAllText(info.GetSettingFileFullPath(_settingsFolderAbsolutePath), json);
+                info.SaveSettings(serializableSettingObject);
             }
         }
 
-        public T GetSettings<T>(ModuleInfoBase info) where T : class
+        public T GetSettings<T>(ModuleInfoBase module) where T : class
         {
-            lock (_commandDictLocks[info.Id])
+            lock (_commandDictLocks[module.Id].SettingsLock)
             {
-                string fullPath = info.GetSettingFileFullPath(_settingsFolderAbsolutePath);
-                if (!File.Exists(fullPath)) return null;
-                string data = File.ReadAllText(fullPath);
-                var settings = JsonConvert.DeserializeObject<ModuleSettings<T>>(data);
-                return settings.ModuleData;
+                return module.GetSettings<T>();
             }
         }
 
@@ -506,7 +514,7 @@ namespace HelloBotCore
 
         //todo : should be refactoring to show error (remove method and call error event)
         [Obsolete]
-        private void ShowInternalMessage(string commandname, string content, string title = null, ClientCommandContext clientCommandContext=null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
+        private void ShowInternalMessage(string commandname, string content, string title = null, ClientCommandContext clientCommandContext = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
         {
             Guid systemGuid = Guid.Empty;
             if (OnMessageRecieved != null)
@@ -517,11 +525,11 @@ namespace HelloBotCore
                     AnswerType = answerType,
                     CommandName = commandname,
                     MessageSourceType = ModuleType.Handler
-                },clientCommandContext);
+                }, clientCommandContext);
         }
-        
 
-        public void RegisterUserReactionCallback(Guid commandToken,UserReactionToCommandType reactionType, Action reactionCallback)
+
+        public void RegisterUserReactionCallback(Guid commandToken, UserReactionToCommandType reactionType, Action reactionCallback)
         {
 
             BotCommandContext commandContext = GetCommandContextByToken(commandToken) as BotCommandContext;
@@ -536,7 +544,7 @@ namespace HelloBotCore
                         commandContext.OnClickAction = reactionCallback;
                         break;
                 }
-                
+
             }
         }
 
@@ -546,7 +554,7 @@ namespace HelloBotCore
             if (trayModuleContext != null)
             {
                 if (OnTrayIconStateChangeRequested != null)
-                    OnTrayIconStateChangeRequested(trayModuleContext.ModuleId, trayModuleContext.TrayIcon, text,textColor,backgroundColor,fontSize,fontName,iconBorderColor);
+                    OnTrayIconStateChangeRequested(trayModuleContext.ModuleId, trayModuleContext.TrayIcon, text, textColor, backgroundColor, fontSize, fontName, iconBorderColor);
             }
         }
 
@@ -556,9 +564,17 @@ namespace HelloBotCore
             if (trayModuleContext != null)
             {
                 string title = trayModuleContext.CommandName;
-                
+
                 if (OnTrayBalloonTipRequested != null)
-                    OnTrayBalloonTipRequested(trayModuleContext.ModuleId, title, text, timeout??TimeSpan.FromSeconds(10),tooltipType??TooltipType.None);
+                    OnTrayBalloonTipRequested(trayModuleContext.ModuleId, title, text, timeout ?? TimeSpan.FromSeconds(10), tooltipType ?? TooltipType.None);
+            }
+        }
+
+        public void LogModuleTraceRequest(ModuleInfoBase moduleInfo, string message)
+        {
+            lock (_commandDictLocks[moduleInfo.Id].LogTraceLock)
+            {
+                moduleInfo.Trace.AddMessage(message);
             }
         }
 
@@ -606,7 +622,7 @@ namespace HelloBotCore
             }
         }
 
-        
+
         public void SetCurrentLanguage(Language lang)
         {
             _currentLanguage = lang;
@@ -626,14 +642,26 @@ namespace HelloBotCore
         {
             return _currentUIClientVersion;
         }
-
         
+        public IEnumerable<ModuleEventInfo> Events
+        {
+            get { return _allModules.OfType<ModuleEventInfo>(); }
+        }
 
-        public IEnumerable<ModuleEventInfo> Events { get { return _allModules.OfType<ModuleEventInfo>(); } }
-        public IEnumerable<ModuleCommandInfo> EnabledCommands { get { return _allModules.OfType<ModuleCommandInfo>().Where(x=>x.IsEnabled); } }
-        public IEnumerable<ModuleTrayInfo> TrayModules { get { return _allModules.OfType<ModuleTrayInfo>(); } }
+        public IEnumerable<ModuleCommandInfo> EnabledCommands
+        {
+            get { return _allModules.OfType<ModuleCommandInfo>().Where(x => x.IsEnabled); }
+        }
 
-        public List<ModuleInfoBase> AllModules { get { return _allModules; } }
+        public IEnumerable<ModuleTrayInfo> TrayModules
+        {
+            get { return _allModules.OfType<ModuleTrayInfo>(); }
+        }
+
+        public List<ModuleInfoBase> AllModules
+        {
+            get { return _allModules; }
+        }
 
 
         public void DisableModule(string moduleSystemName)
@@ -649,11 +677,11 @@ namespace HelloBotCore
         public List<ModuleInfoBase> GetIncompatibleSettingModules()
         {
             List<ModuleInfoBase> toReturn = new List<ModuleInfoBase>();
-            foreach (ModuleInfoBase module in AllModules.Where(x=>x.ModuleSettingsType!=null))
+            foreach (ModuleInfoBase module in AllModules.Where(x => x.ModuleSettingsType != null))
             {
-                lock (_commandDictLocks[module.Id])
+                lock (_commandDictLocks[module.Id].SettingsLock)
                 {
-                    string fullPath = module.GetSettingFileFullPath(_settingsFolderAbsolutePath);
+                    string fullPath = module.GetSettingFileFullPath();
                     if (File.Exists(fullPath))
                     {
                         string data = File.ReadAllText(fullPath);
@@ -663,10 +691,33 @@ namespace HelloBotCore
                             toReturn.Add(module);
                         }
                     }
-                    
+
                 }
             }
             return toReturn;
+        }
+
+        private void SaveModuleTraces()
+        {
+            while (true)
+            {
+                Thread.Sleep(RunTraceSaveEveryMin*1000*60);
+                try
+                {
+                    foreach (var module in AllModules)
+                    {
+                        lock (_commandDictLocks[module.Id].LogTraceLock)
+                        {
+                            module.Trace.Save();
+                        }
+                    }
+                }
+                catch(Exception ex)
+                {
+                    if (OnErrorOccured != null)
+                        OnErrorOccured(ex);
+                }
+            }
         }
     }
 }

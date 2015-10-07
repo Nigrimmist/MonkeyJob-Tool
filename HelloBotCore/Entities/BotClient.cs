@@ -75,6 +75,9 @@ namespace HelloBotCore.Entities
             _moduleClientHandler.ShowTrayBalloonTip(token, text, timeout, tooltipType);
         }
 
-        
+        public void LogTrace(string message)
+        {
+            _moduleClientHandler.LogModuleTraceRequest(_moduleInfo, message);
+        }
     }
 }

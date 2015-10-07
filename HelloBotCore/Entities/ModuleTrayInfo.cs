@@ -16,6 +16,12 @@ namespace HelloBotCore.Entities
         public delegate void OnEventFireDelegate(Guid eventToken);
         public TimeSpan EventRunEvery { get; set; }
         public OnEventFireDelegate EventFireCallback;
+
+        public ModuleTrayInfo(string settingsFolderAbsolutePath, string logsFolderAbsolutePath) : base(settingsFolderAbsolutePath, logsFolderAbsolutePath)
+        {
+            
+        }
+
         public Icon TrayIcon { get; set; }
 
         public void Init(string dllName, ModuleTrayBase trayModuleBase, IModuleClientHandler moduleClientHandler, AuthorInfo author)

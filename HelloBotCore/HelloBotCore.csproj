@@ -53,6 +53,7 @@
     <Compile Include="Entities\AnswerInfo.cs" />
     <Compile Include="Entities\BotContextBase.cs" />
     <Compile Include="Entities\BotTrayModuleContext.cs" />
+    <Compile Include="Entities\LogMessage.cs" />
     <Compile Include="Entities\ModuleInfoBase.cs" />
     <Compile Include="Entities\BotClient.cs" />
     <Compile Include="Entities\BotCommandContext.cs" />
@@ -60,6 +61,8 @@
     <Compile Include="Entities\ModuleEventInfo.cs" />
     <Compile Include="Entities\IModuleClientHandler.cs" />
     <Compile Include="Entities\ModuleCommandInfo.cs" />
+    <Compile Include="Entities\ModuleLocker.cs" />
+    <Compile Include="Entities\ModuleLogStorageInfo.cs" />
     <Compile Include="Entities\ModuleSettings.cs" />
     <Compile Include="Entities\ModuleTrayInfo.cs" />
     <Compile Include="Entities\ModuleType.cs" />
