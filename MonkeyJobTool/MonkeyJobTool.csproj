@@ -110,6 +110,7 @@
     <Compile Include="Controls\Settings\IUIDataItem.cs" />
     <Compile Include="Entities\AppConstants.cs" />
     <Compile Include="Entities\ApplicationConfiguration.cs" />
+    <Compile Include="Entities\ApplicationMigrations.cs" />
     <Compile Include="Entities\Autocomplete\AutocompletePopupInfo.cs" />
     <Compile Include="Entities\Autocomplete\AutocompletePopupItem.cs" />
     <Compile Include="Entities\Autocomplete\DataFilterInfo.cs" />

@@ -6,6 +6,10 @@ using Newtonsoft.Json;
 
 namespace MonkeyJobTool.Entities
 {
+
+    /// <summary>
+    /// Adding new settings, be sure that it has been inited in constructor and Migrations for new version was created.
+    /// </summary>
     public class ApplicationConfiguration
     {
         public AppConfHotkeys HotKeys { get; set; }
@@ -18,6 +22,7 @@ namespace MonkeyJobTool.Entities
         public bool DevelopmentModeEnabled { get; set; }
         public double InstalledAppVersion { get; set; }
         public bool ShowCommandHelp { get; set; }
+        public double ConfigVersion { get; set; }
 
         /// <summary>
         /// Defaults will be used for clear first installation
@@ -45,11 +50,12 @@ namespace MonkeyJobTool.Entities
                         "Nigrimmist.Modules.PingModule",
                         "Nigrimmist.Modules.WeatherTrayModule",
                         "Nigrimmist.Modules.MemoryUsageTrayModule"
-                    }
+                    },
+                    ClearCommandAfterMinOfInactivity = TimeSpan.FromMinutes(5)
                 };
                 DevelopmentModeEnabled = true;
                 InstalledAppVersion = AppConstants.AppVersion;
-                
+                ConfigVersion = AppConstants.ConfigVersion;
             }
         }
 
@@ -76,10 +82,5 @@ namespace MonkeyJobTool.Entities
         public List<string>  DisabledModules { get; set; }
         public bool DoNotNotify { get; set; }
         public TimeSpan ClearCommandAfterMinOfInactivity { get; set; }
-
-        public SystemData()
-        {
-            ClearCommandAfterMinOfInactivity = TimeSpan.FromMinutes(5);
-        }
     }
 }

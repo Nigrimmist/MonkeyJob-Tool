@@ -115,6 +115,7 @@ namespace MonkeyJobTool.Entities
             //register open program hotkey using incoming (main form) delegate
             _hotKeysHadlers.Add(HotKeyType.OpenProgram, mainFormOpenHotKeyRaisedHandler);
             ReInitHotKeys();
+            ApplicationMigrations.UpdateAppMigrations();
         }
 
        
