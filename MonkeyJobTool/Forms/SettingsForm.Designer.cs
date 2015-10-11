@@ -50,6 +50,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.pnlCommandReplaces = new System.Windows.Forms.FlowLayoutPanel();
             this.TPModuleSettings = new System.Windows.Forms.TabPage();
+            this.btnShowLogs = new System.Windows.Forms.Button();
             this.btnEnabledDisableModule = new System.Windows.Forms.Button();
             this.gridModules = new System.Windows.Forms.DataGridView();
             this.ModuleName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -57,7 +58,8 @@
             this.colIsEnabled = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.settingsCol = new System.Windows.Forms.DataGridViewImageColumn();
             this.btnSaveConfig = new System.Windows.Forms.Button();
-            this.btnShowLogs = new System.Windows.Forms.Button();
+            this.hsShowHelpForCommands = new MonkeyJobTool.Controls.HelpTooltip();
+            this.chkIsShowCommandHelp = new System.Windows.Forms.CheckBox();
             this.TPCommandReplace.SuspendLayout();
             this.TPGeneral.SuspendLayout();
             this.TPHotkeys.SuspendLayout();
@@ -118,6 +120,8 @@
             // 
             // TPGeneral
             // 
+            this.TPGeneral.Controls.Add(this.hsShowHelpForCommands);
+            this.TPGeneral.Controls.Add(this.chkIsShowCommandHelp);
             this.TPGeneral.Controls.Add(this.hsSendErrorReport);
             this.TPGeneral.Controls.Add(this.chkDenyErrorInfoSend);
             this.TPGeneral.Controls.Add(this.htDonateBtn);
@@ -284,6 +288,19 @@
             this.TPModuleSettings.Text = "Управление модулями";
             this.TPModuleSettings.UseVisualStyleBackColor = true;
             // 
+            // btnShowLogs
+            // 
+            this.btnShowLogs.BackColor = System.Drawing.Color.Moccasin;
+            this.btnShowLogs.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnShowLogs.ForeColor = System.Drawing.Color.Black;
+            this.btnShowLogs.Location = new System.Drawing.Point(436, 42);
+            this.btnShowLogs.Name = "btnShowLogs";
+            this.btnShowLogs.Size = new System.Drawing.Size(118, 39);
+            this.btnShowLogs.TabIndex = 7;
+            this.btnShowLogs.Text = "Просмотреть лог активности";
+            this.btnShowLogs.UseVisualStyleBackColor = false;
+            this.btnShowLogs.Click += new System.EventHandler(this.btnShowLogs_Click);
+            // 
             // btnEnabledDisableModule
             // 
             this.btnEnabledDisableModule.BackColor = System.Drawing.Color.Moccasin;
@@ -368,18 +385,23 @@
             this.btnSaveConfig.UseVisualStyleBackColor = false;
             this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
             // 
-            // btnShowLogs
+            // hsShowHelpForCommands
             // 
-            this.btnShowLogs.BackColor = System.Drawing.Color.Moccasin;
-            this.btnShowLogs.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnShowLogs.ForeColor = System.Drawing.Color.Black;
-            this.btnShowLogs.Location = new System.Drawing.Point(436, 42);
-            this.btnShowLogs.Name = "btnShowLogs";
-            this.btnShowLogs.Size = new System.Drawing.Size(118, 39);
-            this.btnShowLogs.TabIndex = 7;
-            this.btnShowLogs.Text = "Просмотреть лог активности";
-            this.btnShowLogs.UseVisualStyleBackColor = false;
-            this.btnShowLogs.Click += new System.EventHandler(this.btnShowLogs_Click);
+            this.hsShowHelpForCommands.AutoSize = true;
+            this.hsShowHelpForCommands.Location = new System.Drawing.Point(220, 107);
+            this.hsShowHelpForCommands.Name = "hsShowHelpForCommands";
+            this.hsShowHelpForCommands.Size = new System.Drawing.Size(19, 19);
+            this.hsShowHelpForCommands.TabIndex = 8;
+            // 
+            // chkIsShowCommandHelp
+            // 
+            this.chkIsShowCommandHelp.AutoSize = true;
+            this.chkIsShowCommandHelp.Location = new System.Drawing.Point(6, 107);
+            this.chkIsShowCommandHelp.Name = "chkIsShowCommandHelp";
+            this.chkIsShowCommandHelp.Size = new System.Drawing.Size(208, 17);
+            this.chkIsShowCommandHelp.TabIndex = 7;
+            this.chkIsShowCommandHelp.Text = "Показывать подсказки для команд";
+            this.chkIsShowCommandHelp.UseVisualStyleBackColor = true;
             // 
             // SettingsForm
             // 
@@ -439,5 +461,7 @@
         private Controls.HelpTooltip hsSendErrorReport;
         private System.Windows.Forms.CheckBox chkDenyErrorInfoSend;
         private System.Windows.Forms.Button btnShowLogs;
+        private Controls.HelpTooltip hsShowHelpForCommands;
+        private System.Windows.Forms.CheckBox chkIsShowCommandHelp;
     }
 }

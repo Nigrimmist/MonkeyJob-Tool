@@ -111,10 +111,17 @@ namespace Nigrimmist.Modules.Modules
             {
                 if (ex is WebException)
                 {
-                    if (((WebException)ex).Status == WebExceptionStatus.ProtocolError)
+                    if (((WebException)ex).Status == WebExceptionStatus.NameResolutionFailure)
                     {
-
+                        _client.LogTrace("The remote name could not be resolved");
+                        return;
                     }
+                    else if (((WebException)ex).Status == WebExceptionStatus.ProtocolError)
+                    {
+                        _client.LogTrace("The remote name could not be resolved");
+                        return;
+                    }
+                    
                 }
                 throw;
             }

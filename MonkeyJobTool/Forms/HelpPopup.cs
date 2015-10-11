@@ -10,7 +10,8 @@ namespace MonkeyJobTool.Forms
     public enum PopupFormType
     {
         HelpForm,
-        CommandInfo
+        CommandInfo,
+        SuggestCommandInfo
     }
     
     public partial class HelpPopup : Form
@@ -18,7 +19,7 @@ namespace MonkeyJobTool.Forms
         public Point MouseCoords { get; set; }
         public PopupFormType FormType { get; set; }
         public HelpInfo HelpData { get; set; }
-
+        
         public HelpPopup()
         {
             InitializeComponent();
@@ -43,13 +44,37 @@ namespace MonkeyJobTool.Forms
                     HandleCommandInfo();
                     break;
                 }
+                case PopupFormType.SuggestCommandInfo:
+                {
+                    HandleSuggestCommandInfo();
+                    break;
+                }
             }
             Font tempFont = ( (fldBody)).Font;
             int textLength = ((fldBody)).Text.Length;
             int textLines = ((fldBody)).GetLineFromCharIndex(textLength) + 1;
             int margin = ((fldBody)).Bounds.Height - ((fldBody)).ClientSize.Height;
-            ((RichTextBox)(fldBody)).Height = (TextRenderer.MeasureText(" ", tempFont).Height * textLines) + margin + 3 + richTextBox2.Height;
+            ((RichTextBox)(fldBody)).Height = (TextRenderer.MeasureText(" ", tempFont).Height * textLines) + margin + 3 + rtbTitle.Height;
             this.Height = fldBody.Height+28;
+        }
+
+        private void HandleSuggestCommandInfo()
+        {
+            lblTitle.Text = HelpData.Title;
+            this.Width = 260;
+            fldBody.Width = 200;
+            rtbTitle.Width = this.Width-2;
+            fldBody.Location = new Point(50, fldBody.Location.Y);
+            PictureBox iconBox = new PictureBox();
+            iconBox.Image = Resources.help1;
+            fldBody.Text = HelpData.Body;
+            iconBox.Size = new Size(36, 36);
+            iconBox.Top = 25;
+            iconBox.Left = 8;
+            iconBox.Height = Resources.help1.Height;
+            iconBox.Width = Resources.help1.Width;
+            this.Controls.Add(iconBox);
+
         }
 
         private void HandleCommandInfo()
@@ -104,17 +129,6 @@ namespace MonkeyJobTool.Forms
 
         }
 
-        private void FullPostForm_Load(object sender, EventArgs e)
-        {
-            Debug.WriteLine(this.Location);
-        }
-
-        private void richTextBox1_MouseEnter(object sender, EventArgs e)
-        {
-            MouseCoords = new Point(Cursor.Position.X + 10, Cursor.Position.Y);
-            SetupCoords();
-        }
-
         protected override bool ShowWithoutActivation
         {
             get { return true; }
@@ -125,12 +139,6 @@ namespace MonkeyJobTool.Forms
             ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, Color.Black, ButtonBorderStyle.Solid);
         }
 
-        private void richTextBox2_MouseMove(object sender, MouseEventArgs e)
-        {
-            this.Hide();
-        }
-
-
     }
 
     public class HelpInfo
@@ -138,5 +146,6 @@ namespace MonkeyJobTool.Forms
         public string Body { get; set; }
         public Image Icon { get; set; }
         public string Title { get; set; }
+        public string ForCommand { get; set; }
     }
 }

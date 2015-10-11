@@ -52,7 +52,7 @@ namespace Nigrimmist.Modules.Modules
                     {
                         new CommandKeyValue() {Command = "g", Url = "https://www.google.by/search?q={0}"},
                         new CommandKeyValue() {Command = "y", Url = "http://yandex.ru/yandsearch?text={0}"},
-                        new CommandKeyValue() {Command = "кино", Url = "http://www.kinopoisk.ru/index.php?first=yes&what=&kp_query={0}"},
+                        new CommandKeyValue() {Command = "кино", Url = "http://www.kinopoisk.ru/search/films/?text={0}"},
                         new CommandKeyValue() {Command = "you", Url = "https://www.youtube.com/results?search_query={0}"},
                         new CommandKeyValue() {Command = "so", Url = "http://stackoverflow.com/search?q={0}"}
                     }

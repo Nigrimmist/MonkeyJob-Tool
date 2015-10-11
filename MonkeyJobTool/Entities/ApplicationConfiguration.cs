@@ -17,7 +17,7 @@ namespace MonkeyJobTool.Entities
         public Language Language { get; set; }
         public bool DevelopmentModeEnabled { get; set; }
         public double InstalledAppVersion { get; set; }
-
+        public bool ShowCommandHelp { get; set; }
 
         /// <summary>
         /// Defaults will be used for clear first installation
@@ -36,6 +36,7 @@ namespace MonkeyJobTool.Entities
                 AllowUsingGoogleAnalytics = true;
                 AllowSendCrashReports = true;
                 ShowDonateButton = true;
+                ShowCommandHelp = true;
                 Language = Language.ru;
                 SystemData = new SystemData()
                 {
@@ -48,6 +49,7 @@ namespace MonkeyJobTool.Entities
                 };
                 DevelopmentModeEnabled = true;
                 InstalledAppVersion = AppConstants.AppVersion;
+                
             }
         }
 
@@ -73,5 +75,11 @@ namespace MonkeyJobTool.Entities
     {
         public List<string>  DisabledModules { get; set; }
         public bool DoNotNotify { get; set; }
+        public TimeSpan ClearCommandAfterMinOfInactivity { get; set; }
+
+        public SystemData()
+        {
+            ClearCommandAfterMinOfInactivity = TimeSpan.FromMinutes(5);
+        }
     }
 }

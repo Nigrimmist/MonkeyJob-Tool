@@ -206,6 +206,11 @@ namespace MonkeyJobTool.Controls.Autocomplete
             _popup.ToTop();
         }
 
+        public int GetPopupHeight()
+        {
+            return _popup.Height;
+        }
+
         public void SelectAllText()
         {
             txtCommand.SelectAll();
@@ -267,6 +272,11 @@ namespace MonkeyJobTool.Controls.Autocomplete
         {
             ChangeEnterIconColor(true);
             timerEnterIconChange.Stop();
+        }
+
+        public void Clear()
+        {
+            txtCommand.Text = "";
         }
     }
 }

@@ -141,18 +141,79 @@ namespace MonkeyJobTool.Forms
             if (foundCommand != null && foundCommand.Icon!=null)
             {
                 MainIcon.Image = foundCommand.Icon;
+                if (string.IsNullOrEmpty(args))
+                    ShowHelpInfo(foundCommand);
+                else
+                    CloseHelpInfo();
             }
             else
             {
                 MainIcon.Image = _defaultIcon;
+                CloseHelpInfo();
             }
             if (string.IsNullOrEmpty(text))
             {
                 App.Instance.CloseFixedPopup();
+                CloseHelpInfo();
             }
         }
 
 
+        private HelpPopup _helpPopupForm = null;
+        private void ShowHelpInfo(ModuleCommandInfo command)
+        {
+            if (App.Instance.AppConf.ShowCommandHelp)
+            {
+                if (_helpPopupForm != null && _helpPopupForm.HelpData.ForCommand == command.ModuleSystemName)
+                {
+                    return;
+                }
+                CloseHelpInfo();
+
+                var helpForm = new HelpPopup()
+                {
+                    HelpData = new HelpInfo
+                    {
+                        Body = command.ToString(false),
+                        Icon = command.Icon ?? Resources.monkey_highres_img,
+                        Title = "Подсказка по команде \"" + command.GetModuleName() + "\"",
+                        ForCommand = command.ModuleSystemName
+                    }
+                };
+                _helpPopupForm = helpForm;
+                helpForm.FormType = PopupFormType.SuggestCommandInfo;
+                helpForm.Init();
+
+                int top = this.Top + this.Height - helpForm.Height; //(_autocomplete.IsPopupOpen?_autocomplete.GetPopupHeight():0);
+                helpForm.Top = top;
+                helpForm.Left = this.Left - this.Width;
+                helpForm.ToTop();
+            }
+        }
+
+        private void CloseHelpInfo()
+        {
+            if (_helpPopupForm != null)
+            {
+                _helpPopupForm.Close();
+                _helpPopupForm = null;
+            }
+        }
+
+        private void ShowHelpInfo()
+        {
+            if (_helpPopupForm != null)
+            {
+                _helpPopupForm.ToTop();
+            }
+        }
+        private void HideHelpInfo()
+        {
+            if (_helpPopupForm != null)
+            {
+                _helpPopupForm.Hide();
+            }
+        }
         private void InitBot(Action<Action> afterInitActionClbck=null)
         {
             new Thread(() =>
@@ -323,8 +384,6 @@ namespace MonkeyJobTool.Forms
                 Invoke(act);
             else
                 act();
-
-
         }
 
         private Icon GetCurrentClearTrayIcon()
@@ -337,6 +396,7 @@ namespace MonkeyJobTool.Forms
             tsDonate.Visible = App.Instance.AppConf.ShowDonateButton;
         }
 
+        private DateTime? _lastDeactivateFormDate;
         private bool _isHelpBalloonDisplayed;
         void MainForm_Deactivate(object sender, EventArgs e)
         {
@@ -347,6 +407,7 @@ namespace MonkeyJobTool.Forms
                 App.Instance.HideAllPopupsAvailableForHiding();
                 //App.Instance.CloseFixedPopup();
                 App.Instance.ReorderPopupsPositions();
+                _lastDeactivateFormDate = DateTime.Now;
             }
 
             if (_isFirstRun && !_isHelpBalloonDisplayed)
@@ -373,7 +434,6 @@ namespace MonkeyJobTool.Forms
 
                 if (answerType == AnswerBehaviourType.CopyToClipBoard || (clientCommandContext != null && clientCommandContext.IsToBuffer))
                 {
-                    
                     this.Invoke(new MethodInvoker(delegate
                     {
                         CopyToClipboard(title, answer);
@@ -579,6 +639,7 @@ namespace MonkeyJobTool.Forms
             this.Hide();
             _autocomplete.HidePopup();
             App.Instance.HideAllPopupsAvailableForHiding();
+            HideHelpInfo();
         }
         private void trayIcon_MouseDown(object sender, MouseEventArgs e)
         {
@@ -590,10 +651,19 @@ namespace MonkeyJobTool.Forms
 
         void ShowMain()
         {
+            //do not show old commands after min of inactivity
+            if (_lastDeactivateFormDate.HasValue && DateTime.Now - _lastDeactivateFormDate.Value > App.Instance.AppConf.SystemData.ClearCommandAfterMinOfInactivity)
+            {
+                _autocomplete.Clear();
+                App.Instance.CloseFixedPopup();
+                _lastDeactivateFormDate = null;
+            }
+
             App.Instance.AllPopupsToTop();
+            ShowHelpInfo();
             this.ToTop(true);
             App.Instance.ReorderPopupsPositions();
-
+            
             if (!App.Instance.AnyPopupExist())
             {
                 if (_autocomplete.IsPopupOpen)
@@ -610,26 +680,32 @@ namespace MonkeyJobTool.Forms
             {
                 new Thread(() =>
                 {
-                    DateTime lastLogDate = DateTime.Today;
-
-                    RegistryKey appRegistry = Registry.CurrentUser.CreateSubKey(AppConstants.AppName);
-                    var lastStatsCollectedKey = appRegistry.GetValue(AppConstants.Registry.LastStatsCollectedDateKey);
-                    if (_isFirstRun)
+                    try
                     {
-                        GoogleAnalytics.LogFirstUse();
-                        GoogleAnalytics.LogRun();
+                        DateTime lastLogDate = DateTime.Today;
+
+                        RegistryKey appRegistry = Registry.CurrentUser.CreateSubKey(AppConstants.AppName);
+                        var lastStatsCollectedKey = appRegistry.GetValue(AppConstants.Registry.LastStatsCollectedDateKey);
+                        if (_isFirstRun)
+                        {
+                            GoogleAnalytics.LogFirstUse();
+                            GoogleAnalytics.LogRun();
+                        }
+                        if (lastStatsCollectedKey != null)
+                        {
+                            lastLogDate = DateTime.ParseExact(lastStatsCollectedKey.ToString(), AppConstants.DateTimeFormat, null);
+                        }
+
+                        if (DateTime.Today > lastLogDate)
+                            GoogleAnalytics.LogRun();
+
+
+                        appRegistry.SetValue(AppConstants.Registry.LastStatsCollectedDateKey, DateTime.Now.Date.ToString(AppConstants.DateTimeFormat));
                     }
-                    if (lastStatsCollectedKey != null)
+                    catch (Exception ex)
                     {
-                        lastLogDate = DateTime.ParseExact(lastStatsCollectedKey.ToString(), AppConstants.DateTimeFormat, null);
+                        LogManager.Error(ex,"LogAnalytic");
                     }
-
-                    if (DateTime.Today > lastLogDate)
-                        GoogleAnalytics.LogRun();
-
-
-                    appRegistry.SetValue(AppConstants.Registry.LastStatsCollectedDateKey, DateTime.Now.Date.ToString(AppConstants.DateTimeFormat));
-
                 }).Start();
             }
         }

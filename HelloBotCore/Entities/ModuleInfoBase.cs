@@ -83,7 +83,7 @@ namespace HelloBotCore.Entities
             return "";
         }
 
-        public override string ToString()
+        public string ToString(bool includingAuthorInfo=true)
         {
             string toReturn = string.Empty;
             if (!string.IsNullOrEmpty(CommandDescription.Description))
@@ -99,9 +99,9 @@ namespace HelloBotCore.Entities
             {
                 toReturn += moduleDescription + Environment.NewLine + Environment.NewLine;
             }
-            
-            
-            if (Author != null)
+
+
+            if (Author != null && includingAuthorInfo)
             {
                 if (!string.IsNullOrEmpty(Author.Name))
                     toReturn += "Автор : " + Author.Name + Environment.NewLine + Environment.NewLine;
