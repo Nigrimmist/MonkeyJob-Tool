@@ -141,8 +141,14 @@ namespace MonkeyJobTool.Forms
             if (foundCommand != null && foundCommand.Icon!=null)
             {
                 MainIcon.Image = foundCommand.Icon;
-                if (string.IsNullOrEmpty(args))
-                    ShowHelpInfo(foundCommand);
+                
+                if (string.IsNullOrEmpty(args) || args == "?")
+                {
+                    if (App.Instance.AppConf.ShowCommandHelp || args == "?")
+                        ShowHelpInfo(foundCommand);
+                    else
+                        CloseHelpInfo();
+                }
                 else
                     CloseHelpInfo();
             }
@@ -160,9 +166,9 @@ namespace MonkeyJobTool.Forms
 
 
         private HelpPopup _helpPopupForm = null;
+
         private void ShowHelpInfo(ModuleCommandInfo command)
         {
-            if (App.Instance.AppConf.ShowCommandHelp)
             {
                 if (_helpPopupForm != null && _helpPopupForm.HelpData.ForCommand == command.ModuleSystemName)
                 {
@@ -188,6 +194,7 @@ namespace MonkeyJobTool.Forms
                 helpForm.Top = top;
                 helpForm.Left = this.Left - this.Width;
                 helpForm.ToTop();
+
             }
         }
 
