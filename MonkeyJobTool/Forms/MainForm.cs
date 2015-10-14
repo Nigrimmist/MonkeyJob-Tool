@@ -720,7 +720,7 @@ namespace MonkeyJobTool.Forms
         public void HandleCommandInfoPopupClose(Guid? commandToken, ClosePopupReasonType closeReason)
         {
             if(commandToken!=null)
-                _bot.HandleUserReactionToCommand(commandToken.Value, (UserReactionToCommandType)((int)closeReason));
+                _bot.HandleUserReactionToCommand(commandToken.Value, closeReason.ToUserReactonType());
         }
 
 

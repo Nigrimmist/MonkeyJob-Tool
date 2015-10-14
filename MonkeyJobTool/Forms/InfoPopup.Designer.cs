@@ -29,16 +29,21 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InfoPopup));
             this.closeTimer = new System.Windows.Forms.Timer(this.components);
             this.IconPic = new System.Windows.Forms.PictureBox();
             this.lblCloseHint = new System.Windows.Forms.Label();
             this.pnlHeader = new System.Windows.Forms.Panel();
+            this.picClose = new System.Windows.Forms.PictureBox();
+            this.picCopy = new System.Windows.Forms.PictureBox();
             this.rtTitle = new MonkeyJobTool.Controls.Autocomplete.RichTextLabel();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.pnlCloseHint = new System.Windows.Forms.Panel();
             this.txtMessage = new MonkeyJobTool.Controls.Autocomplete.RichTextLabel();
             ((System.ComponentModel.ISupportInitialize)(this.IconPic)).BeginInit();
             this.pnlHeader.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picClose)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picCopy)).BeginInit();
             this.pnlMain.SuspendLayout();
             this.pnlCloseHint.SuspendLayout();
             this.SuspendLayout();
@@ -50,7 +55,7 @@
             // 
             // IconPic
             // 
-            this.IconPic.BackgroundImage = global::MonkeyJobTool.Properties.Resources.monkey_highres_img;
+            this.IconPic.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("IconPic.BackgroundImage")));
             this.IconPic.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.IconPic.Location = new System.Drawing.Point(3, 1);
             this.IconPic.Margin = new System.Windows.Forms.Padding(0);
@@ -74,6 +79,8 @@
             // pnlHeader
             // 
             this.pnlHeader.BackColor = System.Drawing.Color.Transparent;
+            this.pnlHeader.Controls.Add(this.picClose);
+            this.pnlHeader.Controls.Add(this.picCopy);
             this.pnlHeader.Controls.Add(this.rtTitle);
             this.pnlHeader.Controls.Add(this.IconPic);
             this.pnlHeader.ForeColor = System.Drawing.Color.Transparent;
@@ -82,6 +89,34 @@
             this.pnlHeader.Name = "pnlHeader";
             this.pnlHeader.Size = new System.Drawing.Size(258, 38);
             this.pnlHeader.TabIndex = 12;
+            // 
+            // picClose
+            // 
+            this.picClose.BackColor = System.Drawing.Color.Transparent;
+            this.picClose.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("picClose.BackgroundImage")));
+            this.picClose.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.picClose.Location = new System.Drawing.Point(235, 8);
+            this.picClose.Name = "picClose";
+            this.picClose.Size = new System.Drawing.Size(13, 13);
+            this.picClose.TabIndex = 13;
+            this.picClose.TabStop = false;
+            this.picClose.Click += new System.EventHandler(this.picClose_Click);
+            this.picClose.MouseEnter += new System.EventHandler(this.pic_MouseEnter);
+            this.picClose.MouseLeave += new System.EventHandler(this.pic_MouseLeave);
+            // 
+            // picCopy
+            // 
+            this.picCopy.BackColor = System.Drawing.Color.Transparent;
+            this.picCopy.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("picCopy.BackgroundImage")));
+            this.picCopy.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.picCopy.Location = new System.Drawing.Point(213, 8);
+            this.picCopy.Name = "picCopy";
+            this.picCopy.Size = new System.Drawing.Size(13, 13);
+            this.picCopy.TabIndex = 12;
+            this.picCopy.TabStop = false;
+            this.picCopy.Click += new System.EventHandler(this.picCopy_Click);
+            this.picCopy.MouseEnter += new System.EventHandler(this.pic_MouseEnter);
+            this.picCopy.MouseLeave += new System.EventHandler(this.pic_MouseLeave);
             // 
             // rtTitle
             // 
@@ -151,6 +186,8 @@
             this.Load += new System.EventHandler(this.InfoPopup_Load);
             ((System.ComponentModel.ISupportInitialize)(this.IconPic)).EndInit();
             this.pnlHeader.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.picClose)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picCopy)).EndInit();
             this.pnlMain.ResumeLayout(false);
             this.pnlCloseHint.ResumeLayout(false);
             this.pnlCloseHint.PerformLayout();
@@ -168,5 +205,7 @@
         private System.Windows.Forms.Panel pnlHeader;
         private System.Windows.Forms.Panel pnlMain;
         private System.Windows.Forms.Panel pnlCloseHint;
+        private System.Windows.Forms.PictureBox picCopy;
+        private System.Windows.Forms.PictureBox picClose;
     }
 }

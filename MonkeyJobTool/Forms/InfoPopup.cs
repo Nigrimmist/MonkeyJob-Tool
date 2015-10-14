@@ -170,6 +170,12 @@ namespace MonkeyJobTool.Forms
             pnlMain.Height = this.Height;
             foreach (var c in FormHelper.IterateControls(Controls))
             {
+                if (c is PictureBox)
+                {
+                    PictureBox pic = (PictureBox)c;
+                    if(pic.Name==picClose.Name || pic.Name==picCopy.Name)
+                        continue;
+                }
                 c.MouseUp += InfoPopup_MouseUp;
             }
             pnlHeader.Width = pnlMainWidth-1; 
@@ -190,7 +196,10 @@ namespace MonkeyJobTool.Forms
                 AlreadyNotified = true;
             }
             txtMessage.Visible = true;
-            
+
+
+            picClose.Left = this.Width - picClose.Width - 12;
+            picCopy.Left = picClose.Left-22;
         }
 
         
@@ -272,6 +281,38 @@ namespace MonkeyJobTool.Forms
                 this.Hide();
             }
         }
+
+        
+        private void pic_MouseEnter(object sender, EventArgs e)
+        {
+            PictureBox cntrl = (PictureBox) sender;
+            cntrl.Width+=4;
+            cntrl.Height += 4;
+            cntrl.Location = new Point(cntrl.Location.X, cntrl.Location.Y - 2);
+        }
+
+        private void pic_MouseLeave(object sender, EventArgs e)
+        {
+            PictureBox cntrl = (PictureBox)sender;
+            cntrl.Width -= 4;
+            cntrl.Height -= 4;
+            cntrl.Location = new Point(cntrl.Location.X, cntrl.Location.Y + 2);
+        }
+
+        private void picClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
+            if (OnPopupClosedBy != null)
+            {
+                OnPopupClosedBy(ClosePopupReasonType.Manually, _sessionData);
+            }
+        }
+
+        private void picCopy_Click(object sender, EventArgs e)
+        {
+
+        }
+
         
     }
 }

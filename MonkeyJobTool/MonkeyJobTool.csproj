@@ -345,6 +345,7 @@
     <None Include="Resources\keyboard25.png" />
     <None Include="Resources\enter5.png" />
     <None Include="Resources\enter5%281%29.png" />
+    <None Include="Resources\cross97.png" />
     <Content Include="Res\mj.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
