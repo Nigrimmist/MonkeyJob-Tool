@@ -406,6 +406,10 @@ namespace MonkeyJobTool.Entities
             }
         }
 
-        
+        public void CopyToClipboard(string popupTitle, string text)
+        {
+            Clipboard.SetText(text);
+            ShowInternalPopup(popupTitle, "Результат команды скопирован в буфер обмена", TimeSpan.FromSeconds(3));
+        }
     }
 }

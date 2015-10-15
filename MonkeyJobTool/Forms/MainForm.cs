@@ -443,7 +443,7 @@ namespace MonkeyJobTool.Forms
                 {
                     this.Invoke(new MethodInvoker(delegate
                     {
-                        CopyToClipboard(title, answer);
+                        App.Instance.CopyToClipboard(title, answer);
                     }));
                 }
                 else
@@ -485,11 +485,7 @@ namespace MonkeyJobTool.Forms
                 }
         }
 
-        private void CopyToClipboard(string popupTitle,string text)
-        {
-            Clipboard.SetText(text);
-            App.Instance.ShowInternalPopup(popupTitle, "Результат команды скопирован в буфер обмена", TimeSpan.FromSeconds(3));
-        }
+        
         private string TryToReplaceCommand(string command, out bool replaceCountExceed)
         {
             int replaceChainCount = 0;
@@ -633,7 +629,7 @@ namespace MonkeyJobTool.Forms
                     var fixedAnswerPopup = App.Instance.GetOpenedFixedPopup();
                     if (fixedAnswerPopup != null)
                     {
-                        CopyToClipboard("Буфер обмена", fixedAnswerPopup.Text);
+                        App.Instance.CopyToClipboard("Буфер обмена", fixedAnswerPopup.Text);
                         e.SuppressKeyPress = true;
                     }
                     

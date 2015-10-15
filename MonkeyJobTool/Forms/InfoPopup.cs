@@ -310,7 +310,13 @@ namespace MonkeyJobTool.Forms
 
         private void picCopy_Click(object sender, EventArgs e)
         {
-
+            
+            App.Instance.CopyToClipboard("Буфер обмена",Text);
+            this.Close();
+            if (OnPopupClosedBy != null)
+            {
+                OnPopupClosedBy(ClosePopupReasonType.Manually, _sessionData);
+            }
         }
 
         
