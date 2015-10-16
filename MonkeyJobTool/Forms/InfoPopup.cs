@@ -43,6 +43,7 @@ namespace MonkeyJobTool.Forms
         public InfoPopup(PopupType popupType, string title, string text, TimeSpan? displayTime, object sessionData = null, Image icon = null, Color? titleBackgroundColor = null, Color? bodyBackgroundColor = null)
         {
             InitializeComponent();
+            
             this.Text = text;
             this.Title = title;
             PopupType = popupType;
@@ -55,6 +56,10 @@ namespace MonkeyJobTool.Forms
 
             if (bodyBackgroundColor.HasValue)
                 BodyColor = bodyBackgroundColor.Value;
+
+            new ToolTip() { ShowAlways = true }.SetToolTip(this.picMinimize, "Свернуть");
+            new ToolTip() { ShowAlways = true }.SetToolTip(this.picClose, "Закрыть");
+            new ToolTip() { ShowAlways = true }.SetToolTip(this.picCopy, "Скопировать в буфер обмена");
         }
 
         //n->0
@@ -173,7 +178,7 @@ namespace MonkeyJobTool.Forms
                 if (c is PictureBox)
                 {
                     PictureBox pic = (PictureBox)c;
-                    if(pic.Name==picClose.Name || pic.Name==picCopy.Name)
+                    if(pic.Name==picClose.Name || pic.Name==picCopy.Name || pic.Name == picMinimize.Name)
                         continue;
                 }
                 c.MouseUp += InfoPopup_MouseUp;
@@ -198,8 +203,9 @@ namespace MonkeyJobTool.Forms
             txtMessage.Visible = true;
 
 
-            picClose.Left = this.Width - picClose.Width - 12;
+            picClose.Left = this.Width - picClose.Width - 3;
             picCopy.Left = picClose.Left-22;
+            picMinimize.Left = picCopy.Left - 21;
         }
 
         
@@ -317,6 +323,11 @@ namespace MonkeyJobTool.Forms
             {
                 OnPopupClosedBy(ClosePopupReasonType.Manually, _sessionData);
             }
+        }
+
+        private void picMinimize_Click(object sender, EventArgs e)
+        {
+            this.Hide();
         }
 
         

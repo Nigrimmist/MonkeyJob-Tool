@@ -65,13 +65,20 @@ namespace Nigrimmist.Modules.Modules
         
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
-            Expression expr = new Expression(args);
-            var exprAnswer = expr.Evaluate();
-            string answer = string.Empty;
+            if (!string.IsNullOrEmpty(args.Trim()))
+            {
+                Expression expr = new Expression(args);
+                var exprAnswer = expr.Evaluate();
+                string answer = string.Empty;
 
-            answer = string.Format("Ответ равен : {0}", exprAnswer);
+                answer = string.Format("{0}", exprAnswer);
 
-            _client.ShowMessage(commandToken, answer);
+                _client.ShowMessage(commandToken, answer);
+            }
+            else
+            {
+                _client.ShowMessage(commandToken, "Введите выражение",messageType:MessageType.Error);
+            }
         }
     }
 }
