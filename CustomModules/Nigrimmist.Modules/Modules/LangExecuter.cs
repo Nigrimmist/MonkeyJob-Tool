@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class LangExecuter : ModuleHandlerBase
+    public class LangExecuter : ModuleCommandBase
     {
         private class RexTesterResponse
         {

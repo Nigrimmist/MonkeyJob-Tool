@@ -7,11 +7,11 @@ namespace SmartAssHandlerLib
 {
     public class VariousHandlersRegister : ModuleRegister
     {
-        public List<ModuleHandlerBase> GetModules()
+        public List<ModuleCommandBase> GetModules()
         {
-            return new List<ModuleHandlerBase>()
+            return new List<ModuleCommandBase>()
             {
-                new YesNoHandlerHandlerBase()
+                new YesNoCommandCommandBase()
             };
         }
 

@@ -9,7 +9,7 @@ using HelloBotModuleHelper;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class Map : ModuleHandlerBase
+    public class Map : ModuleCommandBase
     {
         private IClient _client;
 

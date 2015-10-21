@@ -9,7 +9,7 @@ using HelloBotCommunication.Interfaces;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class CopyToBufferModule: ModuleHandlerBase
+    public class CopyToBufferModule: ModuleCommandBase
     {
         private IClient _client;
         private List<BufferCommandKeyValue> _commandUrls;

@@ -11,7 +11,7 @@ using HtmlAgilityPack;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class IpChecker : ModuleHandlerBase
+    public class IpChecker : ModuleCommandBase
     {
         
         private Random _r = new Random();

@@ -14,7 +14,7 @@ namespace Nigrimmist.Modules.Modules
     /// <summary>
     /// Fun advices from http://fucking-great-advice.ru/
     /// </summary>
-    public class Advice : ModuleHandlerBase
+    public class Advice : ModuleCommandBase
     {
         private class AdviceResponse
         {

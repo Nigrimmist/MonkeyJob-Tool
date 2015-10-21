@@ -4,9 +4,9 @@ namespace HelloBotCommunication.Interfaces
 {
     public abstract class ModuleRegister
     {
-        public virtual List<ModuleHandlerBase> GetModules()
+        public virtual List<ModuleCommandBase> GetModules()
         {
-            return new List<ModuleHandlerBase>();
+            return new List<ModuleCommandBase>();
         }
         public virtual List<ModuleEventBase> GetEvents()
         {

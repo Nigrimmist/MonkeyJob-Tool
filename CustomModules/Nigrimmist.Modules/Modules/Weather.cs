@@ -13,7 +13,7 @@ using HtmlAgilityPack;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class Weather : ModuleHandlerBase
+    public class Weather : ModuleCommandBase
     {
         private IClient _client;
 

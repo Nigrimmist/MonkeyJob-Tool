@@ -10,7 +10,7 @@ namespace Nigrimmist.Modules.Modules
     /// <summary>
     /// Generate short link for argument url
     /// </summary>
-    public class ShortLink : ModuleHandlerBase
+    public class ShortLink : ModuleCommandBase
     {
         private IClient _client;
 

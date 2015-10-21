@@ -10,9 +10,9 @@ namespace Nigrimmist.Modules
 
     public class DllRegister : ModuleRegister
     {
-        public override List<ModuleHandlerBase> GetModules()
+        public override List<ModuleCommandBase> GetModules()
         {
-            return new List<ModuleHandlerBase>()
+            return new List<ModuleCommandBase>()
             {
                 new Calculator(),
                 new Weather(),

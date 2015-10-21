@@ -9,7 +9,7 @@ using HtmlAgilityPack;
 
 namespace Yushko.Modules
 {
-    public class Kstati : ModuleHandlerBase
+    public class Kstati : ModuleCommandBase
     {
         private IClient _client;
 

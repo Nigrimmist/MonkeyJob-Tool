@@ -10,7 +10,7 @@ namespace Nigrimmist.Modules.Modules
     /// <summary>
     /// Quote from http://online-generators.ru/
     /// </summary>
-    public class Quote : ModuleHandlerBase
+    public class Quote : ModuleCommandBase
     {
         private IClient _client;
 

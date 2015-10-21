@@ -143,8 +143,10 @@ namespace MonkeyJobTool.Forms
             if (foundCommand != null && foundCommand.Icon!=null)
             {
                 MainIcon.Image = foundCommand.Icon;
-                
-                if (string.IsNullOrEmpty(args) || args == "?")
+
+                _bot.NotifyCommandModuleAboutArgsChange(foundCommand, command, args);
+
+                if (string.IsNullOrEmpty(args))
                 {
                     if (App.Instance.AppConf.ShowCommandHelp || args == "?")
                         ShowHelpInfo(foundCommand);
@@ -152,7 +154,17 @@ namespace MonkeyJobTool.Forms
                         CloseHelpInfo();
                 }
                 else
-                    CloseHelpInfo();
+                {
+                    if (args == "?")
+                    {
+                        if (App.Instance.AppConf.ShowCommandHelp || args == "?")
+                            ShowHelpInfo(foundCommand);
+                        else
+                            CloseHelpInfo();
+                    }
+                    else
+                        CloseHelpInfo();
+                }
             }
             else
             {
@@ -239,7 +251,8 @@ namespace MonkeyJobTool.Forms
                     _bot.OnTrayBalloonTipRequested += BotOnOnTrayBalloonTipRequested;
                     _bot.SetCurrentLanguage((Language) (int) App.Instance.AppConf.Language);
                     _bot.RegisterModules(App.Instance.AppConf.SystemData.DisabledModules);
-                    
+                    _bot.OnSuggestRecieved += BotOnSuggestRecieved;
+
                     App.Instance.Bot = _bot;
                     SetLoading(false);
                     if (afterInitActionClbck != null)
@@ -267,6 +280,8 @@ namespace MonkeyJobTool.Forms
                 }
             }).Start();
         }
+
+        
 
         private void BotOnGeneralErrorOccured(Exception ex)
         {
@@ -785,6 +800,11 @@ namespace MonkeyJobTool.Forms
                 tsNotificationOff.Text = "Не беспокоить";
             }
             UpdateTrayicon();
+        }
+
+        void BotOnSuggestRecieved(List<AutoSuggestItem> obj)
+        {
+            Debug.WriteLine(string.Join(",",obj.Select(x=>x.DisplayedKey+";"+x.Value).ToArray()));
         }
     }
 }

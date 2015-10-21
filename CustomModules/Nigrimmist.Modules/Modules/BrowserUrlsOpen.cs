@@ -9,7 +9,7 @@ using HelloBotCommunication.Interfaces;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class BrowserUrlsOpen: ModuleHandlerBase
+    public class BrowserUrlsOpen: ModuleCommandBase
     {
         private IClient _client;
         private List<CommandKeyValue> _commandUrls;

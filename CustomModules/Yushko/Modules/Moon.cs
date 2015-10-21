@@ -9,7 +9,7 @@ using HtmlAgilityPack;
 
 namespace Yushko.Modules
 {
-    public class Moon : ModuleHandlerBase
+    public class Moon : ModuleCommandBase
     {
         private IClient _client;
 

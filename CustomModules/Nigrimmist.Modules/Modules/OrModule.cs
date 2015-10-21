@@ -8,7 +8,7 @@ using HelloBotCommunication.Interfaces;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class Or : ModuleHandlerBase
+    public class Or : ModuleCommandBase
     {
         private IClient _client;
 

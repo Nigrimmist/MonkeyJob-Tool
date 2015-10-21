@@ -7,9 +7,9 @@ namespace Yushko
 {
     public class HandlerRegister: ModuleRegister
     {
-        public override List<ModuleHandlerBase> GetModules()
+        public override List<ModuleCommandBase> GetModules()
         {
-            return new List<ModuleHandlerBase>()
+            return new List<ModuleCommandBase>()
             {
                 new ExchangeRate(),
                new Moon(),

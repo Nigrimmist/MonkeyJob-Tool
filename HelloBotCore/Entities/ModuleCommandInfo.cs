@@ -23,18 +23,18 @@ namespace HelloBotCore.Entities
             OriginalAliases = new List<string>();
         }
 
-        public void Init(string dllName,ModuleHandlerBase handlerModuleBase, IModuleClientHandler moduleClientHandler, AuthorInfo author)
+        public void Init(string dllName,ModuleCommandBase commandModuleBase, IModuleClientHandler moduleClientHandler, AuthorInfo author)
         {
-            HandleMessage = handlerModuleBase.HandleMessage;
-            base.Init(dllName, handlerModuleBase, author);
-            BodyBackgroundColor = handlerModuleBase.BodyBackgroundColor;
-            HeaderBackgroundColor = handlerModuleBase.HeaderBackGroundColor;
+            HandleMessage = commandModuleBase.HandleMessage;
+            base.Init(dllName, commandModuleBase, author);
+            BodyBackgroundColor = commandModuleBase.BodyBackgroundColor;
+            HeaderBackgroundColor = commandModuleBase.HeaderBackGroundColor;
             IClient client = new ModuleToClientAdapter(moduleClientHandler, this);
-            handlerModuleBase.Init(client);
-            CallCommandList = handlerModuleBase.CallCommandList.ToList();
-            CommandDescription = handlerModuleBase.ModuleDescription;
-            OriginalAliases = handlerModuleBase.CallCommandList.Where(x=>!string.IsNullOrEmpty(x.Command)).Select(x => x.Command).ToList();
-            OriginalAliases.AddRange(handlerModuleBase.CallCommandList.Where(x => !string.IsNullOrEmpty(x.Command)).SelectMany(x => x.Aliases).ToList());
+            commandModuleBase.Init(client);
+            CallCommandList = commandModuleBase.CallCommandList.ToList();
+            CommandDescription = commandModuleBase.ModuleDescription;
+            OriginalAliases = commandModuleBase.CallCommandList.Where(x=>!string.IsNullOrEmpty(x.Command)).Select(x => x.Command).ToList();
+            OriginalAliases.AddRange(commandModuleBase.CallCommandList.Where(x => !string.IsNullOrEmpty(x.Command)).SelectMany(x => x.Aliases).ToList());
             
         }
 

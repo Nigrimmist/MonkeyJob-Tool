@@ -10,7 +10,7 @@ using HtmlAgilityPack;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class Boobs : ModuleHandlerBase
+    public class Boobs : ModuleCommandBase
     {
         private IClient _client;
 

@@ -9,7 +9,7 @@ using HelloBotCommunication.Interfaces;
 
 namespace SmartAssHandlerLib
 {
-    public class YesNoHandlerHandlerBase : ModuleHandlerBase
+    public class YesNoCommandCommandBase : ModuleCommandBase
     {
         private readonly RandomHelper _decisionMaker = new RandomHelper();
 
@@ -24,7 +24,7 @@ namespace SmartAssHandlerLib
         {
             _client = client;
         }
-        public YesNoHandlerHandlerBase()
+        public YesNoCommandCommandBase()
         {
             _specialAnswersProvider = new SpecialAnswersProvider(_decisionMaker);
             _generalAnswersProvider = new GeneralAnswersProvider(_decisionMaker);

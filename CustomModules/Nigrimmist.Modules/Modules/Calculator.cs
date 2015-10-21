@@ -7,13 +7,19 @@ using NCalc;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class Calculator : ModuleHandlerBase
+    public class Calculator : ModuleCommandBase
     {
         private IClient _client;
 
         public override void Init(IClient client)
         {
             _client = client;
+            _client.OnCommandArgsChanged += _client_OnCommandArgsChanged;
+        }
+        
+        void _client_OnCommandArgsChanged(string command, string args)
+        {
+            _client.ShowSuggestList(new List<AutoSuggestItem>(){new AutoSuggestItem(){DisplayedKey = command,Value = args}});
         }
 
         public override double ModuleVersion

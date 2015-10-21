@@ -10,7 +10,7 @@ using Yushko.ExRates;
 
 namespace Yushko.Modules
 {
-    public class ExchangeRate : ModuleHandlerBase
+    public class ExchangeRate : ModuleCommandBase
     {
         private IClient _client;
 

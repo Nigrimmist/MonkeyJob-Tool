@@ -11,7 +11,7 @@ using HtmlAgilityPack;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class Bash : ModuleHandlerBase
+    public class Bash : ModuleCommandBase
     {
         private List<string> _jokes = new List<string>();
         private Random _r = new Random();

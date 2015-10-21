@@ -71,6 +71,9 @@ namespace HelloBotCore
         public delegate void OnTrayPopupShowRequestedDelegate(Guid moduleId, string title, string body, TimeSpan timeout, TooltipType tooltipType);
 
         public event OnTrayPopupShowRequestedDelegate OnTrayBalloonTipRequested;
+        private IDictionary<Guid, OnCommandArgsChangedDelegate> _commandArgChangeDelegates;
+
+        public event Action<List<AutoSuggestItem>> OnSuggestRecieved;
 
         /// <summary>
         /// Bot costructor
@@ -94,6 +97,7 @@ namespace HelloBotCore
             _commandTimeoutSec = 30;
             _commandDictLocks = new Dictionary<Guid, ModuleLocker>();
             _commandContexts = new Dictionary<Guid, BotContextBase>();
+            _commandArgChangeDelegates = new Dictionary<Guid, OnCommandArgsChangedDelegate>();
             new Thread(SaveModuleTraces).Start();
         }
 
@@ -717,6 +721,45 @@ namespace HelloBotCore
                     if (OnErrorOccured != null)
                         OnErrorOccured(ex);
                 }
+            }
+        }
+
+
+        
+        public void RegisterModuleChangeCommandArgsHandler(ModuleCommandInfo commandModuleInfo,OnCommandArgsChangedDelegate func)
+        {
+            if (!_commandArgChangeDelegates.ContainsKey(commandModuleInfo.Id))
+            {
+                _commandArgChangeDelegates.Add(commandModuleInfo.Id,func);
+            }
+        }
+
+        public void NotifyCommandModuleAboutArgsChange(ModuleCommandInfo command, string commandAlias, string args)
+        {
+            if (_commandArgChangeDelegates.ContainsKey(command.Id))
+            {
+                //todo : thread pool required
+                new Thread(() =>
+                {
+                    try
+                    {
+                        _commandArgChangeDelegates[command.Id](commandAlias, args);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (OnModuleErrorOccured != null)
+                            OnModuleErrorOccured(ex, command);
+                    }
+                }).Start();
+
+            }
+        }
+
+        public void ShowSuggestionsToClient(List<AutoSuggestItem> items)
+        {
+            if (OnSuggestRecieved != null)
+            {
+                OnSuggestRecieved(items);
             }
         }
     }

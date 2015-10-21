@@ -11,7 +11,7 @@ using Nigrimmist.Modules.Helpers;
 
 namespace Nigrimmist.Modules.Modules
 {
-    public class ItHappens : ModuleHandlerBase
+    public class ItHappens : ModuleCommandBase
     {
         public List<string> _jokes = new List<string>();
         private Random _r = new Random();
