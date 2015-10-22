@@ -73,6 +73,8 @@ namespace MonkeyJobTool.Controls.Autocomplete
             }
         }
 
+        public TextBox TextBox {get { return txtCommand; }}
+
         private void txtCommand_TextChanged(object sender, EventArgs e)
         {
             string term = txtCommand.Text;
@@ -96,7 +98,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
                         popupModel.Items.Add(new AutocompletePopupItem()
                         {
                             WordParts = GetWordParts(item, term),
-                            Value = item
+                            ClearText = item
                         });
                     }
                     _popup.Model = popupModel;

@@ -19,7 +19,7 @@ namespace Nigrimmist.Modules.Modules
         
         void _client_OnCommandArgsChanged(string command, string args)
         {
-            _client.ShowSuggestList(new List<AutoSuggestItem>(){new AutoSuggestItem(){DisplayedKey = command,Value = args}});
+            _client.ShowSuggestList(new List<AutoSuggestItem>() { new AutoSuggestItem() { DisplayedKey = command + args, Value = args } });
         }
 
         public override double ModuleVersion

@@ -16,6 +16,7 @@ using HelloBotCommunication;
 using HelloBotCore;
 using HelloBotCore.Entities;
 using Microsoft.Win32;
+using MonkeyJobTool.Controls;
 using MonkeyJobTool.Controls.Autocomplete;
 using MonkeyJobTool.Entities;
 using MonkeyJobTool.Entities.Autocomplete;
@@ -36,6 +37,7 @@ namespace MonkeyJobTool.Forms
         private HelloBot _bot;
         private const string _copyToBufferPostFix = " в буфер";
         private AutoCompleteControl _autocomplete;
+        private CommandSuggester _commandSuggester;
         private readonly Bitmap _defaultIcon = Resources.monkey_highres_img;
         private readonly Bitmap _loadingIcon = Resources.loading;
         private bool _isFirstRun;
@@ -129,6 +131,9 @@ namespace MonkeyJobTool.Forms
             _autocomplete.OnTextChanged += _autocomplete_OnTextChanged;
 
             this.Controls.Add(_autocomplete);
+
+            _commandSuggester = new CommandSuggester(_autocomplete.TextBox, this);
+
             this.ToTop(true);
             LogAnalytic();
         }
@@ -804,7 +809,11 @@ namespace MonkeyJobTool.Forms
 
         void BotOnSuggestRecieved(List<AutoSuggestItem> obj)
         {
-            Debug.WriteLine(string.Join(",",obj.Select(x=>x.DisplayedKey+";"+x.Value).ToArray()));
+            this.Invoke(new MethodInvoker(delegate
+            {
+                _commandSuggester.ShowItems(obj);
+            }));
+            
         }
     }
 }

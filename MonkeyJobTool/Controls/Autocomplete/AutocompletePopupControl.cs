@@ -54,7 +54,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
             for (int i = 0; i < Model.Items.Count; i++)
             {
                 var item = Model.Items[i];
-                AutocompletePopupItemControl itemControl = new AutocompletePopupItemControl(item.WordParts,item.Value)
+                AutocompletePopupItemControl itemControl = new AutocompletePopupItemControl(item.WordParts,item.ClearText)
                 {
                     Top = totalHeght,
                     Index = Model.Items.Count-1-i
