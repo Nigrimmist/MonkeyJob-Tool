@@ -15,7 +15,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
 {
     public partial class AutoCompleteControl : UserControl
     {
-        private AutocompletePopupControl _popup = new AutocompletePopupControl();
+        private AutocompletePopupControl _popup = new AutocompletePopupControl(title: "Команды");
         public Form ParentForm { get; set; }
         
         public delegate DataFilterInfo GetItemsFromSource(string term);

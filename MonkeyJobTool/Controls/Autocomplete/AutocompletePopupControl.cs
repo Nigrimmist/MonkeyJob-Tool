@@ -22,7 +22,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         public delegate void OnNoOneSelectedDelegate();
         public event OnNoOneSelectedDelegate OnNoOneSelected;
-
+        public string Title { get; set; }
         private int _HighlightedItemIndex
         {
             get { return _highlightedItemIndex; }
@@ -39,18 +39,40 @@ namespace MonkeyJobTool.Controls.Autocomplete
         private int _highlightedItemIndex = -1;
 
 
-        public AutocompletePopupControl()
+        public AutocompletePopupControl(Color? backColor=null, Color? highlightColor=null, string title=null)
         {
             InitializeComponent();
+            if (backColor.HasValue)
+                this.BackColor = backColor.Value;
+            if (highlightColor.HasValue)
+                _highlightColor = highlightColor.Value;
+            if (!string.IsNullOrEmpty(title))
+                Title = title;
             _defaultColor = this.BackColor;
         }
 
         public void ShowItems()
         {
-            this.Controls.Clear();
-            this.items.Clear();
+            //this.Controls.Clear();
+            //this.items.Clear();
             _highlightedItemIndex = -1;
             int totalHeght = 0;
+            if (!string.IsNullOrEmpty(Title))
+            {
+                var lbl = new Label()
+                {
+                    Text = Title,
+                    BackColor = Color.Black,
+                    ForeColor = Color.White,
+                    Width = this.Width-35,
+                    TextAlign = ContentAlignment.MiddleLeft,
+                    Font = new Font(DefaultFont,FontStyle.Bold)
+                    
+                };
+                this.Controls.Add(lbl);
+                totalHeght += lbl.Height;
+            }
+            
             for (int i = 0; i < Model.Items.Count; i++)
             {
                 var item = Model.Items[i];

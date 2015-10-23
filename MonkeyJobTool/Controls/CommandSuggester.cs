@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -16,7 +17,7 @@ namespace MonkeyJobTool.Controls
         private readonly TextBox _boundTextbox;
         private readonly Form _parentForm;
 
-        private AutocompletePopupControl _popup = new AutocompletePopupControl();
+        private AutocompletePopupControl _popup = new AutocompletePopupControl(Color.BurlyWood, Color.DarkOrange, "Аргументы");
         
         private bool _isPopupOpen;
         private string _lastPreSelectText = string.Empty;
