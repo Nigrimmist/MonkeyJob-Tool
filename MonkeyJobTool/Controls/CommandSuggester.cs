@@ -17,7 +17,7 @@ namespace MonkeyJobTool.Controls
         private readonly TextBox _boundTextbox;
         private readonly Form _parentForm;
 
-        private AutocompletePopupControl _popup = new AutocompletePopupControl(Color.BurlyWood, Color.DarkOrange, "Аргументы");
+        private AutocompletePopupControl _popup = new AutocompletePopupControl(ColorTranslator.FromHtml("#FFDB99"), Color.DarkOrange, "Аргументы");
         
         private bool _isPopupOpen;
         private string _lastPreSelectText = string.Empty;
@@ -25,13 +25,15 @@ namespace MonkeyJobTool.Controls
         public delegate void OnCommandReceivedDelegate(string command);
         public event OnCommandReceivedDelegate OnCommandReceived;
 
-        public delegate void OnKeyPressedDelegate(Keys key, KeyEventArgs e);
-        public event OnKeyPressedDelegate OnKeyPressed;
+        
         public int StartSuggestFrom = 1;
+        int _argListLeftMargin = 40;
+
         public bool IsPopupOpen
         {
             get { return _isPopupOpen; }
         }
+
 
         public CommandSuggester(TextBox boundTextbox, Form parentForm)
         {
@@ -44,35 +46,83 @@ namespace MonkeyJobTool.Controls
             _popup.OnItemHighlighted += popup_OnItemHighlighted;
             _popup.OnNoOneSelected += _popup_OnNoOneSelected;
             _popup.OnMouseClicked += _popup_OnMouseClicked;
+            _boundTextbox.KeyDown += boundTextbox_KeyDown;
         }
 
-        
+        void boundTextbox_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Up:
+                    {
+                        _popup.HighlightUp();
+                        e.Handled = true;
+                        break;
+                    }
+                case Keys.Down:
+                    {
+                        _popup.HighlightDown();
+                        e.Handled = true;
+                        break;
+                    }
+                default:
+                    {
+                        _popup.ResetHighlightIndex();
+
+                        break;
+                    }
+            }
+            
+        }
+
         void _popup_OnMouseClicked(string clickedItem)
         {
-            SetCommand(clickedItem);
+            SetArg(clickedItem);
         }
 
         void _popup_OnNoOneSelected()
         {
-            _boundTextbox.Text = _lastPreSelectText;
-            _boundTextbox.SelectionStart = _boundTextbox.Text.Length;
+            //_boundTextbox.Text = _lastPreSelectText;
+            //_boundTextbox.SelectionStart = _boundTextbox.Text.Length;
         }
 
-        private void SetCommand(string command)
+        private void SetArg(string arg)
         {
-            _boundTextbox.Text = command + " ";
+            var indexToReplace = getIndexToInsertArgument(_boundTextbox.Text, arg);
+            _boundTextbox.Text = _boundTextbox.Text.Substring(0, indexToReplace+1)+arg;
             _boundTextbox.SelectionStart = _boundTextbox.Text.Length;
         }
+        
+        private int getIndexToInsertArgument(string text, string argument)
+        {
+            
+            int corr = 0;
+            for (var i = argument.Length - 1; i >= 0; i--)
+            {
+                if (argument[i] == text[text.Length - 1 - corr])
+                {
+                    corr++;
+                }
+                else
+                {
+                    corr = 0;
+                }
+            }
+            corr = text.Length - 1 - corr;
+            return corr;
+        }
+
         void popup_OnItemHighlighted(string highlightedItem,bool usingMouse)
         {
             if (!usingMouse)
             {
-                SetCommand(highlightedItem);
+                SetArg(highlightedItem);
             }
         }
 
         public void ShowItems(List<AutoSuggestItem> items)
         {
+            
             var popupModel = new AutocompletePopupInfo();
             foreach (var item in items)
             {
@@ -87,9 +137,15 @@ namespace MonkeyJobTool.Controls
             _popup.Model = popupModel;
             _popup.ShowItems();
             _popup.Top = _parentForm.Top - _popup.Height;
-            _popup.Left = _parentForm.Left;
-            _popup.Width = _parentForm.Width;
+            _popup.Left = _parentForm.Left + _argListLeftMargin;
+            _popup.Width = _parentForm.Width - _argListLeftMargin;
             _isPopupOpen = true;
+        }
+
+        public void Hide()
+        {
+            _popup.Hide();
+            _isPopupOpen = false;
         }
 
         //private void boundTB_TextChanged(object sender, EventArgs e)
@@ -125,45 +181,9 @@ namespace MonkeyJobTool.Controls
         //    //App.Instance.CloseAllPopups();
         //}
 
-        private void txtCommand_KeyDown(object sender, KeyEventArgs e)
-        {
-            switch (e.KeyCode)
-            {
-                case Keys.Enter:
-                {
-                    SendCommand();
-                    
-                    e.SuppressKeyPress = true;
+        
 
-                    break;
-                }
-                case Keys.Up:
-                {
-                    _popup.HighlightUp();
-                    e.Handled = true;
-                    break;
-                }
-                case Keys.Down:
-                {
-                    _popup.HighlightDown();
-                    e.Handled = true;
-                    break;
-                }
-                default:
-                {
-                    _popup.ResetHighlightIndex();
-
-                    break;
-                }
-            }
-            if (OnKeyPressed != null)
-                OnKeyPressed(e.KeyCode,e);
-        }
-
-        public void HidePopup()
-        {
-            _popup.Hide();
-        }
+        
 
         public void PopupToTop()
         {

@@ -53,8 +53,8 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         public void ShowItems()
         {
-            //this.Controls.Clear();
-            //this.items.Clear();
+            this.Controls.Clear();
+            this.items.Clear();
             _highlightedItemIndex = -1;
             int totalHeght = 0;
             if (!string.IsNullOrEmpty(Title))
@@ -64,10 +64,9 @@ namespace MonkeyJobTool.Controls.Autocomplete
                     Text = Title,
                     BackColor = Color.Black,
                     ForeColor = Color.White,
-                    Width = this.Width-35,
+                    Width = this.Width,
                     TextAlign = ContentAlignment.MiddleLeft,
                     Font = new Font(DefaultFont,FontStyle.Bold)
-                    
                 };
                 this.Controls.Add(lbl);
                 totalHeght += lbl.Height;
@@ -95,6 +94,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
                     c.Click += c_Click;
                 }
                 this.Controls.Add(itemControl);
+                itemControl.SetBackColor(this.BackColor);
             }
             this.Height = totalHeght;
             this.ToTop();
@@ -134,9 +134,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
                     if (OnNoOneSelected != null)
                         OnNoOneSelected();
                 }
-
             }
-
         }
 
         public void HighlightUp()

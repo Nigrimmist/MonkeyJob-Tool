@@ -15,6 +15,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
 {
     public partial class AutoCompleteControl : UserControl
     {
+        
         private AutocompletePopupControl _popup = new AutocompletePopupControl(title: "Команды");
         public Form ParentForm { get; set; }
         
@@ -22,6 +23,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
         public GetItemsFromSource DataFilterFunc;
         private bool _isPopupOpen;
         private string _lastPreSelectText = string.Empty;
+        private readonly Func<bool> _keyboardArrowModeEnabledFunc;
 
         public delegate void OnCommandReceivedDelegate(string command);
         public event OnCommandReceivedDelegate OnCommandReceived;
@@ -37,8 +39,9 @@ namespace MonkeyJobTool.Controls.Autocomplete
             get { return _isPopupOpen; }
         }
 
-        public AutoCompleteControl()
+        public AutoCompleteControl(Func<bool> keyboardArrowModeEnabledFunc)
         {
+            _keyboardArrowModeEnabledFunc = keyboardArrowModeEnabledFunc;
             InitializeComponent();
         }
 
@@ -62,7 +65,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         private void SetCommand(string command)
         {
-            txtCommand.Text = command + " ";
+            txtCommand.Text = command;
             txtCommand.SelectionStart = txtCommand.Text.Length;
         }
         void popup_OnItemHighlighted(string highlightedItem,bool usingMouse)
@@ -165,6 +168,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
         
         private void txtCommand_KeyDown(object sender, KeyEventArgs e)
         {
+            bool arrowNavigationEnabled = _keyboardArrowModeEnabledFunc();
             switch (e.KeyCode)
             {
                 case Keys.Enter:
@@ -177,14 +181,20 @@ namespace MonkeyJobTool.Controls.Autocomplete
                 }
                 case Keys.Up:
                 {
-                    _popup.HighlightUp();
-                    e.Handled = true;
+                    if (arrowNavigationEnabled)
+                    {
+                        _popup.HighlightUp();
+                        e.Handled = true;
+                    }
                     break;
                 }
                 case Keys.Down:
                 {
-                    _popup.HighlightDown();
-                    e.Handled = true;
+                    if (arrowNavigationEnabled)
+                    {
+                        _popup.HighlightDown();
+                        e.Handled = true;
+                    }
                     break;
                 }
                 default:

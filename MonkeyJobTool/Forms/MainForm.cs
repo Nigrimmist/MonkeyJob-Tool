@@ -118,7 +118,7 @@ namespace MonkeyJobTool.Forms
             this.Deactivate += MainForm_Deactivate;
             this.tsDonate.Visible = App.Instance.AppConf.ShowDonateButton;
 
-            _autocomplete = new AutoCompleteControl()
+            _autocomplete = new AutoCompleteControl(() => !_commandSuggester.IsPopupOpen)
             {
                 ParentForm = this,
                 DataFilterFunc = GetCommandListByTerm,
@@ -128,54 +128,57 @@ namespace MonkeyJobTool.Forms
             };
             _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
             _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
-            _autocomplete.OnTextChanged += _autocomplete_OnTextChanged;
+            _autocomplete.OnTextChanged += autocomplete_OnTextChanged;
 
             this.Controls.Add(_autocomplete);
 
             _commandSuggester = new CommandSuggester(_autocomplete.TextBox, this);
-
+            _commandSuggester.Init();
             this.ToTop(true);
             LogAnalytic();
         }
 
-        void _autocomplete_OnTextChanged(string text)
+        void autocomplete_OnTextChanged(string text)
         {
             string args;
             bool commandReplaceCountExceed;
+            bool closeHelpInfo = true;
             string command = TryToReplaceCommand(text, out commandReplaceCountExceed);
-
+            _commandSuggester.Hide();
             var foundCommand = _bot.FindModule(command, out command, out args);
-            if (foundCommand != null && foundCommand.Icon!=null)
+            if (foundCommand != null)
             {
-                MainIcon.Image = foundCommand.Icon;
-
-                _bot.NotifyCommandModuleAboutArgsChange(foundCommand, command, args);
+                if (foundCommand.Icon != null)
+                    MainIcon.Image = foundCommand.Icon;
+                
+                if (!string.IsNullOrEmpty(args))
+                    _bot.NotifyCommandModuleAboutArgsChange(foundCommand, command, args);
 
                 if (string.IsNullOrEmpty(args))
                 {
-                    if (App.Instance.AppConf.ShowCommandHelp || args == "?")
+                    if (App.Instance.AppConf.ShowCommandHelp)
+                    {
                         ShowHelpInfo(foundCommand);
-                    else
-                        CloseHelpInfo();
+                        closeHelpInfo = false;
+                    }
                 }
                 else
                 {
-                    if (args == "?")
+                    if (args.Trim() == "?")
                     {
-                        if (App.Instance.AppConf.ShowCommandHelp || args == "?")
-                            ShowHelpInfo(foundCommand);
-                        else
-                            CloseHelpInfo();
+                        ShowHelpInfo(foundCommand);
+                        closeHelpInfo = false;
                     }
-                    else
-                        CloseHelpInfo();
                 }
             }
             else
             {
                 MainIcon.Image = _defaultIcon;
-                CloseHelpInfo();
             }
+
+            if (closeHelpInfo)
+                CloseHelpInfo();
+
             if (string.IsNullOrEmpty(text))
             {
                 App.Instance.CloseFixedPopup();

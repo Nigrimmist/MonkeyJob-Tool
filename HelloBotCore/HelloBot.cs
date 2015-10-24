@@ -422,7 +422,7 @@ namespace HelloBotCore
                     command = foundCommand;
                 }
             }
-            args = args.Trim();
+            
             return toReturn;
         }
 
@@ -762,5 +762,7 @@ namespace HelloBotCore
                 OnSuggestRecieved(items);
             }
         }
+
+        
     }
 }
