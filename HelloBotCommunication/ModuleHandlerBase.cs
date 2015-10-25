@@ -28,5 +28,10 @@ namespace HelloBotCommunication
         {
             get { return null; }
         }
+
+        /// <summary>
+        /// Suggestions for your command
+        /// </summary>
+        public virtual ReadOnlyCollection<ArgumentSuggestionInfo> ArgumentSuggestions {get { return null;}} 
     }
 }

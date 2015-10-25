@@ -53,6 +53,7 @@
     <Compile Include="Entities\AnswerInfo.cs" />
     <Compile Include="Entities\BotContextBase.cs" />
     <Compile Include="Entities\BotTrayModuleContext.cs" />
+    <Compile Include="Entities\CommandArgumentSuggestionInfo.cs" />
     <Compile Include="Entities\LogMessage.cs" />
     <Compile Include="Entities\ModuleInfoBase.cs" />
     <Compile Include="Entities\BotClient.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Entities\ModuleSettings.cs" />
     <Compile Include="Entities\ModuleTrayInfo.cs" />
     <Compile Include="Entities\ModuleType.cs" />
+    <Compile Include="Entities\RegexParseitem.cs" />
     <Compile Include="Entities\UserReactionToCommandType.cs" />
     <Compile Include="HelloBot.cs" />
     <Compile Include="Entities\Language.cs" />

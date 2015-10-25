@@ -77,6 +77,9 @@
     <Compile Include="Controls\Autocomplete\AutoCompleteControl.Designer.cs">
       <DependentUpon>AutoCompleteControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Autocomplete\AutoCompleteTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\Autocomplete\RichTextLabelResizable.cs">
       <SubType>Component</SubType>
     </Compile>

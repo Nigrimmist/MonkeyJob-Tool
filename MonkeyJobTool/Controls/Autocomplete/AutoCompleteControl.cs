@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using HelloBotCommunication;
 using MonkeyJobTool.Entities;
 using MonkeyJobTool.Entities.Autocomplete;
 using MonkeyJobTool.Extensions;
@@ -17,13 +19,15 @@ namespace MonkeyJobTool.Controls.Autocomplete
     {
         
         private AutocompletePopupControl _popup = new AutocompletePopupControl(title: "Команды");
+        private CommandArgumentSuggester _commandArgumentSuggester;
+
         public Form ParentForm { get; set; }
         
         public delegate DataFilterInfo GetItemsFromSource(string term);
         public GetItemsFromSource DataFilterFunc;
         private bool _isPopupOpen;
         private string _lastPreSelectText = string.Empty;
-        private readonly Func<bool> _keyboardArrowModeEnabledFunc;
+        
 
         public delegate void OnCommandReceivedDelegate(string command);
         public event OnCommandReceivedDelegate OnCommandReceived;
@@ -39,10 +43,15 @@ namespace MonkeyJobTool.Controls.Autocomplete
             get { return _isPopupOpen; }
         }
 
-        public AutoCompleteControl(Func<bool> keyboardArrowModeEnabledFunc)
+        public AutoCompleteControl()
         {
-            _keyboardArrowModeEnabledFunc = keyboardArrowModeEnabledFunc;
             InitializeComponent();
+        }
+
+        public void Init()
+        {
+            _commandArgumentSuggester = new CommandArgumentSuggester(this.txtCommand, ParentForm);
+            _commandArgumentSuggester.Init();
         }
 
         private void AutoCompleteControl_Load(object sender, EventArgs e)
@@ -76,17 +85,16 @@ namespace MonkeyJobTool.Controls.Autocomplete
             }
         }
 
-        public TextBox TextBox {get { return txtCommand; }}
+        
 
         private void txtCommand_TextChanged(object sender, EventArgs e)
         {
             string term = txtCommand.Text;
-            if (OnTextChanged != null)
-                OnTextChanged(term);
 
             if (_popup.IsAnyitemHighlighted) return; //no any suggestions if selectMode enabled
-            
-            
+            _commandArgumentSuggester.Hide();
+            if (OnTextChanged != null)
+                OnTextChanged(term);
             _lastPreSelectText = term;
             if (!string.IsNullOrEmpty(term) && term.Length >= StartSuggestFrom)
             {
@@ -168,7 +176,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
         
         private void txtCommand_KeyDown(object sender, KeyEventArgs e)
         {
-            bool arrowNavigationEnabled = _keyboardArrowModeEnabledFunc();
+            bool arrowNavigationEnabled = !_commandArgumentSuggester.IsPopupOpen;
             switch (e.KeyCode)
             {
                 case Keys.Enter:
@@ -211,11 +219,13 @@ namespace MonkeyJobTool.Controls.Autocomplete
         public void HidePopup()
         {
             _popup.Hide();
+            _commandArgumentSuggester.Hide();
         }
 
         public void PopupToTop()
         {
             _popup.ToTop();
+            _commandArgumentSuggester.PopupToTop();
         }
 
         public int GetPopupHeight()
@@ -289,6 +299,11 @@ namespace MonkeyJobTool.Controls.Autocomplete
         public void Clear()
         {
             txtCommand.Text = "";
+        }
+
+        public void ShowArguments(List<AutoSuggestItem> args)
+        {
+            _commandArgumentSuggester.ShowItems(args);
         }
     }
 }

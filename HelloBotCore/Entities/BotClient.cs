@@ -79,33 +79,6 @@ namespace HelloBotCore.Entities
         {
             _moduleClientHandler.LogModuleTraceRequest(_moduleInfo, message);
         }
-
-        private OnCommandArgsChangedDelegate _onCommandArgsChanged; 
-        public event OnCommandArgsChangedDelegate OnCommandArgsChanged
-        {
-            add
-            {
-                if (_moduleInfo.ModuleType == ModuleType.Handler)
-                {
-                    _moduleClientHandler.RegisterModuleChangeCommandArgsHandler(_moduleInfo as ModuleCommandInfo, NotifyModuleAboutArgsChanged);
-                    _onCommandArgsChanged += value;
-                }
-            }
-            remove { if (_onCommandArgsChanged != null) _onCommandArgsChanged -= value; }
-        }
-
-        public void ShowSuggestList(List<AutoSuggestItem> itemsToShow)
-        {
-            _moduleClientHandler.ShowSuggestionsToClient(itemsToShow);
-        }
-
-        private void NotifyModuleAboutArgsChanged(string command, string args)
-        {
-
-            if (_onCommandArgsChanged != null)
-            {
-                _onCommandArgsChanged(command, args);
-            }
-        }
+        
     }
 }

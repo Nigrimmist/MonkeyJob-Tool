@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.txtCommand = new System.Windows.Forms.TextBox();
+            this.txtCommand = new AutoCompleteTextBox();
             this.pbEnter = new System.Windows.Forms.PictureBox();
             this.pnlEnterIconHolder = new System.Windows.Forms.Panel();
             this.timerEnterIconChange = new System.Windows.Forms.Timer(this.components);
@@ -98,7 +98,7 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox txtCommand;
+        private AutoCompleteTextBox txtCommand;
         private System.Windows.Forms.PictureBox pbEnter;
         private System.Windows.Forms.Panel pnlEnterIconHolder;
         private System.Windows.Forms.Timer timerEnterIconChange;

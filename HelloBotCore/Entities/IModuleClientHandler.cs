@@ -21,7 +21,5 @@ namespace HelloBotCore.Entities
         void UpdateTrayText(Guid token, string text, Color? textColor = null, Color? backgroundColor = null, int fontSize = 12, string fontName = "Tahoma", Color? iconBorderColor = null);
         void ShowTrayBalloonTip(Guid token, string text, TimeSpan? timeout = null, TooltipType? tooltipType = null);
         void LogModuleTraceRequest(ModuleInfoBase moduleInfo, string message);
-        void RegisterModuleChangeCommandArgsHandler(ModuleCommandInfo commandModuleInfo, OnCommandArgsChangedDelegate func);
-        void ShowSuggestionsToClient(List<AutoSuggestItem> items);
     }
 }

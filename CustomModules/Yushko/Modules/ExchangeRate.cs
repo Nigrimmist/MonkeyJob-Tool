@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using HelloBotCommunication;
 using HelloBotCommunication.Interfaces;
@@ -34,10 +35,67 @@ namespace Yushko.Modules
             }
         }
 
+        public override ReadOnlyCollection<ArgumentSuggestionInfo> ArgumentSuggestions
+        {
+            get
+            {
+                return new ReadOnlyCollection<ArgumentSuggestionInfo>(new List<ArgumentSuggestionInfo>()
+                {
+                    new ArgumentSuggestionInfo()
+                    {
+                        ArgTemplate = @"[0-9]+\s{{cur1}}\s{{cur2}}",
+                        Details = new List<SuggestionDetails>()
+                        {
+                            new SuggestionDetails(){Key = "cur1",GetSuggestionFunc = () => _curCodes.Select(x=>new AutoSuggestItem(){Value = x.Key,DisplayedKey = x.Key+" - "+x.Value}).ToList()},
+                            new SuggestionDetails(){Key = "cur2",GetSuggestionFunc = () => _curCodes.Select(x=>new AutoSuggestItem(){Value = x.Key,DisplayedKey = x.Key+" - "+x.Value}).ToList()},
+                        }
+                    },
+                    new ArgumentSuggestionInfo()
+                    {
+                        ArgTemplate = @"{{subcommand}}",
+                        Details = new List<SuggestionDetails>()
+                        {
+                            new SuggestionDetails(){Key = "subcommand",GetSuggestionFunc = () => new List<string>(){"ставкареф","все"}.Select(x=>new AutoSuggestItem(){Value = x,DisplayedKey = x}).ToList()}
+                        }
+                    }
+                });
+            }
+        }
+
         public override string ModuleTitle
         {
             get { return "Курсы валют"; }
         }
+
+        public Dictionary<string, string> _curCodes = new Dictionary<string, string>()
+        {
+            {"USD", "доллар США"},
+            {"EUR", "евро"},
+            {"RUB", "российский рубль"},
+            {"BYR", "белорусский рубль"},
+            {"UAH", "гривна"},
+            {"AUD", "австралийский доллар"},
+            {"BGN", "болгарский лев"},
+            {"DKK", "датская крона"},
+            {"PLN", "злотый"},
+            {"ISK", "исландская крона"},
+            {"CAD", "канадский доллар"},
+            {"CNY", "китайский юань"},
+            {"KWD", "кувейтский динар"},
+            {"MDL", "молдавский лей"},
+            {"NZD", "новозеландский доллар"},
+            {"NOK", "норвежская крона"},
+            {"SGD", "сингапурский доллар"},
+            {"KGS", "сом"},
+            {"KZT", "тенге"},
+            {"TRY", "турецкая лира"},
+            {"GBP", "фунт стерлингов"},
+            {"CZK", "чешская крона"},
+            {"SEK", "шведская крона"},
+            {"CHF", "швейцарский франк"},
+            {"JPY", "йен"},
+            {"IRR", "иранских риалов"},
+        };
 
         public override DescriptionInfo ModuleDescription
         {

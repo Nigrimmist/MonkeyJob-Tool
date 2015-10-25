@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using HelloBotCore.Entities;
 using HelloBotCommunication;
@@ -71,7 +72,7 @@ namespace HelloBotCore
         public delegate void OnTrayPopupShowRequestedDelegate(Guid moduleId, string title, string body, TimeSpan timeout, TooltipType tooltipType);
 
         public event OnTrayPopupShowRequestedDelegate OnTrayBalloonTipRequested;
-        private IDictionary<Guid, OnCommandArgsChangedDelegate> _commandArgChangeDelegates;
+        
 
         public event Action<List<AutoSuggestItem>> OnSuggestRecieved;
 
@@ -97,7 +98,7 @@ namespace HelloBotCore
             _commandTimeoutSec = 30;
             _commandDictLocks = new Dictionary<Guid, ModuleLocker>();
             _commandContexts = new Dictionary<Guid, BotContextBase>();
-            _commandArgChangeDelegates = new Dictionary<Guid, OnCommandArgsChangedDelegate>();
+            
             new Thread(SaveModuleTraces).Start();
         }
 
@@ -725,25 +726,29 @@ namespace HelloBotCore
         }
 
 
-        
-        public void RegisterModuleChangeCommandArgsHandler(ModuleCommandInfo commandModuleInfo,OnCommandArgsChangedDelegate func)
+        public void GetArgumentSuggestions(ModuleCommandInfo command, string commandAlias, string args)
         {
-            if (!_commandArgChangeDelegates.ContainsKey(commandModuleInfo.Id))
+            if (command.CommandArgumentSuggestions != null)
             {
-                _commandArgChangeDelegates.Add(commandModuleInfo.Id,func);
-            }
-        }
 
-        public void NotifyCommandModuleAboutArgsChange(ModuleCommandInfo command, string commandAlias, string args)
-        {
-            if (_commandArgChangeDelegates.ContainsKey(command.Id))
-            {
                 //todo : thread pool required
                 new Thread(() =>
                 {
                     try
                     {
-                        _commandArgChangeDelegates[command.Id](commandAlias, args);
+                        foreach (var comSuggestion in command.CommandArgumentSuggestions)
+                        {
+                            foreach (var argSuggestion in comSuggestion.TemplateParseInfo.Where(x=>x.Order==0))
+                            {
+                                var firstLevelSuggestions = string.IsNullOrEmpty(argSuggestion.RegexpPart) && args.Trim() == "";
+                                
+                                if (firstLevelSuggestions || (!string.IsNullOrEmpty(argSuggestion.RegexpPart) && Regex.IsMatch(args, argSuggestion.RegexpPart)))
+                                {
+                                    ShowSuggestionsToClient(comSuggestion.Details.Where(x=>x.Key==argSuggestion.Key).Select(x=>x.GetSuggestionFunc).Single()());
+                                    return;
+                                }
+                            }
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -751,7 +756,6 @@ namespace HelloBotCore
                             OnModuleErrorOccured(ex, command);
                     }
                 }).Start();
-
             }
         }
 

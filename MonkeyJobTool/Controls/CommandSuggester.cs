@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -12,15 +13,14 @@ using MonkeyJobTool.Extensions;
 
 namespace MonkeyJobTool.Controls
 {
-    public class CommandSuggester
+    public class CommandArgumentSuggester
     {
-        private readonly TextBox _boundTextbox;
+        private readonly AutoCompleteTextBox _boundTextbox;
         private readonly Form _parentForm;
 
         private AutocompletePopupControl _popup = new AutocompletePopupControl(ColorTranslator.FromHtml("#FFDB99"), Color.DarkOrange, "Аргументы");
         
         private bool _isPopupOpen;
-        private string _lastPreSelectText = string.Empty;
 
         public delegate void OnCommandReceivedDelegate(string command);
         public event OnCommandReceivedDelegate OnCommandReceived;
@@ -35,7 +35,7 @@ namespace MonkeyJobTool.Controls
         }
 
 
-        public CommandSuggester(TextBox boundTextbox, Form parentForm)
+        public CommandArgumentSuggester(AutoCompleteTextBox boundTextbox, Form parentForm)
         {
             _boundTextbox = boundTextbox;
             _parentForm = parentForm;
@@ -47,6 +47,12 @@ namespace MonkeyJobTool.Controls
             _popup.OnNoOneSelected += _popup_OnNoOneSelected;
             _popup.OnMouseClicked += _popup_OnMouseClicked;
             _boundTextbox.KeyDown += boundTextbox_KeyDown;
+            _boundTextbox.TextChanged += boundTextbox_TextChanged;
+        }
+
+        void boundTextbox_TextChanged(object sender, EventArgs e)
+        {
+            preArgChangeText = _boundTextbox.Text;
         }
 
         void boundTextbox_KeyDown(object sender, KeyEventArgs e)
@@ -68,7 +74,6 @@ namespace MonkeyJobTool.Controls
                 default:
                     {
                         _popup.ResetHighlightIndex();
-
                         break;
                     }
             }
@@ -82,14 +87,16 @@ namespace MonkeyJobTool.Controls
 
         void _popup_OnNoOneSelected()
         {
-            //_boundTextbox.Text = _lastPreSelectText;
-            //_boundTextbox.SelectionStart = _boundTextbox.Text.Length;
+            _boundTextbox.SetArgumentText(preArgChangeText);
+            _boundTextbox.SelectionStart = _boundTextbox.Text.Length;
         }
 
+        private string preArgChangeText = null;
         private void SetArg(string arg)
         {
-            var indexToReplace = getIndexToInsertArgument(_boundTextbox.Text, arg);
-            _boundTextbox.Text = _boundTextbox.Text.Substring(0, indexToReplace+1)+arg;
+            var indexToReplace = getIndexToInsertArgument(preArgChangeText??_boundTextbox.Text, arg);
+
+            _boundTextbox.SetArgumentText((preArgChangeText ?? _boundTextbox.Text).Substring(0, indexToReplace + 1) + arg);
             _boundTextbox.SelectionStart = _boundTextbox.Text.Length;
         }
         
@@ -123,6 +130,7 @@ namespace MonkeyJobTool.Controls
         public void ShowItems(List<AutoSuggestItem> items)
         {
             
+
             var popupModel = new AutocompletePopupInfo();
             foreach (var item in items)
             {
@@ -134,6 +142,9 @@ namespace MonkeyJobTool.Controls
                     Value = item.Value
                 });
             }
+
+            if (_isPopupOpen && _popup.Model.Items.All(x => popupModel.Items.Any(y => y.Value == x.Value))) return;
+
             _popup.Model = popupModel;
             _popup.ShowItems();
             _popup.Top = _parentForm.Top - _popup.Height;
@@ -147,43 +158,6 @@ namespace MonkeyJobTool.Controls
             _popup.Hide();
             _isPopupOpen = false;
         }
-
-        //private void boundTB_TextChanged(object sender, EventArgs e)
-        //{
-        //    string term = _boundTextbox.Text;
-        //    if (OnTextChanged != null)
-        //        OnTextChanged(term);
-
-        //    if (_popup.IsAnyitemHighlighted) return; //no any suggestions if selectMode enabled
-            
-            
-        //    _lastPreSelectText = term;
-        //    if (!string.IsNullOrEmpty(term) && term.Length >= StartSuggestFrom)
-        //    {
-                
-        //        var filterResult = DataFilterFunc(term);
-        //        term = filterResult.FoundByTerm; //incoming and outgoing term can be different
-        //        if (filterResult.FoundItems.Any())
-        //        {
-                    
-        //        }
-        //        else
-        //        {
-        //            _popup.Hide();
-        //            _isPopupOpen = false;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        _popup.Hide();
-        //        _isPopupOpen = false;
-        //    }
-        //    //App.Instance.CloseAllPopups();
-        //}
-
-        
-
-        
 
         public void PopupToTop()
         {

@@ -37,7 +37,7 @@ namespace MonkeyJobTool.Forms
         private HelloBot _bot;
         private const string _copyToBufferPostFix = " в буфер";
         private AutoCompleteControl _autocomplete;
-        private CommandSuggester _commandSuggester;
+        
         private readonly Bitmap _defaultIcon = Resources.monkey_highres_img;
         private readonly Bitmap _loadingIcon = Resources.loading;
         private bool _isFirstRun;
@@ -118,7 +118,7 @@ namespace MonkeyJobTool.Forms
             this.Deactivate += MainForm_Deactivate;
             this.tsDonate.Visible = App.Instance.AppConf.ShowDonateButton;
 
-            _autocomplete = new AutoCompleteControl(() => !_commandSuggester.IsPopupOpen)
+            _autocomplete = new AutoCompleteControl()
             {
                 ParentForm = this,
                 DataFilterFunc = GetCommandListByTerm,
@@ -129,11 +129,10 @@ namespace MonkeyJobTool.Forms
             _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
             _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
             _autocomplete.OnTextChanged += autocomplete_OnTextChanged;
-
+            _autocomplete.Init();
             this.Controls.Add(_autocomplete);
 
-            _commandSuggester = new CommandSuggester(_autocomplete.TextBox, this);
-            _commandSuggester.Init();
+            
             this.ToTop(true);
             LogAnalytic();
         }
@@ -144,7 +143,8 @@ namespace MonkeyJobTool.Forms
             bool commandReplaceCountExceed;
             bool closeHelpInfo = true;
             string command = TryToReplaceCommand(text, out commandReplaceCountExceed);
-            _commandSuggester.Hide();
+            
+            //_commandSuggester.Hide();
             var foundCommand = _bot.FindModule(command, out command, out args);
             if (foundCommand != null)
             {
@@ -152,7 +152,7 @@ namespace MonkeyJobTool.Forms
                     MainIcon.Image = foundCommand.Icon;
                 
                 if (!string.IsNullOrEmpty(args))
-                    _bot.NotifyCommandModuleAboutArgsChange(foundCommand, command, args);
+                    _bot.GetArgumentSuggestions(foundCommand, command, args);
 
                 if (string.IsNullOrEmpty(args))
                 {
@@ -814,7 +814,7 @@ namespace MonkeyJobTool.Forms
         {
             this.Invoke(new MethodInvoker(delegate
             {
-                _commandSuggester.ShowItems(obj);
+                _autocomplete.ShowArguments(obj);
             }));
             
         }
