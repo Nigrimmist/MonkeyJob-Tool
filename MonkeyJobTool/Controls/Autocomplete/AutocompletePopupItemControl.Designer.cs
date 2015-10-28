@@ -34,8 +34,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
+            this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "AutocompletePopupItemControl";
-            this.Size = new System.Drawing.Size(262, 47);
+            this.Size = new System.Drawing.Size(258, 23);
             this.Load += new System.EventHandler(this.AutocompleteItemControl_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.AutocompletePopupItemControl_Paint);
             this.ResumeLayout(false);

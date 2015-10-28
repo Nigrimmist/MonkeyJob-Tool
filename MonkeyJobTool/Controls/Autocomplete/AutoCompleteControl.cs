@@ -100,7 +100,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
             {
                 
                 var filterResult = DataFilterFunc(term);
-                term = filterResult.FoundByTerm; //incoming and outgoing term can be different
+                
                 if (filterResult.FoundItems.Any())
                 {
                     var popupModel = new AutocompletePopupInfo();
@@ -108,15 +108,14 @@ namespace MonkeyJobTool.Controls.Autocomplete
                     {
                         popupModel.Items.Add(new AutocompletePopupItem()
                         {
-                            WordParts = GetWordParts(item, term),
                             ClearText = item
                         });
                     }
                     _popup.Model = popupModel;
                     _popup.ShowItems();
                     _popup.Top = ParentForm.Top-_popup.Height;
-                    _popup.Left = ParentForm.Left;
-                    _popup.Width = ParentForm.Width;
+                    _popup.Left = ParentForm.Left+1;
+                    _popup.Width = ParentForm.Width-3;
                     _isPopupOpen = true;
                 }
                 else
@@ -133,47 +132,6 @@ namespace MonkeyJobTool.Controls.Autocomplete
             //App.Instance.CloseAllPopups();
         }
 
-        private List<SelectableWordPart> GetWordParts(string word, string term)
-        {
-            var toReturn = new List<SelectableWordPart>();
-
-            int foundIndex = word.IndexOf(term, System.StringComparison.InvariantCultureIgnoreCase);
-            if (foundIndex != -1)
-            {
-                string foundPart = word.Substring(foundIndex, term.Length);
-
-                if (foundIndex > 0)
-                {
-                    var prefixPart = word.Substring(0, foundIndex);
-                    toReturn.Add(new SelectableWordPart()
-                    {
-                        WordPart = prefixPart
-                    });
-                }
-
-                string postFixPart = word.Substring(foundIndex + foundPart.Length);
-                toReturn.Add(new SelectableWordPart()
-                {
-                    WordPart = foundPart,
-                    IsSelected = true
-                });
-                toReturn.Add(new SelectableWordPart()
-                {
-                    WordPart = postFixPart
-                });
-            }
-            else
-            {
-                toReturn.Add(new SelectableWordPart()
-                {
-                    WordPart = word
-                });
-            }
-            
-            return toReturn;
-        }
-
-        
         private void txtCommand_KeyDown(object sender, KeyEventArgs e)
         {
             bool arrowNavigationEnabled = !_commandArgumentSuggester.IsPopupOpen;

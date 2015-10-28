@@ -27,7 +27,7 @@ namespace MonkeyJobTool.Controls
 
         
         public int StartSuggestFrom = 1;
-        int _argListLeftMargin = 40;
+        int _argListLeftMargin = 0;
 
         public bool IsPopupOpen
         {
@@ -134,11 +134,9 @@ namespace MonkeyJobTool.Controls
             var popupModel = new AutocompletePopupInfo();
             foreach (var item in items)
             {
-                var sp = new SelectableWordPart() {IsSelected = false, WordPart = item.DisplayedKey};
                 popupModel.Items.Add(new AutocompletePopupItem()
                 {
-                    WordParts = new List<SelectableWordPart>() { sp },
-                    ClearText = item.DisplayedKey,
+                   ClearText = item.DisplayedKey,
                     Value = item.Value
                 });
             }
@@ -148,8 +146,8 @@ namespace MonkeyJobTool.Controls
             _popup.Model = popupModel;
             _popup.ShowItems();
             _popup.Top = _parentForm.Top - _popup.Height;
-            _popup.Left = _parentForm.Left + _argListLeftMargin;
-            _popup.Width = _parentForm.Width - _argListLeftMargin;
+            _popup.Left = _parentForm.Left + _argListLeftMargin+1;
+            _popup.Width = _parentForm.Width - _argListLeftMargin-3;
             _isPopupOpen = true;
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -23,6 +24,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
         public delegate void OnNoOneSelectedDelegate();
         public event OnNoOneSelectedDelegate OnNoOneSelected;
         public string Title { get; set; }
+
         private int _HighlightedItemIndex
         {
             get { return _highlightedItemIndex; }
@@ -34,6 +36,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
             }
         }
 
+        public int ShowCount = 10;
 
         private List<AutocompletePopupItemControl> items = new List<AutocompletePopupItemControl>();
         private int _highlightedItemIndex = -1;
@@ -51,53 +54,84 @@ namespace MonkeyJobTool.Controls.Autocomplete
             _defaultColor = this.BackColor;
         }
 
+        private int displayedItemsFromIndex = 0;
+        private int displayedItemsToIndex = 0;
+
         public void ShowItems()
         {
-            this.Controls.Clear();
+            
+            pnlItems.Controls.Clear();
             this.items.Clear();
             _highlightedItemIndex = -1;
             int totalHeght = 0;
+            Label lbl = null;
             if (!string.IsNullOrEmpty(Title))
             {
-                var lbl = new Label()
+                lbl = new Label()
                 {
                     Text = Title,
                     BackColor = Color.Black,
                     ForeColor = Color.White,
-                    Width = this.Width,
                     TextAlign = ContentAlignment.MiddleLeft,
-                    Font = new Font(DefaultFont,FontStyle.Bold)
+                    Font = new Font(DefaultFont,FontStyle.Bold),
+                    Margin = new Padding(0)
                 };
+                
                 this.Controls.Add(lbl);
-                totalHeght += lbl.Height;
+                
             }
-            
-            for (int i = 0; i < Model.Items.Count; i++)
+            pnlItems.Top = lbl!=null?lbl.Height:0;
+            totalHeght = 0;
+            displayedItemsFromIndex = 0;
+            displayedItemsToIndex = Model.Items.Count > ShowCount ? ShowCount-1 : Model.Items.Count-1;
+            for (int i = 0; i <= displayedItemsToIndex; i++)
             {
                 var item = Model.Items[i];
-                AutocompletePopupItemControl itemControl = new AutocompletePopupItemControl(item.WordParts,item.ClearText)
-                {
-                    Top = totalHeght,
-                    Index = Model.Items.Count-1-i
-                };
+                var itemControl = CreateItemControl(item,ref totalHeght,i);
+                pnlItems.Controls.Add(itemControl);
+                itemControl.Height += 10;
                 totalHeght += itemControl.Height;
-                items.Insert(0,itemControl);
-                itemControl.MouseEnter += c_MouseEnter;
-                itemControl.MouseLeave += itemControl_MouseLeave;
-                itemControl.Cursor = Cursors.Hand;
-                itemControl.Click += c_Click;
-                itemControl.OnChildMouseEnter += () => {c_MouseEnter(itemControl,null);};
-                itemControl.OnChildMouseLeave += () => { itemControl_MouseLeave(itemControl, null); };
-                foreach (var c in FormHelper.IterateControls(itemControl.Controls))
-                {
-                    c.Cursor = Cursors.Hand;
-                    c.Click += c_Click;
-                }
-                this.Controls.Add(itemControl);
-                itemControl.SetBackColor(this.BackColor);
             }
-            this.Height = totalHeght;
+            SetupPageArrows();
+            this.Height = 0; //reset max height because of autosize
             this.ToTop();
+            lbl.Width = this.Width;
+        }
+
+
+        private void SetupPageArrows()
+        {
+            if (items.Count > ShowCount)
+            {
+                if (displayedItemsToIndex < ShowCount - 1)
+                {
+                    pnlItems.Top = 10;
+                }
+            }
+        }
+
+        private AutocompletePopupItemControl CreateItemControl(AutocompletePopupItem item, ref int totalHeght, int index)
+        {
+            AutocompletePopupItemControl itemControl = new AutocompletePopupItemControl(item.ClearText)
+            {
+                Top = totalHeght,
+                Index = Model.Items.Count - 1 - index
+            };
+            
+            items.Insert(0, itemControl);
+            itemControl.MouseEnter += c_MouseEnter;
+            itemControl.MouseLeave += itemControl_MouseLeave;
+            itemControl.Cursor = Cursors.Hand;
+            itemControl.Click += c_Click;
+            itemControl.OnChildMouseEnter += () => { c_MouseEnter(itemControl, null); };
+            itemControl.OnChildMouseLeave += () => { itemControl_MouseLeave(itemControl, null); };
+            foreach (var c in FormHelper.IterateControls(itemControl.Controls))
+            {
+                c.Cursor = Cursors.Hand;
+                c.Click += c_Click;
+            }
+            itemControl.SetBackColor(this.BackColor);
+            return itemControl;
         }
 
         void itemControl_MouseLeave(object sender, System.EventArgs e)

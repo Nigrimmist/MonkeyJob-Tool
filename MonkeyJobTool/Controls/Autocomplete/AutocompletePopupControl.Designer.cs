@@ -28,14 +28,26 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.pnlItems = new System.Windows.Forms.Panel();
             this.SuspendLayout();
+            // 
+            // pnlItems
+            // 
+            this.pnlItems.AutoSize = true;
+            this.pnlItems.Location = new System.Drawing.Point(0, 0);
+            this.pnlItems.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlItems.Name = "pnlItems";
+            this.pnlItems.Size = new System.Drawing.Size(202, 21);
+            this.pnlItems.TabIndex = 0;
             // 
             // AutocompletePopupControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(295, 85);
+            this.ClientSize = new System.Drawing.Size(232, 30);
+            this.Controls.Add(this.pnlItems);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "AutocompletePopupControl";
@@ -43,10 +55,13 @@
             this.Text = "AutocompletePopup";
             this.Load += new System.EventHandler(this.AutocompletePopupControl_Load);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
+
+        private System.Windows.Forms.Panel pnlItems;
 
     }
 }
