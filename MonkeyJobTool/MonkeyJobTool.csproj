@@ -117,6 +117,7 @@
     <Compile Include="Entities\ApplicationMigrations.cs" />
     <Compile Include="Entities\Autocomplete\AutocompletePopupInfo.cs" />
     <Compile Include="Entities\Autocomplete\AutocompletePopupItem.cs" />
+    <Compile Include="Entities\Autocomplete\AutocompleteText.cs" />
     <Compile Include="Entities\Autocomplete\DataFilterInfo.cs" />
     <Compile Include="Entities\ClosePopupReasonType.cs" />
     <Compile Include="Entities\Json\CloneObjData.cs" />

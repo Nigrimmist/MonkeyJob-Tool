@@ -128,7 +128,7 @@ namespace MonkeyJobTool.Forms
             };
             _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
             _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
-            _autocomplete.OnTextChanged += autocomplete_OnTextChanged;
+            //_autocomplete.OnTextChanged += autocomplete_OnTextChanged;
             _autocomplete.Init();
             this.Controls.Add(_autocomplete);
 
@@ -139,51 +139,51 @@ namespace MonkeyJobTool.Forms
 
         void autocomplete_OnTextChanged(string text)
         {
-            string args;
-            bool commandReplaceCountExceed;
-            bool closeHelpInfo = true;
-            string command = TryToReplaceCommand(text, out commandReplaceCountExceed);
+            //string args;
+            //bool commandReplaceCountExceed;
+            //bool closeHelpInfo = true;
+            //string command = TryToReplaceCommand(text, out commandReplaceCountExceed);
             
-            //_commandSuggester.Hide();
-            var foundCommand = _bot.FindModule(command, out command, out args);
-            if (foundCommand != null)
-            {
-                if (foundCommand.Icon != null)
-                    MainIcon.Image = foundCommand.Icon;
+            ////_commandSuggester.Hide();
+            //var foundCommand = _bot.FindModule(command, out command, out args);
+            //if (foundCommand != null)
+            //{
+            //    if (foundCommand.Icon != null)
+            //        MainIcon.Image = foundCommand.Icon;
                 
-                if (!string.IsNullOrEmpty(args))
-                    _bot.GetArgumentSuggestions(foundCommand, command, args);
+            //    if (!string.IsNullOrEmpty(args))
+            //        _bot.GetArgumentSuggestions(foundCommand, command, args);
 
-                if (string.IsNullOrEmpty(args))
-                {
-                    if (App.Instance.AppConf.ShowCommandHelp)
-                    {
-                        ShowHelpInfo(foundCommand);
-                        closeHelpInfo = false;
-                    }
-                }
-                else
-                {
-                    if (args.Trim() == "?")
-                    {
-                        ShowHelpInfo(foundCommand);
-                        closeHelpInfo = false;
-                    }
-                }
-            }
-            else
-            {
-                MainIcon.Image = _defaultIcon;
-            }
+            //    if (string.IsNullOrEmpty(args))
+            //    {
+            //        if (App.Instance.AppConf.ShowCommandHelp)
+            //        {
+            //            ShowHelpInfo(foundCommand);
+            //            closeHelpInfo = false;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        if (args.Trim() == "?")
+            //        {
+            //            ShowHelpInfo(foundCommand);
+            //            closeHelpInfo = false;
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    MainIcon.Image = _defaultIcon;
+            //}
 
-            if (closeHelpInfo)
-                CloseHelpInfo();
+            //if (closeHelpInfo)
+            //    CloseHelpInfo();
 
-            if (string.IsNullOrEmpty(text))
-            {
-                App.Instance.CloseFixedPopup();
-                CloseHelpInfo();
-            }
+            //if (string.IsNullOrEmpty(text))
+            //{
+            //    App.Instance.CloseFixedPopup();
+            //    CloseHelpInfo();
+            //}
         }
 
 
