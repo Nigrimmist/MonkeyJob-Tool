@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using HelloBotCommunication;
 
 namespace MonkeyJobTool.Entities.Autocomplete
 {
@@ -24,20 +25,23 @@ namespace MonkeyJobTool.Entities.Autocomplete
         public delegate void CommandBluredDelegate();
         public event CommandBluredDelegate OnCommandBlured;
 
+         
+
         public AutocompleteText(TextBox bindedControl)
         {
             _bindedControl = bindedControl;
             
             _bindedControl.MouseDown += (sender, args) => { changeCaretPos(); };
             _bindedControl.MouseUp += (sender, args) => { changeCaretPos(); };
-            _bindedControl.TextChanged += (sender, args) => { changeCaretPos(true);  if (_changedEventEnabled) { textChanged(); } };
+            _bindedControl.TextChanged += (sender, args) => { changeCaretPos(true); if (_changedEventEnabled) { textChanged(); TryNotifyAboutCommandFocused();
+                Log();
+            } };
             _bindedControl.KeyUp += (sender, args) => { changeCaretPos(); };
             _parts = new List<AutocompleteTextPart>()
             {
-                new AutocompleteTextPart()
+                new AutoCompleteCommandPart()
                 {
-                    Type = AutocompleteTextPartType.Command,
-                    Position = 0
+                   Index = 0
                 }
             };
             _lastText = bindedControl.Text;
@@ -82,6 +86,11 @@ namespace MonkeyJobTool.Entities.Autocomplete
                 _prevCaretSelectionLength = _currCaretSelectionLength;
                 _currCaretPos = _bindedControl.SelectionStart;
                 _currCaretSelectionLength = _bindedControl.SelectionLength;
+                if (!fromChangedTextEvent)
+                {
+                    TryNotifyAboutCommandFocused();
+                    TryNotifyAboutCommandBlured();
+                }
                 Console.WriteLine(_prevCaretPos + " " + _currCaretPos);
             }
         }
@@ -128,31 +137,31 @@ namespace MonkeyJobTool.Entities.Autocomplete
                         ChangePartOfText(_lastText.Substring(_currCaretPos, correctedPrevCaretPos - _currCaretPos), _currCaretPos, correctedPrevCaretPos, true);
                     }
                 }
-                CheckIfCommandRequiredSuggests();
             }
+            TryNotifyAboutCommandBlured();
             _lastText = _bindedControl.Text;
-
-            
-            
-            foreach (var part in _parts)
-            {
-                Console.WriteLine("[" + part.Text + "] - " + part.Type + Environment.NewLine);
-            }
         }
 
-        private void CheckIfCommandRequiredSuggests()
+        private void TryNotifyAboutCommandFocused()
         {
-            var commandPart = _parts.First();
-            if (_currCaretPos <= commandPart.Text.Length && !string.IsNullOrEmpty(commandPart.Text))
+            if (IsCommandInFocus())
             {
                 if (OnCommandFocused != null)
-                    OnCommandFocused(commandPart.Text);
+                    OnCommandFocused(Command.Text);
             }
-            else
+        }
+        private void TryNotifyAboutCommandBlured()
+        {
+            if (!IsCommandInFocus())
             {
                 if (OnCommandBlured != null)
                     OnCommandBlured();
             }
+        }
+
+        private bool IsCommandInFocus()
+        {
+            return _currCaretPos <= Command.Text.Length && !string.IsNullOrEmpty(Command.Text);
         }
 
         private void ChangePartOfText(string val, int fromPos, int toPos, bool deleted)
@@ -199,9 +208,9 @@ namespace MonkeyJobTool.Entities.Autocomplete
                 currPos += part.Text.Length;
             }
             //one part affected
-            if (fromAffectedPart.Position == toAffectedPart.Position || !deleted)
+            if (fromAffectedPart.Index == toAffectedPart.Index || !deleted)
             {
-                var startPos = GetStartPartPos(fromAffectedPart.Position);
+                var startPos = GetStartPartPos(fromAffectedPart.Index);
                 if (!deleted)
                 {
                     fromAffectedPart.Text = fromAffectedPart.Text.Insert(fromPos - startPos, val);
@@ -218,7 +227,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
                 AutocompleteTextPart changedPart = fromAffectedPart;
                 do
                 {
-                    var startPos = GetStartPartPos(changedPart.Position);
+                    var startPos = GetStartPartPos(changedPart.Index);
                     bool fullRemove = startPos + changedPart.Text.Length - 1 < toPos && fromPos <= startPos;
                     if (fullRemove)
                     {
@@ -227,12 +236,12 @@ namespace MonkeyJobTool.Entities.Autocomplete
                     }
                     else
                     {
-                        if (changedPart.Position == fromAffectedPart.Position)
+                        if (changedPart.Index == fromAffectedPart.Index)
                         {
                             toPos -= (changedPart.Text.Length - (fromPos - startPos));
                             changedPart.Text = changedPart.Text.Substring(0, fromPos - startPos);
                         }
-                        else if (changedPart.Position == toAffectedPart.Position)
+                        else if (changedPart.Index == toAffectedPart.Index)
                         {
                             changedPart.Text = changedPart.Text.Substring(toPos - startPos);
                         }
@@ -240,10 +249,24 @@ namespace MonkeyJobTool.Entities.Autocomplete
                             throw new ApplicationException("alg fault");
 
                     }
-                } while ((changedPart = _parts.SingleOrDefault(x => x.Position == changedPart.Position + 1 && x.Position <= toAffectedPart.Position)) != null);
+                } while ((changedPart = _parts.SingleOrDefault(x => x.Index == changedPart.Index + 1 && x.Index <= toAffectedPart.Index)) != null);
             }
             
             ClearParts();
+            CorrectParts();
+        }
+
+        private void CorrectParts()
+        {
+            if (Command.Text.EndsWith(" ") && !string.IsNullOrEmpty(Command.RealCommand))
+            {
+                Command.Text = Command.Text.TrimEnd(' ');
+                _parts.Add(new AutocompleteTextPart()
+                {
+                    Index = _parts.Count,
+                    Text = " "
+                });
+            }
         }
 
         private void ClearParts()
@@ -254,7 +277,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
                 {
                     
                     var part = _parts[i];
-                    part.Position = i;
+                    part.Index = i;
                     //skip command part removing
                     if(part.Type==AutocompleteTextPartType.Command) 
                         continue;
@@ -277,7 +300,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
 
         private int GetStartPartPos(int partPos)
         {
-            return _parts.Where(x => x.Position < partPos).Sum(x => x.Text.Length);
+            return _parts.Where(x => x.Index < partPos).Sum(x => x.Text.Length);
         }
 
         public override string ToString()
@@ -285,55 +308,32 @@ namespace MonkeyJobTool.Entities.Autocomplete
             return string.Join("", _parts.Select(x => x.Text).ToArray());
         }
 
-        public void SetCommand(string command)
+        public void SetCommand(string command, string alias=null)
         {
-            if (_parts.Any())
-            {
-                var commandPart = _parts.First();
-                commandPart.Type = AutocompleteTextPartType.Command;
-                commandPart.Text = command;
-            }
-            else
-            {
-                _parts.Add(new AutocompleteTextPart()
-                {
-                    Type = AutocompleteTextPartType.Command,
-                    Text = command,
-                    Position = 0
-                });
-            }
-
-            if (_parts.Count == 1)
-            {
-                _parts.Add(new AutocompleteTextPart()
-                {
-                    Position = _parts.Count,
-                    Type = AutocompleteTextPartType.PartOfText,
-                    Text = " "
-                });
-            }
+            Command.Text = alias??command;
+            Command.RealCommand = command;
         }
 
-        public void AppendText(string text)
-        {
-            AutocompleteTextPart part = new AutocompleteTextPart()
-            {
-                Type = AutocompleteTextPartType.PartOfText,
-                Text = text,
-                Position = _parts.Any() ? _parts.Last().Position + 1 : 0
-            };
+        //public void AppendText(string text)
+        //{
+        //    AutocompleteTextPart part = new AutocompleteTextPart()
+        //    {
+        //        Type = AutocompleteTextPartType.PartOfText,
+        //        Text = text,
+        //        Position = _parts.Any() ? _parts.Last().Position + 1 : 0
+        //    };
 
-            if (_parts.Any() && _parts.Last().Type==AutocompleteTextPartType.PartOfText)
-            {
-                part = _parts.Last();
-                part.Text += text;
-            }
-            else
-            {
-                _parts.Add(part);
-            }
+        //    if (_parts.Any() && _parts.Last().Type==AutocompleteTextPartType.PartOfText)
+        //    {
+        //        part = _parts.Last();
+        //        part.Text += text;
+        //    }
+        //    else
+        //    {
+        //        _parts.Add(part);
+        //    }
             
-        }
+        //}
 
         public void Clear()
         {
@@ -347,18 +347,59 @@ namespace MonkeyJobTool.Entities.Autocomplete
             _bindedControl.SelectionStart = _bindedControl.Text.Length;
             _changedEventEnabled = true;
         }
+
+        public void NotifyAboutAvailableCommandSuggests(List<string> commands)
+        {
+            
+            if (commands.Count == 1)
+            {
+                //save command
+                Command.RealCommand = commands.First();
+            }
+            else if (commands.Count == 0 && !string.IsNullOrEmpty(Command.RealCommand) && Command.Text.EndsWith(" ")) //full command entered before space
+            {
+                SetCommand(Command.RealCommand, Command.Text);
+            }
+            else
+            {
+                Command.RealCommand = null;
+            }
+        }
+
+        private AutoCompleteCommandPart Command { get { return _parts.First() as AutoCompleteCommandPart; } }
+
+        public void Log()
+        {
+            foreach (var part in _parts)
+            {
+                string details = string.Empty;
+                if (part.Type == AutocompleteTextPartType.Command)
+                {
+                    var command = (part as AutoCompleteCommandPart);
+                    details += "[" + command.RealCommand + "]";
+                }
+                Console.WriteLine("[" + part.Text + "] - " + part.Type + " " + details + Environment.NewLine);
+            }
+        }
     }
 
     public class AutocompleteTextPart
     {
         public string Text { get; set; }
-        public AutocompleteTextPartType Type { get; set; }
-        public int Position { get; set; }
-
+        public virtual AutocompleteTextPartType Type { get {return AutocompleteTextPartType.PartOfText;}  }
+        public int Index { get; set; }
+        
         public AutocompleteTextPart()
         {
             Text = "";
         }
+    }
+
+    public class AutoCompleteCommandPart : AutocompleteTextPart
+    {
+        public override AutocompleteTextPartType Type { get{return AutocompleteTextPartType.Command;} }
+        public string RealCommand { get; set; }
+        
     }
 
     public enum AutocompleteTextPartType

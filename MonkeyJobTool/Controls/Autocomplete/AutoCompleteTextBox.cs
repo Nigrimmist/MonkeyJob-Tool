@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using HelloBotCommunication;
 using MonkeyJobTool.Entities.Autocomplete;
 
 namespace MonkeyJobTool.Controls.Autocomplete
@@ -62,6 +63,11 @@ namespace MonkeyJobTool.Controls.Autocomplete
         private void RefreshText()
         {
             _textWrapper.RefreshText();
+        }
+
+        public void NotifyAboutAvailableCommandSuggests(List<string> commands)
+        {
+            _textWrapper.NotifyAboutAvailableCommandSuggests(commands);
         }
     }
 }

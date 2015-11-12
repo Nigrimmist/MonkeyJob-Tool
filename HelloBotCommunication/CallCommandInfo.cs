@@ -35,8 +35,7 @@ namespace HelloBotCommunication
         {
             Command = command;
             Description = description;
-            Aliases = new List<string>();
-            
+            Aliases = new List<string>();            
         }
 
         public CallCommandInfo(string command, List<string> aliases)

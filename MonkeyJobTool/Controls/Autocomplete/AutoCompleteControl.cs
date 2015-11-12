@@ -67,7 +67,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
         {
             string term = commandText;
 
-            if (_popup.IsAnyitemHighlighted) return; //no any suggestions if selectMode enabled
+            if (_popup.IsAnyitemHighlighted || (IsPopupOpen && _popup.Model.Term==term)) return; //no any suggestions if selectMode enabled
             //_commandArgumentSuggester.Hide();
             //if (OnTextChanged != null)
             //    OnTextChanged(term);
@@ -87,18 +87,26 @@ namespace MonkeyJobTool.Controls.Autocomplete
                             ClearText = item
                         });
                     }
+                    popupModel.Term = term;
                     _popup.Model = popupModel;
                     _popup.ShowItems();
                     _popup.Top = ParentForm.Top - _popup.Height;
                     _popup.Left = ParentForm.Left + 1;
                     _popup.Width = ParentForm.Width - 3;
                     _isPopupOpen = true;
+
+                    if (filterResult.FoundItems.Count == 1)
+                    {
+                        //todo : apply command continue (right key eqiuvalent up)
+                        //txtCommand.SetCommand(filterResult.FoundItems.First());
+                    }
                 }
                 else
                 {
                     _popup.Hide();
                     _isPopupOpen = false;
                 }
+                txtCommand.NotifyAboutAvailableCommandSuggests(filterResult.FoundItems);
             }
         }
 
