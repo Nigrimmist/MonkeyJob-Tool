@@ -588,16 +588,14 @@ namespace MonkeyJobTool.Forms
             }
         }
 
-        
-
         private DataFilterInfo GetCommandListByTerm(string term)
         {
-           var foundItems = _bot.FindCommands(term).Select(x => x.Command.ToLower()).ToList();
+           var foundItems = _bot.FindCommands(term);
             
             return new DataFilterInfo()
             {
                 FoundByTerm = term,
-                FoundItems = foundItems
+                FoundCommands = foundItems
             };
         }
 

@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.txtCommand = new AutoCompleteTextBox();
+            
             this.pbEnter = new System.Windows.Forms.PictureBox();
             this.pnlEnterIconHolder = new System.Windows.Forms.Panel();
             this.timerEnterIconChange = new System.Windows.Forms.Timer(this.components);
@@ -39,6 +39,7 @@
             // 
             // txtCommand
             // 
+            this.txtCommand = new AutoCompleteTextBox();
             this.txtCommand.BackColor = System.Drawing.SystemColors.Control;
             this.txtCommand.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtCommand.Cursor = System.Windows.Forms.Cursors.IBeam;

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using HelloBotCore.Entities;
+
 
 namespace MonkeyJobTool.Entities.Autocomplete
 {
     public class AutocompletePopupItem
     {
-        public string ClearText { get; set; }
-        public object Value { get; set; }
+        public CallCommandInfo Value { get; set; }
     }
 }

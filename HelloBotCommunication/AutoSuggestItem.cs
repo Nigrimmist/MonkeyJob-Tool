@@ -8,6 +8,6 @@ namespace HelloBotCommunication
     public class AutoSuggestItem
     {
         public string DisplayedKey { get; set; }
-        public object Value { get; set; }
+        public string Value { get; set; }
     }
 }

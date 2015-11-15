@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using HelloBotCore.Entities;
 using MonkeyJobTool.Entities.Autocomplete;
 using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Helpers;
@@ -15,10 +16,10 @@ namespace MonkeyJobTool.Controls.Autocomplete
         private Color _highlightColor = Color.LightSkyBlue;
         private Color _defaultColor ;
 
-        public delegate void OnHighlightedDelegate(string highlightedItem, bool usingMouse);
+        public delegate void OnHighlightedDelegate(CallCommandInfo highlightedItem, bool usingMouse);
         public event OnHighlightedDelegate OnItemHighlighted;
 
-        public delegate void OnMouseClickedDelegate(string clickedItem);
+        public delegate void OnMouseClickedDelegate(CallCommandInfo clickedItem);
         public event OnMouseClickedDelegate OnMouseClicked;
 
         public delegate void OnNoOneSelectedDelegate();
@@ -112,7 +113,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         private AutocompletePopupItemControl CreateItemControl(AutocompletePopupItem item, ref int totalHeght, int index)
         {
-            AutocompletePopupItemControl itemControl = new AutocompletePopupItemControl(item.ClearText)
+            AutocompletePopupItemControl itemControl = new AutocompletePopupItemControl(item.Value)
             {
                 Top = totalHeght,
                 Index = Model.Items.Count - 1 - index

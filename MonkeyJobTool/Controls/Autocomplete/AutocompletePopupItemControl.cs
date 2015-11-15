@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using HelloBotCore.Entities;
 using MonkeyJobTool.Entities;
 
 namespace MonkeyJobTool.Controls.Autocomplete
@@ -12,14 +13,14 @@ namespace MonkeyJobTool.Controls.Autocomplete
     {
         
         private Label _rtl;
-        public string Value;
+        public CallCommandInfo Value;
         public int Index { get; set; }
 
         public delegate void OnChildMouseEnterDelegate();
         public event OnChildMouseEnterDelegate OnChildMouseEnter;
         public event OnChildMouseEnterDelegate OnChildMouseLeave;
 
-        public AutocompletePopupItemControl( string value)
+        public AutocompletePopupItemControl(CallCommandInfo value)
         {
             
             this.Value = value;
@@ -34,7 +35,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
             rtl.Font = new Font("MS Reference Sans Serif", 15.57F);
                       
             
-            rtl.Text = Value;
+            rtl.Text = Value.Command;
             rtl.Left = 5;
             rtl.Top = 10;
             

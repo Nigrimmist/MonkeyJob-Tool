@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using HelloBotCommunication;
+using HelloBotCore.Entities;
 using MonkeyJobTool.Entities.Autocomplete;
+using CallCommandInfo = HelloBotCore.Entities.CallCommandInfo;
 
 namespace MonkeyJobTool.Controls.Autocomplete
 {
@@ -18,9 +20,15 @@ namespace MonkeyJobTool.Controls.Autocomplete
         public delegate void CommandBluredDelegate();
         public event CommandBluredDelegate OnCommandBlured;
 
+       private AutocompleteText.TryResolveCommandFromStringDelegate _tryResolveCommandFromStringFunc;
+
         public AutoCompleteTextBox()
         {
-            _textWrapper = new AutocompleteText(this);
+        }
+
+        public void Init(AutocompleteText.TryResolveCommandFromStringDelegate tryResolveCommandFromStringFunc)
+        {
+            _textWrapper = new AutocompleteText(this, tryResolveCommandFromStringFunc);
             _textWrapper.OnCommandFocused += commandText =>
             {
                 if (CommandSuggestRequired != null)
@@ -48,7 +56,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
             _disableTextChangeFiring = false;
         }
 
-        public void SetCommand(string command)
+        public void SetCommand(CallCommandInfo command)
         {
             _textWrapper.SetCommand(command);
             RefreshText();

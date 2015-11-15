@@ -14,6 +14,7 @@ using HelloBotCommunication.Attributes.SettingAttributes;
 using HelloBotCommunication.Interfaces;
 using HelloBotCore.Helpers;
 using Newtonsoft.Json;
+using CallCommandInfo = HelloBotCore.Entities.CallCommandInfo;
 
 namespace HelloBotCore
 {
@@ -445,8 +446,7 @@ namespace HelloBotCore
                 where
                     cmd.Command.StartsWith(incCommand, StringComparison.InvariantCultureIgnoreCase) ||
                     cmd.Aliases.Any(y => y.StartsWith(incCommand, StringComparison.InvariantCultureIgnoreCase))
-                let descr = !string.IsNullOrEmpty(cmd.Description) ? cmd.Description : module.CommandDescription.Description
-                select new CallCommandInfo(cmd.Command, descr)).ToList();
+                select cmd).ToList();
         }
 
         #region methods for modules
@@ -726,7 +726,7 @@ namespace HelloBotCore
         }
 
 
-        public void GetArgumentSuggestions(ModuleCommandInfo command, string commandAlias, string args)
+        public void GetArgumentSuggestions(CallCommandInfo command, string commandAlias, string args)
         {
             if (command.CommandArgumentSuggestions != null)
             {
@@ -752,8 +752,8 @@ namespace HelloBotCore
                     }
                     catch (Exception ex)
                     {
-                        if (OnModuleErrorOccured != null)
-                            OnModuleErrorOccured(ex, command);
+                        //if (OnModuleErrorOccured != null)
+                        //    OnModuleErrorOccured(ex, command);
                     }
                 }).Start();
             }

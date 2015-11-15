@@ -12,6 +12,7 @@ using MonkeyJobTool.Entities;
 using MonkeyJobTool.Entities.Autocomplete;
 using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Forms;
+using CallCommandInfo = HelloBotCore.Entities.CallCommandInfo;
 
 namespace MonkeyJobTool.Controls.Autocomplete
 {
@@ -59,6 +60,16 @@ namespace MonkeyJobTool.Controls.Autocomplete
             _popup.OnItemHighlighted += popup_OnItemHighlighted;
             _popup.OnNoOneSelected += _popup_OnNoOneSelected;
             _popup.OnMouseClicked += _popup_OnMouseClicked;
+
+
+            txtCommand.Init(command =>
+            {
+                var commands = DataFilterFunc(command).FoundCommands;
+                if (commands.Count == 1)
+                    return commands.First();
+                return null;
+            } );
+
             txtCommand.CommandSuggestRequired += txtCommand_CommandSuggestRequired;
             txtCommand.OnCommandBlured += txtCommand_OnCommandBlured;
         }
@@ -77,14 +88,16 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
                 var filterResult = DataFilterFunc(term);
 
-                if (filterResult.FoundItems.Any())
+                if (filterResult.FoundCommands.Any())
                 {
+
+                    //todo cache required : iterate items and check for equall
                     var popupModel = new AutocompletePopupInfo();
-                    foreach (var item in filterResult.FoundItems)
+                    foreach (var item in filterResult.FoundCommands)
                     {
                         popupModel.Items.Add(new AutocompletePopupItem()
                         {
-                            ClearText = item
+                            Value = item
                         });
                     }
                     popupModel.Term = term;
@@ -95,7 +108,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
                     _popup.Width = ParentForm.Width - 3;
                     _isPopupOpen = true;
 
-                    if (filterResult.FoundItems.Count == 1)
+                    if (filterResult.FoundCommands.Count == 1)
                     {
                         //todo : apply command continue (right key eqiuvalent up)
                         //txtCommand.SetCommand(filterResult.FoundItems.First());
@@ -106,7 +119,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
                     _popup.Hide();
                     _isPopupOpen = false;
                 }
-                txtCommand.NotifyAboutAvailableCommandSuggests(filterResult.FoundItems);
+                //txtCommand.NotifyAboutAvailableCommandSuggests(filterResult.FoundCommands);
             }
         }
 
@@ -119,7 +132,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
             }
         }
 
-        void _popup_OnMouseClicked(string clickedItem)
+        void _popup_OnMouseClicked(CallCommandInfo clickedItem)
         {
             SetCommand(clickedItem);
         }
@@ -130,14 +143,14 @@ namespace MonkeyJobTool.Controls.Autocomplete
             //txtCommand.SelectionStart = txtCommand.Text.Length;
         }
 
-        private void SetCommand(string command)
+        private void SetCommand(CallCommandInfo commandInfo)
         {
-            //txtCommand.Text = command;
+            //txtCommand.Text = commandInfo.Command;
             //txtCommand.SelectionStart = txtCommand.Text.Length;
             
-            txtCommand.SetCommand(command);
+            txtCommand.SetCommand(commandInfo);
         }
-        void popup_OnItemHighlighted(string highlightedItem,bool usingMouse)
+        void popup_OnItemHighlighted(CallCommandInfo highlightedItem, bool usingMouse)
         {
             if (!usingMouse)
             {

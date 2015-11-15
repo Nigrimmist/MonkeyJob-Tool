@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows.Forms;
 using HelloBotCommunication;
+using HelloBotCore.Entities;
+using CallCommandInfo = HelloBotCore.Entities.CallCommandInfo;
 
 namespace MonkeyJobTool.Entities.Autocomplete
 {
@@ -11,6 +15,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
     {
         private readonly TextBox _bindedControl;
         
+
         List<AutocompleteTextPart> _parts { get; set; }
         private int _currCaretPos = 0;
         private int _currCaretSelectionLength = 0;
@@ -25,18 +30,41 @@ namespace MonkeyJobTool.Entities.Autocomplete
         public delegate void CommandBluredDelegate();
         public event CommandBluredDelegate OnCommandBlured;
 
-         
+        public delegate CallCommandInfo TryResolveCommandFromStringDelegate(string text);
+        private TryResolveCommandFromStringDelegate _tryResolveCommandFromStringFunc;
 
-        public AutocompleteText(TextBox bindedControl)
+        public AutocompleteText(TextBox bindedControl, TryResolveCommandFromStringDelegate tryResolveCommandFromStringFunc)
         {
             _bindedControl = bindedControl;
-            
+            _tryResolveCommandFromStringFunc = tryResolveCommandFromStringFunc;
+
             _bindedControl.MouseDown += (sender, args) => { changeCaretPos(); };
             _bindedControl.MouseUp += (sender, args) => { changeCaretPos(); };
-            _bindedControl.TextChanged += (sender, args) => { changeCaretPos(true); if (_changedEventEnabled) { textChanged(); TryNotifyAboutCommandFocused();
-                Log();
-            } };
+            _bindedControl.TextChanged += (sender, args) =>
+            {
+                changeCaretPos(true);
+                if (_changedEventEnabled)
+                {
+                    textChanged();
+                    ClearParts();
+                    CorrectParts();
+                    TryResolveCommandIfRequired();
+                    TryNotifyAboutCommandFocused();
+                    TryNotifyAboutCommandBlured();
+
+                    CheckForAvailableArgumentSuggestions();
+                    
+                    Log();
+                }
+                
+            };
             _bindedControl.KeyUp += (sender, args) => { changeCaretPos(); };
+            AddEmptyCommand();
+            _lastText = bindedControl.Text;
+        }
+
+        private void AddEmptyCommand()
+        {
             _parts = new List<AutocompleteTextPart>()
             {
                 new AutoCompleteCommandPart()
@@ -44,38 +72,6 @@ namespace MonkeyJobTool.Entities.Autocomplete
                    Index = 0
                 }
             };
-            _lastText = bindedControl.Text;
-
-            //_parts.Add(new AutocompleteTextPart()
-            //{
-            //    Text = "курс валют",
-            //    Position = 0,
-            //    Type = AutocompleteTextPartType.Command
-            //});
-            //_parts.Add(new AutocompleteTextPart()
-            //{
-            //    Text = " 1 ",
-            //    Position = 1,
-            //    Type = AutocompleteTextPartType.PartOfText
-            //});
-            //_parts.Add(new AutocompleteTextPart()
-            //{
-            //    Text = "usd",
-            //    Position = 2,
-            //    Type = AutocompleteTextPartType.Suggestion
-            //});
-            //_parts.Add(new AutocompleteTextPart()
-            //{
-            //    Text = " ",
-            //    Position = 3,
-            //    Type = AutocompleteTextPartType.PartOfText
-            //});
-            //_parts.Add(new AutocompleteTextPart()
-            //{
-            //    Text = "rub",
-            //    Position = 4,
-            //    Type = AutocompleteTextPartType.Suggestion
-            //});
         }
 
         private void changeCaretPos(bool fromChangedTextEvent = false)
@@ -98,9 +94,6 @@ namespace MonkeyJobTool.Entities.Autocomplete
         private string _lastText = string.Empty;
         private void textChanged()
         {
-
-            //Console.WriteLine("from pos : {0} (length : {1})", _prevCaretPos, _prevCaretSelectionLength);
-            //Console.WriteLine("to pos : {0} (length : {1})", _currCaretPos, _currCaretSelectionLength);
 
             if (_lastText != _bindedControl.Text)
             {
@@ -138,16 +131,24 @@ namespace MonkeyJobTool.Entities.Autocomplete
                     }
                 }
             }
-            TryNotifyAboutCommandBlured();
             _lastText = _bindedControl.Text;
+            Console.WriteLine("textChanged()");
         }
-
+        private void TryResolveCommandIfRequired()
+        {
+            if (IsCommandInFocus())
+            {
+                Console.WriteLine("_tryResolveCommandFromStringFunc()");
+                var command = _tryResolveCommandFromStringFunc(CommandPart.Text);
+                CommandPart.Command = command;
+            }
+        }
         private void TryNotifyAboutCommandFocused()
         {
             if (IsCommandInFocus())
             {
                 if (OnCommandFocused != null)
-                    OnCommandFocused(Command.Text);
+                    OnCommandFocused(CommandPart.Text);
             }
         }
         private void TryNotifyAboutCommandBlured()
@@ -161,12 +162,12 @@ namespace MonkeyJobTool.Entities.Autocomplete
 
         private bool IsCommandInFocus()
         {
-            return _currCaretPos <= Command.Text.Length && !string.IsNullOrEmpty(Command.Text);
+            return _currCaretPos <= CommandPart.Text.Length && !string.IsNullOrEmpty(CommandPart.Text);
         }
 
         private void ChangePartOfText(string val, int fromPos, int toPos, bool deleted)
         {
-            Console.WriteLine("changed fired");
+            
             int currPos = 0;
             AutocompleteTextPart fromAffectedPart = null;
             AutocompleteTextPart toAffectedPart = null;
@@ -252,21 +253,34 @@ namespace MonkeyJobTool.Entities.Autocomplete
                 } while ((changedPart = _parts.SingleOrDefault(x => x.Index == changedPart.Index + 1 && x.Index <= toAffectedPart.Index)) != null);
             }
             
-            ClearParts();
-            CorrectParts();
+            
         }
 
         private void CorrectParts()
         {
-            if (Command.Text.EndsWith(" ") && !string.IsNullOrEmpty(Command.RealCommand))
+            if (CommandPart.Text.EndsWith(" ") && CommandPart.Command!=null)
             {
-                Command.Text = Command.Text.TrimEnd(' ');
+                CommandPart.Text = CommandPart.Text.TrimEnd(' ');
                 _parts.Add(new AutocompleteTextPart()
                 {
                     Index = _parts.Count,
                     Text = " "
                 });
             }
+
+            //var lastPart = _parts.Last();
+            //if (lastPart.Type == AutocompleteTextPartType.Suggestion)
+            //{
+            //    if (lastPart.Text.EndsWith(" ") && (lastPart as AutoCompleteArgumentSuggestPart).Suggest != null)
+            //    {
+            //        lastPart.Text = CommandPart.Text.TrimEnd(' ');
+            //        _parts.Add(new AutocompleteTextPart()
+            //        {
+            //            Index = _parts.Count,
+            //            Text = " "
+            //        });
+            //    }
+            //}
         }
 
         private void ClearParts()
@@ -305,39 +319,24 @@ namespace MonkeyJobTool.Entities.Autocomplete
 
         public override string ToString()
         {
-            return string.Join("", _parts.Select(x => x.Text).ToArray());
+            return PartsToString(_parts);
         }
 
-        public void SetCommand(string command, string alias=null)
+        public string PartsToString(List<AutocompleteTextPart> parts)
         {
-            Command.Text = alias??command;
-            Command.RealCommand = command;
+            return string.Join("", parts.Select(x => x.Text).ToArray());
         }
 
-        //public void AppendText(string text)
-        //{
-        //    AutocompleteTextPart part = new AutocompleteTextPart()
-        //    {
-        //        Type = AutocompleteTextPartType.PartOfText,
-        //        Text = text,
-        //        Position = _parts.Any() ? _parts.Last().Position + 1 : 0
-        //    };
-
-        //    if (_parts.Any() && _parts.Last().Type==AutocompleteTextPartType.PartOfText)
-        //    {
-        //        part = _parts.Last();
-        //        part.Text += text;
-        //    }
-        //    else
-        //    {
-        //        _parts.Add(part);
-        //    }
-            
-        //}
+        public void SetCommand(CallCommandInfo command)
+        {
+            CommandPart.Text = command.Command;
+            CommandPart.Command = command;
+        }
 
         public void Clear()
         {
             _parts.Clear();
+            AddEmptyCommand();
         }
 
         public void RefreshText()
@@ -350,23 +349,23 @@ namespace MonkeyJobTool.Entities.Autocomplete
 
         public void NotifyAboutAvailableCommandSuggests(List<string> commands)
         {
-            
-            if (commands.Count == 1)
-            {
-                //save command
-                Command.RealCommand = commands.First();
-            }
-            else if (commands.Count == 0 && !string.IsNullOrEmpty(Command.RealCommand) && Command.Text.EndsWith(" ")) //full command entered before space
-            {
-                SetCommand(Command.RealCommand, Command.Text);
-            }
-            else
-            {
-                Command.RealCommand = null;
-            }
+            //Console.WriteLine("NotifyAboutAvailableCommandSuggests()");
+            //if (commands.Count == 1)
+            //{
+            //    //save command
+            //    Command.RealCommand = commands.First();
+            //}
+            //else if (commands.Count == 0 && !string.IsNullOrEmpty(Command.RealCommand) && Command.Text.EndsWith(" ")) //full command entered before space
+            //{
+            //    SetCommand(Command.RealCommand, Command.Text);
+            //}
+            //else
+            //{
+            //    Command.RealCommand = null;
+            //}
         }
 
-        private AutoCompleteCommandPart Command { get { return _parts.First() as AutoCompleteCommandPart; } }
+        private AutoCompleteCommandPart CommandPart { get { return _parts.First() as AutoCompleteCommandPart; } }
 
         public void Log()
         {
@@ -376,9 +375,85 @@ namespace MonkeyJobTool.Entities.Autocomplete
                 if (part.Type == AutocompleteTextPartType.Command)
                 {
                     var command = (part as AutoCompleteCommandPart);
-                    details += "[" + command.RealCommand + "]";
+                    details += "[" + (command.Command!=null?command.Command.Command:null) + "]";
+                }
+                if (part.Type == AutocompleteTextPartType.Suggestion)
+                {
+                    var command = (part as AutoCompleteArgumentSuggestPart);
+                    details += "[" + (command.Suggest != null ? command.Suggest.Value : null) + "]";
                 }
                 Console.WriteLine("[" + part.Text + "] - " + part.Type + " " + details + Environment.NewLine);
+            }
+        }
+
+        private void CheckForAvailableArgumentSuggestions()
+        {
+            if (CommandPart.Command != null)
+            {
+                if (CommandPart.Command.CommandArgumentSuggestions != null && !IsCommandInFocus())
+                {
+                    string args = PartsToString(_parts.Where(x => x.Type != AutocompleteTextPartType.Command && x.Type != AutocompleteTextPartType.Suggestion).ToList()).TrimStart();
+                    //todo : thread pool required
+                    //new Thread(() =>
+                    //{
+                        
+                    //}).Start();
+                    try
+                    {
+                        for (int i = 0; i < CommandPart.Command.CommandArgumentSuggestions.Count; i++)
+                        {
+                            var comSuggestion = CommandPart.Command.CommandArgumentSuggestions[i];
+                            foreach (var argSuggestion in comSuggestion.TemplateParseInfo)//.Where(x => x.Order == _parts.Count(y => y.Type == AutocompleteTextPartType.Suggestion))
+                            {
+                                if (args.Trim() != "")
+                                {
+                                    if (!string.IsNullOrEmpty(argSuggestion.RegexpPart) && Regex.IsMatch(args, argSuggestion.RegexpPart))
+                                    {
+                                        List<AutoSuggestItem> suggestions = comSuggestion.Details.Where(x => x.Key == argSuggestion.Key).Select(x => x.GetSuggestionFunc).Single()();
+                                        //todo : check case when text pasted in the middle ?
+                                        if (_parts.Last().Type != AutocompleteTextPartType.Suggestion)
+                                        {
+                                            _parts.Add(new AutoCompleteArgumentSuggestPart()
+                                            {
+                                                Index = _parts.Count,
+                                                Text = ""
+                                            });
+                                        }
+
+                                        if (_parts.Last().Type == AutocompleteTextPartType.Suggestion)
+                                        {
+                                            var suggPart = _parts.Last() as AutoCompleteArgumentSuggestPart;
+                                            var argToCompare = suggPart.Text.ToLower();
+                                            var found = suggestions.FirstOrDefault(x => x.Value.ToLower() == argToCompare);
+
+                                            
+                                            if (found == null && suggPart.Suggest != null &&
+                                                suggPart.Suggest.Value.Length <= suggPart.Text.Length //in case of delete 
+                                                )
+                                            {
+                                                var newTextPart = suggPart.Text.Substring(suggPart.Suggest.Value.Length);
+                                                suggPart.Text = suggPart.Text.Substring(0, suggPart.Suggest.Value.Length);
+                                                _parts.Add(new AutocompleteTextPart()
+                                                {
+                                                    Index = _parts.Count,
+                                                    Text = newTextPart
+                                                });
+                                            }
+
+                                            suggPart.Suggest = found;
+                                        }
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        //if (OnModuleErrorOccured != null)
+                        //    OnModuleErrorOccured(ex, command);
+                    }
+                }
             }
         }
     }
@@ -397,15 +472,22 @@ namespace MonkeyJobTool.Entities.Autocomplete
 
     public class AutoCompleteCommandPart : AutocompleteTextPart
     {
-        public override AutocompleteTextPartType Type { get{return AutocompleteTextPartType.Command;} }
-        public string RealCommand { get; set; }
+        public override AutocompleteTextPartType Type{get { return AutocompleteTextPartType.Command; }}
+        public CallCommandInfo Command { get; set; }
+    }
+
+    public class AutoCompleteArgumentSuggestPart : AutocompleteTextPart
+    {
+        public override AutocompleteTextPartType Type { get { return AutocompleteTextPartType.Suggestion; } }
+        public AutoSuggestItem Suggest { get; set; }
         
+
     }
 
     public enum AutocompleteTextPartType
     {
         Suggestion,
         Command,
-        PartOfText
+        PartOfText,
     }
 }

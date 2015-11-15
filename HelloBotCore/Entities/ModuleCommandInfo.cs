@@ -17,7 +17,7 @@ namespace HelloBotCore.Entities
         public List<string> OriginalAliases { get; set; }
         public Color? BodyBackgroundColor { get; set; }
         public Color? HeaderBackgroundColor { get; set; }
-        public List<CommandArgumentSuggestionInfo> CommandArgumentSuggestions { get; set; }
+        
 
         public ModuleCommandInfo(string settingsFolderAbsolutePath, string logsFolderAbsolutePath) : base(settingsFolderAbsolutePath, logsFolderAbsolutePath)
         {
@@ -32,12 +32,11 @@ namespace HelloBotCore.Entities
             HeaderBackgroundColor = commandModuleBase.HeaderBackGroundColor;
             IClient client = new ModuleToClientAdapter(moduleClientHandler, this);
             commandModuleBase.Init(client);
-            CallCommandList = commandModuleBase.CallCommandList.ToList();
+            CallCommandList = commandModuleBase.CallCommandList.Select(x=>new CallCommandInfo(x)).ToList();
             CommandDescription = commandModuleBase.ModuleDescription;
             OriginalAliases = commandModuleBase.CallCommandList.Where(x=>!string.IsNullOrEmpty(x.Command)).Select(x => x.Command).ToList();
             OriginalAliases.AddRange(commandModuleBase.CallCommandList.Where(x => !string.IsNullOrEmpty(x.Command)).SelectMany(x => x.Aliases).ToList());
-            if(commandModuleBase.ArgumentSuggestions!=null)
-                CommandArgumentSuggestions = commandModuleBase.ArgumentSuggestions.Select(x=>new CommandArgumentSuggestionInfo(x)).ToList();
+            CallCommandList.ForEach(x=>x.Description = string.IsNullOrEmpty(x.Description)?CommandDescription.Description:x.Description);
         }
 
         public override ModuleType ModuleType

@@ -53,6 +53,7 @@
     <Compile Include="Entities\AnswerInfo.cs" />
     <Compile Include="Entities\BotContextBase.cs" />
     <Compile Include="Entities\BotTrayModuleContext.cs" />
+    <Compile Include="Entities\CallCommandInfo.cs" />
     <Compile Include="Entities\CommandArgumentSuggestionInfo.cs" />
     <Compile Include="Entities\LogMessage.cs" />
     <Compile Include="Entities\ModuleInfoBase.cs" />

@@ -43,9 +43,9 @@ namespace MonkeyJobTool.Controls
 
         public void Init()
         {
-            _popup.OnItemHighlighted += popup_OnItemHighlighted;
+            //_popup.OnItemHighlighted += popup_OnItemHighlighted;
             _popup.OnNoOneSelected += _popup_OnNoOneSelected;
-            _popup.OnMouseClicked += _popup_OnMouseClicked;
+            //_popup.OnMouseClicked += _popup_OnMouseClicked;
             _boundTextbox.KeyDown += boundTextbox_KeyDown;
             _boundTextbox.TextChanged += boundTextbox_TextChanged;
         }
@@ -119,37 +119,37 @@ namespace MonkeyJobTool.Controls
             return corr;
         }
 
-        void popup_OnItemHighlighted(string highlightedItem,bool usingMouse)
-        {
-            if (!usingMouse)
-            {
-                SetArg(highlightedItem);
-            }
-        }
+        //void popup_OnItemHighlighted(CallCommandInfo highlightedItem, bool usingMouse)
+        //{
+        //    if (!usingMouse)
+        //    {
+        //        SetArg(highlightedItem);
+        //    }
+        //}
 
-        public void ShowItems(List<AutoSuggestItem> items)
-        {
+        //public void ShowItems(List<AutoSuggestItem> items)
+        //{
             
 
-            var popupModel = new AutocompletePopupInfo();
-            foreach (var item in items)
-            {
-                popupModel.Items.Add(new AutocompletePopupItem()
-                {
-                   ClearText = item.DisplayedKey,
-                    Value = item.Value
-                });
-            }
+        //    var popupModel = new AutocompletePopupInfo();
+        //    foreach (var item in items)
+        //    {
+        //        popupModel.Items.Add(new AutocompletePopupItem()
+        //        {
+        //           ClearText = item.DisplayedKey,
+        //            Value = item.Value
+        //        });
+        //    }
 
-            if (_isPopupOpen && _popup.Model.Items.All(x => popupModel.Items.Any(y => y.Value == x.Value))) return;
+        //    if (_isPopupOpen && _popup.Model.Items.All(x => popupModel.Items.Any(y => y.Value == x.Value))) return;
 
-            _popup.Model = popupModel;
-            _popup.ShowItems();
-            _popup.Top = _parentForm.Top - _popup.Height;
-            _popup.Left = _parentForm.Left + _argListLeftMargin+1;
-            _popup.Width = _parentForm.Width - _argListLeftMargin-3;
-            _isPopupOpen = true;
-        }
+        //    _popup.Model = popupModel;
+        //    _popup.ShowItems();
+        //    _popup.Top = _parentForm.Top - _popup.Height;
+        //    _popup.Left = _parentForm.Left + _argListLeftMargin+1;
+        //    _popup.Width = _parentForm.Width - _argListLeftMargin-3;
+        //    _isPopupOpen = true;
+        //}
 
         public void Hide()
         {

@@ -30,37 +30,31 @@ namespace Yushko.Modules
             {
                 return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("Курсы валют", new List<string>(){"курс","exrate"}),
+                    new CallCommandInfo("Курсы валют", new List<string>() {"курс", "exrate"}, new ReadOnlyCollection<ArgumentSuggestionInfo>(new List<ArgumentSuggestionInfo>()
+                    {
+                        new ArgumentSuggestionInfo()
+                        {
+                            ArgTemplate = @"[0-9]+\s{{cur1}}\s{{cur2}}",
+                            Details = new List<SuggestionDetails>()
+                            {
+                                new SuggestionDetails() {Key = "cur1", GetSuggestionFunc = () => _curCodes.Select(x => new AutoSuggestItem() {Value = x.Key, DisplayedKey = x.Key + " - " + x.Value}).ToList()},
+                                new SuggestionDetails() {Key = "cur2", GetSuggestionFunc = () => _curCodes.Select(x => new AutoSuggestItem() {Value = x.Key, DisplayedKey = x.Key + " - " + x.Value}).ToList()},
+                            }
+                        },
+                        new ArgumentSuggestionInfo()
+                        {
+                            ArgTemplate = @"{{subcommand}}",
+                            Details = new List<SuggestionDetails>()
+                            {
+                                new SuggestionDetails() {Key = "subcommand", GetSuggestionFunc = () => new List<string>() {"ставкареф", "все"}.Select(x => new AutoSuggestItem() {Value = x, DisplayedKey = x}).ToList()}
+                            }
+                        }
+                    })),
                 });
             }
         }
 
-        public override ReadOnlyCollection<ArgumentSuggestionInfo> ArgumentSuggestions
-        {
-            get
-            {
-                return new ReadOnlyCollection<ArgumentSuggestionInfo>(new List<ArgumentSuggestionInfo>()
-                {
-                    new ArgumentSuggestionInfo()
-                    {
-                        ArgTemplate = @"[0-9]+\s{{cur1}}\s{{cur2}}",
-                        Details = new List<SuggestionDetails>()
-                        {
-                            new SuggestionDetails(){Key = "cur1",GetSuggestionFunc = () => _curCodes.Select(x=>new AutoSuggestItem(){Value = x.Key,DisplayedKey = x.Key+" - "+x.Value}).ToList()},
-                            new SuggestionDetails(){Key = "cur2",GetSuggestionFunc = () => _curCodes.Select(x=>new AutoSuggestItem(){Value = x.Key,DisplayedKey = x.Key+" - "+x.Value}).ToList()},
-                        }
-                    },
-                    new ArgumentSuggestionInfo()
-                    {
-                        ArgTemplate = @"{{subcommand}}",
-                        Details = new List<SuggestionDetails>()
-                        {
-                            new SuggestionDetails(){Key = "subcommand",GetSuggestionFunc = () => new List<string>(){"ставкареф","все"}.Select(x=>new AutoSuggestItem(){Value = x,DisplayedKey = x}).ToList()}
-                        }
-                    }
-                });
-            }
-        }
+        
 
         public override string ModuleTitle
         {
