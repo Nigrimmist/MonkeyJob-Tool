@@ -10,7 +10,7 @@ using CallCommandInfo = HelloBotCore.Entities.CallCommandInfo;
 
 namespace MonkeyJobTool.Controls.Autocomplete
 {
-    public class AutoCompleteTextBox : TextBox
+    public class AutoCompleteTextBox : RichTextBox
     {
         private AutocompleteText _textWrapper;
 
