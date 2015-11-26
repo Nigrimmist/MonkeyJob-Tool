@@ -42,12 +42,15 @@ namespace MonkeyJobTool.Entities.Autocomplete
             _bindedControl.MouseUp += (sender, args) => { changeCaretPos(); };
             _bindedControl.TextChanged += (sender, args) =>
             {
-                var focusedPart = changeCaretPos(true);
+                changeCaretPos(true);
                 if (_changedEventEnabled)
                 {
                     textChanged();
                     ClearParts();
                     CorrectParts();
+                    var focusedPart = GetFocusedPart();
+                    
+                    SetBackColor(focusedPart.BackColor);
                     TryResolveCommandIfRequired(focusedPart);
                     TryNotifyAboutCommandFocused(focusedPart);
                     TryNotifyAboutCommandBlured(focusedPart);
@@ -64,6 +67,24 @@ namespace MonkeyJobTool.Entities.Autocomplete
             _lastText = bindedControl.Text;
         }
 
+
+        private AutocompleteTextPart GetFocusedPart()
+        {
+            AutocompleteTextPart toReturn = null;
+            var pos = 0;
+            foreach (var part in _parts)
+            {
+                if (_currCaretPos >= pos && _currCaretPos <= pos + part.Text.Length)
+                {
+                    toReturn = part;
+                    break;
+                }
+                pos += part.Text.Length;
+            }
+
+            return toReturn;
+        }
+
         private void AddEmptyCommand()
         {
             AppendParts(false,new AutoCompleteCommandPart()
@@ -72,7 +93,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
             });
         }
 
-        private AutocompleteTextPart changeCaretPos(bool fromChangedTextEvent = false)
+        private void changeCaretPos(bool fromChangedTextEvent = false)
         {
             AutocompleteTextPart partInFocus = null;
             if ((_currCaretPos != _bindedControl.SelectionStart || fromChangedTextEvent) || _currCaretSelectionLength != _bindedControl.SelectionLength)
@@ -82,33 +103,14 @@ namespace MonkeyJobTool.Entities.Autocomplete
                 _currCaretPos = _bindedControl.SelectionStart;
                 _currCaretSelectionLength = _bindedControl.SelectionLength;
 
-                var pos = 0;
-                foreach (var part in _parts)
-                {
-                    if (_currCaretPos >= pos && _currCaretPos <= pos + part.Text.Length)
-                    {
-                        partInFocus = part;
-                        break;
-                    }
-                    pos += part.Text.Length;
-                }
-
-                if (partInFocus != null)
-                {
-                    SetBackColor(partInFocus.BackColor);
-                }
-
                 if (!fromChangedTextEvent)
                 {
-                    TryNotifyAboutCommandFocused(partInFocus);
-                    TryNotifyAboutCommandBlured(partInFocus);
+                    TryNotifyAboutCommandFocused();
+                    TryNotifyAboutCommandBlured();
                 }
 
                 Console.WriteLine(_prevCaretPos + " " + _currCaretPos);
             }
-
-            
-            return partInFocus;
         }
 
         private void SetBackColor(Color color)
@@ -169,7 +171,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
                 CommandPart.Command = command;
             }
         }
-        private void TryNotifyAboutCommandFocused(AutocompleteTextPart focusedPart)
+        private void TryNotifyAboutCommandFocused(AutocompleteTextPart focusedPart=null)
         {
             if (IsCommandInFocus(focusedPart))
             {
@@ -177,7 +179,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
                     OnCommandFocused(CommandPart.Text);
             }
         }
-        private void TryNotifyAboutCommandBlured(AutocompleteTextPart focusedPart)
+        private void TryNotifyAboutCommandBlured(AutocompleteTextPart focusedPart=null)
         {
             if (!IsCommandInFocus(focusedPart))
             {
@@ -311,7 +313,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
                     Text = " "
                 },new AutocompleteTextPart()
                 {
-                    Index = _parts.Count,
+                    Index = _parts.Count+1,
                     Text = ""
                 });
             }
@@ -593,9 +595,9 @@ namespace MonkeyJobTool.Entities.Autocomplete
             Text = "";
         }
     }
-    подумать как легче и менее костыльней отрисовывть текст - в ноутпаде два вариант. сейчас - с частичной
+    
     public class AutoCompleteCommandPart : AutocompleteTextPart
-    { ит
+    {
         public override AutocompleteTextPartType Type{get { return AutocompleteTextPartType.Command; }}
         public CallCommandInfo Command { get; set; }
 
