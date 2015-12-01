@@ -87,6 +87,7 @@ namespace MonkeyJobTool.Entities
             }
             
         }
+        
         private static void OnError(object sender, ThreadExceptionEventArgs t)
         {
             LogManager.Error(t.Exception);
