@@ -262,6 +262,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
                     {
                         toPos -= changedPart.Text.Length;
                         changedPart.Delete();
+                        changedPart.MarkAsDeleted = true;
                     }
                     else
                     {
@@ -384,7 +385,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
                 {
                     
                     var part = _parts[i];
-                    
+
                     if (part.MarkAsDeleted)
                     {
                         _parts.RemoveAt(i);
