@@ -85,10 +85,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
 
         private void AddEmptyCommand()
         {
-            AppendParts(new AutoCompleteCommandPart()
-            {
-                Index = 0
-            });
+            AppendParts(new AutoCompleteCommandPart());
         }
 
         private void changeCaretPos(bool fromChangedTextEvent = false)
@@ -312,7 +309,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
                 {
                     AppendParts(new AutoCompleteDelimeterPart()
                     {
-                        Index = _parts.Count,
+                        
                         Text = " "
                     }, false);
                 }
@@ -325,7 +322,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
                 {
                     AppendParts(new AutocompleteTextPart()
                     {
-                        Index = _parts.Count + 1,
+                        
                         Text = ""
                     });
                 }
@@ -352,7 +349,6 @@ namespace MonkeyJobTool.Entities.Autocomplete
                             suggPart.Text = suggPart.Text.Substring(0, suggPart.Suggest.Value.Length);
                             AppendParts(new AutocompleteTextPart()
                             {
-                                Index = _parts.Count,
                                 Text = newTextPart
                             });
                         }
@@ -360,7 +356,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
                 }
 
             }
-            ReAssignPartIndexOrder();
+            //ReAssignPartIndexOrder();
             //var lastPart = _parts.Last();
             //if (lastPart.Type == AutocompleteTextPartType.Suggestion)
             //{
@@ -642,6 +638,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
             if (toEnd)
             {
                 _parts.Add(part);
+                DeletePartIfEmpty(_parts.Count - 2);
             }
             else
             {
@@ -651,6 +648,19 @@ namespace MonkeyJobTool.Entities.Autocomplete
                 else
                 {
                     _parts.Insert(focusedPart.Index, part);
+                    DeletePartIfEmpty(focusedPart.Index);
+                }
+            }
+            ReAssignPartIndexOrder();
+        }
+
+        private void DeletePartIfEmpty(int partIndex)
+        {
+            if (_parts.Count > partIndex && partIndex>=0)
+            {
+                if (string.IsNullOrEmpty(_parts[partIndex].Text))
+                {
+                    _parts.RemoveAt(partIndex);
                 }
             }
         }

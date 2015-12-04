@@ -50,6 +50,8 @@ namespace HelloBotCore.Entities
             if (File.Exists(GetLogFileFullPath()))
             {
                 TraceMessages = JsonConvert.DeserializeObject<List<LogMessage>>(File.ReadAllText(GetLogFileFullPath()));
+                if (TraceMessages == null)
+                    TraceMessages = new List<LogMessage>();
             }
         }
 
