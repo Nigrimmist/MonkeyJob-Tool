@@ -20,15 +20,21 @@ namespace MonkeyJobTool.Controls.Autocomplete
         public delegate void CommandBluredDelegate();
         public event CommandBluredDelegate OnCommandBlured;
 
+        public delegate void ArgumentBluredDelegate();
+        public event ArgumentBluredDelegate OnArgumentBlured;
+
+        public delegate void ArgSuggestRequiredDelegate(string argText);
+        public event ArgSuggestRequiredDelegate ArgSuggestRequired;
+
        private AutocompleteText.TryResolveCommandFromStringDelegate _tryResolveCommandFromStringFunc;
 
         public AutoCompleteTextBox()
         {
         }
 
-        public void Init(AutocompleteText.TryResolveCommandFromStringDelegate tryResolveCommandFromStringFunc)
+        public void Init(AutocompleteText.TryResolveCommandFromStringDelegate tryResolveCommandFromStringFunc,AutocompleteText.GetSuggestionsDelegate getArgumentSuggestionsFunc)
         {
-            _textWrapper = new AutocompleteText(this, tryResolveCommandFromStringFunc);
+            _textWrapper = new AutocompleteText(this, tryResolveCommandFromStringFunc, getArgumentSuggestionsFunc);
             _textWrapper.OnCommandFocused += commandText =>
             {
                 if (CommandSuggestRequired != null)
@@ -38,6 +44,18 @@ namespace MonkeyJobTool.Controls.Autocomplete
             {
                 if (OnCommandBlured != null)
                     OnCommandBlured();
+            };
+            _textWrapper.OnArgumentBlured += () =>
+            {
+                Console.WriteLine("OnArgumentBlured");
+                //if (OnArgumentBlured != null)
+                //    OnArgumentBlured();
+            };
+            _textWrapper.OnArgumentFocused += argumentText =>
+            {
+                Console.WriteLine("OnArgumentFocused");
+                //if (ArgSuggestRequired != null)
+                //    ArgSuggestRequired(argumentText);
             };
         }
 
@@ -52,7 +70,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
         public void SetArgumentText(string text)
         {
             _disableTextChangeFiring = true;
-            this.Text = text;
+            //this.Text = text;
             _disableTextChangeFiring = false;
         }
 

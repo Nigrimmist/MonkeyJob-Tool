@@ -3,10 +3,11 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using HelloBotCore.Entities;
+using HelloBotCommunication;
 using MonkeyJobTool.Entities.Autocomplete;
 using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Helpers;
+using CallCommandInfo = HelloBotCore.Entities.CallCommandInfo;
 
 namespace MonkeyJobTool.Controls.Autocomplete
 {
@@ -16,10 +17,10 @@ namespace MonkeyJobTool.Controls.Autocomplete
         private Color _highlightColor = Color.LightSkyBlue;
         private Color _defaultColor ;
 
-        public delegate void OnHighlightedDelegate(CallCommandInfo highlightedItem, bool usingMouse);
+        public delegate void OnHighlightedDelegate(AutocompleteItem highlightedItem, bool usingMouse);
         public event OnHighlightedDelegate OnItemHighlighted;
 
-        public delegate void OnMouseClickedDelegate(CallCommandInfo clickedItem);
+        public delegate void OnMouseClickedDelegate(AutocompleteItem clickedItem);
         public event OnMouseClickedDelegate OnMouseClicked;
 
         public delegate void OnNoOneSelectedDelegate();

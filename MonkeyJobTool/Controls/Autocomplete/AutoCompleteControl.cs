@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using HelloBotCommunication;
+using HelloBotCore.Entities;
 using MonkeyJobTool.Entities;
 using MonkeyJobTool.Entities.Autocomplete;
 using MonkeyJobTool.Extensions;
@@ -20,7 +21,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
     {
         
         private AutocompletePopupControl _popup = new AutocompletePopupControl(title: "Команды");
-        private CommandArgumentSuggester _commandArgumentSuggester;
+       // private CommandArgumentSuggester _commandArgumentSuggester;
 
         public Form ParentForm { get; set; }
         
@@ -68,10 +69,33 @@ namespace MonkeyJobTool.Controls.Autocomplete
                 if (commands.Count == 1)
                     return commands.First();
                 return null;
-            } );
+            }, GetArgumentSuggestionsFunc );
 
             txtCommand.CommandSuggestRequired += txtCommand_CommandSuggestRequired;
+            txtCommand.ArgSuggestRequired += txtCommand_ArgSuggestRequired;
             txtCommand.OnCommandBlured += txtCommand_OnCommandBlured;
+            txtCommand.OnArgumentBlured += txtCommand_OnArgumentBlured;
+        }
+
+        private List<AutoSuggestItem> GetArgumentSuggestionsFunc(CallCommandInfo command, CommandArgumentSuggestionInfo suggest, string key, int order)
+        {
+            Console.WriteLine("GetArgumentSuggestionsFunc");
+            var suggestions =  suggest.Details.Single(x => x.Key == key).GetSuggestionFunc();
+            //_commandArgumentSuggester.
+            return suggestions;
+        }
+
+        void txtCommand_ArgSuggestRequired(string argText)
+        {
+            
+        }
+
+        void txtCommand_OnArgumentBlured()
+        {
+            //if (_commandArgumentSuggester.IsPopupOpen)
+            //{
+            //    _commandArgumentSuggester.Hide();
+            //}
         }
 
         void txtCommand_CommandSuggestRequired(string commandText)
@@ -97,7 +121,11 @@ namespace MonkeyJobTool.Controls.Autocomplete
                     {
                         popupModel.Items.Add(new AutocompletePopupItem()
                         {
-                            Value = item
+                            Value = new AutocompleteItem()
+                            {
+                                DisplayedValue = item.Command,
+                                Value = item
+                            }
                         });
                     }
                     popupModel.Term = term;
@@ -132,9 +160,9 @@ namespace MonkeyJobTool.Controls.Autocomplete
             }
         }
 
-        void _popup_OnMouseClicked(CallCommandInfo clickedItem)
+        void _popup_OnMouseClicked(AutocompleteItem clickedItem)
         {
-            SetCommand(clickedItem);
+            SetCommand(clickedItem.Value as CallCommandInfo);
         }
 
         void _popup_OnNoOneSelected()
@@ -150,11 +178,11 @@ namespace MonkeyJobTool.Controls.Autocomplete
             
             txtCommand.SetCommand(commandInfo);
         }
-        void popup_OnItemHighlighted(CallCommandInfo highlightedItem, bool usingMouse)
+        void popup_OnItemHighlighted(AutocompleteItem highlightedItem, bool usingMouse)
         {
             if (!usingMouse)
             {
-                SetCommand(highlightedItem);
+                SetCommand(highlightedItem.Value as CallCommandInfo);
             }
         }
 

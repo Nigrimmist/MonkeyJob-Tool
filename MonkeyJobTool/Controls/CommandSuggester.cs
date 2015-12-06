@@ -87,8 +87,8 @@ namespace MonkeyJobTool.Controls
 
         void _popup_OnNoOneSelected()
         {
-            _boundTextbox.SetArgumentText(preArgChangeText);
-            _boundTextbox.SelectionStart = _boundTextbox.Text.Length;
+            //_boundTextbox.SetArgumentText(preArgChangeText);
+            //_boundTextbox.SelectionStart = _boundTextbox.Text.Length;
         }
 
         private string preArgChangeText = null;
@@ -127,29 +127,26 @@ namespace MonkeyJobTool.Controls
         //    }
         //}
 
-        //public void ShowItems(List<AutoSuggestItem> items)
-        //{
-            
+        public void ShowItems(List<AutocompleteItem> items)
+        {
+            var popupModel = new AutocompletePopupInfo();
+            foreach (var item in items)
+            {
+                popupModel.Items.Add(new AutocompletePopupItem()
+                {
+                    Value = item
+                });
+            }
 
-        //    var popupModel = new AutocompletePopupInfo();
-        //    foreach (var item in items)
-        //    {
-        //        popupModel.Items.Add(new AutocompletePopupItem()
-        //        {
-        //           ClearText = item.DisplayedKey,
-        //            Value = item.Value
-        //        });
-        //    }
+            if (_isPopupOpen && _popup.Model.Items.All(x => popupModel.Items.Any(y => y.Value.DisplayedValue == x.Value.DisplayedValue))) return;
 
-        //    if (_isPopupOpen && _popup.Model.Items.All(x => popupModel.Items.Any(y => y.Value == x.Value))) return;
-
-        //    _popup.Model = popupModel;
-        //    _popup.ShowItems();
-        //    _popup.Top = _parentForm.Top - _popup.Height;
-        //    _popup.Left = _parentForm.Left + _argListLeftMargin+1;
-        //    _popup.Width = _parentForm.Width - _argListLeftMargin-3;
-        //    _isPopupOpen = true;
-        //}
+            _popup.Model = popupModel;
+            _popup.ShowItems();
+            _popup.Top = _parentForm.Top - _popup.Height;
+            _popup.Left = _parentForm.Left + _argListLeftMargin + 1;
+            _popup.Width = _parentForm.Width - _argListLeftMargin - 3;
+            _isPopupOpen = true;
+        }
 
         public void Hide()
         {
