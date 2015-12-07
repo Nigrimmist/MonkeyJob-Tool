@@ -692,7 +692,7 @@ namespace MonkeyJobTool.Forms
             
             if (!App.Instance.AnyPopupExist())
             {
-                if (_autocomplete.IsPopupOpen)
+                if (_autocomplete.IsOneOfPopupsOpen)
                 {
                     _autocomplete.PopupToTop();
                 }

@@ -111,7 +111,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\Settings\IUIDataItem.cs" />
-    <Compile Include="Controls\CommandSuggester.cs" />
+    <Compile Include="Controls\CommandArgumentSuggester.cs" />
     <Compile Include="Entities\AppConstants.cs" />
     <Compile Include="Entities\ApplicationConfiguration.cs" />
     <Compile Include="Entities\ApplicationMigrations.cs" />

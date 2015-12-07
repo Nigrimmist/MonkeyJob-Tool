@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -221,5 +222,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
         {
             _highlightedItemIndex = -1;
         }
+
+        
     }
 }

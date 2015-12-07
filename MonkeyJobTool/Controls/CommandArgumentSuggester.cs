@@ -18,12 +18,12 @@ namespace MonkeyJobTool.Controls
         private readonly AutoCompleteTextBox _boundTextbox;
         private readonly Form _parentForm;
 
-        private AutocompletePopupControl _popup = new AutocompletePopupControl(ColorTranslator.FromHtml("#FFDB99"), Color.DarkOrange, "Аргументы");
+        private AutocompletePopupControl _popup;
         
         private bool _isPopupOpen;
 
-        public delegate void OnCommandReceivedDelegate(string command);
-        public event OnCommandReceivedDelegate OnCommandReceived;
+        public delegate void OnItemSelectedDelegate(AutocompleteItem item);
+        public event OnItemSelectedDelegate OnItemSelected;
 
         
         public int StartSuggestFrom = 1;
@@ -35,20 +35,20 @@ namespace MonkeyJobTool.Controls
         }
 
 
-        public CommandArgumentSuggester(AutoCompleteTextBox boundTextbox, Form parentForm)
+        public CommandArgumentSuggester(AutoCompleteTextBox boundTextbox, Form parentForm, Color? backColor = null, Color? highlightColor = null, string title = null)
         {
             _boundTextbox = boundTextbox;
             _parentForm = parentForm;
-        }
+            _popup = new AutocompletePopupControl(backColor,highlightColor,title);
 
-        public void Init()
-        {
-            //_popup.OnItemHighlighted += popup_OnItemHighlighted;
+            _popup.OnItemHighlighted += popup_OnItemHighlighted;
             _popup.OnNoOneSelected += _popup_OnNoOneSelected;
-            //_popup.OnMouseClicked += _popup_OnMouseClicked;
+            _popup.OnMouseClicked += _popup_OnMouseClicked;
             _boundTextbox.KeyDown += boundTextbox_KeyDown;
             _boundTextbox.TextChanged += boundTextbox_TextChanged;
         }
+
+        
 
         void boundTextbox_TextChanged(object sender, EventArgs e)
         {
@@ -80,9 +80,9 @@ namespace MonkeyJobTool.Controls
             
         }
 
-        void _popup_OnMouseClicked(string clickedItem)
+        void _popup_OnMouseClicked(AutocompleteItem clickedItem)
         {
-            SetArg(clickedItem);
+            SelectItem(clickedItem);
         }
 
         void _popup_OnNoOneSelected()
@@ -92,12 +92,14 @@ namespace MonkeyJobTool.Controls
         }
 
         private string preArgChangeText = null;
-        private void SetArg(string arg)
+        private void SelectItem(AutocompleteItem item)
         {
-            var indexToReplace = getIndexToInsertArgument(preArgChangeText??_boundTextbox.Text, arg);
+            //var indexToReplace = getIndexToInsertArgument(preArgChangeText??_boundTextbox.Text, arg);
 
-            _boundTextbox.SetArgumentText((preArgChangeText ?? _boundTextbox.Text).Substring(0, indexToReplace + 1) + arg);
-            _boundTextbox.SelectionStart = _boundTextbox.Text.Length;
+            //_boundTextbox.SetArgumentText((preArgChangeText ?? _boundTextbox.Text).Substring(0, indexToReplace + 1) + arg);
+            //_boundTextbox.SelectionStart = _boundTextbox.Text.Length;
+            if (OnItemSelected != null)
+                OnItemSelected(item);
         }
         
         private int getIndexToInsertArgument(string text, string argument)
@@ -119,13 +121,13 @@ namespace MonkeyJobTool.Controls
             return corr;
         }
 
-        //void popup_OnItemHighlighted(CallCommandInfo highlightedItem, bool usingMouse)
-        //{
-        //    if (!usingMouse)
-        //    {
-        //        SetArg(highlightedItem);
-        //    }
-        //}
+        void popup_OnItemHighlighted(AutocompleteItem highlightedItem, bool usingMouse)
+        {
+            if (!usingMouse)
+            {
+                SelectItem(highlightedItem);
+            }
+        }
 
         public void ShowItems(List<AutocompleteItem> items)
         {
@@ -174,24 +176,7 @@ namespace MonkeyJobTool.Controls
             return !string.IsNullOrEmpty(_boundTextbox.SelectedText);
         }
 
-        private void pbEnter_Click(object sender, EventArgs e)
-        {
-            SendCommand();
-        }
-
-        private void pnlEnterIconHolder_Click(object sender, EventArgs e)
-        {
-            SendCommand();
-        }
-
-        private void SendCommand()
-        {
-            if (OnCommandReceived != null)
-            {
-                OnCommandReceived(_boundTextbox.Text);
-                
-            }
-        }
+        
         
     }
 }

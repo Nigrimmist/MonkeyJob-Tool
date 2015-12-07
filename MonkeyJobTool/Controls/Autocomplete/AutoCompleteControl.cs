@@ -20,14 +20,17 @@ namespace MonkeyJobTool.Controls.Autocomplete
     public partial class AutoCompleteControl : UserControl
     {
         
-        private AutocompletePopupControl _popup = new AutocompletePopupControl(title: "Команды");
-       // private CommandArgumentSuggester _commandArgumentSuggester;
+        //private AutocompletePopupControl _popup = new AutocompletePopupControl(title: "Команды");
+        //ColorTranslator.FromHtml("#FFDB99"), Color.DarkOrange, "Аргументы"
+        private CommandArgumentSuggester _commandArgumentSuggester;
+        private CommandArgumentSuggester _commandSuggester;
+
 
         public Form ParentForm { get; set; }
         
         public delegate DataFilterInfo GetItemsFromSource(string term);
         public GetItemsFromSource DataFilterFunc;
-        private bool _isPopupOpen;
+        //private bool _isPopupOpen;
         private string _lastPreselectCommand = string.Empty;
         
 
@@ -40,9 +43,9 @@ namespace MonkeyJobTool.Controls.Autocomplete
         public delegate void OnKeyPressedDelegate(Keys key, KeyEventArgs e);
         public event OnKeyPressedDelegate OnKeyPressed;
         public int StartSuggestFrom = 1;
-        public bool IsPopupOpen
+        public bool IsOneOfPopupsOpen
         {
-            get { return _isPopupOpen; }
+            get { return _commandSuggester.IsPopupOpen; }
         }
 
         public AutoCompleteControl()
@@ -58,11 +61,8 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         private void AutoCompleteControl_Load(object sender, EventArgs e)
         {
-            _popup.OnItemHighlighted += popup_OnItemHighlighted;
-            _popup.OnNoOneSelected += _popup_OnNoOneSelected;
-            _popup.OnMouseClicked += _popup_OnMouseClicked;
-
-
+            _commandSuggester = new CommandArgumentSuggester(txtCommand, ParentForm, title: "Команды");
+            _commandSuggester.OnItemSelected += _commandSuggester_OnItemSelected;
             txtCommand.Init(command =>
             {
                 var commands = DataFilterFunc(command).FoundCommands;
@@ -75,6 +75,11 @@ namespace MonkeyJobTool.Controls.Autocomplete
             txtCommand.ArgSuggestRequired += txtCommand_ArgSuggestRequired;
             txtCommand.OnCommandBlured += txtCommand_OnCommandBlured;
             txtCommand.OnArgumentBlured += txtCommand_OnArgumentBlured;
+        }
+
+        void _commandSuggester_OnItemSelected(AutocompleteItem item)
+        {
+            SetCommand(item.Value as CallCommandInfo);
         }
 
         private List<AutoSuggestItem> GetArgumentSuggestionsFunc(CallCommandInfo command, CommandArgumentSuggestionInfo suggest, string key, int order)
@@ -102,7 +107,9 @@ namespace MonkeyJobTool.Controls.Autocomplete
         {
             string term = commandText;
 
-            if (_popup.IsAnyitemHighlighted || (IsPopupOpen && _popup.Model.Term==term)) return; //no any suggestions if selectMode enabled
+            //todo : next line must be migrated to commandArgumentSuggester
+            //if (_popup.IsAnyitemHighlighted || (IsOneOfPopupsOpen && _popup.Model.Term==term)) return; //no any suggestions if selectMode enabled
+            
             //_commandArgumentSuggester.Hide();
             //if (OnTextChanged != null)
             //    OnTextChanged(term);
@@ -117,24 +124,17 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
                     //todo cache required : iterate items and check for equall
                     var popupModel = new AutocompletePopupInfo();
+                    List<AutocompleteItem> items = new List<AutocompleteItem>();
                     foreach (var item in filterResult.FoundCommands)
                     {
-                        popupModel.Items.Add(new AutocompletePopupItem()
+                        items.Add(new AutocompleteItem()
                         {
-                            Value = new AutocompleteItem()
-                            {
-                                DisplayedValue = item.Command,
-                                Value = item
-                            }
+                            DisplayedValue = item.Command,
+                            Value = item
                         });
                     }
                     popupModel.Term = term;
-                    _popup.Model = popupModel;
-                    _popup.ShowItems();
-                    _popup.Top = ParentForm.Top - _popup.Height;
-                    _popup.Left = ParentForm.Left + 1;
-                    _popup.Width = ParentForm.Width - 3;
-                    _isPopupOpen = true;
+                    _commandSuggester.ShowItems(items);
 
                     if (filterResult.FoundCommands.Count == 1)
                     {
@@ -144,8 +144,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
                 }
                 else
                 {
-                    _popup.Hide();
-                    _isPopupOpen = false;
+                    _commandSuggester.Hide();
                 }
                 //txtCommand.NotifyAboutAvailableCommandSuggests(filterResult.FoundCommands);
             }
@@ -153,11 +152,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         void txtCommand_OnCommandBlured()
         {
-            if (_isPopupOpen)
-            {
-                _popup.Hide();
-                _isPopupOpen = false;
-            }
+            _commandSuggester.Hide();
         }
 
         void _popup_OnMouseClicked(AutocompleteItem clickedItem)
@@ -200,34 +195,6 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
                     break;
                 }
-                case Keys.Up:
-                {
-                    _popup.HighlightUp();
-                    e.Handled = true;
-                    //if (arrowNavigationEnabled)
-                    //{
-                    //    _popup.HighlightUp();
-                    //    e.Handled = true;
-                    //}
-                    break;
-                }
-                case Keys.Down:
-                {
-                    _popup.HighlightDown();
-                    e.Handled = true;
-                    //if (arrowNavigationEnabled)
-                    //{
-                    //    _popup.HighlightDown();
-                    //    e.Handled = true;
-                    //}
-                    break;
-                }
-                default:
-                {
-                    _popup.ResetHighlightIndex();
-
-                    break;
-                }
             }
             if (OnKeyPressed != null)
                 OnKeyPressed(e.KeyCode,e);
@@ -235,19 +202,19 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         public void HidePopup()
         {
-            _popup.Hide();
+            _commandSuggester.Hide();
             //_commandArgumentSuggester.Hide();
         }
 
         public void PopupToTop()
         {
-            _popup.ToTop();
+            _commandSuggester.PopupToTop();
             //_commandArgumentSuggester.PopupToTop();
         }
 
         public int GetPopupHeight()
         {
-            return _popup.Height;
+            return _commandSuggester.GetPopupHeight();
         }
 
         public void SelectAllText()
@@ -322,5 +289,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
         {
             //_commandArgumentSuggester.ShowItems(args);
         }
+
+        
     }
 }
