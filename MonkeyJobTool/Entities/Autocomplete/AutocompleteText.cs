@@ -24,6 +24,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
         private int _prevCaretPos = 0;
         private int _prevCaretSelectionLength = 0;
         private bool _changedEventEnabled = true;
+        
 
         public delegate void CommandFocusedDelegate(string commandText);
         public event CommandFocusedDelegate OnCommandFocused;
@@ -64,12 +65,17 @@ namespace MonkeyJobTool.Entities.Autocomplete
                     TryResolveCommandIfRequired(focusedPart);
                     TryNotifyCommandAndArg(focusedPart);
                     CheckForAvailableArgumentSuggestions(focusedPart);
+                    Console.WriteLine("textchanged.RefreshText");
                     RefreshText();
                     Log();
                 }
                 
             };
-            _bindedControl.KeyUp += (sender, args) => { changeCaretPos(); };
+            _bindedControl.KeyUp += (sender, args) =>
+            {
+                Console.WriteLine("_bindedControl.KeyUp");
+                changeCaretPos();
+            };
             _parts = new List<AutocompleteTextPart>();
             AddEmptyCommand();
             _lastText = bindedControl.Text;
@@ -427,6 +433,24 @@ namespace MonkeyJobTool.Entities.Autocomplete
             CommandPart.Command = command;
             _currCaretPos = CommandPart.Text.Length;
             _lastText = CommandPart.Text;
+            RefreshText();
+        }
+
+        public void SetArg(AutoSuggestItem item)
+        {
+            var focused = GetFocusedPart();
+            if (focused != null && focused.Type==AutocompleteTextPartType.ArgumentSuggestion)
+            {
+                var argumentSuggestPart = focused as AutoCompleteArgumentSuggestPart;
+                if (argumentSuggestPart != null)
+                {
+                    argumentSuggestPart.Text = item.DisplayedKey;
+                    argumentSuggestPart.Suggest = item;
+                    _currCaretPos = GetStartPartPos(focused.Index + argumentSuggestPart.Text.Length);
+                    RefreshText();
+
+                }
+            }
         }
 
         public void Clear()
@@ -442,7 +466,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
         public void RefreshText()
         {
             _changedEventEnabled = false;
-            //Console.WriteLine("RefreshText");
+           
             _bindedControl.Text = "";//this.ToString();
             
             int pos = 0;
@@ -669,7 +693,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
         public string Text { get; set; }
         public virtual AutocompleteTextPartType Type { get {return AutocompleteTextPartType.PartOfText;}  }
         public int Index { get; set; }
-        public virtual Color BackColor {get {return Color.Transparent;}}
+        public virtual Color BackColor { get { return SystemColors.Control; } }
         public bool MarkAsDeleted { get; set; }
         public virtual int Priority {get { return 1; }}
         public AutocompleteTextPart()
@@ -691,10 +715,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
 
         public override int Priority {get { return 2; }}
 
-        public override Color BackColor
-        {
-            get { return Color.Transparent; }
-        }
+        
 
         public override void Delete()
         {

@@ -1,4 +1,6 @@
-﻿namespace MonkeyJobTool.Controls.Autocomplete
+﻿using System.Drawing;
+
+namespace MonkeyJobTool.Controls.Autocomplete
 {
     partial class AutoCompleteControl
     {

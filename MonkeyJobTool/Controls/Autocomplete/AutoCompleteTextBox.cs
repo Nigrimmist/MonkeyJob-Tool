@@ -48,41 +48,44 @@ namespace MonkeyJobTool.Controls.Autocomplete
             _textWrapper.OnArgumentBlured += () =>
             {
                 Console.WriteLine("OnArgumentBlured");
-                //if (OnArgumentBlured != null)
-                //    OnArgumentBlured();
+                if (OnArgumentBlured != null)
+                    OnArgumentBlured();
             };
             _textWrapper.OnArgumentFocused += argumentText =>
             {
                 Console.WriteLine("OnArgumentFocused");
-                //if (ArgSuggestRequired != null)
-                //    ArgSuggestRequired(argumentText);
+                if (ArgSuggestRequired != null)
+                    ArgSuggestRequired(argumentText);
             };
         }
 
-        private bool _disableTextChangeFiring { get; set; }
+        //private bool _disableTextChangeFiring { get; set; }
 
-        protected override void OnTextChanged(EventArgs e)
-        {
-            if (!_disableTextChangeFiring)
-                base.OnTextChanged(e);
-        }
+        //protected override void OnTextChanged(EventArgs e)
+        //{
+        //    //if (!_disableTextChangeFiring)
+        //    if (_textWrapper.ChangedEventEnabled)
+        //        base.OnTextChanged(e);
+        //}
 
-        public void SetArgumentText(string text)
+        public void SetArgument(AutoSuggestItem item)
         {
-            _disableTextChangeFiring = true;
-            //this.Text = text;
-            _disableTextChangeFiring = false;
+            //_disableTextChangeFiring = true;
+            _textWrapper.SetArg(item);
+            //_disableTextChangeFiring = false;
         }
 
         public void SetCommand(CallCommandInfo command)
         {
             _textWrapper.SetCommand(command);
-            RefreshText();
+            Console.WriteLine("setCommand.RefreshText");
+            
         }
 
         public void Clear()
         {
             _textWrapper.Clear();
+            Console.WriteLine("clear.RefreshText");
             RefreshText();
         }
 
@@ -97,3 +100,4 @@ namespace MonkeyJobTool.Controls.Autocomplete
         }
     }
 }
+

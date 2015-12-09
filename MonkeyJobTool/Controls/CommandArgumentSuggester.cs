@@ -21,6 +21,7 @@ namespace MonkeyJobTool.Controls
         private AutocompletePopupControl _popup;
         
         private bool _isPopupOpen;
+        //private bool _isPopupShouldBeOpen;
 
         public delegate void OnItemSelectedDelegate(AutocompleteItem item);
         public event OnItemSelectedDelegate OnItemSelected;
@@ -33,6 +34,13 @@ namespace MonkeyJobTool.Controls
         {
             get { return _isPopupOpen; }
         }
+
+
+        //public bool WasOpenedBeforeHide
+        //{
+        //    get { return _isPopupShouldBeOpen; }
+        //}
+        
 
 
         public CommandArgumentSuggester(AutoCompleteTextBox boundTextbox, Form parentForm, Color? backColor = null, Color? highlightColor = null, string title = null)
@@ -57,27 +65,29 @@ namespace MonkeyJobTool.Controls
 
         void boundTextbox_KeyDown(object sender, KeyEventArgs e)
         {
-            switch (e.KeyCode)
+            if (_isPopupOpen)
             {
-                case Keys.Up:
+                switch (e.KeyCode)
+                {
+                    case Keys.Up:
                     {
                         _popup.HighlightUp();
                         e.Handled = true;
                         break;
                     }
-                case Keys.Down:
+                    case Keys.Down:
                     {
                         _popup.HighlightDown();
                         e.Handled = true;
                         break;
                     }
-                default:
+                    default:
                     {
                         _popup.ResetHighlightIndex();
                         break;
                     }
+                }
             }
-            
         }
 
         void _popup_OnMouseClicked(AutocompleteItem clickedItem)
@@ -153,6 +163,10 @@ namespace MonkeyJobTool.Controls
         public void Hide()
         {
             _popup.Hide();
+            if (rememberVisibleState)
+                rememberVisibleState = _isPopupOpen;
+            else
+                rememberVisibleState = false;
             _isPopupOpen = false;
         }
 
