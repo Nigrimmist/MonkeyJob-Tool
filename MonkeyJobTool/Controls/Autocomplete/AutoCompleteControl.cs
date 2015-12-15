@@ -48,9 +48,6 @@ namespace MonkeyJobTool.Controls.Autocomplete
             get { return _commandSuggester.IsPopupOpen || _commandArgumentSuggester.IsPopupOpen; }
         }
 
-        
-        
-
         public AutoCompleteControl()
         {
             InitializeComponent();
@@ -93,10 +90,10 @@ namespace MonkeyJobTool.Controls.Autocomplete
             SetCommand(item.Value as CallCommandInfo);
         }
 
-        private List<AutoSuggestItem> GetArgumentSuggestionsFunc(CallCommandInfo command, CommandArgumentSuggestionInfo suggest, string key, int order)
+        private List<AutoSuggestItem> GetArgumentSuggestionsFunc(CallCommandInfo command, CommandArgumentSuggestionInfo suggest, string key, int order, string text)
         {
             Console.WriteLine("GetArgumentSuggestionsFunc");
-            var suggestions =  suggest.Details.Single(x => x.Key == key).GetSuggestionFunc();
+            var suggestions =  suggest.Details.Single(x => x.Key == key).GetSuggestionFunc(text);
             List<AutocompleteItem> items = new List<AutocompleteItem>();
             foreach (var item in suggestions)
             {
@@ -120,7 +117,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
         {
             if (_commandArgumentSuggester.IsPopupOpen)
             {
-                _commandArgumentSuggester.Hide();
+                _commandArgumentSuggester.Hide(false);
             }
         }
 
@@ -165,7 +162,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
                 }
                 else
                 {
-                    _commandSuggester.Hide();
+                    _commandSuggester.Hide(false);
                 }
                 //txtCommand.NotifyAboutAvailableCommandSuggests(filterResult.FoundCommands);
             }
@@ -174,7 +171,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
         void txtCommand_OnCommandBlured()
         {
             if(_commandSuggester.IsPopupOpen)
-                _commandSuggester.Hide();
+                _commandSuggester.Hide(false);
         }
 
         void _popup_OnMouseClicked(AutocompleteItem clickedItem)
@@ -224,14 +221,15 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         public void HidePopup()
         {
-            _commandSuggester.Hide();
-            _commandArgumentSuggester.Hide();
+            _commandSuggester.Hide(true);
+            _commandArgumentSuggester.Hide(true);
         }
 
         public void PopupToTop()
         {
-            
-            _commandSuggester.PopupToTop();
+            if(_commandSuggester.IsPopupOpen)
+                _commandSuggester.PopupToTop();
+            if (_commandArgumentSuggester.IsPopupOpen)
             _commandArgumentSuggester.PopupToTop();
         }
 

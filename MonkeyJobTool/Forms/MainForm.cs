@@ -549,7 +549,6 @@ namespace MonkeyJobTool.Forms
                         replaceCountExceed = true;
                 }
                 return toReturn;
-                break;
             }
         }
 

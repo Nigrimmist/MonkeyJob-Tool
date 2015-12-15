@@ -37,8 +37,8 @@ namespace Yushko.Modules
                             ArgTemplate = @"[0-9]+\s{{cur1}}\s{{cur2}}",
                             Details = new List<SuggestionDetails>()
                             {
-                                new SuggestionDetails() {Key = "cur1", GetSuggestionFunc = () => _curCodes.Select(x => new AutoSuggestItem() {Value = x.Key, DisplayedKey = x.Key + " - " + x.Value}).ToList()},
-                                new SuggestionDetails() {Key = "cur2", GetSuggestionFunc = () => _curCodes.Select(x => new AutoSuggestItem() {Value = x.Key, DisplayedKey = x.Key + " - " + x.Value}).ToList()},
+                                new SuggestionDetails() {Key = "cur1", GetSuggestionFunc = (text) => _curCodes.Where(x=>string.IsNullOrEmpty(text) || x.Value.ToLower().Contains(text.ToLower()) || x.Key.ToLower().Contains(text.ToLower())).Select(x => new AutoSuggestItem() {Value = x.Key, DisplayedKey = x.Key + " - " + x.Value}).ToList()},
+                                new SuggestionDetails() {Key = "cur2", GetSuggestionFunc = (text) => _curCodes.Where(x=>string.IsNullOrEmpty(text) || x.Value.ToLower().Contains(text.ToLower()) || x.Key.ToLower().Contains(text.ToLower())).Select(x => new AutoSuggestItem() {Value = x.Key, DisplayedKey = x.Key + " - " + x.Value}).ToList()},
                             }
                         },
                         new ArgumentSuggestionInfo()
@@ -46,7 +46,7 @@ namespace Yushko.Modules
                             ArgTemplate = @"{{subcommand}}",
                             Details = new List<SuggestionDetails>()
                             {
-                                new SuggestionDetails() {Key = "subcommand", GetSuggestionFunc = () => new List<string>() {"ставкареф", "все"}.Select(x => new AutoSuggestItem() {Value = x, DisplayedKey = x}).ToList()}
+                                new SuggestionDetails() {Key = "subcommand", GetSuggestionFunc = (text) => new List<string>() {"ставкареф", "все"}.Select(x => new AutoSuggestItem() {Value = x, DisplayedKey = x}).ToList()}
                             }
                         }
                     })),

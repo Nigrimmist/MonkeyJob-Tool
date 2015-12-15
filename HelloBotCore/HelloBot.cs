@@ -726,38 +726,38 @@ namespace HelloBotCore
         }
 
 
-        public void GetArgumentSuggestions(CallCommandInfo command, string commandAlias, string args)
-        {
-            if (command.CommandArgumentSuggestions != null)
-            {
+        //public void GetArgumentSuggestions(CallCommandInfo command, string commandAlias, string args)
+        //{
+        //    if (command.CommandArgumentSuggestions != null)
+        //    {
 
-                //todo : thread pool required
-                new Thread(() =>
-                {
-                    try
-                    {
-                        foreach (var comSuggestion in command.CommandArgumentSuggestions)
-                        {
-                            foreach (var argSuggestion in comSuggestion.TemplateParseInfo.Where(x=>x.Order==0))
-                            {
-                                var firstLevelSuggestions = string.IsNullOrEmpty(argSuggestion.RegexpPart) && args.Trim() == "";
+        //        //todo : thread pool required
+        //        new Thread(() =>
+        //        {
+        //            try
+        //            {
+        //                foreach (var comSuggestion in command.CommandArgumentSuggestions)
+        //                {
+        //                    foreach (var argSuggestion in comSuggestion.TemplateParseInfo.Where(x=>x.Order==0))
+        //                    {
+        //                        var firstLevelSuggestions = string.IsNullOrEmpty(argSuggestion.RegexpPart) && args.Trim() == "";
                                 
-                                if (firstLevelSuggestions || (!string.IsNullOrEmpty(argSuggestion.RegexpPart) && Regex.IsMatch(args, argSuggestion.RegexpPart)))
-                                {
-                                    ShowSuggestionsToClient(comSuggestion.Details.Where(x=>x.Key==argSuggestion.Key).Select(x=>x.GetSuggestionFunc).Single()());
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        //if (OnModuleErrorOccured != null)
-                        //    OnModuleErrorOccured(ex, command);
-                    }
-                }).Start();
-            }
-        }
+        //                        if (firstLevelSuggestions || (!string.IsNullOrEmpty(argSuggestion.RegexpPart) && Regex.IsMatch(args, argSuggestion.RegexpPart)))
+        //                        {
+        //                            ShowSuggestionsToClient(comSuggestion.Details.Where(x=>x.Key==argSuggestion.Key).Select(x=>x.GetSuggestionFunc).Single()());
+        //                            return;
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                //if (OnModuleErrorOccured != null)
+        //                //    OnModuleErrorOccured(ex, command);
+        //            }
+        //        }).Start();
+        //    }
+        //}
 
         public void ShowSuggestionsToClient(List<AutoSuggestItem> items)
         {

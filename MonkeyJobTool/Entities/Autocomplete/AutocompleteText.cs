@@ -41,7 +41,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
         public delegate CallCommandInfo TryResolveCommandFromStringDelegate(string text);
         private readonly TryResolveCommandFromStringDelegate _tryResolveCommandFromStringFunc;
 
-        public delegate List<AutoSuggestItem> GetSuggestionsDelegate(CallCommandInfo command,CommandArgumentSuggestionInfo suggest,string key, int order);
+        public delegate List<AutoSuggestItem> GetSuggestionsDelegate(CallCommandInfo command,CommandArgumentSuggestionInfo suggest,string key, int order, string text);
         private readonly GetSuggestionsDelegate _getSuggestionsFunc;
 
         public AutocompleteText(RichTextBox bindedControl, TryResolveCommandFromStringDelegate tryResolveCommandFromStringFunc, GetSuggestionsDelegate getSuggestionsFuncFunc)
@@ -53,7 +53,6 @@ namespace MonkeyJobTool.Entities.Autocomplete
             _bindedControl.MouseUp += (sender, args) => { changeCaretPos(); };
             _bindedControl.TextChanged += (sender, args) =>
             {
-                
                 if (_changedEventEnabled)
                 {
                     changeCaretPos(true);
@@ -62,9 +61,9 @@ namespace MonkeyJobTool.Entities.Autocomplete
                     CorrectParts();
 
                     var focusedPart = GetFocusedPart();
+                    CheckForAvailableArgumentSuggestions(ref focusedPart);
                     TryResolveCommandIfRequired(focusedPart);
                     TryNotifyCommandAndArg(focusedPart);
-                    CheckForAvailableArgumentSuggestions(focusedPart);
                     Console.WriteLine("textchanged.RefreshText");
                     RefreshText();
                     Log();
@@ -152,7 +151,14 @@ namespace MonkeyJobTool.Entities.Autocomplete
                     if (_bindedControl.Text.Length > _lastText.Length)
                     {
                         //added new string
-                        ChangePartOfText(_bindedControl.Text.Substring(_prevCaretPos, _currCaretPos - _prevCaretPos), _prevCaretPos, _prevCaretPos, false);
+                        try
+                        {
+                            ChangePartOfText(_bindedControl.Text.Substring(_prevCaretPos, _currCaretPos - _prevCaretPos), _prevCaretPos, _prevCaretPos, false);
+                        }
+                        catch (Exception)
+                        {
+                            throw;
+                        }
                     }
                     else
                     {
@@ -162,7 +168,15 @@ namespace MonkeyJobTool.Entities.Autocomplete
                             correctedPrevCaretPos++;
                         }
                         //text deleted
-                        ChangePartOfText(_lastText.Substring(_currCaretPos, correctedPrevCaretPos - _currCaretPos), _currCaretPos, correctedPrevCaretPos, true);
+                        try
+                        {
+                            ChangePartOfText(_lastText.Substring(_currCaretPos, correctedPrevCaretPos - _currCaretPos), _currCaretPos, correctedPrevCaretPos, true);
+                        }
+                        catch (Exception)
+                        {
+                            throw;
+                        }
+
                     }
                 }
             }
@@ -414,7 +428,17 @@ namespace MonkeyJobTool.Entities.Autocomplete
 
         private int GetStartPartPos(int partPos)
         {
-            return _parts.Where(x => x.Index < partPos).Sum(x => x.Text.Length);
+            int sumPos = 0;
+            for (int i = 0; i < _parts.Count; i++)
+            {
+                var part = _parts[i];
+                if (part.Index < partPos)
+                {
+                    sumPos += part.Text.Length;
+                }
+                
+            }
+            return sumPos;
         }
 
         public override string ToString()
@@ -432,7 +456,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
             CommandPart.Text = command.Command;
             CommandPart.Command = command;
             _currCaretPos = CommandPart.Text.Length;
-            _lastText = CommandPart.Text;
+            
             RefreshText();
         }
 
@@ -444,11 +468,10 @@ namespace MonkeyJobTool.Entities.Autocomplete
                 var argumentSuggestPart = focused as AutoCompleteArgumentSuggestPart;
                 if (argumentSuggestPart != null)
                 {
-                    argumentSuggestPart.Text = item.DisplayedKey;
+                    argumentSuggestPart.Text = item.Value;
                     argumentSuggestPart.Suggest = item;
                     _currCaretPos = GetStartPartPos(focused.Index + argumentSuggestPart.Text.Length);
                     RefreshText();
-
                 }
             }
         }
@@ -478,7 +501,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
             }
             _bindedControl.SelectionStart = _currCaretPos;
             _changedEventEnabled = true;
-            
+            _lastText = _bindedControl.Text;
         }
 
         
@@ -524,7 +547,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
             }
         }
 
-        private void CheckForAvailableArgumentSuggestions(AutocompleteTextPart focusedPart)
+        private void CheckForAvailableArgumentSuggestions(ref AutocompleteTextPart focusedPart)
         {
             if (CommandPart.Command != null)
             {
@@ -582,10 +605,6 @@ namespace MonkeyJobTool.Entities.Autocomplete
                                     bool canBeSuggestedForRegextDefinedSuggest = (!strongRestrictSuggest && argsList.Any() && Regex.IsMatch(argsList[j], argSuggestion.RegexpPart));
                                     if (canBeSuggestedForRestrictSuggest || canBeSuggestedForRegextDefinedSuggest)
                                     {
-                                        List<AutoSuggestItem> suggestions = _getSuggestionsFunc(CommandPart.Command, comSuggestion, argSuggestion.Key, argSuggestion.Order);
-                                            //comSuggestion.Details.Where(x => x.Key == argSuggestion.Key).Select(x => x.GetSuggestionFunc).Single()();
-
-
                                         if (focusedPart.Index == _parts.Last().Index && focusedPart.Type != AutocompleteTextPartType.ArgumentSuggestion)//(!string.IsNullOrEmpty(focusedPart.Text) || canBeSuggestedForRestrictSuggest)
                                         {
                                             focusedPart = new AutoCompleteArgumentSuggestPart()
@@ -601,9 +620,10 @@ namespace MonkeyJobTool.Entities.Autocomplete
                                         if (suggPart != null)
                                         {
                                             var argToCompare = suggPart.Text.ToLower();
-                                            
+                                            List<AutoSuggestItem> suggestions = _getSuggestionsFunc(CommandPart.Command, comSuggestion, argSuggestion.Key, argSuggestion.Order, focusedPart.Text);
                                             if (!string.IsNullOrEmpty(suggPart.Text) && suggPart.StrongRestrictSuggest)
                                             {
+                                                
                                                 var canBeFound = suggestions.Any(x => x.Value.ToLower().StartsWith(argToCompare));
                                                 if (!canBeFound)
                                                 {

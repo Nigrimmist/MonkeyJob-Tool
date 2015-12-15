@@ -150,7 +150,7 @@ namespace MonkeyJobTool.Controls
                 });
             }
 
-            if (_isPopupOpen && _popup.Model.Items.All(x => popupModel.Items.Any(y => y.Value.DisplayedValue == x.Value.DisplayedValue))) return;
+            if (_isPopupOpen && _popup.Model.Items.Any() && _popup.Model.Items.Count == popupModel.Items.Count && _popup.Model.Items.All(x => popupModel.Items.Any(y => y.Value.DisplayedValue == x.Value.DisplayedValue))) return;
 
             _popup.Model = popupModel;
             _popup.ShowItems();
@@ -160,14 +160,11 @@ namespace MonkeyJobTool.Controls
             _isPopupOpen = true;
         }
 
-        public void Hide()
+        public void Hide(bool rememberOpenedPosition)
         {
             _popup.Hide();
-            if (rememberVisibleState)
-                rememberVisibleState = _isPopupOpen;
-            else
-                rememberVisibleState = false;
-            _isPopupOpen = false;
+            if (!rememberOpenedPosition)
+                _isPopupOpen = false;
         }
 
         public void PopupToTop()

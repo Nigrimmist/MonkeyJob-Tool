@@ -6,6 +6,6 @@ namespace HelloBotCommunication
     public class SuggestionDetails
     {
         public string Key { get; set; }
-        public Func<List<AutoSuggestItem>> GetSuggestionFunc { get; set; }
+        public Func<string,List<AutoSuggestItem>> GetSuggestionFunc { get; set; }
     }
 }
