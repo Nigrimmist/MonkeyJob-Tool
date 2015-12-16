@@ -186,6 +186,7 @@
     </Compile>
     <Compile Include="Helpers\EmailHelper.cs" />
     <Compile Include="Helpers\InternetChecker.cs" />
+    <Compile Include="Helpers\MultithreadHelper.cs" />
     <Compile Include="Helpers\ObjectCopier.cs" />
     <Compile Include="Helpers\FormHelper.cs" />
     <Compile Include="Helpers\GoogleAnalytics.cs" />

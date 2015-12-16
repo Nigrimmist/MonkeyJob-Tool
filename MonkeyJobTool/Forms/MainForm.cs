@@ -305,11 +305,10 @@ namespace MonkeyJobTool.Forms
             }
             if (notifyIcon != null)
             {
-                Action act = () => notifyIcon.ShowBalloonTip((int)timeout.TotalMilliseconds, title, body, tooltipType.ToTooltipType());
-                if (this.InvokeRequired)
-                    this.Invoke(act);
-                else
-                    act();
+                MultithreadHelper.ThreadSafeCall(this, () =>
+                {
+                    notifyIcon.ShowBalloonTip((int) timeout.TotalMilliseconds, title, body, tooltipType.ToTooltipType());
+                });
             }
         }
 
@@ -325,11 +324,10 @@ namespace MonkeyJobTool.Forms
                 }
                 if (notifyIcon != null)
                 {
-                    Action act = () => notifyIcon.Icon = ImageHelper.GetIconWithNotificationCount(text, originalIcon,textColor,backgroundColor,fontSize,fontName,iconBorderColor);
-                    if (this.InvokeRequired)
-                        this.Invoke(act);
-                    else
-                        act();
+                    MultithreadHelper.ThreadSafeCall(this, () =>
+                    {
+                        notifyIcon.Icon = ImageHelper.GetIconWithNotificationCount(text, originalIcon, textColor, backgroundColor, fontSize, fontName, iconBorderColor);
+                    });
                 }
             }
             
@@ -368,17 +366,13 @@ namespace MonkeyJobTool.Forms
                         errorMessage = "Увы, какой-то из интернет-сервисов, необходимых для модуля - в данный момент не работает. Пожалуйста, попробуйте чуть позже.";
                     }
                 }
-                Action act = () =>
+
+                MultithreadHelper.ThreadSafeCall(this, () =>
                 {
                     SetLoading(false);
                     App.Instance.ShowInternalPopup("Ошибка модуля", errorMessage, TimeSpan.FromSeconds(10));
-
-                };
-                if (this.InvokeRequired)
-                {
-                    this.Invoke(act);
-                }
-                else act();
+                });
+               
             }
             else
             {
@@ -406,16 +400,14 @@ namespace MonkeyJobTool.Forms
         {
             if (!notificationCount.HasValue)
                 notificationCount = App.Instance.NotificationCount;
-            Action act =
-                () =>
-                    trayIcon.Icon =
+
+            MultithreadHelper.ThreadSafeCall(this, () =>
+            {
+                trayIcon.Icon =
                         notificationCount > 0
                             ? ImageHelper.GetIconWithNotificationCount(notificationCount.Value.ToString(), GetCurrentClearTrayIcon(), Color.White, Color.OrangeRed, 6, useEllipseAsBackground: true)
                             : GetCurrentClearTrayIcon();
-            if (InvokeRequired)
-                Invoke(act);
-            else
-                act();
+            });
         }
 
         private Icon GetCurrentClearTrayIcon()

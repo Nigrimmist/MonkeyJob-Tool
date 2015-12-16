@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using MonkeyJobTool.Helpers;
 
 namespace MonkeyJobTool.Extensions
 {
@@ -11,7 +12,7 @@ namespace MonkeyJobTool.Extensions
     {
         public static void ToTop(this Form form, bool isWithFocus=false)
         {
-            Action act = () =>
+            MultithreadHelper.ThreadSafeCall(form, () =>
             {
                 if (form.WindowState == FormWindowState.Minimized)
                 {
@@ -22,15 +23,7 @@ namespace MonkeyJobTool.Extensions
                     ShowInactiveTopmost(form);
                 else
                     form.Activate();
-            };
-            if (form.InvokeRequired)
-            {
-                form.Invoke(act);
-            }
-            else
-            {
-                act();
-            }
+            });
         }
 
         private const int SW_SHOWNOACTIVATE = 4;

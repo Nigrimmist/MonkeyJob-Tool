@@ -43,7 +43,8 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         private List<AutocompletePopupItemControl> items = new List<AutocompletePopupItemControl>();
         private int _highlightedItemIndex = -1;
-
+        private bool _isInLoadingState = false;
+        public bool IsInLoadingState {get { return _isInLoadingState; }}
 
         public AutocompletePopupControl(Color? backColor=null, Color? highlightColor=null, string title=null)
         {
@@ -59,16 +60,16 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         private int displayedItemsFromIndex = 0;
         private int displayedItemsToIndex = 0;
+        Label lbl = null;
 
         public void ShowItems()
         {
-            
             pnlItems.Controls.Clear();
             this.items.Clear();
             _highlightedItemIndex = -1;
             int totalHeght = 0;
-            Label lbl = null;
-            if (!string.IsNullOrEmpty(Title))
+
+            if (!string.IsNullOrEmpty(Title) && lbl==null)
             {
                 lbl = new Label()
                 {
@@ -99,8 +100,42 @@ namespace MonkeyJobTool.Controls.Autocomplete
             this.Height = 0; //reset max height because of autosize
             this.ToTop();
             lbl.Width = this.Width;
+            _isInLoadingState = false;
         }
 
+        public void ShowLoading()
+        {
+            this.Height = 0;
+            pnlItems.Controls.Clear();
+            this.items.Clear();
+            
+            _highlightedItemIndex = -1;
+            int totalHeght = 0;
+            
+            totalHeght = 0;
+            displayedItemsFromIndex = 0;
+            Model = new AutocompletePopupInfo()
+            {
+                Items = new List<AutocompletePopupItem>()
+                {
+                    new AutocompletePopupItem()
+                    {
+                        Value = new AutocompleteItem()
+                        {
+                            Value = "",
+                            DisplayedValue = "Loading..."
+                        }
+                    }
+                }
+            };
+            var itemControl = CreateItemControl(Model.Items.First(), ref totalHeght, 0);
+            pnlItems.Controls.Add(itemControl);
+            itemControl.Height += 10;
+            totalHeght += itemControl.Height;
+            this.Height = 0; //reset max height because of autosize
+            this.ToTop();
+            _isInLoadingState = true;
+        }
 
         private void SetupPageArrows()
         {

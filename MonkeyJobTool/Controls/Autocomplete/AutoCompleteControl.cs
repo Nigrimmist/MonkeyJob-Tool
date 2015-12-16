@@ -6,13 +6,16 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
+
 using HelloBotCommunication;
 using HelloBotCore.Entities;
 using MonkeyJobTool.Entities;
 using MonkeyJobTool.Entities.Autocomplete;
 using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Forms;
+using MonkeyJobTool.Helpers;
 using CallCommandInfo = HelloBotCore.Entities.CallCommandInfo;
 
 namespace MonkeyJobTool.Controls.Autocomplete
@@ -71,7 +74,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
                 if (commands.Count == 1)
                     return commands.First();
                 return null;
-            }, GetArgumentSuggestionsFunc );
+            }, GetArgumentSuggestionsFuncAsync );
 
             txtCommand.CommandSuggestRequired += txtCommand_CommandSuggestRequired;
             txtCommand.ArgSuggestRequired += txtCommand_ArgSuggestRequired;
@@ -90,22 +93,43 @@ namespace MonkeyJobTool.Controls.Autocomplete
             SetCommand(item.Value as CallCommandInfo);
         }
 
-        private List<AutoSuggestItem> GetArgumentSuggestionsFunc(CallCommandInfo command, CommandArgumentSuggestionInfo suggest, string key, int order, string text)
+        private DateTime _lastArgSuggShowTime = DateTime.MinValue;
+        private void GetArgumentSuggestionsFuncAsync(CallCommandInfo command, CommandArgumentSuggestionInfo suggest, string key, int order, string text, Action<List<AutoSuggestItem>> onSuccessClbck)
         {
-            Console.WriteLine("GetArgumentSuggestionsFunc");
-            var suggestions =  suggest.Details.Single(x => x.Key == key).GetSuggestionFunc(text);
-            List<AutocompleteItem> items = new List<AutocompleteItem>();
-            foreach (var item in suggestions)
+            //todo : to thread pool
+            new Thread(() =>
             {
-                items.Add(new AutocompleteItem()
+                var currDT = DateTime.Now;
+                _lastArgSuggShowTime = currDT;
+                MultithreadHelper.ThreadSafeCall(ParentForm, () =>
                 {
-                    DisplayedValue = item.DisplayedKey,
-                    Value = item
+                    _commandArgumentSuggester.ShowLoading();
                 });
-            }
-            //popupModel.Term = term;
-            _commandArgumentSuggester.ShowItems(items);
-            return suggestions;
+                
+                
+                var suggestions = suggest.Details.Single(x => x.Key == key).GetSuggestionFunc(text);
+
+                //skip old updates
+                if (currDT == _lastArgSuggShowTime)
+                {
+                    List<AutocompleteItem> items = new List<AutocompleteItem>();
+                    foreach (var item in suggestions)
+                    {
+                        items.Add(new AutocompleteItem()
+                        {
+                            DisplayedValue = item.DisplayedKey,
+                            Value = item
+                        });
+                    }
+                    MultithreadHelper.ThreadSafeCall(ParentForm, () =>
+                    {
+                        _commandArgumentSuggester.ShowItems(items);
+                    });
+                }
+                onSuccessClbck(suggestions);
+            }).Start();
+
+            
         }
 
         void txtCommand_ArgSuggestRequired(string argText)

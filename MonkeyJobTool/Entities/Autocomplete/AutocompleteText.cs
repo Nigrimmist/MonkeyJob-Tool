@@ -8,6 +8,7 @@ using System.Threading;
 using System.Windows.Forms;
 using HelloBotCommunication;
 using HelloBotCore.Entities;
+using MonkeyJobTool.Helpers;
 using CallCommandInfo = HelloBotCore.Entities.CallCommandInfo;
 
 namespace MonkeyJobTool.Entities.Autocomplete
@@ -41,16 +42,17 @@ namespace MonkeyJobTool.Entities.Autocomplete
         public delegate CallCommandInfo TryResolveCommandFromStringDelegate(string text);
         private readonly TryResolveCommandFromStringDelegate _tryResolveCommandFromStringFunc;
 
-        public delegate List<AutoSuggestItem> GetSuggestionsDelegate(CallCommandInfo command,CommandArgumentSuggestionInfo suggest,string key, int order, string text);
-        private readonly GetSuggestionsDelegate _getSuggestionsFunc;
+        public delegate void GetSuggestionsDelegate(CallCommandInfo command,CommandArgumentSuggestionInfo suggest,string key, int order, string text, Action<List<AutoSuggestItem>> continueCallback);
+        private readonly GetSuggestionsDelegate _getSuggestionsFuncAsync;
 
-        public AutocompleteText(RichTextBox bindedControl, TryResolveCommandFromStringDelegate tryResolveCommandFromStringFunc, GetSuggestionsDelegate getSuggestionsFuncFunc)
+        public AutocompleteText(RichTextBox bindedControl, TryResolveCommandFromStringDelegate tryResolveCommandFromStringFunc, GetSuggestionsDelegate getSuggestionsFuncAsyncFuncAsync)
         {
             _bindedControl = bindedControl;
             _tryResolveCommandFromStringFunc = tryResolveCommandFromStringFunc;
-            _getSuggestionsFunc = getSuggestionsFuncFunc;
+            _getSuggestionsFuncAsync = getSuggestionsFuncAsyncFuncAsync;
             _bindedControl.MouseDown += (sender, args) => { changeCaretPos(); };
             _bindedControl.MouseUp += (sender, args) => { changeCaretPos(); };
+            _bindedControl.KeyUp += (sender, args) =>{changeCaretPos();};
             _bindedControl.TextChanged += (sender, args) =>
             {
                 if (_changedEventEnabled)
@@ -64,17 +66,11 @@ namespace MonkeyJobTool.Entities.Autocomplete
                     CheckForAvailableArgumentSuggestions(ref focusedPart);
                     TryResolveCommandIfRequired(focusedPart);
                     TryNotifyCommandAndArg(focusedPart);
-                    Console.WriteLine("textchanged.RefreshText");
                     RefreshText();
                     Log();
                 }
-                
             };
-            _bindedControl.KeyUp += (sender, args) =>
-            {
-                Console.WriteLine("_bindedControl.KeyUp");
-                changeCaretPos();
-            };
+            
             _parts = new List<AutocompleteTextPart>();
             AddEmptyCommand();
             _lastText = bindedControl.Text;
@@ -488,24 +484,25 @@ namespace MonkeyJobTool.Entities.Autocomplete
 
         public void RefreshText()
         {
-            _changedEventEnabled = false;
-           
-            _bindedControl.Text = "";//this.ToString();
-            
-            int pos = 0;
-            foreach (AutocompleteTextPart part in _parts)
+            MultithreadHelper.ThreadSafeCall(_bindedControl, () =>
             {
-                SetBackColor(part.BackColor);
-                _bindedControl.AppendText(part.Text);
-                pos += part.Text.Length;
-            }
-            _bindedControl.SelectionStart = _currCaretPos;
-            _changedEventEnabled = true;
-            _lastText = _bindedControl.Text;
+                _changedEventEnabled = false;
+                _bindedControl.Text = "";
+                int pos = 0;
+                foreach (AutocompleteTextPart part in _parts)
+                {
+                    SetBackColor(part.BackColor);
+                    _bindedControl.AppendText(part.Text);
+                    pos += part.Text.Length;
+                }
+                _bindedControl.SelectionStart = _currCaretPos;
+                _changedEventEnabled = true;
+                _lastText = _bindedControl.Text;
+            });
         }
 
-        
 
+        
         
 
         public void NotifyAboutAvailableCommandSuggests(List<string> commands)
@@ -547,7 +544,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
             }
         }
 
-        private void CheckForAvailableArgumentSuggestions(ref AutocompleteTextPart focusedPart)
+        private bool CheckForAvailableArgumentSuggestions(ref AutocompleteTextPart focusedPart)
         {
             if (CommandPart.Command != null)
             {
@@ -620,27 +617,34 @@ namespace MonkeyJobTool.Entities.Autocomplete
                                         if (suggPart != null)
                                         {
                                             var argToCompare = suggPart.Text.ToLower();
-                                            List<AutoSuggestItem> suggestions = _getSuggestionsFunc(CommandPart.Command, comSuggestion, argSuggestion.Key, argSuggestion.Order, focusedPart.Text);
-                                            if (!string.IsNullOrEmpty(suggPart.Text) && suggPart.StrongRestrictSuggest)
+                                            var focusedIndex = focusedPart.Index;
+                                            _getSuggestionsFuncAsync(CommandPart.Command, comSuggestion, argSuggestion.Key, argSuggestion.Order, focusedPart.Text, (suggestions) =>
                                             {
-                                                
-                                                var canBeFound = suggestions.Any(x => x.Value.ToLower().StartsWith(argToCompare));
-                                                if (!canBeFound)
+                                                if (!string.IsNullOrEmpty(suggPart.Text) && suggPart.StrongRestrictSuggest)
                                                 {
-                                                    ChangePartType(focusedPart.Index,new AutocompleteTextPart()
+
+                                                    var canBeFound = suggestions.Any(x => x.Value.ToLower().StartsWith(argToCompare));
+                                                    if (!canBeFound)
                                                     {
-                                                        Text=suggPart.Text
-                                                    });
+                                                        ChangePartType(focusedIndex, new AutocompleteTextPart()
+                                                        {
+                                                            Text = suggPart.Text
+                                                        });
+                                                    }
                                                 }
-                                            }
-                                            
-                                           var found = suggestions.FirstOrDefault(x => x.Value.ToLower() == argToCompare);
-                                           suggPart.Suggest = found;
-                                           suggPart.SuggestCases = suggestions;
-                                            
-                                            
+
+                                                var found = suggestions.FirstOrDefault(x => x.Value.ToLower() == argToCompare);
+                                                suggPart.Suggest = found;
+                                                suggPart.SuggestCases = suggestions;
+                                                Console.WriteLine("thread log");
+                                                Log();
+                                                TryNotifyCommandAndArg();
+                                                RefreshText();
+                                            });
+                                            return true;
+
                                         }
-                                        return;
+                                        return false;
                                     }
                                     else
                                     {
@@ -659,6 +663,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
                     }
                 }
             }
+            return false;
         }
 
         private void ChangePartType(int index, AutocompleteTextPart newPart)

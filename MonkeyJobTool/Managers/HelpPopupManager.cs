@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using MonkeyJobTool.Forms;
+using MonkeyJobTool.Helpers;
+using SharedHelper;
 using Timer = System.Windows.Forms.Timer;
 
 
@@ -27,14 +29,7 @@ namespace MonkeyJobTool.Managers
         {
             if (CurrentHelpForm != null)
             {
-                if (CurrentHelpForm.InvokeRequired)
-                {
-                    CurrentHelpForm.Invoke(new MethodInvoker(CloseHelpForm));
-                }
-                else
-                {
-                    CloseHelpForm();
-                }
+                MultithreadHelper.ThreadSafeCall(CurrentHelpForm, CloseHelpForm);
             }
 
         }
@@ -89,14 +84,7 @@ namespace MonkeyJobTool.Managers
 
         private static void CurrentHelpTimerOnTick(object sender, EventArgs eventArgs)
         {
-            if (CurrentHelpForm.InvokeRequired)
-            {
-                CurrentHelpForm.Invoke(new MethodInvoker(ShowHelpForm));
-            }
-            else
-            {
-                ShowHelpForm();
-            }
+            MultithreadHelper.ThreadSafeCall(CurrentHelpForm, ShowHelpForm);
             CurrentHelpTimer.Stop();
         }
     }

@@ -10,6 +10,7 @@ using MonkeyJobTool.Controls.Autocomplete;
 using MonkeyJobTool.Entities;
 using MonkeyJobTool.Entities.Autocomplete;
 using MonkeyJobTool.Extensions;
+using MonkeyJobTool.Helpers;
 
 namespace MonkeyJobTool.Controls
 {
@@ -150,7 +151,8 @@ namespace MonkeyJobTool.Controls
                 });
             }
 
-            if (_isPopupOpen && _popup.Model.Items.Any() && _popup.Model.Items.Count == popupModel.Items.Count && _popup.Model.Items.All(x => popupModel.Items.Any(y => y.Value.DisplayedValue == x.Value.DisplayedValue))) return;
+            if (_isPopupOpen && _popup.Model.Items.Any() && _popup.Model.Items.Count == popupModel.Items.Count && _popup.Model.Items.All(x => popupModel.Items.Any(y => y.Value.DisplayedValue == x.Value.DisplayedValue))) 
+                return;
 
             _popup.Model = popupModel;
             _popup.ShowItems();
@@ -160,9 +162,25 @@ namespace MonkeyJobTool.Controls
             _isPopupOpen = true;
         }
 
+        public void ShowLoading()
+        {
+            if (_popup.IsInLoadingState) return;
+
+            _popup.ShowLoading();
+            _popup.Top = _parentForm.Top - _popup.Height;
+            _popup.Left = _parentForm.Left + _argListLeftMargin + 1;
+            _popup.Width = _parentForm.Width - _argListLeftMargin - 3;
+            _isPopupOpen = true;
+        }
+
+        public AutocompletePopupControl Popup {get { return _popup; }}
+
         public void Hide(bool rememberOpenedPosition)
         {
-            _popup.Hide();
+            MultithreadHelper.ThreadSafeCall(_popup, () =>
+            {
+                _popup.Hide();
+            });
             if (!rememberOpenedPosition)
                 _isPopupOpen = false;
         }
