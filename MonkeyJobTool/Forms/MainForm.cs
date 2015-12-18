@@ -128,8 +128,7 @@ namespace MonkeyJobTool.Forms
             };
             _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
             _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
-            //_autocomplete.OnTextChanged += autocomplete_OnTextChanged;
-            _autocomplete.Init();
+            
             this.Controls.Add(_autocomplete);
 
             

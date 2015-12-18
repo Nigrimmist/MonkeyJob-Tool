@@ -8,7 +8,7 @@ using HelloBotCommunication;
 using MonkeyJobTool.Entities.Autocomplete;
 using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Helpers;
-using CallCommandInfo = HelloBotCore.Entities.CallCommandInfo;
+
 
 namespace MonkeyJobTool.Controls.Autocomplete
 {

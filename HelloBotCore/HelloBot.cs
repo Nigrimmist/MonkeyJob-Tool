@@ -336,7 +336,7 @@ namespace HelloBotCore
                                         ModuleId = hnd.Id
                                     });
 
-                                    hnd.HandleMessage(command, args, commandTempGuid);
+                                    hnd.HandleMessage(command, args.TrimStart(), commandTempGuid);
                                 }
                                 catch (Exception ex)
                                 {

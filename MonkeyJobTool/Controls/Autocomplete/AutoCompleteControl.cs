@@ -56,12 +56,6 @@ namespace MonkeyJobTool.Controls.Autocomplete
             InitializeComponent();
         }
 
-        public void Init()
-        {
-            //_commandArgumentSuggester = new CommandArgumentSuggester(this.txtCommand, ParentForm);
-            //_commandArgumentSuggester.Init();
-        }
-
         private void AutoCompleteControl_Load(object sender, EventArgs e)
         {
             _commandSuggester = new CommandArgumentSuggester(txtCommand, ParentForm, title: "Команды");
@@ -84,7 +78,6 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         void _commandArgumentSuggester_OnItemSelected(AutocompleteItem item)
         {
-            Console.WriteLine("arg item selected"+item.DisplayedValue);
             txtCommand.SetArgument((item.Value as AutoSuggestItem));
         }
 
