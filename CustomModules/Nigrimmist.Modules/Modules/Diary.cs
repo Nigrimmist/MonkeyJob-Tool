@@ -43,6 +43,15 @@ namespace Nigrimmist.Modules.Modules
 
         public override void OnFire(Guid eventToken)
         {
+            //var r = new Random();
+            ////_client.ShowMessage(eventToken, r.Next().ToString()).OnClick(() =>
+            ////{
+                
+            ////});
+            ////_client.ShowMessage(eventToken, r.Next().ToString()).OnClick(() =>
+            ////{
+
+            ////}); 
             try
             {
                 DiarySettings settings = _client.GetSettings<DiarySettings>();

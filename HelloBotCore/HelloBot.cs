@@ -546,7 +546,7 @@ namespace HelloBotCore
                         commandContext.OnClosedAction = reactionCallback;
                         break;
                     case UserReactionToCommandType.Clicked:
-                        commandContext.OnClickAction = reactionCallback;
+                        commandContext.OnClickAction =reactionCallback;
                         break;
                 }
 
@@ -611,14 +611,14 @@ namespace HelloBotCore
                         if (commandContext.OnClickAction != null)
                         {
                             commandContext.OnClickAction();
-                            commandContext.ClearHandlers();
+                            //commandContext.ClearHandlers();
                         }
                         break;
                     case UserReactionToCommandType.Closed:
                         if (commandContext.OnClosedAction != null)
                         {
                             commandContext.OnClosedAction();
-                            commandContext.ClearHandlers();
+                            //commandContext.ClearHandlers();
                         }
                         break;
                     default:

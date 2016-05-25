@@ -40,7 +40,9 @@ namespace Nigrimmist.Modules
                 new Diary(),
                 new ToolUpdate(),
                 new MtsEthernetBYModule(),
-                new MtsGsmByModule()
+                new MtsGsmByModule(),
+                new OnlinerRent(),
+                new NeagentBY()
             };
         }
 
