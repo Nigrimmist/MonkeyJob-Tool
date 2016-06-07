@@ -53,6 +53,12 @@ namespace MonkeyJobTool.Forms
         
         private void MainForm_Load(object sender, EventArgs e)
         {
+            //new Thread(o =>
+            //{
+            //    Thread.Sleep(5000);
+            //    this.ToTop();
+            //    Debug.WriteLine("to top main form");
+            //}).Start();
             try
             {
                 App.Instance.Init(openFormHotKeyRaised, this);
@@ -116,6 +122,7 @@ namespace MonkeyJobTool.Forms
         private void Init()
         {
             this.Deactivate += MainForm_Deactivate;
+            this.Activated += MainForm_Activated;
             this.tsDonate.Visible = App.Instance.AppConf.ShowDonateButton;
 
             _autocomplete = new AutoCompleteControl()
@@ -134,6 +141,11 @@ namespace MonkeyJobTool.Forms
             
             this.ToTop(true);
             LogAnalytic();
+        }
+
+        void MainForm_Activated(object sender, EventArgs e)
+        {
+            Debug.WriteLine("MainForm_Activated");
         }
 
         void autocomplete_OnTextChanged(string text)
@@ -423,6 +435,7 @@ namespace MonkeyJobTool.Forms
         private bool _isHelpBalloonDisplayed;
         void MainForm_Deactivate(object sender, EventArgs e)
         {
+            Debug.WriteLine("MainForm_Deactivate");
             //hack check. Required in case when user click right click to popup to close it. We not hide main form. But hide if another application get focus.
             if (!App.ApplicationIsActivated())
             {
@@ -483,16 +496,22 @@ namespace MonkeyJobTool.Forms
                             
                             this.Invoke((MethodInvoker) (delegate
                             {
-                                switch (answerInfo.MessageSourceType)
+
+                                var mainFormActive = App.ApplicationIsActivated();
+                                if (answerInfo.MessageSourceType == ModuleType.Handler)
                                 {
-                                    case ModuleType.Handler:
+                                    if (mainFormActive)
                                         App.Instance.ShowFixedPopup(title, answer, commandToken, answerInfo.Icon, answerInfo.HeaderBackgroundColor, answerInfo.BodyBackgroundColor);
-                                        break;
-                                    case ModuleType.Event:
+                                    else
                                         App.Instance.ShowNotification(title, answer, commandToken, answerInfo.Icon, answerInfo.HeaderBackgroundColor, answerInfo.BodyBackgroundColor);
-                                        break;
-                                    default:
-                                        throw new ArgumentOutOfRangeException();
+                                }
+                                else if (answerInfo.MessageSourceType == ModuleType.Event)
+                                {
+                                    App.Instance.ShowNotification(title, answer, commandToken, answerInfo.Icon, answerInfo.HeaderBackgroundColor, answerInfo.BodyBackgroundColor);
+                                }
+                                else
+                                {
+                                    throw new ArgumentOutOfRangeException();
                                 }
                             }));
 
@@ -675,6 +694,7 @@ namespace MonkeyJobTool.Forms
                 _lastDeactivateFormDate = null;
             }
 
+            
             App.Instance.AllPopupsToTop();
             ShowHelpInfo();
             this.ToTop(true);

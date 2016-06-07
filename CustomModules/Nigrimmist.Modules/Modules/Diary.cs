@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Web;
 using HelloBotCommunication;
 using HelloBotCommunication.Attributes.SettingAttributes;
@@ -43,11 +44,12 @@ namespace Nigrimmist.Modules.Modules
 
         public override void OnFire(Guid eventToken)
         {
-            //var r = new Random();
-            ////_client.ShowMessage(eventToken, r.Next().ToString()).OnClick(() =>
-            ////{
-                
-            ////});
+            Thread.Sleep(2000);
+            var r = new Random();
+            _client.ShowMessage(eventToken, r.Next().ToString()).OnClick(() =>
+            {
+
+            });
             ////_client.ShowMessage(eventToken, r.Next().ToString()).OnClick(() =>
             ////{
 

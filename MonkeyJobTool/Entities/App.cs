@@ -192,7 +192,12 @@ namespace MonkeyJobTool.Entities
             
             if (!AppConf.SystemData.DoNotNotify || popupType != PopupType.Notification)
             {
+                
+                var mainWindowActivated = App.ApplicationIsActivated();
+                Debug.WriteLine("popup going to top. main window : "+mainWindowActivated);
                 popup.ToTop();
+                if(mainWindowActivated) //focus for main form was stealed after popup.toTop, restoring
+                    _mainForm.ToTop(true);
             }
             popup.Location = new Point(_mainForm.Location.X + (_mainForm.Width - popup.Width), _mainForm.Location.Y - popup.Height - totalPopupY);
             
@@ -282,6 +287,7 @@ namespace MonkeyJobTool.Entities
 
         void popup_FormClosed(object sender, FormClosedEventArgs e)
         {
+            Debug.WriteLine("popup_FormClosed");
             var popup = (InfoPopup) sender;
             lock (_openedPopupsLock)
             {
@@ -342,16 +348,18 @@ namespace MonkeyJobTool.Entities
         /// <summary>Returns true if the current application has focus, false otherwise</summary>
         public static bool ApplicationIsActivated()
         {
+            
             var activatedHandle = GetForegroundWindow();
             if (activatedHandle == IntPtr.Zero)
             {
+                Debug.WriteLine("ApplicationIsActivated : activatedHandle == IntPtr.Zero => return false;");
                 return false;       // No window is currently activated
             }
 
             var procId = Process.GetCurrentProcess().Id;
             int activeProcId;
             GetWindowThreadProcessId(activatedHandle, out activeProcId);
-
+            Debug.WriteLine("ApplicationIsActivated : activeProcId == procId => " + (activeProcId == procId)+" "+activeProcId+" "+procId);
             return activeProcId == procId;
         }
 
@@ -367,7 +375,10 @@ namespace MonkeyJobTool.Entities
         {
                 lock (_openedPopupsLock)
                 {
-                    _openedPopups.Where(x => x.PopupType == PopupType.Notification).ToList().ForEach(x=>x.Close());
+                   var toClose = _openedPopups.Where(x => x.PopupType == PopupType.Notification).ToList();
+                   toClose.ForEach(x => x.Close());
+                   //_openedPopups = _openedPopups.Where(x => x.PopupType != PopupType.Notification).ToList();
+                   Debug.WriteLine("CheckAllNotificationAsRead " + _openedPopups.Count);
                 }
         }
 

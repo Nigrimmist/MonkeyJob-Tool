@@ -38,7 +38,7 @@ namespace MonkeyJobTool.Forms
         public new Image Icon { get; set; }
         public Color TitleColor = Color.SkyBlue;
         public Color BodyColor = Color.White;
-
+        private bool _wasDisplayed = true;
 
         public InfoPopup(PopupType popupType, string title, string text, TimeSpan? displayTime, object sessionData = null, Image icon = null, Color? titleBackgroundColor = null, Color? bodyBackgroundColor = null)
         {
@@ -60,6 +60,8 @@ namespace MonkeyJobTool.Forms
             new ToolTip() { ShowAlways = true }.SetToolTip(this.picMinimize, "Свернуть");
             new ToolTip() { ShowAlways = true }.SetToolTip(this.picClose, "Закрыть");
             new ToolTip() { ShowAlways = true }.SetToolTip(this.picCopy, "Скопировать в буфер обмена");
+
+            
         }
 
         //n->0
@@ -96,7 +98,7 @@ namespace MonkeyJobTool.Forms
 
         private void InfoPopup_Load(object sender, EventArgs e)
         {
-            
+            _wasDisplayed = true;
             txtMessage.Visible = false;
             if (Icon!=null)
                 IconPic.BackgroundImage = Icon;
@@ -261,12 +263,6 @@ namespace MonkeyJobTool.Forms
             
         }
 
-        protected override bool ShowWithoutActivation
-        {
-            get { return true; }
-        }
-
-
         private void pnlMain_Paint(object sender, PaintEventArgs e)
         {
             int borderSize = 1;
@@ -278,14 +274,17 @@ namespace MonkeyJobTool.Forms
                 e.Graphics.DrawLine(p, pnlMain.ClientSize.Width - borderSize, 0, pnlMain.ClientSize.Width - borderSize, pnlMain.ClientSize.Height - borderSize);
                 e.Graphics.DrawLine(p, pnlMain.ClientSize.Width - borderSize, pnlMain.ClientSize.Height - borderSize, 0, pnlMain.ClientSize.Height - borderSize);
             }
+            
         }
 
         private void InfoPopup_Deactivate(object sender, EventArgs e)
         {
-            if (!App.ApplicationIsActivated())
-            {
-                this.Hide();
-            }
+            //Debug.WriteLine("popupInfo - InfoPopup_Deactivate called");
+            //if (!App.ApplicationIsActivated())
+            //{
+            //    Debug.WriteLine("popupInfo - InfoPopup_Deactivate -> HIDE");
+            //    this.Hide();
+            //}
         }
 
         
@@ -330,6 +329,14 @@ namespace MonkeyJobTool.Forms
             this.Hide();
         }
 
-        
+        public new void Close()
+        {
+            if(!_wasDisplayed)
+                this.Show();// hack to raise OnFormClose event, without it will not called after base.Close
+           
+            base.Close();
+            Debug.WriteLine("popup close fired");
+            
+        }
     }
 }
