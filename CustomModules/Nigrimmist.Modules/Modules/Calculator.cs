@@ -37,7 +37,7 @@ namespace Nigrimmist.Modules.Modules
             {
                 return new ReadOnlyCollection<CallCommandInfo>(new List<CallCommandInfo>()
                 {
-                    new CallCommandInfo("калькулятор тест12356 тест2 тест3 тест4", new List<string>(){"calculator", "calc"})
+                    new CallCommandInfo("калькулятор", new List<string>(){"calculator", "calc"})
                 });
             }
         }

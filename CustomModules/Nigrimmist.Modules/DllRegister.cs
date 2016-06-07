@@ -29,7 +29,8 @@ namespace Nigrimmist.Modules
                 new ShortLink(),
                 new BrowserUrlsOpen(),
                 new IpChecker(),
-                new CopyToBufferModule()
+                new CopyToBufferModule(),
+                new LocalDnsBlockerModule()
             };
         }
 
