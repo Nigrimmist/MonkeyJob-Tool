@@ -15,6 +15,7 @@ using HelloBotCommunication.Interfaces;
 using HelloBotCore.Helpers;
 using Newtonsoft.Json;
 using CallCommandInfo = HelloBotCore.Entities.CallCommandInfo;
+using IntegrationClientBase = HelloBotCore.Entities.IntegrationClientBase;
 
 namespace HelloBotCore
 {
@@ -36,7 +37,7 @@ namespace HelloBotCore
         private const int RunTraceSaveEveryMin = 5;
 
         private List<ModuleInfoBase> _allModules = new List<ModuleInfoBase>();
-
+        
         
         private readonly string _moduleDllmask;
         private readonly string _botCommandPrefix;
@@ -60,7 +61,8 @@ namespace HelloBotCore
         public event OnModuleErrorOccuredDelegate OnModuleErrorOccured;
         public event OnMessageRecievedDelegate OnMessageRecieved;
         private readonly double _currentUIClientVersion;
-        
+        private List<IntegrationClientBase> _integrationClients;
+
 
         public delegate void TrayIconSetupRequiredDelegate(Guid moduleId, Icon icon, string title);
 
@@ -204,16 +206,67 @@ namespace HelloBotCore
             }
         }
 
-        public void RegisterModules(List<string> disabledModules = null)
+        public void RegisterModules(List<string> enabledModules = null, List<string> disabledModules = null)
         {
-
-            var allModules = LoadModules(disabledModules);
+            var allModules = LoadModules(enabledModules,disabledModules);
 
             var handlerModules = allModules.OfType<ModuleCommandInfo>().Where(x => x.CallCommandList.Any()).ToList();
             var baseList = ExtendAliases(handlerModules).Select(x => (ModuleInfoBase) x).ToList(); //extend aliases for autocomplete wrong keyboard layout search
             baseList.AddRange(allModules.OfType<ModuleEventInfo>().Select(x => (ModuleInfoBase) x));
             baseList.AddRange(allModules.OfType<ModuleTrayInfo>().Select(x => (ModuleInfoBase) x));
             AllModules.AddRange(baseList);
+        }
+
+        public void RegisterIntegrationClients(List<string> enabledClients = null)
+        {
+            var allClients = LoadIntegrationClients(enabledClients);
+            _integrationClients = allClients;
+        }
+
+        public List<IntegrationClientBase> LoadIntegrationClients(List<string> enabledClients = null)
+        {
+            List<IntegrationClientBase> toReturn = new List<IntegrationClientBase>();
+            var dlls = Directory.GetFiles(_moduleFolderPath, _moduleDllmask);
+            var i = typeof(IntegrationClientRegisterBase);
+            var settingsAttr = typeof(ModuleSettingsForAttribute);
+
+            if (enabledClients == null) enabledClients = new List<string>();
+            foreach (var dll in dlls)
+            {
+                var ass = Assembly.LoadFile(dll);
+                var fi = new FileInfo(dll);
+                //get types from assembly
+                var types = ass.GetTypes();
+                var typesInAssembly = types.Where(type => i.IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                var settingForClients = types.Where(t => t.IsDefined(settingsAttr, false)).Select(x =>
+                    new
+                    {
+                        moduleSettingsClass = x,
+                        moduleForParentClass = ((ModuleSettingsForAttribute)(Attribute.GetCustomAttribute(x, settingsAttr))).ModuleType
+                    }).ToList();
+
+                foreach (Type type in typesInAssembly)
+                {
+                    object obj = Activator.CreateInstance(type);
+
+                    var clients = ((IntegrationClientRegisterBase)obj).GetIntegrationClients().Select(module =>
+                    {
+                        var settingClass = settingForClients.FirstOrDefault(x => x.moduleForParentClass == module.GetType());
+                        var tModule = new IntegrationClientInfo(_settingsFolderAbsolutePath, _logsFolderAbsolutePath);
+                        _commandDictLocks.Add(tModule.Id, new ModuleLocker());
+                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this, ((IntegrationClientRegisterBase)obj).AuthorInfo);
+                        tModule.IsEnabled = enabledClients.Contains(tModule.ModuleSystemName);
+                        if (settingClass != null)
+                            tModule.ModuleSettingsType = settingClass.moduleSettingsClass;
+                        return (ModuleInfoBase)tModule;
+                    });
+
+                    toReturn.AddRange(clients);
+
+                }
+            }
+
+            return toReturn;
         }
 
         private List<ModuleCommandInfo> ExtendAliases(List<ModuleCommandInfo> modules)
@@ -235,13 +288,14 @@ namespace HelloBotCore
             return modules;
         }
 
-        protected virtual List<ModuleInfoBase> LoadModules(List<string> disabledModules)
+        protected virtual List<ModuleInfoBase> LoadModules(List<string> enabledModules, List<string> disabledModules)
         {
             List<ModuleInfoBase> toReturn = new List<ModuleInfoBase>();
             var dlls = Directory.GetFiles(_moduleFolderPath, _moduleDllmask);
-            var i = typeof (ModuleRegister);
+            var i = typeof (ModuleRegisterBase);
             var settingsAttr = typeof (ModuleSettingsForAttribute);
 
+            if (enabledModules == null) enabledModules = new List<string>();
             if (disabledModules == null) disabledModules = new List<string>();
             foreach (var dll in dlls)
             {
@@ -261,39 +315,37 @@ namespace HelloBotCore
                 {
                     object obj = Activator.CreateInstance(type);
 
-
-
-                    var modules = ((ModuleRegister) obj).GetModules().Select(module =>
+                    var modules = ((ModuleRegisterBase) obj).GetModules().Select(module =>
                     {
                         var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == module.GetType());
                         var tModule = new ModuleCommandInfo(_settingsFolderAbsolutePath,_logsFolderAbsolutePath);
                         _commandDictLocks.Add(tModule.Id, new ModuleLocker());
-                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this, ((ModuleRegister) obj).AuthorInfo);
+                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this, ((ModuleRegisterBase) obj).AuthorInfo);
                         tModule.IsEnabled = !disabledModules.Contains(tModule.ModuleSystemName);
                         if (settingClass != null)
                             tModule.ModuleSettingsType = settingClass.moduleSettingsClass;
                         return (ModuleInfoBase) tModule;
                     });
 
-                    var events = ((ModuleRegister) obj).GetEvents().Select(ev =>
+                    var events = ((ModuleRegisterBase) obj).GetEvents().Select(ev =>
                     {
                         var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == ev.GetType());
                         var tModule = new ModuleEventInfo(_settingsFolderAbsolutePath, _logsFolderAbsolutePath);
                         _commandDictLocks.Add(tModule.Id, new ModuleLocker());
-                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this, ((ModuleRegister) obj).AuthorInfo);
-                        tModule.IsEnabled = !disabledModules.Contains(tModule.ModuleSystemName);
+                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this, ((ModuleRegisterBase) obj).AuthorInfo);
+                        tModule.IsEnabled = enabledModules.Contains(tModule.ModuleSystemName);
                         if (settingClass != null)
                             tModule.ModuleSettingsType = settingClass.moduleSettingsClass;
                         return (ModuleInfoBase) tModule;
                     });
 
-                    var trayModules = ((ModuleRegister) obj).GetTrayModules().Select(ev =>
+                    var trayModules = ((ModuleRegisterBase) obj).GetTrayModules().Select(ev =>
                     {
                         var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == ev.GetType());
                         var tModule = new ModuleTrayInfo(_settingsFolderAbsolutePath, _logsFolderAbsolutePath);
                         _commandDictLocks.Add(tModule.Id, new ModuleLocker());
-                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this, ((ModuleRegister) obj).AuthorInfo);
-                        tModule.IsEnabled = !disabledModules.Contains(tModule.ModuleSystemName);
+                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this, ((ModuleRegisterBase) obj).AuthorInfo);
+                        tModule.IsEnabled = enabledModules.Contains(tModule.ModuleSystemName);
                         if (settingClass != null)
                             tModule.ModuleSettingsType = settingClass.moduleSettingsClass;
                         return (ModuleInfoBase) tModule;
@@ -666,6 +718,11 @@ namespace HelloBotCore
         public List<ModuleInfoBase> AllModules
         {
             get { return _allModules; }
+        }
+
+        public List<IntegrationClientBase> IntegrationClients
+        {
+            get { return _integrationClients; }
         }
 
 

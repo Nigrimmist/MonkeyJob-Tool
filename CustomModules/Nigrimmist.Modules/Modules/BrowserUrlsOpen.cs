@@ -27,9 +27,9 @@ namespace Nigrimmist.Modules.Modules
                 };
             }
         }
-        public override double ModuleVersion { get { return 1.0; } }
+        public override double Version { get { return 1.0; } }
 
-        public override string ModuleTitle
+        public override string Title
         {
             get { return "Ссылкооткрыватель"; }
         }

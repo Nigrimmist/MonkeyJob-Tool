@@ -24,7 +24,7 @@ namespace Nigrimmist.Modules.Modules
             _client = client;
             hostsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "drivers/etc/hosts");
         }
-        public override double ModuleVersion
+        public override double Version
         {
             get { return 1.0; }
         }
@@ -51,7 +51,7 @@ namespace Nigrimmist.Modules.Modules
         }
 
 
-        public override string ModuleTitle
+        public override string Title
         {
             get { return "IP Фаервол"; }
         }

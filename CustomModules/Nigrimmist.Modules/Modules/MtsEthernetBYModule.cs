@@ -24,7 +24,7 @@ namespace Nigrimmist.Modules.Modules
             _client = client;
         }
 
-        public override string ModuleTitle
+        public override string Title
         {
             get { return "МТС ИНТЕРНЕТ .BY"; }
         }

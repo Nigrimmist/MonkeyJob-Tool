@@ -32,7 +32,7 @@ namespace SmartAssHandlerLib
         }
 
 
-        public override double ModuleVersion
+        public override double Version
         {
             get { return 1.0; }
         }
@@ -51,7 +51,7 @@ namespace SmartAssHandlerLib
             }
         }
 
-        public override string ModuleTitle
+        public override string Title
         {
             get { return "Простой ответ"; }
         }

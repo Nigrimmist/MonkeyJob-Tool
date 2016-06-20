@@ -404,6 +404,8 @@ namespace MonkeyJobTool.Entities
             if (!AppConf.SystemData.DisabledModules.Contains(moduleSystemName))
             {
                 AppConf.SystemData.DisabledModules.Add(moduleSystemName);
+                if (AppConf.SystemData.EnabledModules.Contains(moduleSystemName))
+                    AppConf.SystemData.EnabledModules.Remove(moduleSystemName);
                 AppConf.Save();
             }
         }
@@ -414,6 +416,8 @@ namespace MonkeyJobTool.Entities
             if (AppConf.SystemData.DisabledModules.Contains(moduleSystemName))
             {
                 AppConf.SystemData.DisabledModules.Remove(moduleSystemName);
+                if (!AppConf.SystemData.EnabledModules.Contains(moduleSystemName))
+                    AppConf.SystemData.EnabledModules.Add(moduleSystemName);
                 AppConf.Save();
             }
         }

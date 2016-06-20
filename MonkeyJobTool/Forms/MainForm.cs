@@ -269,7 +269,8 @@ namespace MonkeyJobTool.Forms
                     _bot.OnTrayIconStateChangeRequested += OnTrayIconStateChangeRequested;
                     _bot.OnTrayBalloonTipRequested += BotOnOnTrayBalloonTipRequested;
                     _bot.SetCurrentLanguage((Language) (int) App.Instance.AppConf.Language);
-                    _bot.RegisterModules(App.Instance.AppConf.SystemData.DisabledModules);
+                    _bot.RegisterModules(App.Instance.AppConf.SystemData.EnabledModules, App.Instance.AppConf.SystemData.DisabledModules);
+                    _bot.RegisterIntegrationClients(App.Instance.AppConf.SystemData.EnabledModules);
                     _bot.OnSuggestRecieved += BotOnSuggestRecieved;
 
                     App.Instance.Bot = _bot;

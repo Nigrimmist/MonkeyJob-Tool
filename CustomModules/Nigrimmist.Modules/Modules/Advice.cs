@@ -28,7 +28,7 @@ namespace Nigrimmist.Modules.Modules
             _client = client;
         }
 
-        public override double ModuleVersion
+        public override double Version
         {
             get { return 1.0; }
         }
@@ -55,7 +55,7 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override string ModuleTitle
+        public override string Title
         {
             get { return "Лучший совет"; }
         }

@@ -6,7 +6,7 @@ using HelloBotCommunication.Interfaces;
 
 namespace HelloBotCommunication
 {
-    public abstract class ModuleTrayBase : ModuleBase
+    public abstract class ModuleTrayBase : ComponentBase
     {
 
         /// <summary>

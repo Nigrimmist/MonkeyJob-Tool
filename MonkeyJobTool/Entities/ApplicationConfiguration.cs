@@ -31,7 +31,7 @@ namespace MonkeyJobTool.Entities
         {
             
             CommandReplaces = new List<CommandReplace>();
-            SystemData = new SystemData() {DisabledModules = new List<string>()};
+            SystemData = new SystemData() ;
             if (initDefaults)
             {
                 HotKeys = new AppConfHotkeys()
@@ -45,12 +45,7 @@ namespace MonkeyJobTool.Entities
                 Language = Language.ru;
                 SystemData = new SystemData()
                 {
-                    DisabledModules = new List<string>()
-                    {
-                        "Nigrimmist.Modules.PingModule",
-                        "Nigrimmist.Modules.WeatherTrayModule",
-                        "Nigrimmist.Modules.MemoryUsageTrayModule"
-                    },
+                    EnabledModules = new List<string>(),
                     ClearCommandAfterMinOfInactivity = TimeSpan.FromMinutes(5)
                 };
                 DevelopmentModeEnabled = true;
@@ -79,8 +74,22 @@ namespace MonkeyJobTool.Entities
 
     public class SystemData
     {
-        public List<string>  DisabledModules { get; set; }
+        /// <summary>
+        /// For Event Based/tray modules. they are disabled by default
+        /// </summary>
+        public List<string>  EnabledModules { get; set; }
+
+        /// <summary>
+        /// For command modules. they are enabled by default
+        /// </summary>
+        public List<string> DisabledModules { get; set; }
         public bool DoNotNotify { get; set; }
         public TimeSpan ClearCommandAfterMinOfInactivity { get; set; }
+
+        public SystemData()
+        {
+            EnabledModules = new List<string>();
+            DisabledModules = new List<string>();
+        }
     }
 }

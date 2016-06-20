@@ -53,7 +53,7 @@ namespace Nigrimmist.Modules.Modules
             get { return "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABNUlEQVRYhc2WIXIDMQxFHyjoEQoLCwoCA3uIHkBHCAgvDAgILAwsXFgYEBAYuKAgMCCgR2iA7Yk6s+vRdmVvPfPZt/zGsiSDbV2AH6N2xpim9QR8DjjcHeBFBd4D2x7tla8FROnBC0AyPukBaGKMqgA6BW+eAEvgsUdL5fuOEB/eAFad4sELbwDrDRzjvrk3gGR8onxnQmWspwIolgJrHyiWgiYG7FJDhSqQjE+okAIrgE7ByhMgBevSSvlSJ9wQ3ofbLBgyDZ+B9zEHjwWYE/qAK4C1ClIKGkIaqo9jPQ03TFAFxfqAtQrSh+TVG8CqYgCS8QkVUmAFmPwGik3DlnC1XWqVr9iHZPIqkIxP/hOA7oSuANZZkN7AltuD/POaAV8quEUHfn/Z78cAANwRmsuQcWxeV7d3Oo71BEw0AAAAAElFTkSuQmCC"; }
         }
 
-        public override string ModuleTitle
+        public override string Title
         {
             get { return "Free Memory"; }
         }

@@ -29,7 +29,7 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
-        public override string ModuleTitle
+        public override string Title
         {
             get { return "Проверка обновлений"; }
         }

@@ -5,7 +5,7 @@ using Yushko.Modules;
 
 namespace Yushko
 {
-    public class HandlerRegister: ModuleRegister
+    public class HandlerRegisterBase: ModuleRegisterBase
     {
         public override List<ModuleCommandBase> GetModules()
         {

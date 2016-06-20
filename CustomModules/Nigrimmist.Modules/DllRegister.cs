@@ -8,7 +8,7 @@ using Nigrimmist.Modules.Modules;
 namespace Nigrimmist.Modules
 {
 
-    public class DllRegister : ModuleRegister
+    public class DllRegisterBase : ModuleRegisterBase
     {
         public override List<ModuleCommandBase> GetModules()
         {

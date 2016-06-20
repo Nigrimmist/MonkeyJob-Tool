@@ -19,7 +19,7 @@ namespace Yushko.Modules
         {
             _client = client;
         }
-        public override double ModuleVersion
+        public override double Version
         {
             get { return 1.0; }
         }
@@ -56,7 +56,7 @@ namespace Yushko.Modules
 
         
 
-        public override string ModuleTitle
+        public override string Title
         {
             get { return "Курсы валют"; }
         }

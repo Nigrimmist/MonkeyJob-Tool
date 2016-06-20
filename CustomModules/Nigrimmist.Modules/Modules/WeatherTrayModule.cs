@@ -67,7 +67,7 @@ namespace Nigrimmist.Modules.Modules
             get { return "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAhElEQVQ4je3SsQlCMRQF0FNkCEdwAAvHsHAFCzcQEZRv4QguY/cFx7DIIN/CV1j8iA8LGy9cCCE5D0JoZ4ZbdP7mXDM9FlgGks7QWKeAKSbfAPvoH/gFUEaAkgE2nj/xHO2xywB3rGLygDVqBqjoXoBDFjjhim30Ensfp+AYU2tcHn3EB5R/MKcp5BbYAAAAAElFTkSuQmCC"; }
         }
 
-        public override string ModuleTitle
+        public override string Title
         {
             get { return "Градусник"; }
         }

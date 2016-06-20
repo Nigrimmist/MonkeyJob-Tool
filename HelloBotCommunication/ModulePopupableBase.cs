@@ -7,7 +7,7 @@ using HelloBotCommunication.Interfaces;
 
 namespace HelloBotCommunication
 {
-    public class ModulePopupableBase : ModuleBase
+    public class ModulePopupableBase : ComponentBase
     {
         /// <summary>
         /// Init method for retrieving client functionality if required. Will be called after constructor.

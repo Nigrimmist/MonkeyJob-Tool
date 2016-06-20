@@ -24,7 +24,5 @@ namespace HelloBotCommunication
         /// General event description
         /// </summary>
         public virtual string ModuleDescription { get { return null; } }
-
-        
     }
 }

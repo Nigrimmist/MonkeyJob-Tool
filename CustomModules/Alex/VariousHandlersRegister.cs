@@ -5,7 +5,7 @@ using HelloBotCommunication.Interfaces;
 
 namespace SmartAssHandlerLib
 {
-    public class VariousHandlersRegister : ModuleRegister
+    public class VariousHandlersRegisterBase : ModuleRegisterBase
     {
         public List<ModuleCommandBase> GetModules()
         {
