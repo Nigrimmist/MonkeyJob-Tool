@@ -267,7 +267,7 @@ namespace MonkeyJobTool.Forms
         #region command grid
         private void DatabindCommandGrid()
         {
-            var orderedModules = App.Instance.Bot.AllModules.OrderByDescending(x => ChangedModules.Contains(x)).ThenByDescending(x=>x.ModuleType).ThenBy(x => x.ModuleSystemName).ToList();
+            var orderedModules = App.Instance.Bot.AllModules.OrderByDescending(x => ChangedModules.Contains(x)).ThenByDescending(x=>x.ModuleType).ThenBy(x => x.SystemName).ToList();
 
             foreach (var mod in orderedModules)
             {
@@ -275,7 +275,7 @@ namespace MonkeyJobTool.Forms
                 if(ChangedModules.Any(x=>x.Id==mod.Id))
                     rowColor = Color.PaleVioletRed;
                 
-                AddModuleInfoToGrid(mod.GetModuleName(), mod.GetTypeDescription(), mod.IsEnabled, mod.ModuleSystemName, mod.ModuleSettingsType != null,rowColor);
+                AddModuleInfoToGrid(mod.GetModuleName(), mod.GetTypeDescription(), mod.IsEnabled, mod.SystemName, mod.SettingsType != null,rowColor);
             }
 
             gridModules.Rows[0].Selected = true;
@@ -318,7 +318,7 @@ namespace MonkeyJobTool.Forms
             if(gridModules.SelectedRows.Count==1)
             {
                 var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
-                var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
+                var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.SystemName == moduleKey);
                 btnEnabledDisableModule.Text = (!module.IsEnabled ? "В" : "Вы") + "ключить модуль";
                 btnShowLogs.Enabled = module.Trace.TraceMessages.Any();
             }
@@ -338,7 +338,7 @@ namespace MonkeyJobTool.Forms
                     var moduleKey = gridModules.Rows[rowIndex].ErrorText;
                     if (!string.IsNullOrEmpty(moduleKey))
                     {
-                        var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
+                        var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.SystemName == moduleKey);
 
                         if (_commandHelpCommand != null)
                         {
@@ -384,14 +384,14 @@ namespace MonkeyJobTool.Forms
         {
             var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
             
-            var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
+            var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.SystemName == moduleKey);
             if (module.IsEnabled)
             {
-                App.Instance.DisableModule(module.ModuleSystemName);
+                App.Instance.DisableModule(module.SystemName);
             }
             else
             {
-                App.Instance.EnableModule(module.ModuleSystemName);
+                App.Instance.EnableModule(module.SystemName);
             }
             gridModules.Rows[gridModules.SelectedRows[0].Index].Cells["colIsEnabled"].Value = module.IsEnabled ? "Вкл" : "Выкл";
             btnEnabledDisableModule.Text = (!module.IsEnabled ? "В" : "Вы") + "ключить модуль";
@@ -402,8 +402,8 @@ namespace MonkeyJobTool.Forms
             if (e.RowIndex >= 0 && e.ColumnIndex == gridModules.Rows[e.RowIndex].Cells["settingsCol"].ColumnIndex)
             {
                 var moduleKey = gridModules.Rows[e.RowIndex].ErrorText;
-                var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
-                if (module.ModuleSettingsType != null)
+                var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.SystemName == moduleKey);
+                if (module.SettingsType != null)
                 {
                     var setMod = new ModuleSettingsForm()
                     {
@@ -419,8 +419,8 @@ namespace MonkeyJobTool.Forms
             if (e.RowIndex >= 0 && e.ColumnIndex == gridModules.Rows[e.RowIndex].Cells["settingsCol"].ColumnIndex)
             {
                 var moduleKey = gridModules.Rows[e.RowIndex].ErrorText;
-                var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
-                gridModules.Cursor = module.ModuleSettingsType != null ? Cursors.Hand : Cursors.Default;
+                var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.SystemName == moduleKey);
+                gridModules.Cursor = module.SettingsType != null ? Cursors.Hand : Cursors.Default;
             }
             else
             {
@@ -451,7 +451,7 @@ namespace MonkeyJobTool.Forms
             if(gridModules.SelectedRows.Count==1)
             {
                 var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
-                var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.ModuleSystemName == moduleKey);
+                var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.SystemName == moduleKey);
                 var mlForm = new ModuleLogsForm(){Module = module};
                 mlForm.ShowDialog();
             }

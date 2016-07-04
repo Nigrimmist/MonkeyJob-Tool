@@ -203,7 +203,7 @@ namespace MonkeyJobTool.Forms
         private void ShowHelpInfo(ModuleCommandInfo command)
         {
             {
-                if (_helpPopupForm != null && _helpPopupForm.HelpData.ForCommand == command.ModuleSystemName)
+                if (_helpPopupForm != null && _helpPopupForm.HelpData.ForCommand == command.SystemName)
                 {
                     return;
                 }
@@ -216,7 +216,7 @@ namespace MonkeyJobTool.Forms
                         Body = command.ToString(false),
                         Icon = command.Icon ?? Resources.monkey_highres_img,
                         Title = "Подсказка по команде \"" + command.GetModuleName() + "\"",
-                        ForCommand = command.ModuleSystemName
+                        ForCommand = command.SystemName
                     }
                 };
                 _helpPopupForm = helpForm;
@@ -265,6 +265,7 @@ namespace MonkeyJobTool.Forms
                     _bot.OnModuleErrorOccured +=BotOnModuleOnModuleErrorOccured;
                     _bot.OnErrorOccured+= BotOnGeneralErrorOccured;
                     _bot.OnMessageRecieved += BotOnMessageRecieved;
+                    _bot.OnMessageHandled += BotOnMessageHandled;
                     _bot.OnTrayIconSetupRequired += OnTrayIconSetupRequired;
                     _bot.OnTrayIconStateChangeRequested += OnTrayIconStateChangeRequested;
                     _bot.OnTrayBalloonTipRequested += BotOnOnTrayBalloonTipRequested;
@@ -300,6 +301,8 @@ namespace MonkeyJobTool.Forms
                 }
             }).Start();
         }
+
+       
 
         
 
@@ -454,7 +457,11 @@ namespace MonkeyJobTool.Forms
             }
         }
 
-        void BotOnMessageRecieved(Guid commandToken,AnswerInfo answerInfo, ClientCommandContext clientCommandContext)
+        void BotOnMessageHandled()
+        {
+            SetLoading(false);
+        }
+        void BotOnMessageRecieved(Guid? commandToken,AnswerInfo answerInfo, ClientCommandContext clientCommandContext)
         {
                 string answer = answerInfo.Answer;
                 var answerType = answerInfo.AnswerType;
@@ -506,7 +513,7 @@ namespace MonkeyJobTool.Forms
                                     else
                                         App.Instance.ShowNotification(title, answer, commandToken, answerInfo.Icon, answerInfo.HeaderBackgroundColor, answerInfo.BodyBackgroundColor);
                                 }
-                                else if (answerInfo.MessageSourceType == ModuleType.Event)
+                                else if (answerInfo.MessageSourceType == ModuleType.Event || answerInfo.MessageSourceType == ModuleType.IntegrationClient)
                                 {
                                     App.Instance.ShowNotification(title, answer, commandToken, answerInfo.Icon, answerInfo.HeaderBackgroundColor, answerInfo.BodyBackgroundColor);
                                 }
@@ -587,7 +594,7 @@ namespace MonkeyJobTool.Forms
                     SetLoading(true);
 
 
-                    if (!_bot.HandleMessage(command, new ClientCommandContext() {IsToBuffer = toBuffer}))
+                    if (!_bot.HandleMessage(command, new ClientCommandContext() { IsToBuffer = toBuffer }, !App.Instance.AppConf.DevelopmentModeEnabled))
                     {
                         App.Instance.ShowFixedPopup(AppConstants.AppName, "Команда не найдена", null);
 

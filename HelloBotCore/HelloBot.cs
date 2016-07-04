@@ -37,8 +37,6 @@ namespace HelloBotCore
         private const int RunTraceSaveEveryMin = 5;
 
         private List<ModuleInfoBase> _allModules = new List<ModuleInfoBase>();
-        
-        
         private readonly string _moduleDllmask;
         private readonly string _botCommandPrefix;
         private readonly string _moduleFolderPath;
@@ -55,11 +53,13 @@ namespace HelloBotCore
         public delegate void OnGeneralErrorOccuredDelegate(Exception ex);
 
         /// <param name="clientCommandContext">Can be null</param>
-        public delegate void OnMessageRecievedDelegate(Guid commandToken, AnswerInfo answer, ClientCommandContext clientCommandContext);
+        public delegate void OnMessageRecievedDelegate(Guid? commandToken, AnswerInfo answer, ClientCommandContext clientCommandContext);
+        public delegate void OnMessageHandledDelegate();
 
         public event OnGeneralErrorOccuredDelegate OnErrorOccured;
         public event OnModuleErrorOccuredDelegate OnModuleErrorOccured;
         public event OnMessageRecievedDelegate OnMessageRecieved;
+        public event OnMessageHandledDelegate OnMessageHandled;
         private readonly double _currentUIClientVersion;
         private List<IntegrationClientBase> _integrationClients;
 
@@ -254,15 +254,14 @@ namespace HelloBotCore
                         var settingClass = settingForClients.FirstOrDefault(x => x.moduleForParentClass == module.GetType());
                         var tModule = new IntegrationClientInfo(_settingsFolderAbsolutePath, _logsFolderAbsolutePath);
                         _commandDictLocks.Add(tModule.Id, new ModuleLocker());
-                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this, ((IntegrationClientRegisterBase)obj).AuthorInfo);
-                        tModule.IsEnabled = enabledClients.Contains(tModule.ModuleSystemName);
+                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this,((IntegrationClientRegisterBase)obj).AuthorInfo);
+                        tModule.IsEnabled = enabledClients.Contains(tModule.SystemName);
                         if (settingClass != null)
-                            tModule.ModuleSettingsType = settingClass.moduleSettingsClass;
-                        return (ModuleInfoBase)tModule;
-                    });
+                            tModule.SettingsType = settingClass.moduleSettingsClass;
+                        return (IntegrationClientBase)tModule;
+                    }).ToList();
 
                     toReturn.AddRange(clients);
-
                 }
             }
 
@@ -321,11 +320,11 @@ namespace HelloBotCore
                         var tModule = new ModuleCommandInfo(_settingsFolderAbsolutePath,_logsFolderAbsolutePath);
                         _commandDictLocks.Add(tModule.Id, new ModuleLocker());
                         tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this, ((ModuleRegisterBase) obj).AuthorInfo);
-                        tModule.IsEnabled = !disabledModules.Contains(tModule.ModuleSystemName);
+                        tModule.IsEnabled = !disabledModules.Contains(tModule.SystemName);
                         if (settingClass != null)
-                            tModule.ModuleSettingsType = settingClass.moduleSettingsClass;
+                            tModule.SettingsType = settingClass.moduleSettingsClass;
                         return (ModuleInfoBase) tModule;
-                    });
+                    }).ToList();
 
                     var events = ((ModuleRegisterBase) obj).GetEvents().Select(ev =>
                     {
@@ -333,11 +332,11 @@ namespace HelloBotCore
                         var tModule = new ModuleEventInfo(_settingsFolderAbsolutePath, _logsFolderAbsolutePath);
                         _commandDictLocks.Add(tModule.Id, new ModuleLocker());
                         tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this, ((ModuleRegisterBase) obj).AuthorInfo);
-                        tModule.IsEnabled = enabledModules.Contains(tModule.ModuleSystemName);
+                        tModule.IsEnabled = enabledModules.Contains(tModule.SystemName);
                         if (settingClass != null)
-                            tModule.ModuleSettingsType = settingClass.moduleSettingsClass;
+                            tModule.SettingsType = settingClass.moduleSettingsClass;
                         return (ModuleInfoBase) tModule;
-                    });
+                    }).ToList();
 
                     var trayModules = ((ModuleRegisterBase) obj).GetTrayModules().Select(ev =>
                     {
@@ -345,11 +344,11 @@ namespace HelloBotCore
                         var tModule = new ModuleTrayInfo(_settingsFolderAbsolutePath, _logsFolderAbsolutePath);
                         _commandDictLocks.Add(tModule.Id, new ModuleLocker());
                         tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this, ((ModuleRegisterBase) obj).AuthorInfo);
-                        tModule.IsEnabled = enabledModules.Contains(tModule.ModuleSystemName);
+                        tModule.IsEnabled = enabledModules.Contains(tModule.SystemName);
                         if (settingClass != null)
-                            tModule.ModuleSettingsType = settingClass.moduleSettingsClass;
+                            tModule.SettingsType = settingClass.moduleSettingsClass;
                         return (ModuleInfoBase) tModule;
-                    });
+                    }).ToList();
 
                     toReturn.AddRange(modules);
                     toReturn.AddRange(events);
@@ -360,7 +359,7 @@ namespace HelloBotCore
             return toReturn;
         }
 
-        public bool HandleMessage(string incomingMessage, ClientCommandContext clientCommandContext)
+        public bool HandleMessage(string incomingMessage, ClientCommandContext clientCommandContext, bool runWithTimeout)
         {
             if (incomingMessage.Contains(_botCommandPrefix))
             {
@@ -401,7 +400,7 @@ namespace HelloBotCore
 
                                     }
                                 }
-                            }, TimeSpan.FromSeconds(_commandTimeoutSec)))
+                            }, TimeSpan.FromSeconds(_commandTimeoutSec), runWithTimeout))
                             {
                                 ShowInternalMessage(command, "модуль сломался. Причина : время модуля на выполнение команды истекло");
                             }
@@ -416,17 +415,20 @@ namespace HelloBotCore
             return false;
         }
 
-        private static bool RunWithTimeout(ThreadStart threadStart, TimeSpan timeout)
+        private static bool RunWithTimeout(ThreadStart threadStart, TimeSpan timeout, bool timeoutEnabled)
         {
             Thread workerThread = new Thread(threadStart);
             workerThread.SetApartmentState(ApartmentState.STA);
             workerThread.Start();
-
-            bool finished = workerThread.Join(timeout);
-            if (!finished)
-                workerThread.Abort();
-
-            return finished;
+            
+            if (timeoutEnabled)
+            {
+                var finished = workerThread.Join(timeout);
+                if (!finished)
+                    workerThread.Abort();
+                return finished;
+            }
+            return true;
         }
 
 
@@ -503,7 +505,7 @@ namespace HelloBotCore
 
         #region methods for modules
 
-        public void SaveSettings<T>(ModuleInfoBase info, T serializableSettingObject) where T : class
+        public void SaveSettings<T>(ComponentInfoBase info, T serializableSettingObject) where T : class
         {
             lock (_commandDictLocks[info.Id].SettingsLock)
             {
@@ -511,7 +513,9 @@ namespace HelloBotCore
             }
         }
 
-        public T GetSettings<T>(ModuleInfoBase module) where T : class
+        
+
+        public T GetSettings<T>(ComponentInfoBase module) where T : class
         {
             lock (_commandDictLocks[module.Id].SettingsLock)
             {
@@ -519,52 +523,87 @@ namespace HelloBotCore
             }
         }
 
-        public void ShowMessage(Guid commandToken, ModuleInfoBase info, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
+        
+
+        public void ShowMessage(ComponentInfoBase info, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default,Guid? commandToken = null, bool useBaseClient = false)
         {
-            BotContextBase commandBaseContext;
+            BotContextBase commandBaseContext = null;
             //todo:refactoring required (should be cleared time to time)
-            lock (_commandContexts)
+            if (commandToken.HasValue)
             {
-                if (_commandContexts.TryGetValue(commandToken, out commandBaseContext))
+                lock (_commandContexts)
                 {
-                    //_commandContexts.Remove(commandToken);
+                    if (_commandContexts.TryGetValue(commandToken.Value, out commandBaseContext))
+                    {
+                        //_commandContexts.Remove(commandToken);
+                    }
                 }
             }
+            
             BotCommandContext commandContext = commandBaseContext as BotCommandContext;
-            if (commandContext != null)
+            if (commandContext != null || !commandToken.HasValue)
             {
-                if (OnMessageRecieved != null)
+                var enabledIntegrationClients = IntegrationClients.Where(x => x.IsEnabled).ToList();
+
+                if (enabledIntegrationClients.Any() && !useBaseClient)
                 {
-                    Color? bodyBackgroundColor = null;
-                    Color? headerBackgroundColor = null;
-                    var eventInfo = info as ModuleEventInfo;
-                    if (eventInfo != null)
+                    foreach (IntegrationClientBase client in enabledIntegrationClients)
                     {
-                        bodyBackgroundColor = eventInfo.BodyBackgroundColor;
-                        headerBackgroundColor = eventInfo.HeaderBackgroundColor;
+                        Guid token = Guid.NewGuid();
+                        AddNewCommandContext(token, new BotCommandContext()
+                        {
+                            CommandName = !string.IsNullOrEmpty(client.ProvidedTitle) ? client.ProvidedTitle : "",
+                            ModuleType = ModuleType.IntegrationClient,
+                            ModuleId = client.Id
+                        });
+
+                        client.SendMessageToClient(token,new CommunicationMessage()
+                        {
+                            MessageParts = new List<CommunicationMessagePart>()
+                            {
+                                new CommunicationMessagePart(){MessageFormat = CommunicationMessageFormat.Text,Value = content},
+                            },
+                            FromModule = info.ProvidedTitle ?? ""
+                        });
                     }
-
-                    var commandInfo = info as ModuleCommandInfo;
-                    if (commandInfo != null)
-                    {
-                        bodyBackgroundColor = commandInfo.BodyBackgroundColor;
-                        headerBackgroundColor = commandInfo.HeaderBackgroundColor;
-                    }
-
-                    OnMessageRecieved(commandToken, new AnswerInfo()
-                    {
-                        Answer = content,
-                        Title = title,
-                        CommandName = commandContext.CommandName,
-                        AnswerType = answerType,
-                        MessageSourceType = commandContext.ModuleType,
-                        Icon = info.Icon,
-                        BodyBackgroundColor = bodyBackgroundColor,
-                        HeaderBackgroundColor = headerBackgroundColor
-                    }, commandContext.ClientCommandContext);
-
-
+                    if (OnMessageHandled!=null)
+                        OnMessageHandled();
                 }
+                else
+                {
+                    if (OnMessageRecieved != null)
+                    {
+                        Color? bodyBackgroundColor = null;
+                        Color? headerBackgroundColor = null;
+                        var eventInfo = info as ModuleEventInfo;
+                        if (eventInfo != null)
+                        {
+                            bodyBackgroundColor = eventInfo.BodyBackgroundColor;
+                            headerBackgroundColor = eventInfo.HeaderBackgroundColor;
+                        }
+
+                        var commandInfo = info as ModuleCommandInfo;
+                        if (commandInfo != null)
+                        {
+                            bodyBackgroundColor = commandInfo.BodyBackgroundColor;
+                            headerBackgroundColor = commandInfo.HeaderBackgroundColor;
+                        }
+
+                        OnMessageRecieved(commandToken, new AnswerInfo()
+                        {
+                            Answer = content,
+                            Title = title,
+                            CommandName = commandContext.CommandName,
+                            AnswerType = answerType,
+                            MessageSourceType = commandContext.ModuleType,
+                            Icon = info.Icon,
+                            BodyBackgroundColor = bodyBackgroundColor,
+                            HeaderBackgroundColor = headerBackgroundColor
+                        }, commandContext.ClientCommandContext);
+                    }
+                }
+
+                
 
             }
         }
@@ -627,7 +666,7 @@ namespace HelloBotCore
             }
         }
 
-        public void LogModuleTraceRequest(ModuleInfoBase moduleInfo, string message)
+        public void LogModuleTraceRequest(ComponentInfoBase moduleInfo, string message)
         {
             lock (_commandDictLocks[moduleInfo.Id].LogTraceLock)
             {
@@ -728,18 +767,18 @@ namespace HelloBotCore
 
         public void DisableModule(string moduleSystemName)
         {
-            AllModules.Single(x => x.ModuleSystemName == moduleSystemName).IsEnabled = false;
+            AllModules.Single(x => x.SystemName == moduleSystemName).IsEnabled = false;
         }
 
         public void EnableModule(string moduleSystemName)
         {
-            AllModules.Single(x => x.ModuleSystemName == moduleSystemName).IsEnabled = true;
+            AllModules.Single(x => x.SystemName == moduleSystemName).IsEnabled = true;
         }
 
         public List<ModuleInfoBase> GetIncompatibleSettingModules()
         {
             List<ModuleInfoBase> toReturn = new List<ModuleInfoBase>();
-            foreach (ModuleInfoBase module in AllModules.Where(x => x.ModuleSettingsType != null))
+            foreach (ModuleInfoBase module in AllModules.Where(x => x.SettingsType != null))
             {
                 lock (_commandDictLocks[module.Id].SettingsLock)
                 {

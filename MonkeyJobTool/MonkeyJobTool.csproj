@@ -306,6 +306,10 @@
       <Project>{f9500b18-085e-4a3d-b215-75ec409e05da}</Project>
       <Name>HelloBotCore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Nigrimmist.TelegramIntegrationClient\Nigrimmist.TelegramIntegrationClient.csproj">
+      <Project>{f69d4dd7-b6f5-44e0-8e50-716be7894f7b}</Project>
+      <Name>Nigrimmist.TelegramIntegrationClient</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SharedHelper\SharedHelper.csproj">
       <Project>{1eed6356-2e6b-460a-9be6-5e394be532b7}</Project>
       <Name>SharedHelper</Name>

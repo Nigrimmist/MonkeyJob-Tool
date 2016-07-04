@@ -9,6 +9,7 @@ namespace HelloBotCore.Entities
     {
         Handler,
         Event,
-        Tray
+        Tray,
+        IntegrationClient
     }
 }

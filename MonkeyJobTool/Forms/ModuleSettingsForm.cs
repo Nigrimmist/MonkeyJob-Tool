@@ -36,14 +36,14 @@ namespace MonkeyJobTool.Forms
             object moduleSettings;
             if (!File.Exists(fullPath))
             {
-                moduleSettings = Activator.CreateInstance(Module.ModuleSettingsType);
+                moduleSettings = Activator.CreateInstance(Module.SettingsType);
             }
             else
             {
                 string data = File.ReadAllText(fullPath);
                 var settingsWrapper = JsonConvert.DeserializeObject(data, typeof (ModuleSettings)) as ModuleSettings;
                 var rawSettingsJson = JsonConvert.SerializeObject(settingsWrapper.ModuleData);
-                moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.ModuleSettingsType);
+                moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.SettingsType);
             }
             var table = new TableLayoutPanel()
             {
@@ -283,14 +283,14 @@ namespace MonkeyJobTool.Forms
                 ModuleSettings ms;
                 if (!File.Exists(fullPath))
                 {
-                    moduleSettings = Activator.CreateInstance(Module.ModuleSettingsType);
+                    moduleSettings = Activator.CreateInstance(Module.SettingsType);
                 }
                 else
                 {
                     string data = File.ReadAllText(fullPath);
                     ms = JsonConvert.DeserializeObject(data, typeof (ModuleSettings)) as ModuleSettings;
                     var rawSettingsJson = JsonConvert.SerializeObject(ms.ModuleData);
-                    moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.ModuleSettingsType);
+                    moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.SettingsType);
                 }
 
                 ms = new ModuleSettings(Module.Version, Module.ActualSettingsModuleVersion, FillObjectFromUI(moduleSettings));
