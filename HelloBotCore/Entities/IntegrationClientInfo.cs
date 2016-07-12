@@ -15,6 +15,11 @@ namespace HelloBotCore.Entities
 
         }
 
+        public override ModuleType ModuleType
+        {
+            get { return ModuleType.IntegrationClient; }
+        }
+
         public override string ToString(bool includingAuthorInfo = true)
         {
             return base.ToString(includingAuthorInfo);

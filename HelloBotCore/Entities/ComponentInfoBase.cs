@@ -27,7 +27,7 @@ namespace HelloBotCore.Entities
         public ModuleLogStorageInfo Trace { get; set; }
         private string _settingsFolderAbsolutePath { get; set; }
         private string _logsFolderAbsolutePath { get; set; }
-
+        public abstract ModuleType ModuleType { get; }
 
         protected ComponentInfoBase(string settingsFolderAbsolutePath, string logsFolderAbsolutePath)
         {

@@ -78,6 +78,9 @@ namespace HelloBotCore
         
 
         public event Action<List<AutoSuggestItem>> OnSuggestRecieved;
+        public delegate bool IsClientEnabledForModuleDelegate(string client,string module, ModuleType moduleType);
+
+        private IsClientEnabledForModuleDelegate _isClientEnabledForModuleFunc = null;
 
         /// <summary>
         /// Bot costructor
@@ -217,8 +220,9 @@ namespace HelloBotCore
             AllModules.AddRange(baseList);
         }
 
-        public void RegisterIntegrationClients(List<string> enabledClients = null)
+        public void RegisterIntegrationClients(List<string> enabledClients, IsClientEnabledForModuleDelegate isClientEnabledForModuleFunc)
         {
+            _isClientEnabledForModuleFunc = isClientEnabledForModuleFunc;
             var allClients = LoadIntegrationClients(enabledClients);
             _integrationClients = allClients;
         }
@@ -525,7 +529,7 @@ namespace HelloBotCore
 
         
 
-        public void ShowMessage(ComponentInfoBase info, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default,Guid? commandToken = null, bool useBaseClient = false)
+        public void ShowMessage(ComponentInfoBase moduleInfo, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default,Guid? commandToken = null, bool useBaseClient = false)
         {
             BotContextBase commandBaseContext = null;
             //todo:refactoring required (should be cleared time to time)
@@ -543,8 +547,8 @@ namespace HelloBotCore
             BotCommandContext commandContext = commandBaseContext as BotCommandContext;
             if (commandContext != null || !commandToken.HasValue)
             {
-                var enabledIntegrationClients = IntegrationClients.Where(x => x.IsEnabled).ToList();
-
+                var enabledIntegrationClients = IntegrationClients.Where(x => x.IsEnabled && _isClientEnabledForModuleFunc(x.SystemName, moduleInfo.SystemName, moduleInfo.ModuleType)).ToList();
+                
                 if (enabledIntegrationClients.Any() && !useBaseClient)
                 {
                     foreach (IntegrationClientBase client in enabledIntegrationClients)
@@ -563,7 +567,7 @@ namespace HelloBotCore
                             {
                                 new CommunicationMessagePart(){MessageFormat = CommunicationMessageFormat.Text,Value = content},
                             },
-                            FromModule = info.ProvidedTitle ?? ""
+                            FromModule = moduleInfo.ProvidedTitle ?? ""
                         });
                     }
                     if (OnMessageHandled!=null)
@@ -575,14 +579,14 @@ namespace HelloBotCore
                     {
                         Color? bodyBackgroundColor = null;
                         Color? headerBackgroundColor = null;
-                        var eventInfo = info as ModuleEventInfo;
+                        var eventInfo = moduleInfo as ModuleEventInfo;
                         if (eventInfo != null)
                         {
                             bodyBackgroundColor = eventInfo.BodyBackgroundColor;
                             headerBackgroundColor = eventInfo.HeaderBackgroundColor;
                         }
 
-                        var commandInfo = info as ModuleCommandInfo;
+                        var commandInfo = moduleInfo as ModuleCommandInfo;
                         if (commandInfo != null)
                         {
                             bodyBackgroundColor = commandInfo.BodyBackgroundColor;
@@ -596,7 +600,7 @@ namespace HelloBotCore
                             CommandName = commandContext.CommandName,
                             AnswerType = answerType,
                             MessageSourceType = commandContext.ModuleType,
-                            Icon = info.Icon,
+                            Icon = moduleInfo.Icon,
                             BodyBackgroundColor = bodyBackgroundColor,
                             HeaderBackgroundColor = headerBackgroundColor
                         }, commandContext.ClientCommandContext);

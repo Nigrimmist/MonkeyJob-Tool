@@ -14,8 +14,6 @@ namespace HelloBotCore.Entities
 {
     public abstract class ModuleInfoBase : ComponentInfoBase
     {
-        public abstract ModuleType ModuleType { get; }
-
         protected ModuleInfoBase(string settingsFolderAbsolutePath, string logsFolderAbsolutePath)
             : base(settingsFolderAbsolutePath, logsFolderAbsolutePath)
         {

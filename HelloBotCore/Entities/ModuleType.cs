@@ -7,9 +7,9 @@ namespace HelloBotCore.Entities
 {
     public enum ModuleType
     {
-        Handler,
-        Event,
-        Tray,
-        IntegrationClient
+        Handler=1,
+        Event=2,
+        Tray=3,
+        IntegrationClient=4
     }
 }

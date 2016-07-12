@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using HelloBotCore.Entities;
 using Newtonsoft.Json;
 
 namespace MonkeyJobTool.Entities
@@ -86,10 +88,38 @@ namespace MonkeyJobTool.Entities
         public bool DoNotNotify { get; set; }
         public TimeSpan ClearCommandAfterMinOfInactivity { get; set; }
 
+        public List<ModuleToModuleCommunication> ClientToModulesCommunications { get; set; }
+
+        public bool ModuleEnabledForModule(string mainModule, string dependentModule, ModuleType dependentModuleType)
+        {
+            if (ClientToModulesCommunications != null)
+            {
+                var found = ClientToModulesCommunications.FirstOrDefault(x => x.MainModule == mainModule);
+                if (found != null)
+                    return found.IsEnabledFor(dependentModule, dependentModuleType);
+            }
+            return true;
+        }
+
         public SystemData()
         {
             EnabledModules = new List<string>();
             DisabledModules = new List<string>();
+        }
+    }
+
+    public class ModuleToModuleCommunication
+    {
+        public string MainModule { get; set; }
+        public List<string> EnabledModules { get; set; }
+        public ModuleType? EnabledByType { get; set; }
+        public ModuleType? DisabledByType { get; set; }
+        public bool IsEnabledFor(string moduleSystemName, ModuleType moduleType)
+        {
+            if (DisabledByType.HasValue && DisabledByType.Value == moduleType) return false;
+            if (EnabledByType.HasValue && EnabledByType.Value != moduleType) return false;
+
+            return EnabledModules == null || EnabledModules.Contains(moduleSystemName);
         }
     }
 }
