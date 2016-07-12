@@ -404,10 +404,10 @@ namespace MonkeyJobTool.Entities
             if (!AppConf.SystemData.DisabledModules.Contains(moduleSystemName))
             {
                 AppConf.SystemData.DisabledModules.Add(moduleSystemName);
-                if (AppConf.SystemData.EnabledModules.Contains(moduleSystemName))
-                    AppConf.SystemData.EnabledModules.Remove(moduleSystemName);
-                AppConf.Save();
             }
+            if (AppConf.SystemData.EnabledModules.Contains(moduleSystemName))
+                AppConf.SystemData.EnabledModules.Remove(moduleSystemName);
+            AppConf.Save();
         }
 
         public void EnableModule(string moduleSystemName)
@@ -416,10 +416,10 @@ namespace MonkeyJobTool.Entities
             if (AppConf.SystemData.DisabledModules.Contains(moduleSystemName))
             {
                 AppConf.SystemData.DisabledModules.Remove(moduleSystemName);
-                if (!AppConf.SystemData.EnabledModules.Contains(moduleSystemName))
-                    AppConf.SystemData.EnabledModules.Add(moduleSystemName);
-                AppConf.Save();
             }
+            if (!AppConf.SystemData.EnabledModules.Contains(moduleSystemName))
+                AppConf.SystemData.EnabledModules.Add(moduleSystemName);
+            AppConf.Save();
         }
 
         public void CopyToClipboard(string popupTitle, string text)
