@@ -54,7 +54,7 @@ namespace Nigrimmist.Modules.Modules
                     {
                         if (string.IsNullOrEmpty(account.Login) || string.IsNullOrEmpty(account.Password))
                         {
-                            _client.ShowMessage(eventToken, "Заполните логин и пароль от сайта mts.by", messageType: MessageType.Error);
+                            _client.ShowMessage(eventToken, CommunicationMessage.FromString("Заполните логин и пароль от сайта mts.by"), messageType: MessageType.Error);
                             return;
                         }
 
@@ -66,7 +66,7 @@ namespace Nigrimmist.Modules.Modules
                         hrm.Post("https://ihelper.mts.by/Selfcare/logon.aspx", string.Format(@"__VIEWSTATE={0}&ctl00%24MainContent%24tbPhoneNumber={1}&ctl00%24MainContent%24tbPassword={2}&ctl00%24MainContent%24btnEnter=%D0%92%D0%BE%D0%B9%D1%82%D0%B8", HttpUtility.UrlEncode(viewstate), account.Login, account.Password));
                         if (hrm.Html.Contains("Введён неверный пароль/телефон"))
                         {
-                            _client.ShowMessage(eventToken, "Неправильные логин/пароль", messageType: MessageType.Error);
+                            _client.ShowMessage(eventToken, CommunicationMessage.FromString("Неправильные логин/пароль"), messageType: MessageType.Error);
                             return;
                         }
 
@@ -91,7 +91,7 @@ namespace Nigrimmist.Modules.Modules
                                 {
                                     account.LastWarningBorder = topBorder.Border;
                                     account.LastScannedAmount = amount;
-                                    _client.ShowMessage(eventToken, string.Format("Время пополнить баланс номера : \r\n\r\n+375 {1}\r\n\r\n На счету осталось {0} руб", amount, account.Login));
+                                    _client.ShowMessage(eventToken, CommunicationMessage.FromString(string.Format("Время пополнить баланс номера : \r\n\r\n+375 {1}\r\n\r\n На счету осталось {0} руб", amount, account.Login)));
                                     _client.SaveSettings(settings);
                                 }
                             }
@@ -100,7 +100,7 @@ namespace Nigrimmist.Modules.Modules
                         if (account.LastScannedAmount.HasValue && account.LastScannedAmount < amount && settings.IsNotifyAboutRefill)
                         {
                             account.LastScannedAmount = amount;
-                            _client.ShowMessage(eventToken, string.Format("Баланс аккаунта {1} успешно пополнен до {0} руб", amount, account.Login));
+                            _client.ShowMessage(eventToken, CommunicationMessage.FromString(string.Format("Баланс аккаунта {1} успешно пополнен до {0} руб", amount, account.Login)));
                             _client.SaveSettings(settings);
                         }
                     }

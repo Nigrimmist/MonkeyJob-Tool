@@ -70,7 +70,7 @@ namespace Nigrimmist.Modules.Modules
             hrm.Get(string.Format("https://translate.google.com/translate_a/single?client=t&sl={0}&tl={1}&hl=ru&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=at&ie=UTF-8&oe=UTF-8&otf=2&srcrom=1&ssel=0&tsel=0&kc=1&tk=296212|170720&q=", fromLang, toLang) + HttpUtility.UrlEncode(args));
             string html = hrm.Html;
             string anwser = html.Substring(4, html.IndexOf(@""",""") - 4);
-            _client.ShowMessage(commandToken,anwser);
+            _client.ShowMessage(commandToken, CommunicationMessage.FromString(anwser));
         }
 
        

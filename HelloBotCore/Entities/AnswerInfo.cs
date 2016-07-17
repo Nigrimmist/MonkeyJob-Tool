@@ -6,7 +6,7 @@ namespace HelloBotCore.Entities
 {
     public class AnswerInfo
     {
-        public string Answer { get; set; }
+        public CommunicationMessage Answer { get; set; }
         public string Title { get; set; }
         public AnswerBehaviourType AnswerType { get; set; }
         public string CommandName { get; set; }

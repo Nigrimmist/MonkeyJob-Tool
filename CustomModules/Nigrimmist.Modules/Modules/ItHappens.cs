@@ -78,10 +78,10 @@ namespace Nigrimmist.Modules.Modules
             _jokes.RemoveAt(rPos);
 
 
-            joke = Regex.Replace(joke, "[\r\n]{3,}", "\r\n\r\n"); 
+            joke = Regex.Replace(joke, "[\r\n]{3,}", "\r\n\r\n");
 
 
-            _client.ShowMessage(commandToken,joke);
+            _client.ShowMessage(commandToken, CommunicationMessage.FromString(joke));
         }
     }
 }

@@ -120,9 +120,9 @@ namespace Nigrimmist.Modules.Modules
                 answer += ". " + hrm.ResponseUri;
             }
 
-            _client.ShowMessage(commandToken,answer).OnClick(() =>
+            _client.ShowMessage(commandToken, CommunicationMessage.FromString(answer)).OnClick(() =>
             {
-                _client.ShowMessage(commandToken, hrm.ResponseUri, answerType: AnswerBehaviourType.OpenLink);
+                _client.ShowMessage(commandToken, CommunicationMessage.FromUrl(hrm.ResponseUri), answerType: AnswerBehaviourType.OpenLink);
             });
         }
     }

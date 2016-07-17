@@ -25,7 +25,7 @@ namespace Nigrimmist.TelegramIntegrationClient
         private int offset = 0;
 
 
-        public override void HandleMessage(Guid token, CommunicationMessage message)
+        public override void HandleMessage(Guid token, CommunicationClientMessage message)
         {
             if (message == null) return;
             

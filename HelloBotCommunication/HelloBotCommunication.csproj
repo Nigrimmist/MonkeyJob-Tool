@@ -50,6 +50,7 @@
     <Compile Include="AutoSuggestItem.cs" />
     <Compile Include="CallCommandInfo.cs" />
     <Compile Include="ClientLanguage.cs" />
+    <Compile Include="CommunicationMessage - Copy.cs" />
     <Compile Include="CommunicationMessage.cs" />
     <Compile Include="CommunicationMessagePart.cs" />
     <Compile Include="CommunicationMessageType.cs" />

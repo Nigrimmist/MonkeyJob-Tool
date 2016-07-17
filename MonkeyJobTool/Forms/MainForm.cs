@@ -463,14 +463,14 @@ namespace MonkeyJobTool.Forms
         }
         void BotOnMessageRecieved(Guid? commandToken,AnswerInfo answerInfo, ClientCommandContext clientCommandContext)
         {
-                string answer = answerInfo.Answer;
+                var answer = answerInfo.Answer.ToString();
                 var answerType = answerInfo.AnswerType;
                 SetLoading(false);
                 string title = string.IsNullOrEmpty(answerInfo.Title) ? answerInfo.CommandName : answerInfo.Title;
                 if (answerInfo.MessageSourceType == ModuleType.Event)
                 {
                     //do not show already exist popup for events
-                    if (App.Instance.NotificationPopupExist(answerInfo.Answer, answerInfo.Title))
+                    if (App.Instance.NotificationPopupExist(answerInfo.Answer.ToString(), answerInfo.Title))
                     {
                         return;
                     }

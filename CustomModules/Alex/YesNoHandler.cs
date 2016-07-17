@@ -87,7 +87,7 @@ namespace SmartAssHandlerLib
                 answer = _emptyAnswerProvider.Get();
             }
 
-            _client.ShowMessage(commandToken,answer);
+            _client.ShowMessage(commandToken, CommunicationMessage.FromString(answer));
         }
 
         private class RandomHelper

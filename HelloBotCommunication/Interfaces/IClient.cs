@@ -11,10 +11,10 @@ namespace HelloBotCommunication.Interfaces
         /// Show notification with text to user
         /// </summary>
         /// <param name="token">Command token. Should be recieved later from client.</param>
-        /// <param name="content">Text content</param>
+        /// <param name="message">Message for clients, may contains text/urls/media etc</param>
         /// <param name="title">Message title. if null, command name will be displayed instead</param>
         /// <param name="answerType">Answer type</param>
         /// <param name="messageType">Message type</param>
-        IBotCallback ShowMessage(Guid token, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default);
+        IBotCallback ShowMessage(Guid token, CommunicationMessage message, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default);
     }
 }

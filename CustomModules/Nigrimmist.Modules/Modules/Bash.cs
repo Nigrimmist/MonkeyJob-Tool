@@ -80,7 +80,7 @@ namespace Nigrimmist.Modules.Modules
             string joke = _jokes[rPos];
             _jokes.RemoveAt(rPos);
 
-            _client.ShowMessage(commandToken,joke); ;
+            _client.ShowMessage(commandToken, CommunicationMessage.FromString(joke)); ;
         }
     }
 }

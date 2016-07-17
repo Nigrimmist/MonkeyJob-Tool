@@ -51,7 +51,7 @@ namespace Nigrimmist.Modules.Modules
             {
                 if (string.IsNullOrEmpty(settings.Login) || string.IsNullOrEmpty(settings.Password))
                 {
-                    _client.ShowMessage(eventToken, "Заполните логин и пароль от сайта internet.mts.by", messageType: MessageType.Error);
+                    _client.ShowMessage(eventToken, CommunicationMessage.FromString("Заполните логин и пароль от сайта internet.mts.by"), messageType: MessageType.Error);
                     return;
                 }
 
@@ -63,7 +63,7 @@ namespace Nigrimmist.Modules.Modules
                 hrm.Post("https://internet.mts.by/login", string.Format("utf8=%E2%9C%93&authenticity_token={0}&referer=%2F&login={1}&password={2}&commit=", HttpUtility.UrlEncode(token),settings.Login,settings.Password));
                 if (hrm.Html.Contains("Неверный логин или пароль."))
                 {
-                    _client.ShowMessage(eventToken, "Неправильные логин/пароль", messageType: MessageType.Error);
+                    _client.ShowMessage(eventToken, CommunicationMessage.FromString("Неправильные логин/пароль"), messageType: MessageType.Error);
                     return;
                 }
                 
@@ -83,7 +83,7 @@ namespace Nigrimmist.Modules.Modules
                         {
                             settings.LastWarningBorder = topBorder.Border;
                             settings.LastScannedAmount = amount;
-                            _client.ShowMessage(eventToken, string.Format("Время пополнить баланс интернета! На счету осталось {0} руб", amount));
+                            _client.ShowMessage(eventToken, CommunicationMessage.FromString(string.Format("Время пополнить баланс интернета! На счету осталось {0} руб", amount)));
                             _client.SaveSettings(settings);
                         }
                     }
@@ -91,7 +91,7 @@ namespace Nigrimmist.Modules.Modules
                 if (settings.LastScannedAmount.HasValue && settings.LastScannedAmount<amount && settings.IsNotifyAboutRefill)
                 {
                     settings.LastScannedAmount = amount;
-                    _client.ShowMessage(eventToken, string.Format("Баланс интернета успешно пополнен до {0} руб", amount));
+                    _client.ShowMessage(eventToken, CommunicationMessage.FromString(string.Format("Баланс интернета успешно пополнен до {0} руб", amount)));
                     _client.SaveSettings(settings);
                 }
             }

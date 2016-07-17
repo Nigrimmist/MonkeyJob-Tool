@@ -30,7 +30,7 @@ namespace HelloBotCore.Entities
             return "";
         }
 
-        public override void SendMessageToClient(Guid token, CommunicationMessage message)
+        public override void SendMessageToClient(Guid token, CommunicationClientMessage message)
         {
             baseClient.HandleMessage(token,message);
         }

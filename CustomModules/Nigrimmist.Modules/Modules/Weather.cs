@@ -86,7 +86,7 @@ namespace Nigrimmist.Modules.Modules
             {
                 if (((HttpWebResponse) wex.Response).StatusCode == HttpStatusCode.NotFound)
                 {
-                    _client.ShowMessage(commandToken, string.Format(@"Погоды для ""{0}"" нет, проверьте правильность написания города.", args));
+                    _client.ShowMessage(commandToken, CommunicationMessage.FromString(string.Format(@"Погоды для ""{0}"" нет, проверьте правильность написания города.", args)));
                     return;
                 }
             }
@@ -170,7 +170,7 @@ namespace Nigrimmist.Modules.Modules
 
             }
 
-            _client.ShowMessage(commandToken, sb.ToString().Replace("&deg;", "°"));
+            _client.ShowMessage(commandToken, CommunicationMessage.FromString(sb.ToString().Replace("&deg;", "°")));
         }
 
         private string ClearText(string str)

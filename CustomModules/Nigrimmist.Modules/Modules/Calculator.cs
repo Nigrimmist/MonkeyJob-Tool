@@ -73,11 +73,11 @@ namespace Nigrimmist.Modules.Modules
 
                 answer = string.Format("{0}", exprAnswer);
 
-                _client.ShowMessage(commandToken, answer);
+                _client.ShowMessage(commandToken, CommunicationMessage.FromString(answer));
             }
             else
             {
-                _client.ShowMessage(commandToken, "Введите выражение",messageType:MessageType.Error);
+                _client.ShowMessage(commandToken, CommunicationMessage.FromString("Введите выражение"), messageType: MessageType.Error);
             }
         }
     }

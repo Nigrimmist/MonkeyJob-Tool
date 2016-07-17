@@ -406,7 +406,7 @@ namespace HelloBotCore
                                 }
                             }, TimeSpan.FromSeconds(_commandTimeoutSec), runWithTimeout))
                             {
-                                ShowInternalMessage(command, "модуль сломался. Причина : время модуля на выполнение команды истекло");
+                                ShowInternalMessage(command, CommunicationMessage.FromString("модуль сломался. Причина : время модуля на выполнение команды истекло"));
                             }
                         }).Start();
                         return true;
@@ -528,8 +528,7 @@ namespace HelloBotCore
         }
 
         
-
-        public void ShowMessage(ComponentInfoBase moduleInfo, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default,Guid? commandToken = null, bool useBaseClient = false)
+        public void ShowMessage(ComponentInfoBase moduleInfo, CommunicationMessage content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default, Guid? commandToken = null, bool useBaseClient = false)
         {
             BotContextBase commandBaseContext = null;
             //todo:refactoring required (should be cleared time to time)
@@ -561,7 +560,7 @@ namespace HelloBotCore
                             ModuleId = client.Id
                         });
 
-                        client.SendMessageToClient(token,new CommunicationMessage()
+                        client.SendMessageToClient(token, new CommunicationClientMessage()
                         {
                             MessageParts = new List<CommunicationMessagePart>()
                             {
@@ -614,13 +613,13 @@ namespace HelloBotCore
 
         //todo : should be refactoring to show error (remove method and call error event)
         [Obsolete]
-        private void ShowInternalMessage(string commandname, string content, string title = null, ClientCommandContext clientCommandContext = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
+        private void ShowInternalMessage(string commandname, CommunicationMessage message, string title = null, ClientCommandContext clientCommandContext = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
         {
             Guid systemGuid = Guid.Empty;
             if (OnMessageRecieved != null)
                 OnMessageRecieved(systemGuid, new AnswerInfo()
                 {
-                    Answer = content,
+                    Answer = message,
                     Title = title,
                     AnswerType = answerType,
                     CommandName = commandname,

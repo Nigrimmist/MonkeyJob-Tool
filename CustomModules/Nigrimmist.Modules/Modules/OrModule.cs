@@ -81,7 +81,7 @@ namespace Nigrimmist.Modules.Modules
             }
             if (_r.Next(1, 101) < ChanceOfSpecialAnswer)
                 answer = string.Format(_customMessages[_r.Next(0, _customMessages.Count)], answer);
-            _client.ShowMessage(commandToken,answer);
+            _client.ShowMessage(commandToken, CommunicationMessage.FromString(answer));
         }
 
 

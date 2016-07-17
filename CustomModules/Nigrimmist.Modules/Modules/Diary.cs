@@ -44,16 +44,6 @@ namespace Nigrimmist.Modules.Modules
 
         public override void OnFire(Guid eventToken)
         {
-            //Thread.Sleep(2000);
-            //var r = new Random();
-            //_client.ShowMessage(eventToken, r.Next().ToString()).OnClick(() =>
-            //{
-
-            //});
-            //////_client.ShowMessage(eventToken, r.Next().ToString()).OnClick(() =>
-            //////{
-
-            //////}); 
             try
             {
                 DiarySettings settings = _client.GetSettings<DiarySettings>();
@@ -110,9 +100,9 @@ namespace Nigrimmist.Modules.Modules
                         {
                             toReturn = (@"На дневнике """ + diary.UserName + @""" : " + Environment.NewLine + Environment.NewLine) + toReturn;
 
-                            _client.ShowMessage(eventToken, toReturn).OnClick(() =>
+                            _client.ShowMessage(eventToken, CommunicationMessage.FromString(toReturn).AppendUrl(goToUrl)).OnClick(() =>
                             {
-                                _client.ShowMessage(eventToken, goToUrl, answerType: AnswerBehaviourType.OpenLink);
+                                _client.ShowMessage(eventToken, CommunicationMessage.FromUrl(goToUrl), answerType: AnswerBehaviourType.OpenLink);
                             });
                         }
                     }
@@ -156,19 +146,19 @@ namespace Nigrimmist.Modules.Modules
 
             if (hrm.Html.Contains("ip изменился"))
             {
-                _client.ShowMessage(eventToken, string.Format(@"Логин/пароль для ""{0}"" не верны", username), messageType: MessageType.Error);
+                _client.ShowMessage(eventToken, CommunicationMessage.FromString(string.Format(@"Логин/пароль для ""{0}"" не верны", username)), messageType: MessageType.Error);
                 return false;
             }
 
             if (hrm.Html.Contains("Ваш доступ временно заблокирован"))
             {
-                _client.ShowMessage(eventToken, "Слишком много попыток входа. Доступ заблокирован на 10 минут сервисом.", messageType: MessageType.Error);
+                _client.ShowMessage(eventToken, CommunicationMessage.FromString("Слишком много попыток входа. Доступ заблокирован на 10 минут сервисом."), messageType: MessageType.Error);
                 return false;
             }
 
             if (hrm.Html.Contains("Доступ к дневнику ограничен"))
             {
-                _client.ShowMessage(eventToken, string.Format(@"Доступ к дневнику ""{0}"" ограничен. Обновление уведомления возможно только после ввода логина и пароля в файле настроек модуля", username), messageType: MessageType.Error);
+                _client.ShowMessage(eventToken, CommunicationMessage.FromString(string.Format(@"Доступ к дневнику ""{0}"" ограничен. Обновление уведомления возможно только после ввода логина и пароля в файле настроек модуля", username)), messageType: MessageType.Error);
                 return false;
             }
             hrm.Get("http://diary.ru");

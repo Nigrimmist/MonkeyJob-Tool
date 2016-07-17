@@ -31,10 +31,10 @@ namespace HelloBotCore.Entities
             return _moduleClientHandler.GetSettings<T>(_componentInfoBase);
         }
 
-        public IBotCallback ShowMessage(Guid token, string content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
+        public IBotCallback ShowMessage(Guid token, CommunicationMessage message, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default)
         {
             _lastToken = token;
-            _moduleClientHandler.ShowMessage(_componentInfoBase, content, title, answerType, messageType, token);
+            _moduleClientHandler.ShowMessage(_componentInfoBase, message, title, answerType, messageType, token);
             return this;
         }
 
@@ -80,9 +80,9 @@ namespace HelloBotCore.Entities
             _moduleClientHandler.LogModuleTraceRequest(_componentInfoBase, message);
         }
 
-        void IIntegrationClient.ShowMessage(Guid token, string content, string title, AnswerBehaviourType answerType, MessageType messageType)
+        void IIntegrationClient.ShowMessage(Guid token, string message, string title, AnswerBehaviourType answerType, MessageType messageType)
         {
-            _moduleClientHandler.ShowMessage(_componentInfoBase, content, title, answerType, messageType, useBaseClient: true, commandToken: token);
+            _moduleClientHandler.ShowMessage(_componentInfoBase, CommunicationMessage.FromString(message), title, answerType, messageType, useBaseClient: true, commandToken: token);
         }
 
         

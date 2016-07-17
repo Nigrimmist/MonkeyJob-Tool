@@ -13,7 +13,7 @@ namespace HelloBotCommunication
         {
             
         }
-        public abstract void HandleMessage(Guid token,CommunicationMessage message);
+        public abstract void HandleMessage(Guid token, CommunicationClientMessage message);
         public virtual string ModuleDescription { get { return null; } }
     }
 }

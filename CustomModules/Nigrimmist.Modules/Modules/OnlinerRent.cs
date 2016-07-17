@@ -104,7 +104,7 @@ namespace Nigrimmist.Modules.Modules
                         }
                         var msg = "В районе новые объекты для сдачи.\r\n\r\n" + sb + "\r\nКликните для просмотра.";
                         _client.LogTrace(msg);
-                        _client.ShowMessage(eventToken, msg).OnClick(() =>
+                        _client.ShowMessage(eventToken, CommunicationMessage.FromString(msg)).OnClick(() =>
                         {
                             Console.WriteLine("click");
                             foreach (OnlinerRentResultInfo info in newIds)

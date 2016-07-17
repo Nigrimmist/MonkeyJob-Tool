@@ -68,7 +68,7 @@ namespace Nigrimmist.Modules.Modules
             HtmlDocument htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(html);
             var ip = htmlDoc.DocumentNode.SelectSingleNode(@"//./div[@id='section_left']/div[2]/a").InnerText.Trim();
-            _client.ShowMessage(commandToken, ip);
+            _client.ShowMessage(commandToken, CommunicationMessage.FromString(ip));
         }
     }
 }

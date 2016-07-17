@@ -13,7 +13,7 @@ namespace HelloBotCore.Entities
         {
         }
 
-        public abstract void SendMessageToClient(Guid token, CommunicationMessage message);
+        public abstract void SendMessageToClient(Guid token, CommunicationClientMessage message);
 
     }
 }
