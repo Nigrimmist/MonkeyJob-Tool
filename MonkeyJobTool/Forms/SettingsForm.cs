@@ -264,10 +264,10 @@ namespace MonkeyJobTool.Forms
             SaveConfiguration();
         }
 
-        #region command grid
+        #region grids
         private void DatabindCommandGrid()
         {
-            var orderedModules = App.Instance.Bot.AllModules.OrderByDescending(x => ChangedModules.Contains(x)).ThenByDescending(x=>x.ModuleType).ThenBy(x => x.SystemName).ToList();
+            var orderedModules = App.Instance.Bot.Modules.OrderByDescending(x => ChangedModules.Contains(x)).ThenByDescending(x=>x.ModuleType).ThenBy(x => x.SystemName).ToList();
 
             foreach (var mod in orderedModules)
             {
@@ -280,7 +280,21 @@ namespace MonkeyJobTool.Forms
 
             gridModules.Rows[0].Selected = true;
         }
+        private void DatabindClientGrid()
+        {
+            var orderedModules = App.Instance.Bot.IntegrationClients.OrderByDescending(x => ChangedModules.Contains(x)).ThenByDescending(x => x.ModuleType).ThenBy(x => x.SystemName).ToList();
 
+            foreach (var mod in orderedModules)
+            {
+                Color? rowColor = null;
+                if (ChangedModules.Any(x => x.Id == mod.Id))
+                    rowColor = Color.PaleVioletRed;
+
+                AddModuleInfoToGrid(mod.GetModuleName(), mod.GetTypeDescription(), mod.IsEnabled, mod.SystemName, mod.SettingsType != null, rowColor);
+            }
+
+            gridModules.Rows[0].Selected = true;
+        }
         private void AddModuleInfoToGrid(string name, string type, bool enabled, string uniqueName, bool isWithSettings, Color? rowColor=null)
         {
             DataGridViewRow r = new DataGridViewRow {ErrorText = uniqueName};
@@ -318,7 +332,7 @@ namespace MonkeyJobTool.Forms
             if(gridModules.SelectedRows.Count==1)
             {
                 var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
-                var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.SystemName == moduleKey);
+                var module = App.Instance.Bot.Modules.SingleOrDefault(x => x.SystemName == moduleKey);
                 btnEnabledDisableModule.Text = (!module.IsEnabled ? "В" : "Вы") + "ключить модуль";
                 btnShowLogs.Enabled = module.Trace.TraceMessages.Any();
             }
@@ -338,7 +352,7 @@ namespace MonkeyJobTool.Forms
                     var moduleKey = gridModules.Rows[rowIndex].ErrorText;
                     if (!string.IsNullOrEmpty(moduleKey))
                     {
-                        var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.SystemName == moduleKey);
+                        var module = App.Instance.Bot.Modules.SingleOrDefault(x => x.SystemName == moduleKey);
 
                         if (_commandHelpCommand != null)
                         {
@@ -373,18 +387,14 @@ namespace MonkeyJobTool.Forms
             }
         }
 
-        private void gridModules_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
-        {
-
-
-        }
+        
         #endregion
 
         private void btnEnabledDisableModule_Click(object sender, EventArgs e)
         {
             var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
             
-            var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.SystemName == moduleKey);
+            var module = App.Instance.Bot.Modules.SingleOrDefault(x => x.SystemName == moduleKey);
             if (module.IsEnabled)
             {
                 App.Instance.DisableModule(module.SystemName);
@@ -402,7 +412,7 @@ namespace MonkeyJobTool.Forms
             if (e.RowIndex >= 0 && e.ColumnIndex == gridModules.Rows[e.RowIndex].Cells["settingsCol"].ColumnIndex)
             {
                 var moduleKey = gridModules.Rows[e.RowIndex].ErrorText;
-                var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.SystemName == moduleKey);
+                var module = App.Instance.Bot.Modules.SingleOrDefault(x => x.SystemName == moduleKey);
                 if (module.SettingsType != null)
                 {
                     var setMod = new ModuleSettingsForm()
@@ -419,7 +429,7 @@ namespace MonkeyJobTool.Forms
             if (e.RowIndex >= 0 && e.ColumnIndex == gridModules.Rows[e.RowIndex].Cells["settingsCol"].ColumnIndex)
             {
                 var moduleKey = gridModules.Rows[e.RowIndex].ErrorText;
-                var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.SystemName == moduleKey);
+                var module = App.Instance.Bot.Modules.SingleOrDefault(x => x.SystemName == moduleKey);
                 gridModules.Cursor = module.SettingsType != null ? Cursors.Hand : Cursors.Default;
             }
             else
@@ -451,9 +461,105 @@ namespace MonkeyJobTool.Forms
             if(gridModules.SelectedRows.Count==1)
             {
                 var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
-                var module = App.Instance.Bot.AllModules.SingleOrDefault(x => x.SystemName == moduleKey);
+                var module = App.Instance.Bot.Modules.SingleOrDefault(x => x.SystemName == moduleKey);
                 var mlForm = new ModuleLogsForm(){Module = module};
                 mlForm.ShowDialog();
+            }
+        }
+
+        private void gridClients_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex == gridClients.Rows[e.RowIndex].Cells["settingsCol"].ColumnIndex)
+            {
+                var moduleKey = gridClients.Rows[e.RowIndex].ErrorText;
+                var module = App.Instance.Bot.IntegrationClients.SingleOrDefault(x => x.SystemName == moduleKey);
+                if (module.SettingsType != null)
+                {
+                    var setMod = new ModuleSettingsForm()
+                    {
+                        Module = module
+                    };
+                    setMod.ShowDialog();
+                }
+            }
+        }
+
+        private void gridClients_MouseLeave(object sender, EventArgs e)
+        {
+            if (_commandHelpCommand != null)
+            {
+                _commandHelpCommand.Hide();
+            }
+        }
+
+        private void gridClients_MouseMove(object sender, MouseEventArgs e)
+        {
+            int rowIndex = gridClients.HitTest(e.X, e.Y).RowIndex;
+            if (rowIndex >= 0)
+            {
+                if (rowIndex != _displayHelpRowId)
+                {
+                    _displayHelpRowId = rowIndex;
+                    var moduleKey = gridClients.Rows[rowIndex].ErrorText;
+                    if (!string.IsNullOrEmpty(moduleKey))
+                    {
+                        var client = App.Instance.Bot.IntegrationClients.SingleOrDefault(x => x.SystemName == moduleKey);
+
+                        if (_commandHelpCommand != null)
+                        {
+                            //todo : do not hide, only change text (trouble with dynamic border exist). reason : blinking
+                            _commandHelpCommand.Hide();
+                        }
+                        _commandHelpCommand = new HelpPopup { FormType = PopupFormType.CommandInfo };
+                        _commandHelpCommand.HelpData = new HelpInfo()
+                        {
+                            Body = client.ToString(),
+                            Icon = client.Icon ?? Resources.monkey_highres_img,
+                            Title = "Информация о клиенте " + client.GetModuleName()
+                        };
+                        _commandHelpCommand.Init();
+                    }
+                }
+                if (_commandHelpCommand != null)
+                {
+                    var gridLoc = gridClients.PointToScreen(Point.Empty);
+                    gridLoc.Y += gridClients.Height + 10;
+                    gridLoc.X -= 10;
+                    _commandHelpCommand.Location = gridLoc;
+                    _commandHelpCommand.ToTop();
+                }
+            }
+            else
+            {
+                if (_commandHelpCommand != null)
+                {
+                    _commandHelpCommand.Hide();
+                }
+            }
+        }
+
+        private void gridClients_RowEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            if (gridClients.SelectedRows.Count == 1)
+            {
+                var moduleKey = gridClients.Rows[gridClients.SelectedRows[0].Index].ErrorText;
+                var module = App.Instance.Bot.Modules.SingleOrDefault(x => x.SystemName == moduleKey);
+                btnEnabledDisableModule.Text = (!module.IsEnabled ? "Под" : "Вы") + "ключить клиент";
+                btnShowLogs.Enabled = module.Trace.TraceMessages.Any();
+            }
+        }
+
+        private void gridClients_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex == gridClients.Rows[e.RowIndex].Cells["settingsCol"].ColumnIndex)
+            {
+                var moduleKey = gridClients.Rows[e.RowIndex].ErrorText;
+                var module = App.Instance.Bot.IntegrationClients.SingleOrDefault(x => x.SystemName == moduleKey);
+                gridClients.Cursor = module.SettingsType != null ? Cursors.Hand : Cursors.Default;
+            }
+            else
+            {
+                gridClients.Cursor = Cursors.Default;
             }
         }
     }

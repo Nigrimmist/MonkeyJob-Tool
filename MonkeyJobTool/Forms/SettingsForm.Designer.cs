@@ -41,7 +41,7 @@
             this.chkIsHideDonateBtn = new System.Windows.Forms.CheckBox();
             this.TPHotkeys = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.TPReplaces = new System.Windows.Forms.TabPage();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.pnlCommandReplaces = new System.Windows.Forms.FlowLayoutPanel();
@@ -54,18 +54,26 @@
             this.colIsEnabled = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.settingsCol = new System.Windows.Forms.DataGridViewImageColumn();
             this.btnSaveConfig = new System.Windows.Forms.Button();
+            this.TPClients = new System.Windows.Forms.TabPage();
             this.hsShowHelpForCommands = new MonkeyJobTool.Controls.HelpTooltip();
             this.hsSendErrorReport = new MonkeyJobTool.Controls.HelpTooltip();
             this.htDonateBtn = new MonkeyJobTool.Controls.HelpTooltip();
             this.htStatsCollect = new MonkeyJobTool.Controls.HelpTooltip();
             this.htHotKey = new MonkeyJobTool.Controls.HelpTooltip();
             this.htReplace = new MonkeyJobTool.Controls.HelpTooltip();
+            this.btnEnabledDisableClient = new System.Windows.Forms.Button();
+            this.gridClients = new System.Windows.Forms.DataGridView();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewImageColumn1 = new System.Windows.Forms.DataGridViewImageColumn();
             this.TPCommandReplace.SuspendLayout();
             this.TPGeneral.SuspendLayout();
             this.TPHotkeys.SuspendLayout();
-            this.tabPage3.SuspendLayout();
+            this.TPReplaces.SuspendLayout();
             this.TPModuleSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridModules)).BeginInit();
+            this.TPClients.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridClients)).BeginInit();
             this.SuspendLayout();
             // 
             // chkIsWithWindowsStart
@@ -110,8 +118,9 @@
             // 
             this.TPCommandReplace.Controls.Add(this.TPGeneral);
             this.TPCommandReplace.Controls.Add(this.TPHotkeys);
-            this.TPCommandReplace.Controls.Add(this.tabPage3);
+            this.TPCommandReplace.Controls.Add(this.TPReplaces);
             this.TPCommandReplace.Controls.Add(this.TPModuleSettings);
+            this.TPCommandReplace.Controls.Add(this.TPClients);
             this.TPCommandReplace.Location = new System.Drawing.Point(13, 13);
             this.TPCommandReplace.Name = "TPCommandReplace";
             this.TPCommandReplace.SelectedIndex = 0;
@@ -201,19 +210,19 @@
             this.label1.TabIndex = 4;
             this.label1.Text = "Вызов программы : ";
             // 
-            // tabPage3
+            // TPReplaces
             // 
-            this.tabPage3.Controls.Add(this.htReplace);
-            this.tabPage3.Controls.Add(this.label3);
-            this.tabPage3.Controls.Add(this.label2);
-            this.tabPage3.Controls.Add(this.pnlCommandReplaces);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(572, 214);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Сокращения команд";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.TPReplaces.Controls.Add(this.htReplace);
+            this.TPReplaces.Controls.Add(this.label3);
+            this.TPReplaces.Controls.Add(this.label2);
+            this.TPReplaces.Controls.Add(this.pnlCommandReplaces);
+            this.TPReplaces.Location = new System.Drawing.Point(4, 22);
+            this.TPReplaces.Name = "TPReplaces";
+            this.TPReplaces.Padding = new System.Windows.Forms.Padding(3);
+            this.TPReplaces.Size = new System.Drawing.Size(572, 214);
+            this.TPReplaces.TabIndex = 2;
+            this.TPReplaces.Text = "Сокращения команд";
+            this.TPReplaces.UseVisualStyleBackColor = true;
             // 
             // label3
             // 
@@ -308,7 +317,6 @@
             this.gridModules.Size = new System.Drawing.Size(424, 208);
             this.gridModules.TabIndex = 0;
             this.gridModules.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridModules_CellClick);
-            this.gridModules.CellMouseLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridModules_CellMouseLeave);
             this.gridModules.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.gridModules_CellMouseMove);
             this.gridModules.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridModules_RowEnter);
             this.gridModules.MouseLeave += new System.EventHandler(this.gridModules_MouseLeave);
@@ -354,6 +362,18 @@
             this.btnSaveConfig.Text = "Сохранить";
             this.btnSaveConfig.UseVisualStyleBackColor = false;
             this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
+            // 
+            // TPClients
+            // 
+            this.TPClients.Controls.Add(this.btnEnabledDisableClient);
+            this.TPClients.Controls.Add(this.gridClients);
+            this.TPClients.Location = new System.Drawing.Point(4, 22);
+            this.TPClients.Name = "TPClients";
+            this.TPClients.Padding = new System.Windows.Forms.Padding(3);
+            this.TPClients.Size = new System.Drawing.Size(572, 214);
+            this.TPClients.TabIndex = 4;
+            this.TPClients.Text = "Интеграция с клиентами";
+            this.TPClients.UseVisualStyleBackColor = true;
             // 
             // hsShowHelpForCommands
             // 
@@ -403,6 +423,68 @@
             this.htReplace.Size = new System.Drawing.Size(19, 19);
             this.htReplace.TabIndex = 6;
             // 
+            // btnEnabledDisableClient
+            // 
+            this.btnEnabledDisableClient.BackColor = System.Drawing.Color.Moccasin;
+            this.btnEnabledDisableClient.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnEnabledDisableClient.ForeColor = System.Drawing.Color.Black;
+            this.btnEnabledDisableClient.Location = new System.Drawing.Point(436, 6);
+            this.btnEnabledDisableClient.Name = "btnEnabledDisableClient";
+            this.btnEnabledDisableClient.Size = new System.Drawing.Size(118, 30);
+            this.btnEnabledDisableClient.TabIndex = 9;
+            this.btnEnabledDisableClient.Text = "Отключить клиент";
+            this.btnEnabledDisableClient.UseVisualStyleBackColor = false;
+            // 
+            // gridClients
+            // 
+            this.gridClients.AllowUserToAddRows = false;
+            this.gridClients.AllowUserToDeleteRows = false;
+            this.gridClients.AllowUserToResizeRows = false;
+            this.gridClients.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.gridClients.BackgroundColor = System.Drawing.Color.White;
+            this.gridClients.CausesValidation = false;
+            this.gridClients.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn1,
+            this.dataGridViewTextBoxColumn3,
+            this.dataGridViewImageColumn1});
+            this.gridClients.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.gridClients.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.gridClients.Location = new System.Drawing.Point(6, 6);
+            this.gridClients.MultiSelect = false;
+            this.gridClients.Name = "gridClients";
+            this.gridClients.ReadOnly = true;
+            this.gridClients.RowHeadersVisible = false;
+            this.gridClients.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.gridClients.Size = new System.Drawing.Size(424, 208);
+            this.gridClients.TabIndex = 8;
+            this.gridClients.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridClients_CellClick);
+
+            this.gridClients.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.gridClients_CellMouseMove);
+            this.gridClients.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridClients_RowEnter);
+            this.gridClients.MouseLeave += new System.EventHandler(this.gridClients_MouseLeave);
+            this.gridClients.MouseMove += new System.Windows.Forms.MouseEventHandler(this.gridClients_MouseMove);
+            // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.FillWeight = 150F;
+            this.dataGridViewTextBoxColumn1.HeaderText = "Клиент";
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.ReadOnly = true;
+            // 
+            // dataGridViewTextBoxColumn3
+            // 
+            this.dataGridViewTextBoxColumn3.HeaderText = "Статус";
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            this.dataGridViewTextBoxColumn3.ReadOnly = true;
+            // 
+            // dataGridViewImageColumn1
+            // 
+            this.dataGridViewImageColumn1.HeaderText = "Настройки";
+            this.dataGridViewImageColumn1.Name = "dataGridViewImageColumn1";
+            this.dataGridViewImageColumn1.ReadOnly = true;
+            this.dataGridViewImageColumn1.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewImageColumn1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -422,10 +504,12 @@
             this.TPGeneral.PerformLayout();
             this.TPHotkeys.ResumeLayout(false);
             this.TPHotkeys.PerformLayout();
-            this.tabPage3.ResumeLayout(false);
-            this.tabPage3.PerformLayout();
+            this.TPReplaces.ResumeLayout(false);
+            this.TPReplaces.PerformLayout();
             this.TPModuleSettings.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gridModules)).EndInit();
+            this.TPClients.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.gridClients)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -441,7 +525,7 @@
         private System.Windows.Forms.TabPage TPHotkeys;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnSaveConfig;
-        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.TabPage TPReplaces;
         private System.Windows.Forms.FlowLayoutPanel pnlCommandReplaces;
         private System.Windows.Forms.CheckBox chkIsHideDonateBtn;
         private System.Windows.Forms.Label label3;
@@ -463,5 +547,11 @@
         private System.Windows.Forms.Button btnShowLogs;
         private Controls.HelpTooltip hsShowHelpForCommands;
         private System.Windows.Forms.CheckBox chkIsShowCommandHelp;
+        private System.Windows.Forms.TabPage TPClients;
+        private System.Windows.Forms.Button btnEnabledDisableClient;
+        private System.Windows.Forms.DataGridView gridClients;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewImageColumn dataGridViewImageColumn1;
     }
 }

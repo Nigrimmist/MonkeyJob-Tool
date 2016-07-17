@@ -465,7 +465,7 @@ namespace MonkeyJobTool.Forms
         {
                 var answer = answerInfo.Answer.ToString();
                 var answerType = answerInfo.AnswerType;
-                SetLoading(false);
+                
                 string title = string.IsNullOrEmpty(answerInfo.Title) ? answerInfo.CommandName : answerInfo.Title;
                 if (answerInfo.MessageSourceType == ModuleType.Event)
                 {

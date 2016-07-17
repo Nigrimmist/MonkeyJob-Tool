@@ -36,7 +36,7 @@ namespace HelloBotCore
         public readonly double Version = 0.6;
         private const int RunTraceSaveEveryMin = 5;
 
-        private List<ModuleInfoBase> _allModules = new List<ModuleInfoBase>();
+        private List<ModuleInfoBase> _modules = new List<ModuleInfoBase>();
         private readonly string _moduleDllmask;
         private readonly string _botCommandPrefix;
         private readonly string _moduleFolderPath;
@@ -217,7 +217,7 @@ namespace HelloBotCore
             var baseList = ExtendAliases(handlerModules).Select(x => (ModuleInfoBase) x).ToList(); //extend aliases for autocomplete wrong keyboard layout search
             baseList.AddRange(allModules.OfType<ModuleEventInfo>().Select(x => (ModuleInfoBase) x));
             baseList.AddRange(allModules.OfType<ModuleTrayInfo>().Select(x => (ModuleInfoBase) x));
-            AllModules.AddRange(baseList);
+            Modules.AddRange(baseList);
         }
 
         public void RegisterIntegrationClients(List<string> enabledClients, IsClientEnabledForModuleDelegate isClientEnabledForModuleFunc)
@@ -569,8 +569,6 @@ namespace HelloBotCore
                             FromModule = moduleInfo.ProvidedTitle ?? ""
                         });
                     }
-                    if (OnMessageHandled!=null)
-                        OnMessageHandled();
                 }
                 else
                 {
@@ -606,7 +604,8 @@ namespace HelloBotCore
                     }
                 }
 
-                
+                if (OnMessageHandled != null)
+                    OnMessageHandled();
 
             }
         }
@@ -744,22 +743,22 @@ namespace HelloBotCore
         
         public IEnumerable<ModuleEventInfo> Events
         {
-            get { return _allModules.OfType<ModuleEventInfo>(); }
+            get { return _modules.OfType<ModuleEventInfo>(); }
         }
 
         public IEnumerable<ModuleCommandInfo> EnabledCommands
         {
-            get { return _allModules.OfType<ModuleCommandInfo>().Where(x => x.IsEnabled); }
+            get { return _modules.OfType<ModuleCommandInfo>().Where(x => x.IsEnabled); }
         }
 
         public IEnumerable<ModuleTrayInfo> TrayModules
         {
-            get { return _allModules.OfType<ModuleTrayInfo>(); }
+            get { return _modules.OfType<ModuleTrayInfo>(); }
         }
 
-        public List<ModuleInfoBase> AllModules
+        public List<ModuleInfoBase> Modules
         {
-            get { return _allModules; }
+            get { return _modules; }
         }
 
         public List<IntegrationClientBase> IntegrationClients
@@ -770,18 +769,18 @@ namespace HelloBotCore
 
         public void DisableModule(string moduleSystemName)
         {
-            AllModules.Single(x => x.SystemName == moduleSystemName).IsEnabled = false;
+            Modules.Single(x => x.SystemName == moduleSystemName).IsEnabled = false;
         }
 
         public void EnableModule(string moduleSystemName)
         {
-            AllModules.Single(x => x.SystemName == moduleSystemName).IsEnabled = true;
+            Modules.Single(x => x.SystemName == moduleSystemName).IsEnabled = true;
         }
 
         public List<ModuleInfoBase> GetIncompatibleSettingModules()
         {
             List<ModuleInfoBase> toReturn = new List<ModuleInfoBase>();
-            foreach (ModuleInfoBase module in AllModules.Where(x => x.SettingsType != null))
+            foreach (ModuleInfoBase module in Modules.Where(x => x.SettingsType != null))
             {
                 lock (_commandDictLocks[module.Id].SettingsLock)
                 {
@@ -808,7 +807,7 @@ namespace HelloBotCore
                 Thread.Sleep(RunTraceSaveEveryMin*1000*60);
                 try
                 {
-                    foreach (var module in AllModules)
+                    foreach (var module in Modules)
                     {
                         lock (_commandDictLocks[module.Id].LogTraceLock)
                         {
