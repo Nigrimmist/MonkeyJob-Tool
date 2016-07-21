@@ -10,9 +10,9 @@ namespace HelloBotCommunication
     {
         public string FromModule { get; set; }
 
-        public CommunicationClientMessage()
+        public CommunicationClientMessage(CommunicationMessage baseMsg)
         {
-            
+            this.MessageParts = baseMsg.MessageParts;
         }
     }
 }

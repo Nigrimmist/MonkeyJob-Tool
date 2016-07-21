@@ -13,7 +13,7 @@ namespace MonkeyJobTool.Forms
 {
     public partial class ModuleLogsForm : Form
     {
-        public ModuleInfoBase Module { get; set; }
+        public ComponentInfoBase Module { get; set; }
 
         public ModuleLogsForm()
         {

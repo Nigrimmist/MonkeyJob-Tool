@@ -19,12 +19,12 @@ namespace MonkeyJobTool.Forms
     public partial class SettingsForm : Form
     {
         private List<CommandReplaceBlock> _replaceBlocks = new List<CommandReplaceBlock>();
-        public List<ModuleInfoBase> ChangedModules { get; set; }
+        public List<ComponentInfoBase> ChangedModules { get; set; }
 
 
         public SettingsForm()
         {
-            ChangedModules = new List<ModuleInfoBase>();
+            ChangedModules = new List<ComponentInfoBase>();
             InitializeComponent();
         }
         
@@ -37,7 +37,8 @@ namespace MonkeyJobTool.Forms
             chkIsShowCommandHelp.Checked = App.Instance.AppConf.ShowCommandHelp;
             HotKeysDatabind();
             CommandReplaceDatabind();
-            DatabindCommandGrid();
+            DatabindGrid(SettingGridType.Modules);
+            DatabindGrid(SettingGridType.Clients);
             DatabindHelpTooltips();
         }
 
@@ -58,11 +59,6 @@ namespace MonkeyJobTool.Forms
             hsShowHelpForCommands.HelpText = @"Показывает дополнительную информацию по команде в момент её набора, если таковая имеется";
         }
 
-
-        private void chkIsWithWindowsStart_CheckedChanged(object sender, EventArgs e)
-        {
-           
-        }
 
         private Dictionary<string, Keys> _specialKeys = new Dictionary<string, Keys>()
         {
@@ -265,37 +261,24 @@ namespace MonkeyJobTool.Forms
         }
 
         #region grids
-        private void DatabindCommandGrid()
+        private void DatabindGrid(SettingGridType gridType)
         {
-            var orderedModules = App.Instance.Bot.Modules.OrderByDescending(x => ChangedModules.Contains(x)).ThenByDescending(x=>x.ModuleType).ThenBy(x => x.SystemName).ToList();
+            var items = gridType == SettingGridType.Modules ? App.Instance.Bot.Modules : App.Instance.Bot.IntegrationClients.Select(x=>(ComponentInfoBase)x);
+            var orderedItems = items.OrderByDescending(x => ChangedModules.Contains(x)).ThenByDescending(x => x.ModuleType).ThenBy(x => x.SystemName).ToList();
 
-            foreach (var mod in orderedModules)
+            foreach (var mod in orderedItems)
             {
                 Color? rowColor = null;
                 if(ChangedModules.Any(x=>x.Id==mod.Id))
                     rowColor = Color.PaleVioletRed;
                 
-                AddModuleInfoToGrid(mod.GetModuleName(), mod.GetTypeDescription(), mod.IsEnabled, mod.SystemName, mod.SettingsType != null,rowColor);
+                AddModuleInfoToGrid(gridType,mod.GetModuleName(), mod.GetTypeDescription(), mod.IsEnabled, mod.SystemName, mod.SettingsType != null,rowColor);
             }
 
-            gridModules.Rows[0].Selected = true;
+            Grid(gridType).Rows[0].Selected = true;
         }
-        private void DatabindClientGrid()
-        {
-            var orderedModules = App.Instance.Bot.IntegrationClients.OrderByDescending(x => ChangedModules.Contains(x)).ThenByDescending(x => x.ModuleType).ThenBy(x => x.SystemName).ToList();
-
-            foreach (var mod in orderedModules)
-            {
-                Color? rowColor = null;
-                if (ChangedModules.Any(x => x.Id == mod.Id))
-                    rowColor = Color.PaleVioletRed;
-
-                AddModuleInfoToGrid(mod.GetModuleName(), mod.GetTypeDescription(), mod.IsEnabled, mod.SystemName, mod.SettingsType != null, rowColor);
-            }
-
-            gridModules.Rows[0].Selected = true;
-        }
-        private void AddModuleInfoToGrid(string name, string type, bool enabled, string uniqueName, bool isWithSettings, Color? rowColor=null)
+        
+        private void AddModuleInfoToGrid(SettingGridType gridType,string name, string type, bool enabled, string uniqueName, bool isWithSettings, Color? rowColor = null)
         {
             DataGridViewRow r = new DataGridViewRow {ErrorText = uniqueName};
             if (rowColor.HasValue)
@@ -307,11 +290,12 @@ namespace MonkeyJobTool.Forms
                 Value = name,
                 Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleLeft }
             }); 
-            r.Cells.Add(new DataGridViewTextBoxCell()
-            {
-                Value = type,
-                Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleLeft }
-            });
+            if(gridType==SettingGridType.Modules)
+                r.Cells.Add(new DataGridViewTextBoxCell()
+                {
+                    Value = type,
+                    Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleLeft }
+                });
 
             r.Cells.Add(new DataGridViewTextBoxCell()
             {
@@ -324,35 +308,50 @@ namespace MonkeyJobTool.Forms
 
                 Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleCenter }
             });
-            gridModules.Rows.Add(r);
+            Grid(gridType).Rows.Add(r);
         }
 
-        private void gridModules_RowEnter(object sender, DataGridViewCellEventArgs e)
+        private void grid_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            if(gridModules.SelectedRows.Count==1)
+            var grid = ((DataGridView) sender);
+            if (grid.SelectedRows.Count == 1)
             {
-                var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
-                var module = App.Instance.Bot.Modules.SingleOrDefault(x => x.SystemName == moduleKey);
-                btnEnabledDisableModule.Text = (!module.IsEnabled ? "В" : "Вы") + "ключить модуль";
-                btnShowLogs.Enabled = module.Trace.TraceMessages.Any();
+                var moduleKey = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
+                var gridType = GridTypeBySender(sender);
+                var module = (gridType == SettingGridType.Modules ? App.Instance.Bot.Modules : App.Instance.Bot.IntegrationClients.Select(x => (ComponentInfoBase)x)).SingleOrDefault(x => x.SystemName == moduleKey);
+                if (gridType == SettingGridType.Modules)
+                {
+                    btnEnabledDisableModule.Text = (!module.IsEnabled ? "В" : "Вы") + "ключить модуль";
+                    btnShowLogs.Enabled = module.Trace.TraceMessages.Any();
+                }
+                else
+                {
+                    btnEnabledDisableClient.Text = (!module.IsEnabled ? "Под" : "Вы") + "ключить клиент";
+                    btnShowClientLogs.Enabled = module.Trace.TraceMessages.Any();
+                }
+                    
+                
             }
         }
 
         private HelpPopup _commandHelpCommand = null;
 
         private int _displayHelpRowId = -1;
-        private void gridModules_MouseMove(object sender, MouseEventArgs e)
+        private void grid_MouseMove(object sender, MouseEventArgs e)
         {
-            int rowIndex = gridModules.HitTest(e.X, e.Y).RowIndex;
+            var grid = ((DataGridView)sender);
+            var gridType = GridTypeBySender(sender);
+            int rowIndex = grid.HitTest(e.X, e.Y).RowIndex;
             if (rowIndex >= 0)
             {
                 if (rowIndex != _displayHelpRowId)
                 {
                     _displayHelpRowId = rowIndex;
-                    var moduleKey = gridModules.Rows[rowIndex].ErrorText;
+                    var moduleKey = grid.Rows[rowIndex].ErrorText;
                     if (!string.IsNullOrEmpty(moduleKey))
                     {
-                        var module = App.Instance.Bot.Modules.SingleOrDefault(x => x.SystemName == moduleKey);
+                        var module = (gridType == SettingGridType.Modules ? App.Instance.Bot.Modules : App.Instance.Bot.IntegrationClients.Select(x => (ComponentInfoBase)x)).SingleOrDefault(x => x.SystemName == moduleKey);
+
 
                         if (_commandHelpCommand != null)
                         {
@@ -364,15 +363,15 @@ namespace MonkeyJobTool.Forms
                         {
                             Body = module.ToString(),
                             Icon = module.Icon ?? Resources.monkey_highres_img,
-                            Title = "Информация о модуле " + module.GetModuleName()
+                            Title = "Информация о " + (gridType==SettingGridType.Modules?"модуле":"клиенте") + " " + module.GetModuleName()
                         };
                         _commandHelpCommand.Init();
                     }
                 }
                 if (_commandHelpCommand != null)
                 {
-                    var gridLoc = gridModules.PointToScreen(Point.Empty);
-                    gridLoc.Y += gridModules.Height+10;
+                    var gridLoc = grid.PointToScreen(Point.Empty);
+                    gridLoc.Y += grid.Height + 10;
                     gridLoc.X -= 10;
                     _commandHelpCommand.Location = gridLoc;
                     _commandHelpCommand.ToTop();
@@ -390,11 +389,13 @@ namespace MonkeyJobTool.Forms
         
         #endregion
 
-        private void btnEnabledDisableModule_Click(object sender, EventArgs e)
+        private void btnEnabledDisableComponent_Click(object sender, EventArgs e)
         {
-            var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
-            
-            var module = App.Instance.Bot.Modules.SingleOrDefault(x => x.SystemName == moduleKey);
+            DataGridView grid = ((Button) sender).Name == btnEnabledDisableModule.Name ? gridModules : gridClients;
+            var gridType = GridTypeBySender(grid);
+            var moduleKey = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
+
+            var module = (gridType==SettingGridType.Modules ? App.Instance.Bot.Modules : App.Instance.Bot.IntegrationClients.Select(x=>(ComponentInfoBase)x)).SingleOrDefault(x => x.SystemName == moduleKey);
             if (module.IsEnabled)
             {
                 App.Instance.DisableModule(module.SystemName);
@@ -403,16 +404,30 @@ namespace MonkeyJobTool.Forms
             {
                 App.Instance.EnableModule(module.SystemName);
             }
-            gridModules.Rows[gridModules.SelectedRows[0].Index].Cells["colIsEnabled"].Value = module.IsEnabled ? "Вкл" : "Выкл";
-            btnEnabledDisableModule.Text = (!module.IsEnabled ? "В" : "Вы") + "ключить модуль";
+            
+
+            if (gridType == SettingGridType.Modules)
+            {
+                btnEnabledDisableModule.Text = (!module.IsEnabled ? "В" : "Вы") + "ключить модуль";
+            }
+            else
+            {
+                btnEnabledDisableClient.Text = (!module.IsEnabled ? "Под" : "Вы") + "ключить клиент";
+            }
+
+            grid.Rows[gridModules.SelectedRows[0].Index].Cells[ColumnNameByGridType(gridType, "colIsEnabled")].Value = module.IsEnabled ? "Вкл" : "Выкл";
         }
 
-        private void gridModules_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void grid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0 && e.ColumnIndex == gridModules.Rows[e.RowIndex].Cells["settingsCol"].ColumnIndex)
+            var grid = ((DataGridView)sender);
+            var gridType = GridTypeBySender(grid);
+            if (e.RowIndex >= 0 && e.ColumnIndex == grid.Rows[e.RowIndex].Cells[ColumnNameByGridType(gridType, "settingsCol")].ColumnIndex)
             {
-                var moduleKey = gridModules.Rows[e.RowIndex].ErrorText;
-                var module = App.Instance.Bot.Modules.SingleOrDefault(x => x.SystemName == moduleKey);
+                var moduleKey = grid.Rows[e.RowIndex].ErrorText;
+                
+                var module = (gridType == SettingGridType.Modules ? App.Instance.Bot.Modules : App.Instance.Bot.IntegrationClients.Select(x => (ComponentInfoBase)x)).SingleOrDefault(x => x.SystemName == moduleKey);
+
                 if (module.SettingsType != null)
                 {
                     var setMod = new ModuleSettingsForm()
@@ -424,21 +439,27 @@ namespace MonkeyJobTool.Forms
             }
         }
 
-        private void gridModules_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
+        private void grid_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (e.RowIndex >= 0 && e.ColumnIndex == gridModules.Rows[e.RowIndex].Cells["settingsCol"].ColumnIndex)
+            var grid = ((DataGridView) sender);
+            var gridType = GridTypeBySender(sender);
+            if (e.RowIndex >= 0 && e.ColumnIndex == grid.Rows[e.RowIndex].Cells[ColumnNameByGridType(gridType, "settingsCol")].ColumnIndex)
             {
-                var moduleKey = gridModules.Rows[e.RowIndex].ErrorText;
-                var module = App.Instance.Bot.Modules.SingleOrDefault(x => x.SystemName == moduleKey);
-                gridModules.Cursor = module.SettingsType != null ? Cursors.Hand : Cursors.Default;
+                var moduleKey = grid.Rows[e.RowIndex].ErrorText;
+
+                var module =
+                    (gridType == SettingGridType.Modules ? App.Instance.Bot.Modules : App.Instance.Bot.IntegrationClients.Select(x => (ComponentInfoBase) x)).SingleOrDefault(
+                        x => x.SystemName == moduleKey);
+
+                grid.Cursor = module.SettingsType != null ? Cursors.Hand : Cursors.Default;
             }
             else
             {
-                gridModules.Cursor = Cursors.Default;
+                grid.Cursor = Cursors.Default;
             }
         }
 
-        private void gridModules_MouseLeave(object sender, EventArgs e)
+        private void grid_MouseLeave(object sender, EventArgs e)
         {
             if (_commandHelpCommand != null)
             {
@@ -458,109 +479,43 @@ namespace MonkeyJobTool.Forms
 
         private void btnShowLogs_Click(object sender, EventArgs e)
         {
-            if(gridModules.SelectedRows.Count==1)
+            DataGridView grid = ((Button)sender).Name == btnShowLogs.Name ? gridModules : gridClients;
+            if (grid.SelectedRows.Count == 1)
             {
-                var moduleKey = gridModules.Rows[gridModules.SelectedRows[0].Index].ErrorText;
-                var module = App.Instance.Bot.Modules.SingleOrDefault(x => x.SystemName == moduleKey);
+                var moduleKey = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
+                var gridType = GridTypeBySender(grid);
+                var module = (gridType == SettingGridType.Modules ? App.Instance.Bot.Modules : App.Instance.Bot.IntegrationClients.Select(x => (ComponentInfoBase)x)).SingleOrDefault(x => x.SystemName == moduleKey);
+
                 var mlForm = new ModuleLogsForm(){Module = module};
                 mlForm.ShowDialog();
             }
         }
 
-        private void gridClients_CellClick(object sender, DataGridViewCellEventArgs e)
+        private string ColumnNameByGridType(SettingGridType gridType,string baseColumnName)
         {
-            if (e.RowIndex >= 0 && e.ColumnIndex == gridClients.Rows[e.RowIndex].Cells["settingsCol"].ColumnIndex)
-            {
-                var moduleKey = gridClients.Rows[e.RowIndex].ErrorText;
-                var module = App.Instance.Bot.IntegrationClients.SingleOrDefault(x => x.SystemName == moduleKey);
-                if (module.SettingsType != null)
-                {
-                    var setMod = new ModuleSettingsForm()
-                    {
-                        Module = module
-                    };
-                    setMod.ShowDialog();
-                }
-            }
+            if (gridType == SettingGridType.Clients)
+                return baseColumnName + "Clients";
+            return baseColumnName;
         }
 
-        private void gridClients_MouseLeave(object sender, EventArgs e)
+        private DataGridView Grid(SettingGridType gridType)
         {
-            if (_commandHelpCommand != null)
-            {
-                _commandHelpCommand.Hide();
-            }
+            if (gridType == SettingGridType.Clients)
+                return gridClients;
+            return gridModules;
         }
 
-        private void gridClients_MouseMove(object sender, MouseEventArgs e)
+        private SettingGridType GridTypeBySender(object grid)
         {
-            int rowIndex = gridClients.HitTest(e.X, e.Y).RowIndex;
-            if (rowIndex >= 0)
-            {
-                if (rowIndex != _displayHelpRowId)
-                {
-                    _displayHelpRowId = rowIndex;
-                    var moduleKey = gridClients.Rows[rowIndex].ErrorText;
-                    if (!string.IsNullOrEmpty(moduleKey))
-                    {
-                        var client = App.Instance.Bot.IntegrationClients.SingleOrDefault(x => x.SystemName == moduleKey);
-
-                        if (_commandHelpCommand != null)
-                        {
-                            //todo : do not hide, only change text (trouble with dynamic border exist). reason : blinking
-                            _commandHelpCommand.Hide();
-                        }
-                        _commandHelpCommand = new HelpPopup { FormType = PopupFormType.CommandInfo };
-                        _commandHelpCommand.HelpData = new HelpInfo()
-                        {
-                            Body = client.ToString(),
-                            Icon = client.Icon ?? Resources.monkey_highres_img,
-                            Title = "Информация о клиенте " + client.GetModuleName()
-                        };
-                        _commandHelpCommand.Init();
-                    }
-                }
-                if (_commandHelpCommand != null)
-                {
-                    var gridLoc = gridClients.PointToScreen(Point.Empty);
-                    gridLoc.Y += gridClients.Height + 10;
-                    gridLoc.X -= 10;
-                    _commandHelpCommand.Location = gridLoc;
-                    _commandHelpCommand.ToTop();
-                }
-            }
-            else
-            {
-                if (_commandHelpCommand != null)
-                {
-                    _commandHelpCommand.Hide();
-                }
-            }
+            return ((DataGridView) grid).Name == gridModules.Name ? SettingGridType.Modules : SettingGridType.Clients;
         }
 
-        private void gridClients_RowEnter(object sender, DataGridViewCellEventArgs e)
+        enum SettingGridType
         {
-            if (gridClients.SelectedRows.Count == 1)
-            {
-                var moduleKey = gridClients.Rows[gridClients.SelectedRows[0].Index].ErrorText;
-                var module = App.Instance.Bot.Modules.SingleOrDefault(x => x.SystemName == moduleKey);
-                btnEnabledDisableModule.Text = (!module.IsEnabled ? "Под" : "Вы") + "ключить клиент";
-                btnShowLogs.Enabled = module.Trace.TraceMessages.Any();
-            }
+            Modules,
+            Clients
         }
 
-        private void gridClients_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            if (e.RowIndex >= 0 && e.ColumnIndex == gridClients.Rows[e.RowIndex].Cells["settingsCol"].ColumnIndex)
-            {
-                var moduleKey = gridClients.Rows[e.RowIndex].ErrorText;
-                var module = App.Instance.Bot.IntegrationClients.SingleOrDefault(x => x.SystemName == moduleKey);
-                gridClients.Cursor = module.SettingsType != null ? Cursors.Hand : Cursors.Default;
-            }
-            else
-            {
-                gridClients.Cursor = Cursors.Default;
-            }
-        }
+        
     }
 }

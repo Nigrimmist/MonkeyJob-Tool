@@ -36,7 +36,7 @@ namespace HelloBotCore
         public readonly double Version = 0.6;
         private const int RunTraceSaveEveryMin = 5;
 
-        private List<ModuleInfoBase> _modules = new List<ModuleInfoBase>();
+        private List<ComponentInfoBase> _modules = new List<ComponentInfoBase>();
         private readonly string _moduleDllmask;
         private readonly string _botCommandPrefix;
         private readonly string _moduleFolderPath;
@@ -560,12 +560,8 @@ namespace HelloBotCore
                             ModuleId = client.Id
                         });
 
-                        client.SendMessageToClient(token, new CommunicationClientMessage()
+                        client.SendMessageToClient(token, new CommunicationClientMessage(content)
                         {
-                            MessageParts = new List<CommunicationMessagePart>()
-                            {
-                                new CommunicationMessagePart(){MessageFormat = CommunicationMessageFormat.Text,Value = content},
-                            },
                             FromModule = moduleInfo.ProvidedTitle ?? ""
                         });
                     }
@@ -756,7 +752,7 @@ namespace HelloBotCore
             get { return _modules.OfType<ModuleTrayInfo>(); }
         }
 
-        public List<ModuleInfoBase> Modules
+        public List<ComponentInfoBase> Modules
         {
             get { return _modules; }
         }
@@ -769,18 +765,18 @@ namespace HelloBotCore
 
         public void DisableModule(string moduleSystemName)
         {
-            Modules.Single(x => x.SystemName == moduleSystemName).IsEnabled = false;
+            Modules.Union(_integrationClients).Single(x => x.SystemName == moduleSystemName).IsEnabled = false;
         }
 
         public void EnableModule(string moduleSystemName)
         {
-            Modules.Single(x => x.SystemName == moduleSystemName).IsEnabled = true;
+            Modules.Union(_integrationClients).Single(x => x.SystemName == moduleSystemName).IsEnabled = true;
         }
 
-        public List<ModuleInfoBase> GetIncompatibleSettingModules()
+        public List<ComponentInfoBase> GetIncompatibleSettingModules()
         {
-            List<ModuleInfoBase> toReturn = new List<ModuleInfoBase>();
-            foreach (ModuleInfoBase module in Modules.Where(x => x.SettingsType != null))
+            List<ComponentInfoBase> toReturn = new List<ComponentInfoBase>();
+            foreach (ComponentInfoBase module in Modules.Select(x => (ComponentInfoBase)x).Union(IntegrationClients).Where(x => x.SettingsType != null))
             {
                 lock (_commandDictLocks[module.Id].SettingsLock)
                 {
@@ -799,6 +795,7 @@ namespace HelloBotCore
             }
             return toReturn;
         }
+
 
         private void SaveModuleTraces()
         {

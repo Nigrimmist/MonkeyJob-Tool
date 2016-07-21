@@ -53,19 +53,20 @@
             this.moduleTypeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colIsEnabled = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.settingsCol = new System.Windows.Forms.DataGridViewImageColumn();
-            this.btnSaveConfig = new System.Windows.Forms.Button();
             this.TPClients = new System.Windows.Forms.TabPage();
+            this.btnShowClientLogs = new System.Windows.Forms.Button();
+            this.btnEnabledDisableClient = new System.Windows.Forms.Button();
+            this.gridClients = new System.Windows.Forms.DataGridView();
+            this.btnSaveConfig = new System.Windows.Forms.Button();
             this.hsShowHelpForCommands = new MonkeyJobTool.Controls.HelpTooltip();
             this.hsSendErrorReport = new MonkeyJobTool.Controls.HelpTooltip();
             this.htDonateBtn = new MonkeyJobTool.Controls.HelpTooltip();
             this.htStatsCollect = new MonkeyJobTool.Controls.HelpTooltip();
             this.htHotKey = new MonkeyJobTool.Controls.HelpTooltip();
             this.htReplace = new MonkeyJobTool.Controls.HelpTooltip();
-            this.btnEnabledDisableClient = new System.Windows.Forms.Button();
-            this.gridClients = new System.Windows.Forms.DataGridView();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewImageColumn1 = new System.Windows.Forms.DataGridViewImageColumn();
+            this.colClient = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colIsEnabledClients = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.settingsColClients = new System.Windows.Forms.DataGridViewImageColumn();
             this.TPCommandReplace.SuspendLayout();
             this.TPGeneral.SuspendLayout();
             this.TPHotkeys.SuspendLayout();
@@ -85,7 +86,6 @@
             this.chkIsWithWindowsStart.TabIndex = 0;
             this.chkIsWithWindowsStart.Text = "Запускать при старте Windows";
             this.chkIsWithWindowsStart.UseVisualStyleBackColor = true;
-            this.chkIsWithWindowsStart.CheckedChanged += new System.EventHandler(this.chkIsWithWindowsStart_CheckedChanged);
             // 
             // cmbKey1
             // 
@@ -291,7 +291,7 @@
             this.btnEnabledDisableModule.TabIndex = 6;
             this.btnEnabledDisableModule.Text = "Выключить модуль";
             this.btnEnabledDisableModule.UseVisualStyleBackColor = false;
-            this.btnEnabledDisableModule.Click += new System.EventHandler(this.btnEnabledDisableModule_Click);
+            this.btnEnabledDisableModule.Click += new System.EventHandler(this.btnEnabledDisableComponent_Click);
             // 
             // gridModules
             // 
@@ -316,11 +316,11 @@
             this.gridModules.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.gridModules.Size = new System.Drawing.Size(424, 208);
             this.gridModules.TabIndex = 0;
-            this.gridModules.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridModules_CellClick);
-            this.gridModules.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.gridModules_CellMouseMove);
-            this.gridModules.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridModules_RowEnter);
-            this.gridModules.MouseLeave += new System.EventHandler(this.gridModules_MouseLeave);
-            this.gridModules.MouseMove += new System.Windows.Forms.MouseEventHandler(this.gridModules_MouseMove);
+            this.gridModules.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.grid_CellClick);
+            this.gridModules.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.grid_CellMouseMove);
+            this.gridModules.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.grid_RowEnter);
+            this.gridModules.MouseLeave += new System.EventHandler(this.grid_MouseLeave);
+            this.gridModules.MouseMove += new System.Windows.Forms.MouseEventHandler(this.grid_MouseMove);
             // 
             // ModuleName
             // 
@@ -350,6 +350,73 @@
             this.settingsCol.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.settingsCol.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
+            // TPClients
+            // 
+            this.TPClients.Controls.Add(this.btnShowClientLogs);
+            this.TPClients.Controls.Add(this.btnEnabledDisableClient);
+            this.TPClients.Controls.Add(this.gridClients);
+            this.TPClients.Location = new System.Drawing.Point(4, 22);
+            this.TPClients.Name = "TPClients";
+            this.TPClients.Padding = new System.Windows.Forms.Padding(3);
+            this.TPClients.Size = new System.Drawing.Size(572, 214);
+            this.TPClients.TabIndex = 4;
+            this.TPClients.Text = "Интеграция с клиентами";
+            this.TPClients.UseVisualStyleBackColor = true;
+            // 
+            // btnShowClientLogs
+            // 
+            this.btnShowClientLogs.BackColor = System.Drawing.Color.Moccasin;
+            this.btnShowClientLogs.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnShowClientLogs.ForeColor = System.Drawing.Color.Black;
+            this.btnShowClientLogs.Location = new System.Drawing.Point(436, 42);
+            this.btnShowClientLogs.Name = "btnShowClientLogs";
+            this.btnShowClientLogs.Size = new System.Drawing.Size(118, 39);
+            this.btnShowClientLogs.TabIndex = 10;
+            this.btnShowClientLogs.Text = "Просмотреть лог активности";
+            this.btnShowClientLogs.UseVisualStyleBackColor = false;
+            this.btnShowClientLogs.Click += new System.EventHandler(this.btnShowLogs_Click);
+            // 
+            // btnEnabledDisableClient
+            // 
+            this.btnEnabledDisableClient.BackColor = System.Drawing.Color.Moccasin;
+            this.btnEnabledDisableClient.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnEnabledDisableClient.ForeColor = System.Drawing.Color.Black;
+            this.btnEnabledDisableClient.Location = new System.Drawing.Point(436, 6);
+            this.btnEnabledDisableClient.Name = "btnEnabledDisableClient";
+            this.btnEnabledDisableClient.Size = new System.Drawing.Size(118, 30);
+            this.btnEnabledDisableClient.TabIndex = 9;
+            this.btnEnabledDisableClient.Text = "Отключить клиент";
+            this.btnEnabledDisableClient.UseVisualStyleBackColor = false;
+            this.btnEnabledDisableClient.Click += new System.EventHandler(this.btnEnabledDisableComponent_Click);
+            // 
+            // gridClients
+            // 
+            this.gridClients.AllowUserToAddRows = false;
+            this.gridClients.AllowUserToDeleteRows = false;
+            this.gridClients.AllowUserToResizeRows = false;
+            this.gridClients.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.gridClients.BackgroundColor = System.Drawing.Color.White;
+            this.gridClients.CausesValidation = false;
+            this.gridClients.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colClient,
+            this.colIsEnabledClients,
+            this.settingsColClients});
+            this.gridClients.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.gridClients.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.gridClients.Location = new System.Drawing.Point(6, 6);
+            this.gridClients.MultiSelect = false;
+            this.gridClients.Name = "gridClients";
+            this.gridClients.ReadOnly = true;
+            this.gridClients.RowHeadersVisible = false;
+            this.gridClients.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.gridClients.Size = new System.Drawing.Size(424, 208);
+            this.gridClients.TabIndex = 8;
+            this.gridClients.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.grid_CellClick);
+            this.gridClients.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.grid_CellMouseMove);
+            this.gridClients.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.grid_RowEnter);
+            this.gridClients.MouseLeave += new System.EventHandler(this.grid_MouseLeave);
+            this.gridClients.MouseMove += new System.Windows.Forms.MouseEventHandler(this.grid_MouseMove);
+            // 
             // btnSaveConfig
             // 
             this.btnSaveConfig.BackColor = System.Drawing.Color.Moccasin;
@@ -362,18 +429,6 @@
             this.btnSaveConfig.Text = "Сохранить";
             this.btnSaveConfig.UseVisualStyleBackColor = false;
             this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
-            // 
-            // TPClients
-            // 
-            this.TPClients.Controls.Add(this.btnEnabledDisableClient);
-            this.TPClients.Controls.Add(this.gridClients);
-            this.TPClients.Location = new System.Drawing.Point(4, 22);
-            this.TPClients.Name = "TPClients";
-            this.TPClients.Padding = new System.Windows.Forms.Padding(3);
-            this.TPClients.Size = new System.Drawing.Size(572, 214);
-            this.TPClients.TabIndex = 4;
-            this.TPClients.Text = "Интеграция с клиентами";
-            this.TPClients.UseVisualStyleBackColor = true;
             // 
             // hsShowHelpForCommands
             // 
@@ -423,67 +478,26 @@
             this.htReplace.Size = new System.Drawing.Size(19, 19);
             this.htReplace.TabIndex = 6;
             // 
-            // btnEnabledDisableClient
+            // colClient
             // 
-            this.btnEnabledDisableClient.BackColor = System.Drawing.Color.Moccasin;
-            this.btnEnabledDisableClient.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnEnabledDisableClient.ForeColor = System.Drawing.Color.Black;
-            this.btnEnabledDisableClient.Location = new System.Drawing.Point(436, 6);
-            this.btnEnabledDisableClient.Name = "btnEnabledDisableClient";
-            this.btnEnabledDisableClient.Size = new System.Drawing.Size(118, 30);
-            this.btnEnabledDisableClient.TabIndex = 9;
-            this.btnEnabledDisableClient.Text = "Отключить клиент";
-            this.btnEnabledDisableClient.UseVisualStyleBackColor = false;
+            this.colClient.FillWeight = 150F;
+            this.colClient.HeaderText = "Клиент";
+            this.colClient.Name = "colClient";
+            this.colClient.ReadOnly = true;
             // 
-            // gridClients
+            // colIsEnabledClients
             // 
-            this.gridClients.AllowUserToAddRows = false;
-            this.gridClients.AllowUserToDeleteRows = false;
-            this.gridClients.AllowUserToResizeRows = false;
-            this.gridClients.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.gridClients.BackgroundColor = System.Drawing.Color.White;
-            this.gridClients.CausesValidation = false;
-            this.gridClients.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dataGridViewTextBoxColumn1,
-            this.dataGridViewTextBoxColumn3,
-            this.dataGridViewImageColumn1});
-            this.gridClients.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.gridClients.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.gridClients.Location = new System.Drawing.Point(6, 6);
-            this.gridClients.MultiSelect = false;
-            this.gridClients.Name = "gridClients";
-            this.gridClients.ReadOnly = true;
-            this.gridClients.RowHeadersVisible = false;
-            this.gridClients.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.gridClients.Size = new System.Drawing.Size(424, 208);
-            this.gridClients.TabIndex = 8;
-            this.gridClients.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridClients_CellClick);
-
-            this.gridClients.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.gridClients_CellMouseMove);
-            this.gridClients.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridClients_RowEnter);
-            this.gridClients.MouseLeave += new System.EventHandler(this.gridClients_MouseLeave);
-            this.gridClients.MouseMove += new System.Windows.Forms.MouseEventHandler(this.gridClients_MouseMove);
+            this.colIsEnabledClients.HeaderText = "Статус";
+            this.colIsEnabledClients.Name = "colIsEnabledClients";
+            this.colIsEnabledClients.ReadOnly = true;
             // 
-            // dataGridViewTextBoxColumn1
+            // settingsColClients
             // 
-            this.dataGridViewTextBoxColumn1.FillWeight = 150F;
-            this.dataGridViewTextBoxColumn1.HeaderText = "Клиент";
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            this.dataGridViewTextBoxColumn1.ReadOnly = true;
-            // 
-            // dataGridViewTextBoxColumn3
-            // 
-            this.dataGridViewTextBoxColumn3.HeaderText = "Статус";
-            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
-            this.dataGridViewTextBoxColumn3.ReadOnly = true;
-            // 
-            // dataGridViewImageColumn1
-            // 
-            this.dataGridViewImageColumn1.HeaderText = "Настройки";
-            this.dataGridViewImageColumn1.Name = "dataGridViewImageColumn1";
-            this.dataGridViewImageColumn1.ReadOnly = true;
-            this.dataGridViewImageColumn1.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewImageColumn1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.settingsColClients.HeaderText = "Настройки";
+            this.settingsColClients.Name = "settingsColClients";
+            this.settingsColClients.ReadOnly = true;
+            this.settingsColClients.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.settingsColClients.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // SettingsForm
             // 
@@ -550,8 +564,9 @@
         private System.Windows.Forms.TabPage TPClients;
         private System.Windows.Forms.Button btnEnabledDisableClient;
         private System.Windows.Forms.DataGridView gridClients;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
-        private System.Windows.Forms.DataGridViewImageColumn dataGridViewImageColumn1;
+        private System.Windows.Forms.Button btnShowClientLogs;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colClient;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colIsEnabledClients;
+        private System.Windows.Forms.DataGridViewImageColumn settingsColClients;
     }
 }

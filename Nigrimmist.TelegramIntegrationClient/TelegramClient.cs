@@ -33,6 +33,7 @@ namespace Nigrimmist.TelegramIntegrationClient
             TelegramSettings settings = null;
             if (bot == null && !botInited)
             {
+                _client.LogTrace("Init start");
                 settings = _client.GetSettings<TelegramSettings>();
                 if (settings != null && !string.IsNullOrEmpty(settings.Token))
                 {
@@ -42,12 +43,14 @@ namespace Nigrimmist.TelegramIntegrationClient
                     }
                     catch (Exception ex)
                     {
+                        _client.LogTrace("bot init exception : "+ex);
                         _client.ShowMessage(token, ex.Message);
                         return;
                     }
                     
                     offset = settings.Offset;
                     chatId = settings.ChatId;
+                    _client.LogTrace("offset : "+offset+" chatId"+chatId);
                 }
                 else
                 {
@@ -61,9 +64,11 @@ namespace Nigrimmist.TelegramIntegrationClient
                 if (chatId == -1 || chatId == 0)
                 {
                     var updates = bot.GetUpdatesAsync(offset).Result;
+                    _client.LogTrace("updates received");
                     if (updates.Any())
                     {
                         chatId = updates.First().Message.Chat.Id;
+                        _client.LogTrace("chatId found "+chatId);
                         settingsShouldBeSave = true;
                         SendMessage(token,"MonkeyJob connected! Thanks for using!");
                     }
@@ -95,6 +100,7 @@ namespace Nigrimmist.TelegramIntegrationClient
             }
             catch (Exception ex)
             {
+                _client.LogTrace("send msg exception "+ex);
                 if (ex.InnerException.ToString().Contains("Invalid token"))
                     _client.ShowMessage(clientToken, "Invalid token. Check Telegram module settings");
                     

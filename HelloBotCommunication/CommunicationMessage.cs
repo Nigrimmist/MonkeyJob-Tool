@@ -21,7 +21,7 @@ namespace HelloBotCommunication
             foreach (var messagePart in MessageParts)
             {
                 if (messagePart.MessageFormat == CommunicationMessageFormat.Text || messagePart.MessageFormat == CommunicationMessageFormat.Url)
-                    sb.AppendLine(messagePart.Value as string);
+                    sb.AppendLine(messagePart.Value.ToString());
             }
             return sb.ToString();
         }
