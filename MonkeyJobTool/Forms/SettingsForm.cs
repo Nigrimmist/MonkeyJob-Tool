@@ -328,15 +328,15 @@ namespace MonkeyJobTool.Forms
                 {
                     btnEnabledDisableClient.Text = (!module.IsEnabled ? "Под" : "Вы") + "ключить клиент";
                     btnShowClientLogs.Enabled = module.Trace.TraceMessages.Any();
-                }
                     
-                
+                }
             }
         }
 
         private HelpPopup _commandHelpCommand = null;
 
         private int _displayHelpRowId = -1;
+        private SettingGridType _displayHelpGridType = SettingGridType.Modules;
         private void grid_MouseMove(object sender, MouseEventArgs e)
         {
             var grid = ((DataGridView)sender);
@@ -344,9 +344,10 @@ namespace MonkeyJobTool.Forms
             int rowIndex = grid.HitTest(e.X, e.Y).RowIndex;
             if (rowIndex >= 0)
             {
-                if (rowIndex != _displayHelpRowId)
+                if (rowIndex != _displayHelpRowId || gridType != _displayHelpGridType)
                 {
                     _displayHelpRowId = rowIndex;
+                    _displayHelpGridType = gridType;
                     var moduleKey = grid.Rows[rowIndex].ErrorText;
                     if (!string.IsNullOrEmpty(moduleKey))
                     {
@@ -514,6 +515,15 @@ namespace MonkeyJobTool.Forms
         {
             Modules,
             Clients
+        }
+
+        private void btnShowModuleCommunication_Click(object sender, EventArgs e)
+        {
+            var moduleKey = gridClients.Rows[gridClients.SelectedRows[0].Index].ErrorText;
+            new ClientToModulesForm()
+            {
+                ClientToModuleData = App.Instance.AppConf.SystemData.GeToModuleCommunicationForClient(moduleKey) 
+            }.ShowDialog();
         }
 
         

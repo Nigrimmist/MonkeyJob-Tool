@@ -55,6 +55,9 @@ namespace HelloBotCore.Entities
                 case ModuleType.Tray:
                     toReturn = "Трей";
                     break;
+                case ModuleType.IntegrationClient:
+                    toReturn = "Клиент";
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

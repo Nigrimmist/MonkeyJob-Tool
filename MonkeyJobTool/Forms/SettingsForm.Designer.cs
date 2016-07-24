@@ -58,15 +58,16 @@
             this.btnEnabledDisableClient = new System.Windows.Forms.Button();
             this.gridClients = new System.Windows.Forms.DataGridView();
             this.btnSaveConfig = new System.Windows.Forms.Button();
+            this.colClient = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colIsEnabledClients = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.settingsColClients = new System.Windows.Forms.DataGridViewImageColumn();
             this.hsShowHelpForCommands = new MonkeyJobTool.Controls.HelpTooltip();
             this.hsSendErrorReport = new MonkeyJobTool.Controls.HelpTooltip();
             this.htDonateBtn = new MonkeyJobTool.Controls.HelpTooltip();
             this.htStatsCollect = new MonkeyJobTool.Controls.HelpTooltip();
             this.htHotKey = new MonkeyJobTool.Controls.HelpTooltip();
             this.htReplace = new MonkeyJobTool.Controls.HelpTooltip();
-            this.colClient = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colIsEnabledClients = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.settingsColClients = new System.Windows.Forms.DataGridViewImageColumn();
+            this.btnShowModuleCommunication = new System.Windows.Forms.Button();
             this.TPCommandReplace.SuspendLayout();
             this.TPGeneral.SuspendLayout();
             this.TPHotkeys.SuspendLayout();
@@ -352,6 +353,7 @@
             // 
             // TPClients
             // 
+            this.TPClients.Controls.Add(this.btnShowModuleCommunication);
             this.TPClients.Controls.Add(this.btnShowClientLogs);
             this.TPClients.Controls.Add(this.btnEnabledDisableClient);
             this.TPClients.Controls.Add(this.gridClients);
@@ -430,6 +432,27 @@
             this.btnSaveConfig.UseVisualStyleBackColor = false;
             this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
             // 
+            // colClient
+            // 
+            this.colClient.FillWeight = 150F;
+            this.colClient.HeaderText = "Клиент";
+            this.colClient.Name = "colClient";
+            this.colClient.ReadOnly = true;
+            // 
+            // colIsEnabledClients
+            // 
+            this.colIsEnabledClients.HeaderText = "Статус";
+            this.colIsEnabledClients.Name = "colIsEnabledClients";
+            this.colIsEnabledClients.ReadOnly = true;
+            // 
+            // settingsColClients
+            // 
+            this.settingsColClients.HeaderText = "Настройки";
+            this.settingsColClients.Name = "settingsColClients";
+            this.settingsColClients.ReadOnly = true;
+            this.settingsColClients.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.settingsColClients.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
             // hsShowHelpForCommands
             // 
             this.hsShowHelpForCommands.AutoSize = true;
@@ -478,26 +501,18 @@
             this.htReplace.Size = new System.Drawing.Size(19, 19);
             this.htReplace.TabIndex = 6;
             // 
-            // colClient
+            // btnShowModuleCommunication
             // 
-            this.colClient.FillWeight = 150F;
-            this.colClient.HeaderText = "Клиент";
-            this.colClient.Name = "colClient";
-            this.colClient.ReadOnly = true;
-            // 
-            // colIsEnabledClients
-            // 
-            this.colIsEnabledClients.HeaderText = "Статус";
-            this.colIsEnabledClients.Name = "colIsEnabledClients";
-            this.colIsEnabledClients.ReadOnly = true;
-            // 
-            // settingsColClients
-            // 
-            this.settingsColClients.HeaderText = "Настройки";
-            this.settingsColClients.Name = "settingsColClients";
-            this.settingsColClients.ReadOnly = true;
-            this.settingsColClients.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.settingsColClients.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.btnShowModuleCommunication.BackColor = System.Drawing.Color.Moccasin;
+            this.btnShowModuleCommunication.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnShowModuleCommunication.ForeColor = System.Drawing.Color.Black;
+            this.btnShowModuleCommunication.Location = new System.Drawing.Point(436, 87);
+            this.btnShowModuleCommunication.Name = "btnShowModuleCommunication";
+            this.btnShowModuleCommunication.Size = new System.Drawing.Size(118, 39);
+            this.btnShowModuleCommunication.TabIndex = 11;
+            this.btnShowModuleCommunication.Text = "Зависимость от модулей";
+            this.btnShowModuleCommunication.UseVisualStyleBackColor = false;
+            this.btnShowModuleCommunication.Click += new System.EventHandler(this.btnShowModuleCommunication_Click);
             // 
             // SettingsForm
             // 
@@ -568,5 +583,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colClient;
         private System.Windows.Forms.DataGridViewTextBoxColumn colIsEnabledClients;
         private System.Windows.Forms.DataGridViewImageColumn settingsColClients;
+        private System.Windows.Forms.Button btnShowModuleCommunication;
     }
 }

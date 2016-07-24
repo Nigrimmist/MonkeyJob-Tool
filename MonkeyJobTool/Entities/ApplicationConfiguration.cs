@@ -29,27 +29,20 @@ namespace MonkeyJobTool.Entities
         /// <summary>
         /// Defaults will be used for clear first installation
         /// </summary>
-        public ApplicationConfiguration(bool initDefaults=false)
+        public ApplicationConfiguration(bool initDefaults = false)
         {
-            
+
             CommandReplaces = new List<CommandReplace>();
-            SystemData = new SystemData() ;
+            SystemData = new SystemData();
             if (initDefaults)
             {
-                HotKeys = new AppConfHotkeys()
-                {
-                    ProgramOpen = "CTRL+M"
-                };
+                HotKeys = new AppConfHotkeys() {ProgramOpen = "CTRL+M"};
                 AllowUsingGoogleAnalytics = true;
                 AllowSendCrashReports = true;
                 ShowDonateButton = true;
                 ShowCommandHelp = true;
                 Language = Language.ru;
-                SystemData = new SystemData()
-                {
-                    EnabledModules = new List<string>(),
-                    ClearCommandAfterMinOfInactivity = TimeSpan.FromMinutes(5)
-                };
+                SystemData = new SystemData() {EnabledModules = new List<string>(), ClearCommandAfterMinOfInactivity = TimeSpan.FromMinutes(5)};
                 DevelopmentModeEnabled = true;
                 InstalledAppVersion = AppConstants.AppVersion;
                 ConfigVersion = AppConstants.ConfigVersion;
@@ -62,7 +55,7 @@ namespace MonkeyJobTool.Entities
             File.WriteAllText(App.Instance.ExecutionFolder + AppConstants.Paths.MainConfFileName, json);
         }
     }
-    
+
     public class AppConfHotkeys
     {
         public string ProgramOpen { get; set; }
@@ -79,12 +72,13 @@ namespace MonkeyJobTool.Entities
         /// <summary>
         /// For Event Based/tray modules. they are disabled by default
         /// </summary>
-        public List<string>  EnabledModules { get; set; }
+        public List<string> EnabledModules { get; set; }
 
         /// <summary>
         /// For command modules. they are enabled by default
         /// </summary>
         public List<string> DisabledModules { get; set; }
+
         public bool DoNotNotify { get; set; }
         public TimeSpan ClearCommandAfterMinOfInactivity { get; set; }
 
@@ -92,36 +86,77 @@ namespace MonkeyJobTool.Entities
 
         public bool ModuleEnabledForModule(string mainModule, string dependentModule, ModuleType dependentModuleType)
         {
+            var found = ClientToModulesCommunications.FirstOrDefault(x => x.MainModule == mainModule);
+
+            return (found ?? ModuleToModuleCommunication.GetDefaultForClient(mainModule)).IsEnabledFor(dependentModule, dependentModuleType);
+        }
+
+        public ModuleToModuleCommunication GeToModuleCommunicationForClient(string clientName)
+        {
             if (ClientToModulesCommunications != null)
             {
-                var found = ClientToModulesCommunications.FirstOrDefault(x => x.MainModule == mainModule);
-                if (found != null)
-                    return found.IsEnabledFor(dependentModule, dependentModuleType);
+                var found = ClientToModulesCommunications.FirstOrDefault(x => x.MainModule == clientName);
+                return found ?? ModuleToModuleCommunication.GetDefaultForClient(clientName);
             }
-            return true;
+            else
+                return ModuleToModuleCommunication.GetDefaultForClient(clientName);
         }
 
         public SystemData()
         {
             EnabledModules = new List<string>();
             DisabledModules = new List<string>();
+            ClientToModulesCommunications = new List<ModuleToModuleCommunication>();
         }
     }
 
     public class ModuleToModuleCommunication
     {
+        private bool _enabledForAll;
         public string MainModule { get; set; }
         public List<string> EnabledModules { get; set; }
+        public List<string> DisabledModules { get; set; }
         public ModuleType? EnabledByType { get; set; }
         public ModuleType? DisabledByType { get; set; }
+
+        public bool EnabledForAll
+        {
+            get { return _enabledForAll; }
+            set
+            {
+                if (value)
+                {
+                    DisabledByType = null;
+                    EnabledByType = null;
+                    EnabledModules.Clear();
+                    DisabledModules.Clear();
+                }
+                _enabledForAll = value;
+            }
+        }
+
         public bool IsEnabledFor(string moduleSystemName, ModuleType moduleType)
         {
             if (DisabledByType.HasValue && DisabledByType.Value == moduleType) return false;
             if (EnabledByType.HasValue && EnabledByType.Value == moduleType) return true;
 
-            return EnabledModules == null || EnabledModules.Contains(moduleSystemName);
+            return (EnabledModules == null || EnabledModules.Contains(moduleSystemName)) || (DisabledModules == null || !DisabledModules.Contains(moduleSystemName));
         }
 
+        public ModuleToModuleCommunication()
+        {
+            EnabledModules = new List<string>();
+            DisabledModules = new List<string>();
+        }
 
+        public static ModuleToModuleCommunication GetDefaultForClient(string clientModule)
+        {
+            return new ModuleToModuleCommunication()
+            {
+                MainModule = clientModule,
+                EnabledForAll = false,
+                EnabledByType = ModuleType.Event
+            };
+        }
     }
 }
