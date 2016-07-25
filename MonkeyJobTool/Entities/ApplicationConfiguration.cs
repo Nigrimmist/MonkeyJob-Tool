@@ -91,15 +91,20 @@ namespace MonkeyJobTool.Entities
             return (found ?? ModuleToModuleCommunication.GetDefaultForClient(mainModule)).IsEnabledFor(dependentModule, dependentModuleType);
         }
 
-        public ModuleToModuleCommunication GeToModuleCommunicationForClient(string clientName)
+        public ModuleToModuleCommunication GetToModuleCommunicationForClient(string clientName, out bool wasFound)
         {
-            if (ClientToModulesCommunications != null)
-            {
-                var found = ClientToModulesCommunications.FirstOrDefault(x => x.MainModule == clientName);
-                return found ?? ModuleToModuleCommunication.GetDefaultForClient(clientName);
-            }
-            else
-                return ModuleToModuleCommunication.GetDefaultForClient(clientName);
+            var found = ClientToModulesCommunications.FirstOrDefault(x => x.MainModule == clientName);
+            wasFound = found != null;
+            return found ?? ModuleToModuleCommunication.GetDefaultForClient(clientName);
+        }
+
+        public void AddUpdateModuleCommunicationForClient(ModuleToModuleCommunication moduleCommunication)
+        {
+            bool wasFound;
+            var comm = GetToModuleCommunicationForClient(moduleCommunication.MainModule, out wasFound);
+            comm = moduleCommunication;
+            if(!wasFound)
+                ClientToModulesCommunications.Add(comm);
         }
 
         public SystemData()
@@ -112,35 +117,32 @@ namespace MonkeyJobTool.Entities
 
     public class ModuleToModuleCommunication
     {
-        private bool _enabledForAll;
         public string MainModule { get; set; }
         public List<string> EnabledModules { get; set; }
         public List<string> DisabledModules { get; set; }
         public ModuleType? EnabledByType { get; set; }
         public ModuleType? DisabledByType { get; set; }
+        public bool EnabledForAll { get; set; }
 
-        public bool EnabledForAll
+        public void Reset()
         {
-            get { return _enabledForAll; }
-            set
-            {
-                if (value)
-                {
-                    DisabledByType = null;
-                    EnabledByType = null;
-                    EnabledModules.Clear();
-                    DisabledModules.Clear();
-                }
-                _enabledForAll = value;
-            }
+            EnabledModules = new List<string>();
+            DisabledModules = new List<string>();
+            EnabledByType = null;
+            DisabledByType = null;
+            EnabledForAll = false;
         }
+
 
         public bool IsEnabledFor(string moduleSystemName, ModuleType moduleType)
         {
+            if (EnabledForAll) return true;
             if (DisabledByType.HasValue && DisabledByType.Value == moduleType) return false;
             if (EnabledByType.HasValue && EnabledByType.Value == moduleType) return true;
+            if (EnabledModules != null && EnabledModules.Any()) return EnabledModules.Contains(moduleSystemName);
+            if (DisabledModules != null && DisabledModules.Any()) return !DisabledModules.Contains(moduleSystemName);
 
-            return (EnabledModules == null || EnabledModules.Contains(moduleSystemName)) || (DisabledModules == null || !DisabledModules.Contains(moduleSystemName));
+            throw new ApplicationException("IsEnabledFor works incorrect");
         }
 
         public ModuleToModuleCommunication()

@@ -520,9 +520,10 @@ namespace MonkeyJobTool.Forms
         private void btnShowModuleCommunication_Click(object sender, EventArgs e)
         {
             var moduleKey = gridClients.Rows[gridClients.SelectedRows[0].Index].ErrorText;
+            bool found;
             new ClientToModulesForm()
             {
-                ClientToModuleData = App.Instance.AppConf.SystemData.GeToModuleCommunicationForClient(moduleKey) 
+                ClientToModuleData = App.Instance.AppConf.SystemData.GetToModuleCommunicationForClient(moduleKey, out found) 
             }.ShowDialog();
         }
 

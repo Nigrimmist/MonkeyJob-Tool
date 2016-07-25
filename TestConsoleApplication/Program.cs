@@ -21,14 +21,31 @@ using Newtonsoft.Json;
 using NetFwTypeLib;
 namespace Test
 {
-    
+    public class test
+    {
+        private List<string> _gg;
+
+        public List<string> gg
+        {
+            get
+            {
+                return _gg;
+            }
+            set
+            {
+                _gg = value;
+            }
+        }
+    }
     class Program
     {
         
         static void Main(string[] args)
         {
-            
-                
+
+            var t = new test();
+            t.gg = new List<string>();
+            t.gg.Add("");
 
             //var token = GetAuthorizationHeader2();
             ////
