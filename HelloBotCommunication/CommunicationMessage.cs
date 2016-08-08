@@ -46,5 +46,7 @@ namespace HelloBotCommunication
             MessageParts.Add(new CommunicationMessagePart() { MessageFormat = CommunicationMessageFormat.Url, Value = url });
             return this;
         }
+
+
     }
 }

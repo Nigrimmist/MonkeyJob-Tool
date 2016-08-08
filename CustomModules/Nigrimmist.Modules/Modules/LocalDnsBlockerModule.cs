@@ -84,7 +84,7 @@ namespace Nigrimmist.Modules.Modules
             get { return "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAB1UlEQVRIid2VIUiDURSFv7CwsGAwGAyGCUaD4oKCgjCDgojBYBCTwbBoEAwiIoYFbSILSyqITUREZBZBsQgiC4YJIgaDiMLCb3jv8d9d735m1AsPtnvuOee9t3vf4L9FJ1ABcr/gjALHwDLQm1SYAW6BCHgGsi0aTHpOWDVgBxgH0rKwrArnWjRoUzy5dkLRFPAlgGug3xDr80vHpSF+BUyEgnMFThsiWYHr69syDI4COKCAbUN8BngTNW+4Ow4xbxjUgTzAggLalXgH8O6xKvAqPqd8TZfP3SutdYCSSFwYuw9d8o7rijSuyyIa23LMbyZ0YoRrX6oiUTQMhgW+4E/YJnavoyjqHwHuRGLDIKRwwyePnjSMBVH3AvAgEqtNSBncpMrjf+LuPsngCRp/mJJBaMcN3Zj/Poyb1sib6lhBXdGBSmS8SIgl4q4Jcepzm4bBntA71I4R8TX0eIIcsCquM8L3USWeJm7pyG+OEeBDmUTAoiAWFFbH7rg1VZcPwL5hsKvIuYSdB7yuTpsCGAJODIMbQ6QPGDTy3cCZ4s8HsMRP8bC6DDErZhWvIsGMLygTvzNhzbRokCV+Pmq4J8OMFO4KVnHdZD3bzSLnOYl/m38vvgExuNOCw1vhrQAAAABJRU5ErkJggg=="; }
         }
 
-        
+        private CancellationTokenSource _lastTaskToken = null;
         //todo : refactoring required
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
@@ -95,6 +95,7 @@ namespace Nigrimmist.Modules.Modules
                 var dns = _client.GetSettings<LocalDnsBlockerSettings>().DnsList.Where(x => x.Title == dnsTitle).Select(x => x.DnsName).SingleOrDefault();
                 if (!string.IsNullOrEmpty(dns))
                 {
+                    if (_lastTaskToken != null) _lastTaskToken.Cancel();
                     DnsBlockOn(dns);
                     _client.ShowMessage(commandToken, CommunicationMessage.FromString("Доступ к " + dnsTitle + " заблокирован"));
                 }
@@ -110,24 +111,33 @@ namespace Nigrimmist.Modules.Modules
                     timeout = TimeSpan.FromMinutes(minCount);
                     dnsTitle = string.Join("", spl.Take(spl.Length - 1));
                 }
-                var dns = _client.GetSettings<LocalDnsBlockerSettings>().DnsList.Where(x => x.Title == dnsTitle).Select(x => x.DnsName).SingleOrDefault();
-                if (!string.IsNullOrEmpty(dns))
-                {
-                    DnsBlockOff(dns);
-                    string msg = "Доступ к " + dnsTitle + " предоставлен";
-                    if (timeout.HasValue)
-                    {
-                        msg += "на " + timeout.Value.TotalMinutes + " мин.";
-                        Task.Factory.StartNew(delegate
-                        {
-                            Thread.Sleep((int)timeout.Value.TotalMilliseconds);
-                            DnsBlockOn(dns);
-                            _client.ShowMessage(commandToken, CommunicationMessage.FromString("Доступ к " + dnsTitle + " заблокирован"));
-                        });
-                    }
-                    _client.ShowMessage(commandToken, CommunicationMessage.FromString(msg));
 
+                var settings = _client.GetSettings<LocalDnsBlockerSettings>();
+                if (settings != null)
+                {
+                    var dns = settings.DnsList.Where(x => x.Title == dnsTitle).Select(x => x.DnsName).SingleOrDefault();
+                    if (!string.IsNullOrEmpty(dns))
+                    {
+                        DnsBlockOff(dns);
+                        string msg = "Доступ к " + dnsTitle + " предоставлен";
+                        if (timeout.HasValue)
+                        {
+                            msg += "на " + timeout.Value.TotalMinutes + " мин.";
+                            if (_lastTaskToken!=null) _lastTaskToken.Cancel();
+                            _lastTaskToken = new CancellationTokenSource();
+                            CancellationToken ct = _lastTaskToken.Token;
+                            Task.Factory.StartNew(delegate
+                            {
+                                Thread.Sleep((int) timeout.Value.TotalMilliseconds);
+                                DnsBlockOn(dns);
+                                _client.ShowMessage(commandToken, CommunicationMessage.FromString("Доступ к " + dnsTitle + " заблокирован"));
+                            },_lastTaskToken, ct);
+                        }
+                        _client.ShowMessage(commandToken, CommunicationMessage.FromString(msg));
+
+                    }
                 }
+
             }
         }
 

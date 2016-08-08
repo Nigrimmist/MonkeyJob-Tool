@@ -133,12 +133,11 @@ namespace MonkeyJobTool.Entities
             EnabledForAll = false;
         }
 
-
         public bool IsEnabledFor(string moduleSystemName, ModuleType moduleType)
         {
             if (EnabledForAll) return true;
-            if (DisabledByType.HasValue && DisabledByType.Value == moduleType) return false;
-            if (EnabledByType.HasValue && EnabledByType.Value == moduleType) return true;
+            if (DisabledByType.HasValue ) return DisabledByType.Value != moduleType;
+            if (EnabledByType.HasValue) return EnabledByType.Value == moduleType;
             if (EnabledModules != null && EnabledModules.Any()) return EnabledModules.Contains(moduleSystemName);
             if (DisabledModules != null && DisabledModules.Any()) return !DisabledModules.Contains(moduleSystemName);
 

@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using HelloBotCommunication.Attributes.SettingAttributes;
@@ -54,115 +55,133 @@ namespace MonkeyJobTool.Forms
         }
 
         
+
         public void BindObject(object obj, TableLayoutPanel parentControl, int deepLevel=1, int? collectionIndex = null)
         {
-            var props = obj.GetType().GetProperties();
-            
-            foreach (var info in props)
+            var objType = obj.GetType();
+            if (objType == typeof (string))
             {
-                
-                var tInfo = info.PropertyType;
-                var propTitle = Attribute.GetCustomAttribute(info, typeof(SettingsNameFieldAttribute)) as SettingsNameFieldAttribute;
-
-                if (propTitle != null)
-                {
-                    var objVal = info.GetValue(obj, null) ;
-                    if (tInfo == typeof (int))
-                    {
-                        AddControl(propTitle.Label, new DataTextBox() { Text = objVal != null ? objVal.ToString() : "" }, info.Name, parentControl, deepLevel, collectionIndex);
-                    }
-                    else if (tInfo == typeof (string))
-                    {
-                        AddControl(propTitle.Label, new DataTextBox() { Text = objVal != null ? objVal.ToString() : "" }, info.Name, parentControl, deepLevel, collectionIndex);
-                    }
-                    else if (tInfo == typeof(bool))
-                    {
-                        AddControl("", new DataCheckBox() { Checked = objVal != null ? (bool)objVal : false, Text = propTitle.Label }, info.Name, parentControl, deepLevel, collectionIndex);
-                    }
-                    else if (typeof(IList).IsAssignableFrom(info.PropertyType))
-                    {
-                        var collectionPanel = new DataTableLayoutPanel()
-                        {
-                            AutoSize = true,
-                        };
-                        AddControlToNewPanelRow(parentControl, GetTitleControl(propTitle.Label), 0);
-                        AddControlToNewPanelRow(parentControl, collectionPanel, 20);
-                        
-                        DataButton btnAddNewItem = new DataButton()
-                        {
-                            BackColor = Color.Moccasin,
-                            FlatStyle = FlatStyle.Popup,
-                            UseVisualStyleBackColor = false
-                        };
-                        btnAddNewItem.ParentPanel = collectionPanel;
-                        btnAddNewItem.ParentParentPanel = parentControl;
-                        btnAddNewItem.DeepLevel = deepLevel;
-                        btnAddNewItem.Text = "Добавить";
-                        btnAddNewItem.Width = 100;
-
-                        if (objVal == null)
-                        {
-                            objVal = Activator.CreateInstance(tInfo.UnderlyingSystemType);
-                        }
-
-                        var itemList = ((IEnumerable) objVal).Cast<object>().ToList();
-                        
-                        if (!itemList.Any())
-                        {
-                            Type listItemType = objVal.GetType().GetGenericArguments().First();
-                            //add one for user input
-                            itemList.Add(Activator.CreateInstance(listItemType));
-                        }
-
-                        collectionPanel.ChildCount = itemList.Count;
-                        for (int i = 0; i < itemList.Count; i++)
-                        {
-                            var item = itemList[i];
-                            btnAddNewItem.Data = new CloneObjData()
-                            {
-                                Data = item,
-                                DataType = item.GetType()
-                            }; //save last for clone by btn click
-
-                            AddItemCollectionToUI(item, collectionPanel, deepLevel,i);
-                        }
-
-
-                        btnAddNewItem.Click += (sender, args) =>
-                        {
-                            var clonedObj = ((DataButton)sender).Data as CloneObjData;
-
-                            if (clonedObj != null)
-                            {
-                                var jsonObj = JsonConvert.SerializeObject(clonedObj.Data);
-                                var materializedObj = JsonConvert.DeserializeObject(jsonObj, clonedObj.DataType);
-                                var colPanel = (DataTableLayoutPanel) ((DataButton) sender).ParentPanel;
-                                colPanel.ChildCount++;
-                                AddItemCollectionToUI(materializedObj, colPanel, ((DataButton)sender).DeepLevel, colPanel.ChildCount-1);
-                            }
-                        };
-
-                        //button to next row
-                        AddControlToNewPanelRow(parentControl, btnAddNewItem, parentControl.Width - btnAddNewItem.Width);
-                    }
-                    else //complex object
-                    {
-                        var collectionPanel = new TableLayoutPanel()
-                        {
-                            AutoSize = true,
-                        };
-                        AddControlToNewPanelRow(parentControl, GetTitleControl(propTitle.Label), 0);
-                        AddControlToNewPanelRow(parentControl, collectionPanel, 0);
-                        if (objVal == null)
-                        {
-                            objVal = Activator.CreateInstance(tInfo.UnderlyingSystemType);
-                        }
-                        BindObject(objVal, collectionPanel,deepLevel+1);
-                    }
-                }
-
-                
+                AddControl("", new DataTextBox() {Text = obj.ToString()}, "", parentControl, deepLevel, collectionIndex);
             }
+            else
+            {
+                var props = objType.GetProperties();
+
+                foreach (var info in props)
+                {
+
+                    var tInfo = info.PropertyType;
+                    var propTitle = Attribute.GetCustomAttribute(info, typeof(SettingsNameFieldAttribute)) as SettingsNameFieldAttribute;
+
+                    if (propTitle != null)
+                    {
+                        var objVal = info.GetValue(obj, null);
+                        if (tInfo == typeof(int))
+                        {
+                            AddControl(propTitle.Label, new DataTextBox() { Text = objVal != null ? objVal.ToString() : "" }, info.Name, parentControl, deepLevel, collectionIndex);
+                        }
+                        else if (tInfo == typeof(string))
+                        {
+                            AddControl(propTitle.Label, new DataTextBox() { Text = objVal != null ? objVal.ToString() : "" }, info.Name, parentControl, deepLevel, collectionIndex);
+                        }
+                        else if (tInfo == typeof(bool))
+                        {
+                            AddControl("", new DataCheckBox() { Checked = objVal != null ? (bool)objVal : false, Text = propTitle.Label }, info.Name, parentControl, deepLevel, collectionIndex);
+                        }
+                        else if (typeof(IList).IsAssignableFrom(info.PropertyType))
+                        {
+                            var collectionPanel = new DataTableLayoutPanel()
+                            {
+                                AutoSize = true,
+                            };
+                            AddControlToNewPanelRow(parentControl, GetTitleControl(propTitle.Label), 0);
+                            AddControlToNewPanelRow(parentControl, collectionPanel, 20);
+
+                            DataButton btnAddNewItem = new DataButton()
+                            {
+                                BackColor = Color.Moccasin,
+                                FlatStyle = FlatStyle.Popup,
+                                UseVisualStyleBackColor = false
+                            };
+                            btnAddNewItem.ParentPanel = collectionPanel;
+                            btnAddNewItem.ParentParentPanel = parentControl;
+                            btnAddNewItem.DeepLevel = deepLevel;
+                            btnAddNewItem.Text = "Добавить";
+                            btnAddNewItem.Width = 100;
+
+                            if (objVal == null)
+                            {
+                                objVal = Activator.CreateInstance(tInfo.UnderlyingSystemType);
+                            }
+
+                            var itemList = ((IEnumerable)objVal).Cast<object>().ToList();
+
+                            if (!itemList.Any())
+                            {
+                                Type listItemType = objVal.GetType().GetGenericArguments().First();
+                                object objToAdd = null;
+                                //add one for user input
+
+                                if (listItemType == typeof(string))
+                                    objToAdd = ""; //because string haven't constructor and cannot be inited through CreateInstance
+                                else
+                                    objToAdd = Activator.CreateInstance(listItemType);
+
+                                itemList.Add(objToAdd);
+                            }
+
+                            collectionPanel.ChildCount = itemList.Count;
+                            for (int i = 0; i < itemList.Count; i++)
+                            {
+                                var item = itemList[i];
+                                btnAddNewItem.Data = new CloneObjData()
+                                {
+                                    Data = item,
+                                    DataType = item.GetType()
+                                }; //save last for clone by btn click
+
+                                AddItemCollectionToUI(item, collectionPanel, deepLevel, i);
+                            }
+
+
+                            btnAddNewItem.Click += (sender, args) =>
+                            {
+                                var clonedObj = ((DataButton)sender).Data as CloneObjData;
+
+                                if (clonedObj != null)
+                                {
+                                    var jsonObj = JsonConvert.SerializeObject(clonedObj.Data);
+                                    var materializedObj = JsonConvert.DeserializeObject(jsonObj, clonedObj.DataType);
+                                    var colPanel = (DataTableLayoutPanel)((DataButton)sender).ParentPanel;
+                                    colPanel.ChildCount++;
+                                    AddItemCollectionToUI(materializedObj, colPanel, ((DataButton)sender).DeepLevel, colPanel.ChildCount - 1);
+                                }
+                            };
+
+                            //button to next row
+                            AddControlToNewPanelRow(parentControl, btnAddNewItem, parentControl.Width - btnAddNewItem.Width);
+                        }
+                        else //complex object
+                        {
+                            var collectionPanel = new TableLayoutPanel()
+                            {
+                                AutoSize = true,
+                            };
+                            AddControlToNewPanelRow(parentControl, GetTitleControl(propTitle.Label), 0);
+                            AddControlToNewPanelRow(parentControl, collectionPanel, 0);
+                            if (objVal == null)
+                            {
+                                objVal = Activator.CreateInstance(tInfo.UnderlyingSystemType);
+                            }
+                            BindObject(objVal, collectionPanel, deepLevel + 1);
+                        }
+                    }
+
+
+                }
+            }
+            
+            
             
         }
 
@@ -293,7 +312,7 @@ namespace MonkeyJobTool.Forms
                     moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.SettingsType);
                 }
 
-                ms = new ModuleSettings(Module.Version, Module.ActualSettingsModuleVersion, FillObjectFromUI(moduleSettings));
+                ms = new ModuleSettings(Module.Version, Module.SettingsModuleVersion, FillObjectFromUI(moduleSettings));
                 
                 var json = JsonConvert.SerializeObject(ms, Formatting.Indented);
                 File.WriteAllText(fullPath, json);
@@ -308,49 +327,60 @@ namespace MonkeyJobTool.Forms
 
         private object FillObjectFromUI(object fillingObject, int deepLevel=1,int? collectionIndex=null)
         {
-           
-            var props = fillingObject.GetType().GetProperties();
-
-            foreach (var info in props)
+            if (fillingObject.GetType() == typeof (string))
             {
+                return GetItemValueFromUI(this, "", deepLevel, collectionIndex);
+            }
+            else
+            {
+                var props = fillingObject.GetType().GetProperties();
 
-                var tInfo = info.PropertyType;
-                var propTitle = Attribute.GetCustomAttribute(info, typeof(SettingsNameFieldAttribute)) as SettingsNameFieldAttribute;
-
-                if (propTitle != null)
+                foreach (var info in props)
                 {
-                    
-                    if (tInfo == typeof(int) || tInfo == typeof(string) || tInfo == typeof(bool))
+
+                    var tInfo = info.PropertyType;
+                    var propTitle = Attribute.GetCustomAttribute(info, typeof(SettingsNameFieldAttribute)) as SettingsNameFieldAttribute;
+
+                    if (propTitle != null)
                     {
-                        var filledVal = GetItemValueFromUI(this, info.Name, deepLevel, collectionIndex);
-                        //return null for detecting empty object and non-exist ui-controls for that object
-                        if (filledVal == null) 
-                            return null;
-                        info.SetValue(fillingObject, Convert.ChangeType(filledVal, info.PropertyType), null);
-                    }
-                    else if (typeof(IList).IsAssignableFrom(info.PropertyType))
-                    {
-                        var objVal = info.GetValue(fillingObject, null);
-                        objVal.GetType().GetMethod("Clear").Invoke(objVal, null);//todo:for now, we clear collection. In future [ID] attribute will be required for list entity for mapping, preventing non-editable fields erase
-                        int i = 0;
-                        Type listItemType = objVal.GetType().GetGenericArguments().First();
-                        do
+
+                        if (tInfo == typeof(int) || tInfo == typeof(string) || tInfo == typeof(bool))
                         {
-                            var collectionItem = Activator.CreateInstance(listItemType);
-                            var filedCollectionItemValue = FillObjectFromUI(collectionItem, deepLevel + 1, i);
-                            if (filedCollectionItemValue == null) break; //no any new items in collection found on ui
-                            objVal.GetType().GetMethod("Add").Invoke(objVal, new[] { filedCollectionItemValue });
-                            i++;
-                        } while (true);
-                        
-                    }
-                    else //complex object
-                    {
-                        var filledComplexObject = FillObjectFromUI(Activator.CreateInstance(tInfo),deepLevel+1);
-                        info.SetValue(fillingObject, Convert.ChangeType(filledComplexObject, info.PropertyType), null);
+                            var filledVal = GetItemValueFromUI(this, info.Name, deepLevel, collectionIndex);
+                            //return null for detecting empty object and non-exist ui-controls for that object
+                            if (filledVal == null)
+                                return null;
+                            info.SetValue(fillingObject, Convert.ChangeType(filledVal, info.PropertyType), null);
+                        }
+                        else if (typeof(IList).IsAssignableFrom(info.PropertyType))
+                        {
+                            var objVal = info.GetValue(fillingObject, null);
+                            objVal.GetType().GetMethod("Clear").Invoke(objVal, null);//todo:for now, we clear collection. In future [ID] attribute will be required for list entity for mapping, preventing non-editable fields erase
+                            int i = 0;
+                            Type listItemType = objVal.GetType().GetGenericArguments().First();
+                            do
+                            {
+                                object collectionItem = null;
+                                if (listItemType == typeof(string))
+                                    collectionItem = "";
+                                else
+                                    collectionItem = Activator.CreateInstance(listItemType);
+                                var filedCollectionItemValue = FillObjectFromUI(collectionItem, deepLevel + 1, i);
+                                if (filedCollectionItemValue == null) break; //no any new items in collection found on ui
+                                objVal.GetType().GetMethod("Add").Invoke(objVal, new[] { filedCollectionItemValue });
+                                i++;
+                            } while (true);
+
+                        }
+                        else //complex object
+                        {
+                            var filledComplexObject = FillObjectFromUI(Activator.CreateInstance(tInfo), deepLevel + 1);
+                            info.SetValue(fillingObject, Convert.ChangeType(filledComplexObject, info.PropertyType), null);
+                        }
                     }
                 }
             }
+            
             return fillingObject;
         }
 

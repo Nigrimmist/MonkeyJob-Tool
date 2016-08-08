@@ -19,80 +19,107 @@ namespace Nigrimmist.TelegramIntegrationClient
             _client = integrationClient;
         }
 
-        private TelegramBotClient bot;
-        private bool botInited;
-        private long chatId = -1;
-        private int offset = 0;
+        public override double ActualSettingsVersion
+        {
+            get { return 1.1; }
+        }
 
+        private List<ClientTelegramWrapper> _bots = null; 
 
         public override void HandleMessage(Guid token, CommunicationClientMessage message)
         {
             if (message == null) return;
-            
-            bool settingsShouldBeSave = false;
             TelegramSettings settings = null;
-            if (bot == null && !botInited)
+
+            if (_bots == null)
             {
-                _client.LogTrace("Init start");
+                _bots = new List<ClientTelegramWrapper>();
                 settings = _client.GetSettings<TelegramSettings>();
-                if (settings != null && !string.IsNullOrEmpty(settings.Token))
+                foreach (var bot in settings.Bots)
                 {
-                    try
+                    _bots.Add(new ClientTelegramWrapper()
                     {
-                        bot = new Api(settings.Token);
-                    }
-                    catch (Exception ex)
-                    {
-                        _client.LogTrace("bot init exception : "+ex);
-                        _client.ShowMessage(token, ex.Message);
-                        return;
-                    }
-                    
-                    offset = settings.Offset;
-                    chatId = settings.ChatId;
-                    _client.LogTrace("offset : "+offset+" chatId"+chatId);
+                        Token = bot.Token,
+                        ChatId = bot.ChatId,
+                        AllowedModuleNames = bot.AllowedModuleList
+                    });
                 }
-                else
-                {
-                    _client.ShowMessage(token,"Please, fill TOKEN to use telegram client or disable it");
-                    return;
-                }
-                botInited = true;
             }
-            if (botInited && bot!=null)
+
+            bool settingsShouldBeSave = false;
+            if (_bots.Any())
             {
-                if (chatId == -1 || chatId == 0)
+                foreach (var bot in _bots)
                 {
-                    var updates = bot.GetUpdatesAsync(offset).Result;
-                    _client.LogTrace("updates received");
-                    if (updates.Any())
-                    {
-                        chatId = updates.First().Message.Chat.Id;
-                        _client.LogTrace("chatId found "+chatId);
-                        settingsShouldBeSave = true;
-                        SendMessage(token,"MonkeyJob connected! Thanks for using!");
-                    }
-                    else
-                    {
-                       _client.ShowMessage(token,"Please, send any message to bot in telegram if you would like to use it as client in MonkeyJob");
-                        return;
-                    }
-                }
+                    if(!bot.AllowedForModule(message.FromModule)) continue;
 
-                if (settingsShouldBeSave)
-                {
-                    if(settings==null)
-                        settings = _client.GetSettings<TelegramSettings>();
-                    settings.ChatId = chatId;
-                    settings.Offset = offset;
-                    _client.SaveSettings(settings);
+                    if (bot.Bot == null && !bot.BotInited)
+                    {
+                        _client.LogTrace("Init start");
+                        if (settings == null)
+                            settings = _client.GetSettings<TelegramSettings>();
+                        if (!string.IsNullOrEmpty(bot.Token))
+                        {
+                            try
+                            {
+                                bot.Bot = new Api(bot.Token);
+                            }
+                            catch (Exception ex)
+                            {
+                                _client.LogTrace("bot init exception : " + ex);
+                                _client.ShowMessage(token, ex.Message);
+                                return;
+                            }
+
+                            _client.LogTrace("offset : " + bot.Offset + " chatId" + bot.ChatId);
+                        }
+                        else
+                        {
+                            _client.ShowMessage(token, "Please, fill TOKEN to use telegram client or disable it");
+                            return;
+                        }
+                        bot.BotInited = true;
+                    }
+                    if (bot.BotInited && bot.Bot != null)
+                    {
+                        if (bot.ChatId == -1 || bot.ChatId == 0)
+                        {
+                            var updates = bot.Bot.GetUpdatesAsync(bot.Offset).Result;
+                            _client.LogTrace("updates received");
+                            if (updates.Any())
+                            {
+                                bot.ChatId = updates.First().Message.Chat.Id;
+                                _client.LogTrace("chatId found " + bot.ChatId);
+                                settingsShouldBeSave = true;
+                                SendMessage(bot.Bot, bot.ChatId,token, "MonkeyJob connected! Thanks for using!");
+                            }
+                            else
+                            {
+                                _client.ShowMessage(token, "Please, send any message to bot in telegram if you would like to use it as a client in MonkeyJob");
+                                return;
+                            }
+                        }
+
+                        if (settingsShouldBeSave)
+                        {
+                            if (settings == null)
+                                settings = _client.GetSettings<TelegramSettings>();
+                            var foundBot = settings.Bots.SingleOrDefault(x => x.Token == bot.Token);
+                            foundBot.ChatId = bot.ChatId;
+                            foundBot.Offset = bot.Offset;
+                            _client.SaveSettings(settings);
+                        }
+                        string answer = message.FromModule + " :" + Environment.NewLine;
+                        SendMessage(bot.Bot,bot.ChatId,token, answer + message);
+                    }
                 }
-                string answer = message.FromModule + " :" + Environment.NewLine;
-                SendMessage(token,answer+message);
+                
             }
+            
         }
+        
 
-        private void SendMessage(Guid clientToken, string message)
+        private void SendMessage(TelegramBotClient bot, long chatId,Guid clientToken, string message)
         {
             try
             {
@@ -113,7 +140,7 @@ namespace Nigrimmist.TelegramIntegrationClient
             get { return "Telegram"; }
         }
 
-        public override string ModuleDescription { get { return "Пересылка уведомлений в Telegram. Для включения этого клиента вам необходимо создать своего собственного Telegram-бота. Посетите [url] для более детальной инструкции."; }  }
+        public override string ModuleDescription { get { return "Пересылка уведомлений в Telegram. Для включения этого клиента вам необходимо создать своего собственного Telegram-бота. Посетите https://core.telegram.org/bots#3-how-do-i-create-a-bot для более детальной инструкции."; } }
     }
 
     
@@ -122,15 +149,49 @@ namespace Nigrimmist.TelegramIntegrationClient
     [ModuleSettingsFor(typeof(TelegramClient))]
     public class TelegramSettings
     {
+        [SettingsNameField("Боты")]
+        public List<TelegramBotSettings> Bots { get; set; } 
+
+        public TelegramSettings()
+        {
+            Bots = new List<TelegramBotSettings>();
+        }
+    }
+
+    public class TelegramBotSettings
+    {
         [SettingsNameField("Телеграм токен, который отдаёт BotFather")]
         public string Token { get; set; }
+
+        [SettingsNameField("Белый список модулей (опционально) : ")]
+        public List<string> AllowedModuleList { get; set; } 
 
         public long ChatId { get; set; }
         public int Offset { get; set; }
 
-        public TelegramSettings()
+        public TelegramBotSettings()
         {
-                
+            AllowedModuleList = new List<string>();
+        }
+    }
+
+    class ClientTelegramWrapper
+    {
+        public bool BotInited { get; set; }
+        public string Token { get; set; }
+        public int Offset { get; set; }
+        public long ChatId { get; set; }
+        public TelegramBotClient Bot { get; set; }
+        public List<string> AllowedModuleNames { get; set; }
+
+        public ClientTelegramWrapper()
+        {
+            AllowedModuleNames = new List<string>();
+        }
+
+        public bool AllowedForModule(string moduleName)
+        {
+            return !AllowedModuleNames.Any() || AllowedModuleNames.Any(x => x.Trim().ToLower() == moduleName.ToLower().Trim());
         }
     }
 }

@@ -392,6 +392,9 @@ namespace HelloBotCore
                                     });
 
                                     hnd.HandleMessage(command, args.TrimStart(), commandTempGuid);
+
+                                    if (OnMessageHandled != null) 
+                                        OnMessageHandled();
                                 }
                                 catch (Exception ex)
                                 {
@@ -776,7 +779,7 @@ namespace HelloBotCore
         public List<ComponentInfoBase> GetIncompatibleSettingModules()
         {
             List<ComponentInfoBase> toReturn = new List<ComponentInfoBase>();
-            foreach (ComponentInfoBase module in Modules.Select(x => (ComponentInfoBase)x).Union(IntegrationClients).Where(x => x.SettingsType != null))
+            foreach (ComponentInfoBase module in Modules.Union(IntegrationClients).Select(x => (ComponentInfoBase)x).Union(IntegrationClients).Where(x => x.SettingsType != null))
             {
                 lock (_commandDictLocks[module.Id].SettingsLock)
                 {
@@ -785,7 +788,7 @@ namespace HelloBotCore
                     {
                         string data = File.ReadAllText(fullPath);
                         var settings = JsonConvert.DeserializeObject<ModuleSettings>(data);
-                        if (settings.SettingsVersion < module.ActualSettingsModuleVersion)
+                        if (settings.SettingsVersion < module.SettingsModuleVersion)
                         {
                             toReturn.Add(module);
                         }

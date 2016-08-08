@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using HelloBotCore.Entities;
 using Microsoft.Win32;
@@ -40,6 +42,9 @@ namespace MonkeyJobTool.Forms
             DatabindGrid(SettingGridType.Modules);
             DatabindGrid(SettingGridType.Clients);
             DatabindHelpTooltips();
+
+           
+
         }
 
         private void DatabindHelpTooltips()
@@ -269,13 +274,16 @@ namespace MonkeyJobTool.Forms
             foreach (var mod in orderedItems)
             {
                 Color? rowColor = null;
-                if(ChangedModules.Any(x=>x.Id==mod.Id))
+                if (ChangedModules.Any(x => x.Id == mod.Id))
+                {
                     rowColor = Color.PaleVioletRed;
+                }
+                    
                 
                 AddModuleInfoToGrid(gridType,mod.GetModuleName(), mod.GetTypeDescription(), mod.IsEnabled, mod.SystemName, mod.SettingsType != null,rowColor);
             }
-
-            Grid(gridType).Rows[0].Selected = true;
+            //Grid(gridType).ClearSelection();
+            //Grid(gridType).Rows[0].Selected = true;
         }
         
         private void AddModuleInfoToGrid(SettingGridType gridType,string name, string type, bool enabled, string uniqueName, bool isWithSettings, Color? rowColor = null)
@@ -470,12 +478,28 @@ namespace MonkeyJobTool.Forms
 
         private void SettingsForm_Shown(object sender, EventArgs e)
         {
+            TCSettings.SelectedTab = TPModuleSettings;
+            gridModules.ClearSelection();
+            TCSettings.SelectedTab = TPClients;
+            gridClients.ClearSelection();
+
             if (ChangedModules.Any())
             {
-                TPCommandReplace.SelectedTab = TPModuleSettings;
-                MessageBox.Show("Внимание!\r\nСледующие модули изменили свои настройки ввиду новой версии модуля, проверьте пожалуйста, что все ваши настройки верны для этих модулей. Изменённые настройки модулей подсвечены красным цветом.\r\n" +
-                                "Для того, чтобы это сообщение больше не появлялось, зайдите в настройки и пересохраните их в обновлённых модулях.", AppConstants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                string moduleType;
+                if (ChangedModules.Any(x => x.ModuleType != ModuleType.IntegrationClient))
+                {
+                    TCSettings.SelectedTab = TPModuleSettings;
+                    moduleType = "модули";
+                }
+                else
+                {
+                    TCSettings.SelectedTab = TPClients;
+                    moduleType = "клиенты";
+                }
+
+                MessageBox.Show(string.Format("Внимание!\r\nСледующие {0} изменили свои настройки ввиду новой версии.\r\n\r\nПроверьте пожалуйста, что все ваши настройки верны. Изменённые {0} подсвечены красным цветом.\r\n\r\nДля того, чтобы это сообщение больше не появлялось, зайдите в настройки и пересохраните их.", moduleType), AppConstants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+            gridClients.ClearSelection();
         }
 
         private void btnShowLogs_Click(object sender, EventArgs e)
@@ -527,6 +551,13 @@ namespace MonkeyJobTool.Forms
             }.ShowDialog();
         }
 
+        
+
+        
+
+        
+
+        
         
     }
 }

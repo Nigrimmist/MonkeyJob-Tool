@@ -33,15 +33,21 @@
             this.cmbKey1 = new System.Windows.Forms.ComboBox();
             this.cmbKey2 = new System.Windows.Forms.ComboBox();
             this.cmbKey3 = new System.Windows.Forms.ComboBox();
-            this.TPCommandReplace = new System.Windows.Forms.TabControl();
+            this.TCSettings = new System.Windows.Forms.TabControl();
             this.TPGeneral = new System.Windows.Forms.TabPage();
+            this.hsShowHelpForCommands = new MonkeyJobTool.Controls.HelpTooltip();
             this.chkIsShowCommandHelp = new System.Windows.Forms.CheckBox();
+            this.hsSendErrorReport = new MonkeyJobTool.Controls.HelpTooltip();
             this.chkDenyErrorInfoSend = new System.Windows.Forms.CheckBox();
+            this.htDonateBtn = new MonkeyJobTool.Controls.HelpTooltip();
+            this.htStatsCollect = new MonkeyJobTool.Controls.HelpTooltip();
             this.chkIsDenyCollectingStats = new System.Windows.Forms.CheckBox();
             this.chkIsHideDonateBtn = new System.Windows.Forms.CheckBox();
             this.TPHotkeys = new System.Windows.Forms.TabPage();
+            this.htHotKey = new MonkeyJobTool.Controls.HelpTooltip();
             this.label1 = new System.Windows.Forms.Label();
             this.TPReplaces = new System.Windows.Forms.TabPage();
+            this.htReplace = new MonkeyJobTool.Controls.HelpTooltip();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.pnlCommandReplaces = new System.Windows.Forms.FlowLayoutPanel();
@@ -54,21 +60,15 @@
             this.colIsEnabled = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.settingsCol = new System.Windows.Forms.DataGridViewImageColumn();
             this.TPClients = new System.Windows.Forms.TabPage();
+            this.btnShowModuleCommunication = new System.Windows.Forms.Button();
             this.btnShowClientLogs = new System.Windows.Forms.Button();
             this.btnEnabledDisableClient = new System.Windows.Forms.Button();
             this.gridClients = new System.Windows.Forms.DataGridView();
-            this.btnSaveConfig = new System.Windows.Forms.Button();
             this.colClient = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colIsEnabledClients = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.settingsColClients = new System.Windows.Forms.DataGridViewImageColumn();
-            this.hsShowHelpForCommands = new MonkeyJobTool.Controls.HelpTooltip();
-            this.hsSendErrorReport = new MonkeyJobTool.Controls.HelpTooltip();
-            this.htDonateBtn = new MonkeyJobTool.Controls.HelpTooltip();
-            this.htStatsCollect = new MonkeyJobTool.Controls.HelpTooltip();
-            this.htHotKey = new MonkeyJobTool.Controls.HelpTooltip();
-            this.htReplace = new MonkeyJobTool.Controls.HelpTooltip();
-            this.btnShowModuleCommunication = new System.Windows.Forms.Button();
-            this.TPCommandReplace.SuspendLayout();
+            this.btnSaveConfig = new System.Windows.Forms.Button();
+            this.TCSettings.SuspendLayout();
             this.TPGeneral.SuspendLayout();
             this.TPHotkeys.SuspendLayout();
             this.TPReplaces.SuspendLayout();
@@ -115,18 +115,18 @@
             this.cmbKey3.Size = new System.Drawing.Size(55, 21);
             this.cmbKey3.TabIndex = 3;
             // 
-            // TPCommandReplace
+            // TCSettings
             // 
-            this.TPCommandReplace.Controls.Add(this.TPGeneral);
-            this.TPCommandReplace.Controls.Add(this.TPHotkeys);
-            this.TPCommandReplace.Controls.Add(this.TPReplaces);
-            this.TPCommandReplace.Controls.Add(this.TPModuleSettings);
-            this.TPCommandReplace.Controls.Add(this.TPClients);
-            this.TPCommandReplace.Location = new System.Drawing.Point(13, 13);
-            this.TPCommandReplace.Name = "TPCommandReplace";
-            this.TPCommandReplace.SelectedIndex = 0;
-            this.TPCommandReplace.Size = new System.Drawing.Size(580, 240);
-            this.TPCommandReplace.TabIndex = 4;
+            this.TCSettings.Controls.Add(this.TPGeneral);
+            this.TCSettings.Controls.Add(this.TPHotkeys);
+            this.TCSettings.Controls.Add(this.TPReplaces);
+            this.TCSettings.Controls.Add(this.TPModuleSettings);
+            this.TCSettings.Controls.Add(this.TPClients);
+            this.TCSettings.Location = new System.Drawing.Point(13, 13);
+            this.TCSettings.Name = "TCSettings";
+            this.TCSettings.SelectedIndex = 0;
+            this.TCSettings.Size = new System.Drawing.Size(580, 240);
+            this.TCSettings.TabIndex = 4;
             // 
             // TPGeneral
             // 
@@ -147,6 +147,14 @@
             this.TPGeneral.Text = "Общие";
             this.TPGeneral.UseVisualStyleBackColor = true;
             // 
+            // hsShowHelpForCommands
+            // 
+            this.hsShowHelpForCommands.AutoSize = true;
+            this.hsShowHelpForCommands.Location = new System.Drawing.Point(220, 107);
+            this.hsShowHelpForCommands.Name = "hsShowHelpForCommands";
+            this.hsShowHelpForCommands.Size = new System.Drawing.Size(19, 19);
+            this.hsShowHelpForCommands.TabIndex = 8;
+            // 
             // chkIsShowCommandHelp
             // 
             this.chkIsShowCommandHelp.AutoSize = true;
@@ -157,6 +165,14 @@
             this.chkIsShowCommandHelp.Text = "Показывать подсказки для команд";
             this.chkIsShowCommandHelp.UseVisualStyleBackColor = true;
             // 
+            // hsSendErrorReport
+            // 
+            this.hsSendErrorReport.AutoSize = true;
+            this.hsSendErrorReport.Location = new System.Drawing.Point(334, 84);
+            this.hsSendErrorReport.Name = "hsSendErrorReport";
+            this.hsSendErrorReport.Size = new System.Drawing.Size(19, 19);
+            this.hsSendErrorReport.TabIndex = 6;
+            // 
             // chkDenyErrorInfoSend
             // 
             this.chkDenyErrorInfoSend.AutoSize = true;
@@ -166,6 +182,22 @@
             this.chkDenyErrorInfoSend.TabIndex = 5;
             this.chkDenyErrorInfoSend.Text = "Запретить отсылать информацию об ошибках программы";
             this.chkDenyErrorInfoSend.UseVisualStyleBackColor = true;
+            // 
+            // htDonateBtn
+            // 
+            this.htDonateBtn.AutoSize = true;
+            this.htDonateBtn.Location = new System.Drawing.Point(255, 38);
+            this.htDonateBtn.Name = "htDonateBtn";
+            this.htDonateBtn.Size = new System.Drawing.Size(19, 19);
+            this.htDonateBtn.TabIndex = 4;
+            // 
+            // htStatsCollect
+            // 
+            this.htStatsCollect.AutoSize = true;
+            this.htStatsCollect.Location = new System.Drawing.Point(370, 61);
+            this.htStatsCollect.Name = "htStatsCollect";
+            this.htStatsCollect.Size = new System.Drawing.Size(19, 19);
+            this.htStatsCollect.TabIndex = 3;
             // 
             // chkIsDenyCollectingStats
             // 
@@ -202,6 +234,14 @@
             this.TPHotkeys.Text = "Хоткеи";
             this.TPHotkeys.UseVisualStyleBackColor = true;
             // 
+            // htHotKey
+            // 
+            this.htHotKey.AutoSize = true;
+            this.htHotKey.Location = new System.Drawing.Point(318, 14);
+            this.htHotKey.Name = "htHotKey";
+            this.htHotKey.Size = new System.Drawing.Size(19, 19);
+            this.htHotKey.TabIndex = 5;
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -224,6 +264,14 @@
             this.TPReplaces.TabIndex = 2;
             this.TPReplaces.Text = "Сокращения команд";
             this.TPReplaces.UseVisualStyleBackColor = true;
+            // 
+            // htReplace
+            // 
+            this.htReplace.AutoSize = true;
+            this.htReplace.Location = new System.Drawing.Point(395, 43);
+            this.htReplace.Name = "htReplace";
+            this.htReplace.Size = new System.Drawing.Size(19, 19);
+            this.htReplace.TabIndex = 6;
             // 
             // label3
             // 
@@ -271,6 +319,7 @@
             // btnShowLogs
             // 
             this.btnShowLogs.BackColor = System.Drawing.Color.Moccasin;
+            this.btnShowLogs.Enabled = false;
             this.btnShowLogs.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnShowLogs.ForeColor = System.Drawing.Color.Black;
             this.btnShowLogs.Location = new System.Drawing.Point(436, 42);
@@ -284,6 +333,7 @@
             // btnEnabledDisableModule
             // 
             this.btnEnabledDisableModule.BackColor = System.Drawing.Color.Moccasin;
+            this.btnEnabledDisableModule.Enabled = false;
             this.btnEnabledDisableModule.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnEnabledDisableModule.ForeColor = System.Drawing.Color.Black;
             this.btnEnabledDisableModule.Location = new System.Drawing.Point(436, 6);
@@ -365,9 +415,24 @@
             this.TPClients.Text = "Интеграция с клиентами";
             this.TPClients.UseVisualStyleBackColor = true;
             // 
+            // btnShowModuleCommunication
+            // 
+            this.btnShowModuleCommunication.BackColor = System.Drawing.Color.Moccasin;
+            this.btnShowModuleCommunication.Enabled = false;
+            this.btnShowModuleCommunication.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnShowModuleCommunication.ForeColor = System.Drawing.Color.Black;
+            this.btnShowModuleCommunication.Location = new System.Drawing.Point(436, 87);
+            this.btnShowModuleCommunication.Name = "btnShowModuleCommunication";
+            this.btnShowModuleCommunication.Size = new System.Drawing.Size(118, 39);
+            this.btnShowModuleCommunication.TabIndex = 11;
+            this.btnShowModuleCommunication.Text = "Зависимость от модулей";
+            this.btnShowModuleCommunication.UseVisualStyleBackColor = false;
+            this.btnShowModuleCommunication.Click += new System.EventHandler(this.btnShowModuleCommunication_Click);
+            // 
             // btnShowClientLogs
             // 
             this.btnShowClientLogs.BackColor = System.Drawing.Color.Moccasin;
+            this.btnShowClientLogs.Enabled = false;
             this.btnShowClientLogs.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnShowClientLogs.ForeColor = System.Drawing.Color.Black;
             this.btnShowClientLogs.Location = new System.Drawing.Point(436, 42);
@@ -381,6 +446,7 @@
             // btnEnabledDisableClient
             // 
             this.btnEnabledDisableClient.BackColor = System.Drawing.Color.Moccasin;
+            this.btnEnabledDisableClient.Enabled = false;
             this.btnEnabledDisableClient.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnEnabledDisableClient.ForeColor = System.Drawing.Color.Black;
             this.btnEnabledDisableClient.Location = new System.Drawing.Point(436, 6);
@@ -419,19 +485,6 @@
             this.gridClients.MouseLeave += new System.EventHandler(this.grid_MouseLeave);
             this.gridClients.MouseMove += new System.Windows.Forms.MouseEventHandler(this.grid_MouseMove);
             // 
-            // btnSaveConfig
-            // 
-            this.btnSaveConfig.BackColor = System.Drawing.Color.Moccasin;
-            this.btnSaveConfig.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnSaveConfig.ForeColor = System.Drawing.Color.Black;
-            this.btnSaveConfig.Location = new System.Drawing.Point(518, 259);
-            this.btnSaveConfig.Name = "btnSaveConfig";
-            this.btnSaveConfig.Size = new System.Drawing.Size(75, 23);
-            this.btnSaveConfig.TabIndex = 5;
-            this.btnSaveConfig.Text = "Сохранить";
-            this.btnSaveConfig.UseVisualStyleBackColor = false;
-            this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
-            // 
             // colClient
             // 
             this.colClient.FillWeight = 150F;
@@ -453,66 +506,18 @@
             this.settingsColClients.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.settingsColClients.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
-            // hsShowHelpForCommands
+            // btnSaveConfig
             // 
-            this.hsShowHelpForCommands.AutoSize = true;
-            this.hsShowHelpForCommands.Location = new System.Drawing.Point(220, 107);
-            this.hsShowHelpForCommands.Name = "hsShowHelpForCommands";
-            this.hsShowHelpForCommands.Size = new System.Drawing.Size(19, 19);
-            this.hsShowHelpForCommands.TabIndex = 8;
-            // 
-            // hsSendErrorReport
-            // 
-            this.hsSendErrorReport.AutoSize = true;
-            this.hsSendErrorReport.Location = new System.Drawing.Point(334, 84);
-            this.hsSendErrorReport.Name = "hsSendErrorReport";
-            this.hsSendErrorReport.Size = new System.Drawing.Size(19, 19);
-            this.hsSendErrorReport.TabIndex = 6;
-            // 
-            // htDonateBtn
-            // 
-            this.htDonateBtn.AutoSize = true;
-            this.htDonateBtn.Location = new System.Drawing.Point(255, 38);
-            this.htDonateBtn.Name = "htDonateBtn";
-            this.htDonateBtn.Size = new System.Drawing.Size(19, 19);
-            this.htDonateBtn.TabIndex = 4;
-            // 
-            // htStatsCollect
-            // 
-            this.htStatsCollect.AutoSize = true;
-            this.htStatsCollect.Location = new System.Drawing.Point(370, 61);
-            this.htStatsCollect.Name = "htStatsCollect";
-            this.htStatsCollect.Size = new System.Drawing.Size(19, 19);
-            this.htStatsCollect.TabIndex = 3;
-            // 
-            // htHotKey
-            // 
-            this.htHotKey.AutoSize = true;
-            this.htHotKey.Location = new System.Drawing.Point(318, 14);
-            this.htHotKey.Name = "htHotKey";
-            this.htHotKey.Size = new System.Drawing.Size(19, 19);
-            this.htHotKey.TabIndex = 5;
-            // 
-            // htReplace
-            // 
-            this.htReplace.AutoSize = true;
-            this.htReplace.Location = new System.Drawing.Point(395, 43);
-            this.htReplace.Name = "htReplace";
-            this.htReplace.Size = new System.Drawing.Size(19, 19);
-            this.htReplace.TabIndex = 6;
-            // 
-            // btnShowModuleCommunication
-            // 
-            this.btnShowModuleCommunication.BackColor = System.Drawing.Color.Moccasin;
-            this.btnShowModuleCommunication.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnShowModuleCommunication.ForeColor = System.Drawing.Color.Black;
-            this.btnShowModuleCommunication.Location = new System.Drawing.Point(436, 87);
-            this.btnShowModuleCommunication.Name = "btnShowModuleCommunication";
-            this.btnShowModuleCommunication.Size = new System.Drawing.Size(118, 39);
-            this.btnShowModuleCommunication.TabIndex = 11;
-            this.btnShowModuleCommunication.Text = "Зависимость от модулей";
-            this.btnShowModuleCommunication.UseVisualStyleBackColor = false;
-            this.btnShowModuleCommunication.Click += new System.EventHandler(this.btnShowModuleCommunication_Click);
+            this.btnSaveConfig.BackColor = System.Drawing.Color.Moccasin;
+            this.btnSaveConfig.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnSaveConfig.ForeColor = System.Drawing.Color.Black;
+            this.btnSaveConfig.Location = new System.Drawing.Point(518, 259);
+            this.btnSaveConfig.Name = "btnSaveConfig";
+            this.btnSaveConfig.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveConfig.TabIndex = 5;
+            this.btnSaveConfig.Text = "Сохранить";
+            this.btnSaveConfig.UseVisualStyleBackColor = false;
+            this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
             // 
             // SettingsForm
             // 
@@ -520,7 +525,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(602, 296);
             this.Controls.Add(this.btnSaveConfig);
-            this.Controls.Add(this.TPCommandReplace);
+            this.Controls.Add(this.TCSettings);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SettingsForm";
@@ -528,7 +533,7 @@
             this.Text = "Настройки";
             this.Load += new System.EventHandler(this.SettingsForm_Load);
             this.Shown += new System.EventHandler(this.SettingsForm_Shown);
-            this.TPCommandReplace.ResumeLayout(false);
+            this.TCSettings.ResumeLayout(false);
             this.TPGeneral.ResumeLayout(false);
             this.TPGeneral.PerformLayout();
             this.TPHotkeys.ResumeLayout(false);
@@ -549,7 +554,7 @@
         private System.Windows.Forms.ComboBox cmbKey1;
         private System.Windows.Forms.ComboBox cmbKey2;
         private System.Windows.Forms.ComboBox cmbKey3;
-        private System.Windows.Forms.TabControl TPCommandReplace;
+        private System.Windows.Forms.TabControl TCSettings;
         private System.Windows.Forms.TabPage TPGeneral;
         private System.Windows.Forms.TabPage TPHotkeys;
         private System.Windows.Forms.Label label1;

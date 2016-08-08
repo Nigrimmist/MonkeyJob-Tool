@@ -18,7 +18,7 @@ namespace HelloBotCore.Entities
         public Guid Id { get; set; }
         public DescriptionInfo CommandDescription { get; set; }
         public double Version { get; set; }
-        public double ActualSettingsModuleVersion { get; set; }
+        public double SettingsModuleVersion { get; set; }
         public string SystemName { get; set; }
         public string ProvidedTitle { get; set; }
         public Image Icon { get; set; }
@@ -49,7 +49,7 @@ namespace HelloBotCore.Entities
 
         public void SaveSettings<T>(T serializableSettingObject) where T : class
         {
-            var settings = new ModuleSettings<T>(Version, ActualSettingsModuleVersion, serializableSettingObject);
+            var settings = new ModuleSettings<T>(Version, SettingsModuleVersion, serializableSettingObject);
             var json = JsonConvert.SerializeObject(settings, Formatting.Indented);
             File.WriteAllText(GetSettingFileFullPath(), json);
         }
@@ -62,7 +62,7 @@ namespace HelloBotCore.Entities
         public void Init(string dllName, ComponentBase componentBase, AuthorInfo author)
         {
             Version = componentBase.Version;
-            ActualSettingsModuleVersion = componentBase.ActualSettingsVersion;
+            SettingsModuleVersion = componentBase.ActualSettingsVersion;
             ProvidedTitle = componentBase.Title;
             var handType = componentBase.GetType();
             SystemName = dllName + "." + handType.Name;
