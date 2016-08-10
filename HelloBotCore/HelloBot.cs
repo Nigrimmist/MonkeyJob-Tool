@@ -231,7 +231,7 @@ namespace HelloBotCore
         {
             List<IntegrationClientBase> toReturn = new List<IntegrationClientBase>();
             var dlls = Directory.GetFiles(_moduleFolderPath, _moduleDllmask);
-            var i = typeof(IntegrationClientRegisterBase);
+            var baseType = typeof(IntegrationClientRegisterBase);
             var settingsAttr = typeof(ModuleSettingsForAttribute);
 
             if (enabledClients == null) enabledClients = new List<string>();
@@ -241,7 +241,7 @@ namespace HelloBotCore
                 var fi = new FileInfo(dll);
                 //get types from assembly
                 var types = ass.GetTypes();
-                var typesInAssembly = types.Where(type => i.IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                var typesInAssembly = types.Where(type => baseType.IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
                 var settingForClients = types.Where(t => t.IsDefined(settingsAttr, false)).Select(x =>
                     new
                     {
@@ -262,6 +262,21 @@ namespace HelloBotCore
                         tModule.IsEnabled = enabledClients.Contains(tModule.SystemName);
                         if (settingClass != null)
                             tModule.SettingsType = settingClass.moduleSettingsClass;
+
+                        var mainModuleSettings = tModule.GetSettings<IntegrationClientSettings>();
+                        if (mainModuleSettings == null)
+                        {
+                            mainModuleSettings = new IntegrationClientSettings();
+                            tModule.SaveSettings(mainModuleSettings);
+                        }
+
+                        for (var i = 0; i < mainModuleSettings.InstanceCount; i++)
+                        {
+                            var clonedClient = tModule.Clone();
+                            clonedClient.InstanceId = i;
+                            tModule.Instances.Add(clonedClient);
+                        }
+
                         return (IntegrationClientBase)tModule;
                     }).ToList();
 

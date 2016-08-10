@@ -174,7 +174,7 @@ namespace MonkeyJobTool.Forms
                 if (!ClientToModuleData.DisabledModules.Any()) return;
             }
 
-            App.Instance.AppConf.SystemData.AddUpdateModuleCommunicationForClient(ClientToModuleData);
+            //App.Instance.AppConf.SystemData.AddUpdateModuleCommunicationForClient(ClientToModuleData);
             App.Instance.AppConf.Save();
             this.Close();
         }

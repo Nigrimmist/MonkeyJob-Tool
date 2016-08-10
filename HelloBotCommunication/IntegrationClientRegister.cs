@@ -11,5 +11,6 @@ namespace HelloBotCommunication
     {
         public abstract AuthorInfo AuthorInfo { get; }
         public abstract List<IntegrationClientBase> GetIntegrationClients();
+        
     }
 }

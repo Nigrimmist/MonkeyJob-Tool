@@ -10,10 +10,21 @@ namespace HelloBotCore.Entities
     public class IntegrationClientInfo : IntegrationClientBase
     {
         private HelloBotCommunication.IntegrationClientBase baseClient = null;
+        private List<IntegrationClientBase> _instances;
+
+
+        public List<IntegrationClientBase> Instances
+        {
+            get { return _instances; }
+            set { _instances = value; }
+        }
+
         public IntegrationClientInfo(string settingsFolderAbsolutePath, string logsFolderAbsolutePath) : base(settingsFolderAbsolutePath, logsFolderAbsolutePath)
         {
-
+            Instances = new List<IntegrationClientBase>();
         }
+
+
 
         public override ModuleType ModuleType
         {
@@ -41,6 +52,11 @@ namespace HelloBotCore.Entities
             base.Init(dllName, baseClient, author);
             HelloBotCommunication.Interfaces.IIntegrationClient client = new ModuleToClientAdapter(moduleClientHandler, this);
             integrationClientBase.Init(client);
+        }
+
+        public IntegrationClientBase Clone()
+        {
+            return (IntegrationClientBase)this.MemberwiseClone();
         }
     }
 }

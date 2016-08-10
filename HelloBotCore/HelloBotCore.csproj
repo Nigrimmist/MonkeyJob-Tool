@@ -57,6 +57,7 @@
     <Compile Include="Entities\CommandArgumentSuggestionInfo.cs" />
     <Compile Include="Entities\IntegrationClientBase.cs" />
     <Compile Include="Entities\IntegrationClientInfo.cs" />
+    <Compile Include="Entities\IntegrationClientSettings.cs" />
     <Compile Include="Entities\LogMessage.cs" />
     <Compile Include="Entities\ComponentInfoBase.cs" />
     <Compile Include="Entities\ModuleInfoBase.cs" />

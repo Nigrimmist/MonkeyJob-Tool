@@ -28,6 +28,7 @@ namespace HelloBotCore.Entities
         private string _settingsFolderAbsolutePath { get; set; }
         private string _logsFolderAbsolutePath { get; set; }
         public abstract ModuleType ModuleType { get; }
+        public int? InstanceId { get; set; }
 
         protected ComponentInfoBase(string settingsFolderAbsolutePath, string logsFolderAbsolutePath)
         {
@@ -100,7 +101,7 @@ namespace HelloBotCore.Entities
 
         public virtual string GetSettingFileFullPath()
         {
-            return _settingsFolderAbsolutePath + "/" + SystemName + ".json";
+            return _settingsFolderAbsolutePath + "/" + SystemName+ (InstanceId.HasValue?InstanceId.Value.ToString():"") + ".json";
         }
     }
 

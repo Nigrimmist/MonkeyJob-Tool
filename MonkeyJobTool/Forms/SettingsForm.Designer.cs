@@ -369,7 +369,7 @@
             this.gridModules.TabIndex = 0;
             this.gridModules.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.grid_CellClick);
             this.gridModules.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.grid_CellMouseMove);
-            this.gridModules.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.grid_RowEnter);
+            this.gridModules.SelectionChanged += new System.EventHandler(this.gridModules_SelectionChanged);
             this.gridModules.MouseLeave += new System.EventHandler(this.grid_MouseLeave);
             this.gridModules.MouseMove += new System.Windows.Forms.MouseEventHandler(this.grid_MouseMove);
             // 
@@ -481,9 +481,9 @@
             this.gridClients.TabIndex = 8;
             this.gridClients.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.grid_CellClick);
             this.gridClients.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.grid_CellMouseMove);
-            this.gridClients.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.grid_RowEnter);
             this.gridClients.MouseLeave += new System.EventHandler(this.grid_MouseLeave);
             this.gridClients.MouseMove += new System.Windows.Forms.MouseEventHandler(this.grid_MouseMove);
+            this.gridClients.SelectionChanged += new System.EventHandler(this.gridModules_SelectionChanged);
             // 
             // colClient
             // 

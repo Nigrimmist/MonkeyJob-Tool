@@ -319,27 +319,7 @@ namespace MonkeyJobTool.Forms
             Grid(gridType).Rows.Add(r);
         }
 
-        private void grid_RowEnter(object sender, DataGridViewCellEventArgs e)
-        {
-            var grid = ((DataGridView) sender);
-            if (grid.SelectedRows.Count == 1)
-            {
-                var moduleKey = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
-                var gridType = GridTypeBySender(sender);
-                var module = (gridType == SettingGridType.Modules ? App.Instance.Bot.Modules : App.Instance.Bot.IntegrationClients.Select(x => (ComponentInfoBase)x)).SingleOrDefault(x => x.SystemName == moduleKey);
-                if (gridType == SettingGridType.Modules)
-                {
-                    btnEnabledDisableModule.Text = (!module.IsEnabled ? "В" : "Вы") + "ключить модуль";
-                    btnShowLogs.Enabled = module.Trace.TraceMessages.Any();
-                }
-                else
-                {
-                    btnEnabledDisableClient.Text = (!module.IsEnabled ? "Под" : "Вы") + "ключить клиент";
-                    btnShowClientLogs.Enabled = module.Trace.TraceMessages.Any();
-                    
-                }
-            }
-        }
+        
 
         private HelpPopup _commandHelpCommand = null;
 
@@ -476,13 +456,14 @@ namespace MonkeyJobTool.Forms
             }
         }
 
+        private bool _gridRowsInited = false;
         private void SettingsForm_Shown(object sender, EventArgs e)
         {
             TCSettings.SelectedTab = TPModuleSettings;
             gridModules.ClearSelection();
             TCSettings.SelectedTab = TPClients;
             gridClients.ClearSelection();
-
+            _gridRowsInited = true;
             if (ChangedModules.Any())
             {
                 string moduleType;
@@ -547,17 +528,41 @@ namespace MonkeyJobTool.Forms
             bool found;
             new ClientToModulesForm()
             {
-                ClientToModuleData = App.Instance.AppConf.SystemData.GetToModuleCommunicationForClient(moduleKey, out found) 
+                //ClientToModuleData = App.Instance.AppConf.SystemData.GetToModuleCommunicationForClient(moduleKey, out found) 
             }.ShowDialog();
         }
 
-        
+        private void gridModules_SelectionChanged(object sender, EventArgs e)
+        {
+            var grid = ((DataGridView)sender);
+            if (grid.SelectedRows.Count == 1)
+            {
+                
+                var moduleKey = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
+                var gridType = GridTypeBySender(sender);
+                var module = (gridType == SettingGridType.Modules ? App.Instance.Bot.Modules : App.Instance.Bot.IntegrationClients.Select(x => (ComponentInfoBase)x)).SingleOrDefault(x => x.SystemName == moduleKey);
+                if (gridType == SettingGridType.Modules)
+                {
+                    if (_gridRowsInited)
+                    {
+                        btnEnabledDisableModule.Enabled = true;
+                    }
+                    btnEnabledDisableModule.Text = (!module.IsEnabled ? "В" : "Вы") + "ключить модуль";
+                    btnShowLogs.Enabled = module.Trace.TraceMessages.Any();
+                }
+                else
+                {
+                    if (_gridRowsInited)
+                    {
+                        btnEnabledDisableClient.Enabled = true;
+                        btnShowModuleCommunication.Enabled = true;
+                    }
+                    btnEnabledDisableClient.Text = (!module.IsEnabled ? "Под" : "Вы") + "ключить клиент";
+                    btnShowClientLogs.Enabled = module.Trace.TraceMessages.Any();
 
-        
-
-        
-
-        
+                }
+            }
+        }
         
     }
 }
