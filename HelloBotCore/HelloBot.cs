@@ -260,8 +260,8 @@ namespace HelloBotCore
 
                             if (instId.HasValue)
                                 tModule.InstanceId = instId;
-
-                            tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this, ((IntegrationClientRegisterBase)obj).AuthorInfo);
+                            var newModuleiInstance = (HelloBotCommunication.IntegrationClientBase)Activator.CreateInstance(module.GetType());
+                            tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), newModuleiInstance, this, ((IntegrationClientRegisterBase)obj).AuthorInfo);
                             tModule.IsEnabled = enabledClients.Contains(tModule.SystemName);
                             if (settingClass != null)
                                 tModule.SettingsType = settingClass.moduleSettingsClass;
