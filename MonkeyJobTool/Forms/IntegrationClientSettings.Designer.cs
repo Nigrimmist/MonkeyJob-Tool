@@ -1,0 +1,159 @@
+﻿namespace MonkeyJobTool.Forms
+{
+    partial class IntegrationClientSettings
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.gridClients = new System.Windows.Forms.DataGridView();
+            this.btnShowModuleCommunication = new System.Windows.Forms.Button();
+            this.btnEnabledDisableClient = new System.Windows.Forms.Button();
+            this.btnShowClientLogs = new System.Windows.Forms.Button();
+            this.colClient = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colIsEnabled = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.settingsCol = new System.Windows.Forms.DataGridViewImageColumn();
+            ((System.ComponentModel.ISupportInitialize)(this.gridClients)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // gridClients
+            // 
+            this.gridClients.AllowUserToAddRows = false;
+            this.gridClients.AllowUserToDeleteRows = false;
+            this.gridClients.AllowUserToResizeRows = false;
+            this.gridClients.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.gridClients.BackgroundColor = System.Drawing.Color.White;
+            this.gridClients.CausesValidation = false;
+            this.gridClients.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colClient,
+            this.colIsEnabled,
+            this.settingsCol});
+            this.gridClients.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.gridClients.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.gridClients.Location = new System.Drawing.Point(12, 12);
+            this.gridClients.MultiSelect = false;
+            this.gridClients.Name = "gridClients";
+            this.gridClients.ReadOnly = true;
+            this.gridClients.RowHeadersVisible = false;
+            this.gridClients.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.gridClients.Size = new System.Drawing.Size(424, 208);
+            this.gridClients.TabIndex = 9;
+            this.gridClients.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridClients_CellClick);
+            this.gridClients.SelectionChanged += new System.EventHandler(this.gridClients_SelectionChanged);
+            // 
+            // btnShowModuleCommunication
+            // 
+            this.btnShowModuleCommunication.BackColor = System.Drawing.Color.Moccasin;
+            this.btnShowModuleCommunication.Enabled = false;
+            this.btnShowModuleCommunication.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnShowModuleCommunication.ForeColor = System.Drawing.Color.Black;
+            this.btnShowModuleCommunication.Location = new System.Drawing.Point(442, 93);
+            this.btnShowModuleCommunication.Name = "btnShowModuleCommunication";
+            this.btnShowModuleCommunication.Size = new System.Drawing.Size(118, 39);
+            this.btnShowModuleCommunication.TabIndex = 12;
+            this.btnShowModuleCommunication.Text = "Зависимость от модулей";
+            this.btnShowModuleCommunication.UseVisualStyleBackColor = false;
+            this.btnShowModuleCommunication.Click += new System.EventHandler(this.btnShowModuleCommunication_Click);
+            // 
+            // btnEnabledDisableClient
+            // 
+            this.btnEnabledDisableClient.BackColor = System.Drawing.Color.Moccasin;
+            this.btnEnabledDisableClient.Enabled = false;
+            this.btnEnabledDisableClient.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnEnabledDisableClient.ForeColor = System.Drawing.Color.Black;
+            this.btnEnabledDisableClient.Location = new System.Drawing.Point(442, 12);
+            this.btnEnabledDisableClient.Name = "btnEnabledDisableClient";
+            this.btnEnabledDisableClient.Size = new System.Drawing.Size(118, 30);
+            this.btnEnabledDisableClient.TabIndex = 13;
+            this.btnEnabledDisableClient.Text = "Отключить клиент";
+            this.btnEnabledDisableClient.UseVisualStyleBackColor = false;
+            this.btnEnabledDisableClient.Click += new System.EventHandler(this.btnEnabledDisableClient_Click);
+            // 
+            // btnShowClientLogs
+            // 
+            this.btnShowClientLogs.BackColor = System.Drawing.Color.Moccasin;
+            this.btnShowClientLogs.Enabled = false;
+            this.btnShowClientLogs.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnShowClientLogs.ForeColor = System.Drawing.Color.Black;
+            this.btnShowClientLogs.Location = new System.Drawing.Point(442, 48);
+            this.btnShowClientLogs.Name = "btnShowClientLogs";
+            this.btnShowClientLogs.Size = new System.Drawing.Size(118, 39);
+            this.btnShowClientLogs.TabIndex = 14;
+            this.btnShowClientLogs.Text = "Просмотреть лог активности";
+            this.btnShowClientLogs.UseVisualStyleBackColor = false;
+            this.btnShowClientLogs.Click += new System.EventHandler(this.btnShowClientLogs_Click);
+            // 
+            // colClient
+            // 
+            this.colClient.FillWeight = 15F;
+            this.colClient.HeaderText = "№";
+            this.colClient.Name = "colClient";
+            this.colClient.ReadOnly = true;
+            // 
+            // colIsEnabled
+            // 
+            this.colIsEnabled.HeaderText = "Статус";
+            this.colIsEnabled.Name = "colIsEnabled";
+            this.colIsEnabled.ReadOnly = true;
+            // 
+            // settingsCol
+            // 
+            this.settingsCol.HeaderText = "Настройки";
+            this.settingsCol.Name = "settingsCol";
+            this.settingsCol.ReadOnly = true;
+            this.settingsCol.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.settingsCol.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // IntegrationClientSettings
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(572, 269);
+            this.Controls.Add(this.btnShowClientLogs);
+            this.Controls.Add(this.btnEnabledDisableClient);
+            this.Controls.Add(this.btnShowModuleCommunication);
+            this.Controls.Add(this.gridClients);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.Name = "IntegrationClientSettings";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Клиенты";
+            this.Load += new System.EventHandler(this.IntegrationClientSettings_Load);
+            this.Shown += new System.EventHandler(this.IntegrationClientSettings_Shown);
+            ((System.ComponentModel.ISupportInitialize)(this.gridClients)).EndInit();
+            this.ResumeLayout(false);
+
+        }
+
+        #endregion
+
+        private System.Windows.Forms.DataGridView gridClients;
+        private System.Windows.Forms.Button btnShowModuleCommunication;
+        private System.Windows.Forms.Button btnEnabledDisableClient;
+        private System.Windows.Forms.Button btnShowClientLogs;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colClient;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colIsEnabled;
+        private System.Windows.Forms.DataGridViewImageColumn settingsCol;
+    }
+}

@@ -40,8 +40,7 @@ namespace Nigrimmist.TelegramIntegrationClient
                     _bots.Add(new ClientTelegramWrapper()
                     {
                         Token = bot.Token,
-                        ChatId = bot.ChatId,
-                        AllowedModuleNames = bot.AllowedModuleList
+                        ChatId = bot.ChatId
                     });
                 }
             }
@@ -51,7 +50,7 @@ namespace Nigrimmist.TelegramIntegrationClient
             {
                 foreach (var bot in _bots)
                 {
-                    if(!bot.AllowedForModule(message.FromModule)) continue;
+                    
 
                     if (bot.Bot == null && !bot.BotInited)
                     {
@@ -163,15 +162,12 @@ namespace Nigrimmist.TelegramIntegrationClient
         [SettingsNameField("Телеграм токен, который отдаёт BotFather")]
         public string Token { get; set; }
 
-        [SettingsNameField("Белый список модулей (опционально) : ")]
-        public List<string> AllowedModuleList { get; set; } 
-
         public long ChatId { get; set; }
         public int Offset { get; set; }
 
         public TelegramBotSettings()
         {
-            AllowedModuleList = new List<string>();
+            
         }
     }
 
@@ -182,16 +178,12 @@ namespace Nigrimmist.TelegramIntegrationClient
         public int Offset { get; set; }
         public long ChatId { get; set; }
         public TelegramBotClient Bot { get; set; }
-        public List<string> AllowedModuleNames { get; set; }
 
         public ClientTelegramWrapper()
         {
-            AllowedModuleNames = new List<string>();
+            
         }
 
-        public bool AllowedForModule(string moduleName)
-        {
-            return !AllowedModuleNames.Any() || AllowedModuleNames.Any(x => x.Trim().ToLower() == moduleName.ToLower().Trim());
-        }
+        
     }
 }

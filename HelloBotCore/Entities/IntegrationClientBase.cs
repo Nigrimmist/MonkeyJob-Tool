@@ -13,7 +13,11 @@ namespace HelloBotCore.Entities
         {
         }
 
+        public ClientInstanceToModuleCommunication InstanceCommunication { get; set; }
+
         public abstract void SendMessageToClient(Guid token, CommunicationClientMessage message);
+
+        
 
     }
 }

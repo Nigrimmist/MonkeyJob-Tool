@@ -61,7 +61,7 @@ namespace HelloBotCore
         public event OnMessageRecievedDelegate OnMessageRecieved;
         public event OnMessageHandledDelegate OnMessageHandled;
         private readonly double _currentUIClientVersion;
-        private List<IntegrationClientBase> _integrationClients;
+        private List<IntegrationClientInfo> _integrationClients;
 
 
         public delegate void TrayIconSetupRequiredDelegate(Guid moduleId, Icon icon, string title);
@@ -78,9 +78,7 @@ namespace HelloBotCore
         
 
         public event Action<List<AutoSuggestItem>> OnSuggestRecieved;
-        public delegate bool IsClientEnabledForModuleDelegate(string client,string module, ModuleType moduleType);
-
-        private IsClientEnabledForModuleDelegate _isClientEnabledForModuleFunc = null;
+        
 
         /// <summary>
         /// Bot costructor
@@ -220,16 +218,15 @@ namespace HelloBotCore
             Modules.AddRange(baseList);
         }
 
-        public void RegisterIntegrationClients(List<string> enabledClients, IsClientEnabledForModuleDelegate isClientEnabledForModuleFunc)
+        public void RegisterIntegrationClients(List<string> enabledClients)
         {
-            _isClientEnabledForModuleFunc = isClientEnabledForModuleFunc;
             var allClients = LoadIntegrationClients(enabledClients);
             _integrationClients = allClients;
         }
 
-        public List<IntegrationClientBase> LoadIntegrationClients(List<string> enabledClients = null)
+        public List<IntegrationClientInfo> LoadIntegrationClients(List<string> enabledClients = null)
         {
-            List<IntegrationClientBase> toReturn = new List<IntegrationClientBase>();
+            List<IntegrationClientInfo> toReturn = new List<IntegrationClientInfo>();
             var dlls = Directory.GetFiles(_moduleFolderPath, _moduleDllmask);
             var baseType = typeof(IntegrationClientRegisterBase);
             var settingsAttr = typeof(ModuleSettingsForAttribute);
@@ -256,28 +253,42 @@ namespace HelloBotCore
                     var clients = ((IntegrationClientRegisterBase)obj).GetIntegrationClients().Select(module =>
                     {
                         var settingClass = settingForClients.FirstOrDefault(x => x.moduleForParentClass == module.GetType());
-                        var tModule = new IntegrationClientInfo(_settingsFolderAbsolutePath, _logsFolderAbsolutePath);
-                        _commandDictLocks.Add(tModule.Id, new ModuleLocker());
-                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this,((IntegrationClientRegisterBase)obj).AuthorInfo);
-                        tModule.IsEnabled = enabledClients.Contains(tModule.SystemName);
-                        if (settingClass != null)
-                            tModule.SettingsType = settingClass.moduleSettingsClass;
+                        var getNewInstance = new Func<int?, IntegrationClientInfo>((instId) =>
+                        {
+                            var tModule = new IntegrationClientInfo(_settingsFolderAbsolutePath, _logsFolderAbsolutePath);
+                            _commandDictLocks.Add(tModule.Id, new ModuleLocker());
 
-                        var mainModuleSettings = tModule.GetSettings<IntegrationClientSettings>();
+                            if (instId.HasValue)
+                                tModule.InstanceId = instId;
+
+                            tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this, ((IntegrationClientRegisterBase)obj).AuthorInfo);
+                            tModule.IsEnabled = enabledClients.Contains(tModule.SystemName);
+                            if (settingClass != null)
+                                tModule.SettingsType = settingClass.moduleSettingsClass;
+
+                            
+                            return tModule;
+                        });
+
+                        var mainModule = getNewInstance(null);
+
+                        var mainModuleSettings = mainModule.GetSettings<IntegrationClientSettings>();
                         if (mainModuleSettings == null)
                         {
                             mainModuleSettings = new IntegrationClientSettings();
-                            tModule.SaveSettings(mainModuleSettings);
+                            mainModule.SaveSettings(mainModuleSettings);
                         }
 
                         for (var i = 0; i < mainModuleSettings.InstanceCount; i++)
                         {
-                            var clonedClient = tModule.Clone();
-                            clonedClient.InstanceId = i;
-                            tModule.Instances.Add(clonedClient);
+                            var clonedClient = getNewInstance(i+1);
+                            ClientInstanceToModuleCommunication clientServiceData;
+                            clonedClient.GetSettings<object, ClientInstanceToModuleCommunication>(out clientServiceData);
+                            clonedClient.InstanceCommunication = clientServiceData ?? ClientInstanceToModuleCommunication.GetDefault();
+                            mainModule.Instances.Add(clonedClient);
                         }
 
-                        return (IntegrationClientBase)tModule;
+                        return mainModule;
                     }).ToList();
 
                     toReturn.AddRange(clients);
@@ -564,7 +575,8 @@ namespace HelloBotCore
             BotCommandContext commandContext = commandBaseContext as BotCommandContext;
             if (commandContext != null || !commandToken.HasValue)
             {
-                var enabledIntegrationClients = IntegrationClients.Where(x => x.IsEnabled && _isClientEnabledForModuleFunc(x.SystemName, moduleInfo.SystemName, moduleInfo.ModuleType)).ToList();
+                //&& _isClientEnabledForModuleFunc(x.SystemName, moduleInfo.SystemName, moduleInfo.ModuleType)
+                var enabledIntegrationClients = IntegrationClients.Where(x => x.IsEnabled).SelectMany(x => x.Instances.Where(y=>y.IsEnabled)).Where(x=>x.InstanceCommunication.IsEnabledFor(x.SystemName,moduleInfo.ModuleType)).ToList();
                 
                 if (enabledIntegrationClients.Any() && !useBaseClient)
                 {
@@ -775,7 +787,7 @@ namespace HelloBotCore
             get { return _modules; }
         }
 
-        public List<IntegrationClientBase> IntegrationClients
+        public List<IntegrationClientInfo> IntegrationClients
         {
             get { return _integrationClients; }
         }
@@ -783,12 +795,12 @@ namespace HelloBotCore
 
         public void DisableModule(string moduleSystemName)
         {
-            Modules.Union(_integrationClients).Single(x => x.SystemName == moduleSystemName).IsEnabled = false;
+            Modules.Union(_integrationClients).Union(_integrationClients.SelectMany(x=>x.Instances)).Single(x => x.SystemName == moduleSystemName).IsEnabled = false;
         }
 
         public void EnableModule(string moduleSystemName)
         {
-            Modules.Union(_integrationClients).Single(x => x.SystemName == moduleSystemName).IsEnabled = true;
+            Modules.Union(_integrationClients).Union(_integrationClients.SelectMany(x=>x.Instances)).Single(x => x.SystemName == moduleSystemName).IsEnabled = true;
         }
 
         public List<ComponentInfoBase> GetIncompatibleSettingModules()

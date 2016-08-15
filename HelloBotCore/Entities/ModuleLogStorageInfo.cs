@@ -12,20 +12,22 @@ namespace HelloBotCore.Entities
         public List<LogMessage> TraceMessages { get; set; }
         private int _limit;
         private readonly string _moduleSystemName;
+        private readonly int? _instanceId;
         private bool _dataAddedSinceLastSave = false;
         private string _savePath { get; set; }
 
-        public ModuleLogStorageInfo(int limit, string savePath, string moduleName)
+        public ModuleLogStorageInfo(int limit, string savePath, string moduleName, int? instanceId)
         {
             _limit = limit;
             _moduleSystemName = moduleName;
+            _instanceId = instanceId;
             _savePath = savePath;
             TraceMessages = new List<LogMessage>();
         }
         
         public void AddMessage(string message)
         {
-            TraceMessages.Add(new LogMessage(){Message = message});
+            TraceMessages.Add(new LogMessage() { Message = (_instanceId.HasValue ? _instanceId + " : " : "") + message });
             if (TraceMessages.Count > _limit)
             {
                 TraceMessages.RemoveRange(0, TraceMessages.Count - _limit);
@@ -57,7 +59,7 @@ namespace HelloBotCore.Entities
 
         public string GetLogFileFullPath()
         {
-            return _savePath + "/" + _moduleSystemName + ".json";
+            return _savePath + "/" + _moduleSystemName  + ".json";
         }
     }
 }

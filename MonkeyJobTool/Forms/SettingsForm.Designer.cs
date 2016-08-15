@@ -60,7 +60,6 @@
             this.colIsEnabled = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.settingsCol = new System.Windows.Forms.DataGridViewImageColumn();
             this.TPClients = new System.Windows.Forms.TabPage();
-            this.btnShowModuleCommunication = new System.Windows.Forms.Button();
             this.btnShowClientLogs = new System.Windows.Forms.Button();
             this.btnEnabledDisableClient = new System.Windows.Forms.Button();
             this.gridClients = new System.Windows.Forms.DataGridView();
@@ -403,7 +402,6 @@
             // 
             // TPClients
             // 
-            this.TPClients.Controls.Add(this.btnShowModuleCommunication);
             this.TPClients.Controls.Add(this.btnShowClientLogs);
             this.TPClients.Controls.Add(this.btnEnabledDisableClient);
             this.TPClients.Controls.Add(this.gridClients);
@@ -414,20 +412,6 @@
             this.TPClients.TabIndex = 4;
             this.TPClients.Text = "Интеграция с клиентами";
             this.TPClients.UseVisualStyleBackColor = true;
-            // 
-            // btnShowModuleCommunication
-            // 
-            this.btnShowModuleCommunication.BackColor = System.Drawing.Color.Moccasin;
-            this.btnShowModuleCommunication.Enabled = false;
-            this.btnShowModuleCommunication.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnShowModuleCommunication.ForeColor = System.Drawing.Color.Black;
-            this.btnShowModuleCommunication.Location = new System.Drawing.Point(436, 87);
-            this.btnShowModuleCommunication.Name = "btnShowModuleCommunication";
-            this.btnShowModuleCommunication.Size = new System.Drawing.Size(118, 39);
-            this.btnShowModuleCommunication.TabIndex = 11;
-            this.btnShowModuleCommunication.Text = "Зависимость от модулей";
-            this.btnShowModuleCommunication.UseVisualStyleBackColor = false;
-            this.btnShowModuleCommunication.Click += new System.EventHandler(this.btnShowModuleCommunication_Click);
             // 
             // btnShowClientLogs
             // 
@@ -481,9 +465,9 @@
             this.gridClients.TabIndex = 8;
             this.gridClients.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.grid_CellClick);
             this.gridClients.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.grid_CellMouseMove);
+            this.gridClients.SelectionChanged += new System.EventHandler(this.gridModules_SelectionChanged);
             this.gridClients.MouseLeave += new System.EventHandler(this.grid_MouseLeave);
             this.gridClients.MouseMove += new System.Windows.Forms.MouseEventHandler(this.grid_MouseMove);
-            this.gridClients.SelectionChanged += new System.EventHandler(this.gridModules_SelectionChanged);
             // 
             // colClient
             // 
@@ -588,6 +572,5 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colClient;
         private System.Windows.Forms.DataGridViewTextBoxColumn colIsEnabledClients;
         private System.Windows.Forms.DataGridViewImageColumn settingsColClients;
-        private System.Windows.Forms.Button btnShowModuleCommunication;
     }
 }

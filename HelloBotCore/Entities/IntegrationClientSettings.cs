@@ -9,7 +9,7 @@ namespace HelloBotCore.Entities
     public class IntegrationClientSettings
     {
         public int InstanceCount { get; set; }
-
+        
         public IntegrationClientSettings()
         {
             InstanceCount = 1;

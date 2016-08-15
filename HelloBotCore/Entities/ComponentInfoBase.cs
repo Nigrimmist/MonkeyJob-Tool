@@ -29,7 +29,7 @@ namespace HelloBotCore.Entities
         private string _logsFolderAbsolutePath { get; set; }
         public abstract ModuleType ModuleType { get; }
         public int? InstanceId { get; set; }
-
+        
         protected ComponentInfoBase(string settingsFolderAbsolutePath, string logsFolderAbsolutePath)
         {
             Id = Guid.NewGuid();
@@ -40,19 +40,37 @@ namespace HelloBotCore.Entities
         
         public T GetSettings<T>() where T : class
         {
-           string fullPath = GetSettingFileFullPath();
-           if (!File.Exists(fullPath)) return null;
-           //todo: refactoring required (cache)
-           string data = File.ReadAllText(fullPath);
-           var settings = JsonConvert.DeserializeObject<ModuleSettings<T>>(data);
-           return settings.ModuleData;
+            object additionalData;
+            return GetSettings<T,object>(out additionalData);
         }
 
-        public void SaveSettings<T>(T serializableSettingObject) where T : class
+        public T GetSettings<T,T2>(out T2 serviceData) where T : class
+            where T2 : class
         {
-            var settings = new ModuleSettings<T>(Version, SettingsModuleVersion, serializableSettingObject);
+            serviceData = null;
+            string fullPath = GetSettingFileFullPath();
+            if (!File.Exists(fullPath)) return null;
+            //todo: refactoring required (cache)
+            string data = File.ReadAllText(fullPath);
+            var settings = JsonConvert.DeserializeObject<ModuleSettings<T,T2>>(data);
+            serviceData = settings.ServiceData;
+            return settings.ModuleData;
+        }
+
+        public void SaveSettings<T>(T serializableSettingObject, object settingsAdditionalData=null) where T : class
+        {
+            var settings = new ModuleSettings<T>(Version, SettingsModuleVersion, serializableSettingObject,settingsAdditionalData);
             var json = JsonConvert.SerializeObject(settings, Formatting.Indented);
             File.WriteAllText(GetSettingFileFullPath(), json);
+        }
+
+        public void SaveServiceData<T>(T serviceData) where T : class
+        {
+            string fullPath = GetSettingFileFullPath();
+            if (!File.Exists(fullPath)) return;
+            string data = File.ReadAllText(fullPath);
+            var settings = JsonConvert.DeserializeObject<ModuleSettings<object, T>>(data);
+            SaveSettings(settings.ModuleData, serviceData);
         }
 
         public string GetModuleName()
@@ -66,7 +84,7 @@ namespace HelloBotCore.Entities
             SettingsModuleVersion = componentBase.ActualSettingsVersion;
             ProvidedTitle = componentBase.Title;
             var handType = componentBase.GetType();
-            SystemName = dllName + "." + handType.Name;
+            SystemName = dllName + "." + handType.Name+(InstanceId.HasValue?"_"+InstanceId.Value:"");
 
             if (!string.IsNullOrEmpty(componentBase.IconInBase64))
             {
@@ -75,7 +93,7 @@ namespace HelloBotCore.Entities
             
             Author = author;
 
-            Trace = new ModuleLogStorageInfo(30, _logsFolderAbsolutePath, SystemName);
+            Trace = new ModuleLogStorageInfo(30, _logsFolderAbsolutePath, SystemName,InstanceId);
             Trace.Load();
         }
         
@@ -101,7 +119,7 @@ namespace HelloBotCore.Entities
 
         public virtual string GetSettingFileFullPath()
         {
-            return _settingsFolderAbsolutePath + "/" + SystemName+ (InstanceId.HasValue?InstanceId.Value.ToString():"") + ".json";
+            return _settingsFolderAbsolutePath + "/" + SystemName + ".json";
         }
     }
 

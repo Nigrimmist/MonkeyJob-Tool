@@ -43,8 +43,13 @@ namespace MonkeyJobTool.Forms
             {
                 string data = File.ReadAllText(fullPath);
                 var settingsWrapper = JsonConvert.DeserializeObject(data, typeof (ModuleSettings)) as ModuleSettings;
-                var rawSettingsJson = JsonConvert.SerializeObject(settingsWrapper.ModuleData);
-                moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.SettingsType);
+                if (settingsWrapper.ModuleData != null)
+                {
+                    var rawSettingsJson = JsonConvert.SerializeObject(settingsWrapper.ModuleData);
+                    moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.SettingsType);
+                }
+                else
+                    moduleSettings = Activator.CreateInstance(Module.SettingsType);
             }
             var table = new TableLayoutPanel()
             {
@@ -299,7 +304,7 @@ namespace MonkeyJobTool.Forms
             {
                 string fullPath = Module.GetSettingFileFullPath();
                 object moduleSettings;
-                ModuleSettings ms;
+                ModuleSettings ms=null;
                 if (!File.Exists(fullPath))
                 {
                     moduleSettings = Activator.CreateInstance(Module.SettingsType);
@@ -308,11 +313,18 @@ namespace MonkeyJobTool.Forms
                 {
                     string data = File.ReadAllText(fullPath);
                     ms = JsonConvert.DeserializeObject(data, typeof (ModuleSettings)) as ModuleSettings;
-                    var rawSettingsJson = JsonConvert.SerializeObject(ms.ModuleData);
-                    moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.SettingsType);
+
+                    if (ms.ModuleData != null)
+                    {
+                        var rawSettingsJson = JsonConvert.SerializeObject(ms.ModuleData);
+                        moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.SettingsType);
+                    }
+                    else
+                        moduleSettings = Activator.CreateInstance(Module.SettingsType);
                 }
 
-                ms = new ModuleSettings(Module.Version, Module.SettingsModuleVersion, FillObjectFromUI(moduleSettings));
+                var serviceData = ms != null ? ms.ServiceData : null;
+                ms = new ModuleSettings(Module.Version, Module.SettingsModuleVersion, FillObjectFromUI(moduleSettings),serviceData);
                 
                 var json = JsonConvert.SerializeObject(ms, Formatting.Indented);
                 File.WriteAllText(fullPath, json);

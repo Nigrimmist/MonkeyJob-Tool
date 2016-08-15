@@ -13,7 +13,7 @@ namespace MonkeyJobTool.Forms
 {
     public partial class ModuleLogsForm : Form
     {
-        public ComponentInfoBase Module { get; set; }
+        public List<LogMessage> LogMessages { get;set; }
 
         public ModuleLogsForm()
         {
@@ -33,7 +33,7 @@ namespace MonkeyJobTool.Forms
 
         private void FillData()
         {
-            fldMessages.Text = String.Join(Environment.NewLine, Module.Trace.TraceMessages.Select(x => x.Date.ToString("yy/MM/dd hh:mm:ss") + " : " + x.Message).ToArray());
+            fldMessages.Text = String.Join(Environment.NewLine, LogMessages.Select(x => x.Date.ToString("yy/MM/dd hh:mm:ss") + " : " + x.Message).ToArray());
         }
     }
 }

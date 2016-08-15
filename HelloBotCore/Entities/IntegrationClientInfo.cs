@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HelloBotCommunication;
+using Newtonsoft.Json;
 
 namespace HelloBotCore.Entities
 {
@@ -11,6 +12,7 @@ namespace HelloBotCore.Entities
     {
         private HelloBotCommunication.IntegrationClientBase baseClient = null;
         private List<IntegrationClientBase> _instances;
+
 
 
         public List<IntegrationClientBase> Instances
@@ -23,9 +25,7 @@ namespace HelloBotCore.Entities
         {
             Instances = new List<IntegrationClientBase>();
         }
-
-
-
+        
         public override ModuleType ModuleType
         {
             get { return ModuleType.IntegrationClient; }
@@ -52,11 +52,6 @@ namespace HelloBotCore.Entities
             base.Init(dllName, baseClient, author);
             HelloBotCommunication.Interfaces.IIntegrationClient client = new ModuleToClientAdapter(moduleClientHandler, this);
             integrationClientBase.Init(client);
-        }
-
-        public IntegrationClientBase Clone()
-        {
-            return (IntegrationClientBase)this.MemberwiseClone();
         }
     }
 }

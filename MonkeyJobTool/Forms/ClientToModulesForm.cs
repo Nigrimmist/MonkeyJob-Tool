@@ -14,7 +14,11 @@ namespace MonkeyJobTool.Forms
 {
     public partial class ClientToModulesForm : Form
     {
-        public ModuleToModuleCommunication ClientToModuleData { get; set; }
+        public ClientInstanceToModuleCommunication ClientData { get; set; }
+
+        public delegate void OnSaveDelegate(ClientInstanceToModuleCommunication clientData);
+        public event OnSaveDelegate OnSave;
+
 
         public ClientToModulesForm()
         {
@@ -100,28 +104,28 @@ namespace MonkeyJobTool.Forms
 
         private void DataBindFromConfig()
         {
-            if (ClientToModuleData.EnabledForAll)
+            if (ClientData.EnabledForAll)
             {
-                rdAll.Checked = ClientToModuleData.EnabledForAll;
+                rdAll.Checked = ClientData.EnabledForAll;
             }
 
-            if (ClientToModuleData.EnabledByType.HasValue)
+            if (ClientData.EnabledByType.HasValue)
             {
                 rdByModuleType.Checked = true;
-                cmbModuleTypes.SelectedValue = (int) ClientToModuleData.EnabledByType.Value;
+                cmbModuleTypes.SelectedValue = (int) ClientData.EnabledByType.Value;
             }
 
-            if (ClientToModuleData.DisabledByType.HasValue)
+            if (ClientData.DisabledByType.HasValue)
             {
                 rdExceptType.Checked = true;
-                cmbExceptType.SelectedValue = (int)ClientToModuleData.DisabledByType.Value;
+                cmbExceptType.SelectedValue = (int)ClientData.DisabledByType.Value;
             }
                 
 
-            if (ClientToModuleData.EnabledModules.Any())
+            if (ClientData.EnabledModules.Any())
             {
                 rdOnlyModules.Checked = true;
-                foreach (var moduleName in ClientToModuleData.EnabledModules)
+                foreach (var moduleName in ClientData.EnabledModules)
                 {
                     var module = App.Instance.Bot.Modules.FirstOrDefault(x => x.SystemName == moduleName);
                     MoveModule(lstAvailableModules, lstCheckedModules, new
@@ -132,10 +136,10 @@ namespace MonkeyJobTool.Forms
                 }
             }
             else
-                if (ClientToModuleData.DisabledModules.Any())
+                if (ClientData.DisabledModules.Any())
                 {
                     rdExceptModules.Checked = true;
-                    foreach (var moduleName in ClientToModuleData.DisabledModules)
+                    foreach (var moduleName in ClientData.DisabledModules)
                     {
                         var module = App.Instance.Bot.Modules.FirstOrDefault(x => x.SystemName == moduleName);
                         MoveModule(lstAvailableModules, lstCheckedModules, new
@@ -150,32 +154,33 @@ namespace MonkeyJobTool.Forms
 
         private void btnSaveConfig_Click(object sender, EventArgs e)
         {
-            ClientToModuleData.Reset();
+            ClientData.Reset();
             if (rdAll.Checked)
             {
-                ClientToModuleData.EnabledForAll = true;
+                ClientData.EnabledForAll = true;
             }
             else if (rdByModuleType.Checked)
             {
-                ClientToModuleData.EnabledByType = (ModuleType)(int) cmbModuleTypes.SelectedValue;
+                ClientData.EnabledByType = (ModuleType)(int) cmbModuleTypes.SelectedValue;
             }
             else if (rdExceptType.Checked)
             {
-                ClientToModuleData.DisabledByType = (ModuleType)(int)cmbExceptType.SelectedValue;
+                ClientData.DisabledByType = (ModuleType)(int)cmbExceptType.SelectedValue;
             }
             else if (rdOnlyModules.Checked)
             {
-                ClientToModuleData.EnabledModules = lstCheckedModules.Items.Cast<dynamic>().Select(x=>(string)x.SystemName).ToList();
-                if (!ClientToModuleData.EnabledModules.Any()) return;
+                ClientData.EnabledModules = lstCheckedModules.Items.Cast<dynamic>().Select(x=>(string)x.SystemName).ToList();
+                if (!ClientData.EnabledModules.Any()) return;
             }
             else if (rdExceptModules.Checked)
             {
-                ClientToModuleData.DisabledModules = lstCheckedModules.Items.Cast<dynamic>().Select(x => (string)x.SystemName).ToList();
-                if (!ClientToModuleData.DisabledModules.Any()) return;
+                ClientData.DisabledModules = lstCheckedModules.Items.Cast<dynamic>().Select(x => (string)x.SystemName).ToList();
+                if (!ClientData.DisabledModules.Any()) return;
             }
 
-            //App.Instance.AppConf.SystemData.AddUpdateModuleCommunicationForClient(ClientToModuleData);
-            App.Instance.AppConf.Save();
+            if (OnSave!=null)
+                OnSave(ClientData);
+            
             this.Close();
         }
     }

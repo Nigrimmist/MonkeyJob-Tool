@@ -282,8 +282,7 @@ namespace MonkeyJobTool.Forms
                 
                 AddModuleInfoToGrid(gridType,mod.GetModuleName(), mod.GetTypeDescription(), mod.IsEnabled, mod.SystemName, mod.SettingsType != null,rowColor);
             }
-            //Grid(gridType).ClearSelection();
-            //Grid(gridType).Rows[0].Selected = true;
+           
         }
         
         private void AddModuleInfoToGrid(SettingGridType gridType,string name, string type, bool enabled, string uniqueName, bool isWithSettings, Color? rowColor = null)
@@ -404,7 +403,7 @@ namespace MonkeyJobTool.Forms
                 btnEnabledDisableClient.Text = (!module.IsEnabled ? "Под" : "Вы") + "ключить клиент";
             }
 
-            grid.Rows[gridModules.SelectedRows[0].Index].Cells[ColumnNameByGridType(gridType, "colIsEnabled")].Value = module.IsEnabled ? "Вкл" : "Выкл";
+            grid.Rows[grid.SelectedRows[0].Index].Cells[ColumnNameByGridType(gridType, "colIsEnabled")].Value = module.IsEnabled ? "Вкл" : "Выкл";
         }
 
         private void grid_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -417,13 +416,18 @@ namespace MonkeyJobTool.Forms
                 
                 var module = (gridType == SettingGridType.Modules ? App.Instance.Bot.Modules : App.Instance.Bot.IntegrationClients.Select(x => (ComponentInfoBase)x)).SingleOrDefault(x => x.SystemName == moduleKey);
 
-                if (module.SettingsType != null)
+                if (gridType == SettingGridType.Modules)
                 {
-                    var setMod = new ModuleSettingsForm()
+                    if (module.SettingsType != null)
                     {
-                        Module = module
-                    };
-                    setMod.ShowDialog();
+                        var setMod = new ModuleSettingsForm() {Module = module};
+                        setMod.ShowDialog();
+                    }
+                }
+                else
+                {
+                    var clientSettingsForm = new IntegrationClientSettings() {Client = (module as IntegrationClientInfo)};
+                    clientSettingsForm.ShowDialog();
                 }
             }
         }
@@ -491,8 +495,12 @@ namespace MonkeyJobTool.Forms
                 var moduleKey = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
                 var gridType = GridTypeBySender(grid);
                 var module = (gridType == SettingGridType.Modules ? App.Instance.Bot.Modules : App.Instance.Bot.IntegrationClients.Select(x => (ComponentInfoBase)x)).SingleOrDefault(x => x.SystemName == moduleKey);
-
-                var mlForm = new ModuleLogsForm(){Module = module};
+                var messages = module.Trace.TraceMessages;
+                if (gridType == SettingGridType.Clients)
+                {
+                    messages = (module as IntegrationClientInfo).Instances.SelectMany(x => x.Trace.TraceMessages).ToList();
+                }
+                var mlForm = new ModuleLogsForm(){LogMessages = messages};
                 mlForm.ShowDialog();
             }
         }
@@ -522,16 +530,6 @@ namespace MonkeyJobTool.Forms
             Clients
         }
 
-        private void btnShowModuleCommunication_Click(object sender, EventArgs e)
-        {
-            var moduleKey = gridClients.Rows[gridClients.SelectedRows[0].Index].ErrorText;
-            bool found;
-            new ClientToModulesForm()
-            {
-                //ClientToModuleData = App.Instance.AppConf.SystemData.GetToModuleCommunicationForClient(moduleKey, out found) 
-            }.ShowDialog();
-        }
-
         private void gridModules_SelectionChanged(object sender, EventArgs e)
         {
             var grid = ((DataGridView)sender);
@@ -548,14 +546,13 @@ namespace MonkeyJobTool.Forms
                         btnEnabledDisableModule.Enabled = true;
                     }
                     btnEnabledDisableModule.Text = (!module.IsEnabled ? "В" : "Вы") + "ключить модуль";
-                    btnShowLogs.Enabled = module.Trace.TraceMessages.Any();
+                    btnShowLogs.Enabled = gridType == SettingGridType.Modules ? module.Trace.TraceMessages.Any() : (module as IntegrationClientInfo).Instances.Any(x => x.Trace.TraceMessages.Any());
                 }
                 else
                 {
                     if (_gridRowsInited)
                     {
                         btnEnabledDisableClient.Enabled = true;
-                        btnShowModuleCommunication.Enabled = true;
                     }
                     btnEnabledDisableClient.Text = (!module.IsEnabled ? "Под" : "Вы") + "ключить клиент";
                     btnShowClientLogs.Enabled = module.Trace.TraceMessages.Any();
