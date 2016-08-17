@@ -8,11 +8,11 @@ namespace HelloBotCore.Entities
 {
     public class IntegrationClientSettings
     {
-        public int InstanceCount { get; set; }
+        public List<int> Instances { get; set; }
         
         public IntegrationClientSettings()
         {
-            InstanceCount = 1;
+            Instances = new List<int>();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,15 +12,11 @@ namespace HelloBotCore.Entities
     public class IntegrationClientInfo : IntegrationClientBase
     {
         private HelloBotCommunication.IntegrationClientBase baseClient = null;
-        private List<IntegrationClientBase> _instances;
+
+        public Func<int?, IntegrationClientInfo> CreateNewInstanceFunc { get; set; }
 
 
-
-        public List<IntegrationClientBase> Instances
-        {
-            get { return _instances; }
-            set { _instances = value; }
-        }
+        public List<IntegrationClientBase> Instances { get; set; }
 
         public IntegrationClientInfo(string settingsFolderAbsolutePath, string logsFolderAbsolutePath) : base(settingsFolderAbsolutePath, logsFolderAbsolutePath)
         {
@@ -52,6 +49,20 @@ namespace HelloBotCore.Entities
             base.Init(dllName, baseClient, author);
             HelloBotCommunication.Interfaces.IIntegrationClient client = new ModuleToClientAdapter(moduleClientHandler, this);
             integrationClientBase.Init(client);
+        }
+
+        public override void Dispose()
+        {
+            var settingsFilePath = GetSettingFileFullPath();
+            if (File.Exists(settingsFilePath))
+            {
+                File.Delete(settingsFilePath);
+            }
+        }
+
+        public IntegrationClientSettings GetSettings()
+        {
+            return GetSettings<IntegrationClientSettings>();
         }
     }
 }

@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using HelloBotCore.Entities;
 using MonkeyJobTool.Entities;
 using MonkeyJobTool.Properties;
+using NLog.LayoutRenderers;
 
 namespace MonkeyJobTool.Forms
 {
@@ -61,8 +62,13 @@ namespace MonkeyJobTool.Forms
                     btnEnabledDisableClient.Enabled = true;
                     btnShowModuleCommunication.Enabled = true;
                 }
-                btnEnabledDisableClient.Text = (!client.IsEnabled ? "Под" : "Вы") + "ключить клиент";
+                btnEnabledDisableClient.Text = (!client.IsEnabled ? "В" : "Вы") + "ключить клиент";
                 btnShowClientLogs.Enabled = client.Trace.TraceMessages.Any();
+                btnRemoveClient.Enabled = true;
+            }
+            else
+            {
+                btnRemoveClient.Enabled = false;
             }
         }
 
@@ -83,7 +89,8 @@ namespace MonkeyJobTool.Forms
         }
 
         private void DatabindGrid()
-        {
+        {   
+            gridClients.Rows.Clear();
             var items = Client.Instances;
             foreach (var inst in items)
             {
@@ -157,6 +164,25 @@ namespace MonkeyJobTool.Forms
         {
             _gridRowsInited = true;
             gridClients.ClearSelection();
+        }
+
+        private void btnAddClient_Click(object sender, EventArgs e)
+        {
+            App.Instance.Bot.AddIntegrationClientInstance(Client.Id);
+            DatabindGrid();
+        }
+
+        private void btnRemoveClient_Click(object sender, EventArgs e)
+        {
+            DataGridView grid =  gridClients;
+            if (grid.SelectedRows.Count == 1)
+            {
+                var moduleKey = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
+
+                var instance = Client.Instances.Select(x => (ComponentInfoBase)x).SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
+                App.Instance.Bot.RemoveIntegrationClientInstance(Client.Id, instance.InstanceId.Value);
+                DatabindGrid();
+            }
         }
 
         

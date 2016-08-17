@@ -257,35 +257,35 @@ namespace HelloBotCore
                         {
                             var tModule = new IntegrationClientInfo(_settingsFolderAbsolutePath, _logsFolderAbsolutePath);
                             _commandDictLocks.Add(tModule.Id, new ModuleLocker());
-
-                            if (instId.HasValue)
-                                tModule.InstanceId = instId;
+                            tModule.InstanceId = instId;
                             var newModuleiInstance = (HelloBotCommunication.IntegrationClientBase)Activator.CreateInstance(module.GetType());
                             tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), newModuleiInstance, this, ((IntegrationClientRegisterBase)obj).AuthorInfo);
                             tModule.IsEnabled = enabledClients.Contains(tModule.SystemName);
+
                             if (settingClass != null)
                                 tModule.SettingsType = settingClass.moduleSettingsClass;
 
-                            
                             return tModule;
                         });
 
                         var mainModule = getNewInstance(null);
 
-                        var mainModuleSettings = mainModule.GetSettings<IntegrationClientSettings>();
+                        var mainModuleSettings = mainModule.GetSettings();
                         if (mainModuleSettings == null)
                         {
                             mainModuleSettings = new IntegrationClientSettings();
                             mainModule.SaveSettings(mainModuleSettings);
                         }
-
-                        for (var i = 0; i < mainModuleSettings.InstanceCount; i++)
+                        mainModule.CreateNewInstanceFunc = getNewInstance;
+                        for (var i = 0; i < mainModuleSettings.Instances.Count; i++)
                         {
-                            var clonedClient = getNewInstance(i+1);
+                            var instId = mainModuleSettings.Instances[i];
+                            var inst = getNewInstance(instId);
                             ClientInstanceToModuleCommunication clientServiceData;
-                            clonedClient.GetSettings<object, ClientInstanceToModuleCommunication>(out clientServiceData);
-                            clonedClient.InstanceCommunication = clientServiceData ?? ClientInstanceToModuleCommunication.GetDefault();
-                            mainModule.Instances.Add(clonedClient);
+                            inst.GetSettings<object, ClientInstanceToModuleCommunication>(out clientServiceData);
+                            if (clientServiceData!=null)
+                                inst.InstanceCommunication = clientServiceData;
+                            mainModule.Instances.Add(inst);
                         }
 
                         return mainModule;
@@ -545,8 +545,6 @@ namespace HelloBotCore
                 info.SaveSettings(serializableSettingObject);
             }
         }
-
-        
 
         public T GetSettings<T>(ComponentInfoBase module) where T : class
         {
@@ -851,38 +849,29 @@ namespace HelloBotCore
         }
 
 
-        //public void GetArgumentSuggestions(CallCommandInfo command, string commandAlias, string args)
-        //{
-        //    if (command.CommandArgumentSuggestions != null)
-        //    {
+        public void RemoveIntegrationClientInstance(Guid clientId, int instanceId)
+        {
+            var client = IntegrationClients.SingleOrDefault(x => x.Id == clientId);
+            var inst = client.Instances.SingleOrDefault(x => x.InstanceId.Value == instanceId);
+            if (inst != null)
+            {
+                client.Instances.Remove(inst);
+                var settings = client.GetSettings();
+                settings.Instances.Remove(instanceId);
+                client.SaveSettings(settings);
+                inst.Dispose();
+            }
+        }
 
-        //        //todo : thread pool required
-        //        new Thread(() =>
-        //        {
-        //            try
-        //            {
-        //                foreach (var comSuggestion in command.CommandArgumentSuggestions)
-        //                {
-        //                    foreach (var argSuggestion in comSuggestion.TemplateParseInfo.Where(x=>x.Order==0))
-        //                    {
-        //                        var firstLevelSuggestions = string.IsNullOrEmpty(argSuggestion.RegexpPart) && args.Trim() == "";
-                                
-        //                        if (firstLevelSuggestions || (!string.IsNullOrEmpty(argSuggestion.RegexpPart) && Regex.IsMatch(args, argSuggestion.RegexpPart)))
-        //                        {
-        //                            ShowSuggestionsToClient(comSuggestion.Details.Where(x=>x.Key==argSuggestion.Key).Select(x=>x.GetSuggestionFunc).Single()());
-        //                            return;
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                //if (OnModuleErrorOccured != null)
-        //                //    OnModuleErrorOccured(ex, command);
-        //            }
-        //        }).Start();
-        //    }
-        //}
+        public void AddIntegrationClientInstance(Guid clientId)
+        {
+            var client = IntegrationClients.SingleOrDefault(x => x.Id == clientId);
+            var newInst = client.CreateNewInstanceFunc(client.Instances.Any()?client.Instances.Max(x => x.InstanceId) + 1:1);
+            client.Instances.Add(newInst);
+            var settings = client.GetSettings();
+            settings.Instances.Add(newInst.InstanceId.Value);
+            client.SaveSettings(settings);
+        }
 
         public void ShowSuggestionsToClient(List<AutoSuggestItem> items)
         {

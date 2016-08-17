@@ -32,6 +32,8 @@
             this.btnShowModuleCommunication = new System.Windows.Forms.Button();
             this.btnEnabledDisableClient = new System.Windows.Forms.Button();
             this.btnShowClientLogs = new System.Windows.Forms.Button();
+            this.btnRemoveClient = new System.Windows.Forms.Button();
+            this.btnAddClient = new System.Windows.Forms.Button();
             this.colClient = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colIsEnabled = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.settingsCol = new System.Windows.Forms.DataGridViewImageColumn();
@@ -87,7 +89,7 @@
             this.btnEnabledDisableClient.Name = "btnEnabledDisableClient";
             this.btnEnabledDisableClient.Size = new System.Drawing.Size(118, 30);
             this.btnEnabledDisableClient.TabIndex = 13;
-            this.btnEnabledDisableClient.Text = "Отключить клиент";
+            this.btnEnabledDisableClient.Text = "Вылючить клиент";
             this.btnEnabledDisableClient.UseVisualStyleBackColor = false;
             this.btnEnabledDisableClient.Click += new System.EventHandler(this.btnEnabledDisableClient_Click);
             // 
@@ -105,21 +107,50 @@
             this.btnShowClientLogs.UseVisualStyleBackColor = false;
             this.btnShowClientLogs.Click += new System.EventHandler(this.btnShowClientLogs_Click);
             // 
+            // btnRemoveClient
+            // 
+            this.btnRemoveClient.BackColor = System.Drawing.Color.Moccasin;
+            this.btnRemoveClient.Enabled = false;
+            this.btnRemoveClient.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnRemoveClient.ForeColor = System.Drawing.Color.Black;
+            this.btnRemoveClient.Location = new System.Drawing.Point(194, 226);
+            this.btnRemoveClient.Name = "btnRemoveClient";
+            this.btnRemoveClient.Size = new System.Drawing.Size(118, 30);
+            this.btnRemoveClient.TabIndex = 15;
+            this.btnRemoveClient.Text = "Удалить";
+            this.btnRemoveClient.UseVisualStyleBackColor = false;
+            this.btnRemoveClient.Click += new System.EventHandler(this.btnRemoveClient_Click);
+            // 
+            // btnAddClient
+            // 
+            this.btnAddClient.BackColor = System.Drawing.Color.Moccasin;
+            this.btnAddClient.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnAddClient.ForeColor = System.Drawing.Color.Black;
+            this.btnAddClient.Location = new System.Drawing.Point(318, 226);
+            this.btnAddClient.Name = "btnAddClient";
+            this.btnAddClient.Size = new System.Drawing.Size(118, 30);
+            this.btnAddClient.TabIndex = 16;
+            this.btnAddClient.Text = "Добавить новый";
+            this.btnAddClient.UseVisualStyleBackColor = false;
+            this.btnAddClient.Click += new System.EventHandler(this.btnAddClient_Click);
+            // 
             // colClient
             // 
-            this.colClient.FillWeight = 15F;
+            this.colClient.FillWeight = 23.34584F;
             this.colClient.HeaderText = "№";
             this.colClient.Name = "colClient";
             this.colClient.ReadOnly = true;
             // 
             // colIsEnabled
             // 
+            this.colIsEnabled.FillWeight = 155.6389F;
             this.colIsEnabled.HeaderText = "Статус";
             this.colIsEnabled.Name = "colIsEnabled";
             this.colIsEnabled.ReadOnly = true;
             // 
             // settingsCol
             // 
+            this.settingsCol.FillWeight = 36.01523F;
             this.settingsCol.HeaderText = "Настройки";
             this.settingsCol.Name = "settingsCol";
             this.settingsCol.ReadOnly = true;
@@ -131,6 +162,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(572, 269);
+            this.Controls.Add(this.btnAddClient);
+            this.Controls.Add(this.btnRemoveClient);
             this.Controls.Add(this.btnShowClientLogs);
             this.Controls.Add(this.btnEnabledDisableClient);
             this.Controls.Add(this.btnShowModuleCommunication);
@@ -152,6 +185,8 @@
         private System.Windows.Forms.Button btnShowModuleCommunication;
         private System.Windows.Forms.Button btnEnabledDisableClient;
         private System.Windows.Forms.Button btnShowClientLogs;
+        private System.Windows.Forms.Button btnRemoveClient;
+        private System.Windows.Forms.Button btnAddClient;
         private System.Windows.Forms.DataGridViewTextBoxColumn colClient;
         private System.Windows.Forms.DataGridViewTextBoxColumn colIsEnabled;
         private System.Windows.Forms.DataGridViewImageColumn settingsCol;
