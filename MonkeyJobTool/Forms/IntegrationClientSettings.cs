@@ -69,6 +69,9 @@ namespace MonkeyJobTool.Forms
             else
             {
                 btnRemoveClient.Enabled = false;
+                btnShowClientLogs.Enabled = false;
+                btnShowModuleCommunication.Enabled = false;
+                btnEnabledDisableClient.Enabled = false;
             }
         }
 

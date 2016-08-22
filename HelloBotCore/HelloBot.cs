@@ -63,22 +63,20 @@ namespace HelloBotCore
         private readonly double _currentUIClientVersion;
         private List<IntegrationClientInfo> _integrationClients;
 
-
         public delegate void TrayIconSetupRequiredDelegate(Guid moduleId, Icon icon, string title);
-
         public event TrayIconSetupRequiredDelegate OnTrayIconSetupRequired;
 
         public delegate void TrayIconStateChangeRequestedDelegate(Guid moduleId, Icon originalIcon, string text, Color? textColor = null, Color? backgroundColor = null, int fontSize = 12, string fontName = "Tahoma", Color? iconBorderColor = null);
 
         public event TrayIconStateChangeRequestedDelegate OnTrayIconStateChangeRequested;
-
         public delegate void OnTrayPopupShowRequestedDelegate(Guid moduleId, string title, string body, TimeSpan timeout, TooltipType tooltipType);
 
         public event OnTrayPopupShowRequestedDelegate OnTrayBalloonTipRequested;
-        
-
         public event Action<List<AutoSuggestItem>> OnSuggestRecieved;
-        
+
+        public delegate void OnModuleRemovedDelegate(string moduleSystemName);
+
+        public event OnModuleRemovedDelegate OnModuleRemoved;
 
         /// <summary>
         /// Bot costructor
@@ -855,11 +853,15 @@ namespace HelloBotCore
             var inst = client.Instances.SingleOrDefault(x => x.InstanceId.Value == instanceId);
             if (inst != null)
             {
+                string systemName = inst.SystemName;
                 client.Instances.Remove(inst);
+                
                 var settings = client.GetSettings();
                 settings.Instances.Remove(instanceId);
                 client.SaveSettings(settings);
                 inst.Dispose();
+                if (OnModuleRemoved != null)
+                    OnModuleRemoved(systemName);
             }
         }
 
@@ -871,6 +873,7 @@ namespace HelloBotCore
             var settings = client.GetSettings();
             settings.Instances.Add(newInst.InstanceId.Value);
             client.SaveSettings(settings);
+            
         }
 
         public void ShowSuggestionsToClient(List<AutoSuggestItem> items)

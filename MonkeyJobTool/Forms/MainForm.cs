@@ -273,7 +273,7 @@ namespace MonkeyJobTool.Forms
                     _bot.RegisterModules(App.Instance.AppConf.SystemData.EnabledModules, App.Instance.AppConf.SystemData.DisabledModules);
                     _bot.RegisterIntegrationClients(App.Instance.AppConf.SystemData.EnabledModules);
                     _bot.OnSuggestRecieved += BotOnSuggestRecieved;
-
+                    _bot.OnModuleRemoved += _bot_OnModuleRemoved;
                     App.Instance.Bot = _bot;
                     SetLoading(false);
                     if (afterInitActionClbck != null)
@@ -302,9 +302,10 @@ namespace MonkeyJobTool.Forms
             }).Start();
         }
 
-       
-
-        
+        void _bot_OnModuleRemoved(string moduleSystemName)
+        {
+            App.Instance.RemoveModuleFromConfig(moduleSystemName);
+        }
 
         private void BotOnGeneralErrorOccured(Exception ex)
         {

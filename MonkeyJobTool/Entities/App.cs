@@ -421,7 +421,18 @@ namespace MonkeyJobTool.Entities
                 AppConf.SystemData.EnabledModules.Add(moduleSystemName);
             AppConf.Save();
         }
-
+        public void RemoveModuleFromConfig(string moduleSystemName)
+        {
+            if (AppConf.SystemData.DisabledModules.Contains(moduleSystemName))
+            {
+                AppConf.SystemData.DisabledModules.Remove(moduleSystemName);
+            }
+            if (AppConf.SystemData.EnabledModules.Contains(moduleSystemName))
+            {
+                AppConf.SystemData.EnabledModules.Remove(moduleSystemName);
+            }
+            AppConf.Save();
+        }
         public void CopyToClipboard(string popupTitle, string text)
         {
             Clipboard.SetText(text);
