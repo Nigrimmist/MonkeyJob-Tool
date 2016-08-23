@@ -168,16 +168,16 @@ namespace MonkeyJobTool.Forms
                 bool closeHelpInfo=true;
                 if (forcedByUser)
                 {
+                    ShowHelpInfo(foundCommand);
+                    closeHelpInfo = false;
+                }
+                else
+                {
                     if (App.Instance.AppConf.ShowCommandHelp)
                     {
                         ShowHelpInfo(foundCommand);
                         closeHelpInfo = false;
                     }
-                }
-                else
-                {
-                    ShowHelpInfo(foundCommand);
-                    closeHelpInfo = false;
                 }
                 if (closeHelpInfo)
                     CloseHelpInfo();
