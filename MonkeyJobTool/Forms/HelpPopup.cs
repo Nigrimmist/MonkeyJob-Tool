@@ -61,6 +61,7 @@ namespace MonkeyJobTool.Forms
         private void HandleSuggestCommandInfo()
         {
             lblTitle.Text = HelpData.Title;
+            
             this.Width = 260;
             fldBody.Width = 200;
             rtbTitle.Width = this.Width-2;
@@ -68,6 +69,7 @@ namespace MonkeyJobTool.Forms
             PictureBox iconBox = new PictureBox();
             iconBox.Image = Resources.help1;
             fldBody.Text = HelpData.Body;
+            fldBody.Text += Environment.NewLine + Environment.NewLine + "*Подсказки можно отключить в настройках";
             iconBox.Size = new Size(36, 36);
             iconBox.Top = 25;
             iconBox.Left = 8;

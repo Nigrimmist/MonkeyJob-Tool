@@ -23,8 +23,14 @@ namespace MonkeyJobTool.Controls.Autocomplete
         public delegate void ArgumentBluredDelegate();
         public event ArgumentBluredDelegate OnArgumentBlured;
 
+        public delegate void OnTextEmptyDelegate();
+        public event OnTextEmptyDelegate OnTextEmpty;
+
         public delegate void ArgSuggestRequiredDelegate(string argText);
         public event ArgSuggestRequiredDelegate ArgSuggestRequired;
+
+        public delegate void HelpShouldBeShownDelegate(bool exist, bool forcedByUser, string command);
+        public event HelpShouldBeShownDelegate HelpShouldBeShown;
 
        private AutocompleteText.TryResolveCommandFromStringDelegate _tryResolveCommandFromStringFunc;
 
@@ -51,11 +57,23 @@ namespace MonkeyJobTool.Controls.Autocomplete
                 if (OnArgumentBlured != null)
                     OnArgumentBlured();
             };
+            _textWrapper.OnTextEmpty += () =>
+            {
+                Console.WriteLine("OnTextEmpty");
+                if (OnTextEmpty != null)
+                    OnTextEmpty();
+            };
             _textWrapper.OnArgumentFocused += argumentText =>
             {
                 Console.WriteLine("OnArgumentFocused");
                 if (ArgSuggestRequired != null)
                     ArgSuggestRequired(argumentText);
+            };
+            _textWrapper.HelpShouldBeShown += (exist, forcedByUser, command) =>
+            {
+                if (HelpShouldBeShown != null)
+                    HelpShouldBeShown(exist, forcedByUser, command);
+                
             };
         }
 

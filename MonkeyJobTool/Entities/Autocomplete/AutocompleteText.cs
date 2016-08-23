@@ -25,7 +25,9 @@ namespace MonkeyJobTool.Entities.Autocomplete
         private int _prevCaretPos = 0;
         private int _prevCaretSelectionLength = 0;
         private bool _changedEventEnabled = true;
-        
+
+        public delegate void HelpShouldBeShownDelegate(bool exist, bool forcedByUser,string command);
+        public event HelpShouldBeShownDelegate HelpShouldBeShown;
 
         public delegate void CommandFocusedDelegate(string commandText);
         public event CommandFocusedDelegate OnCommandFocused;
@@ -38,6 +40,9 @@ namespace MonkeyJobTool.Entities.Autocomplete
 
         public delegate void ArgumentBluredDelegate();
         public event ArgumentBluredDelegate OnArgumentBlured;
+
+        public delegate void OnTextEmptyDelegate();
+        public event OnTextEmptyDelegate OnTextEmpty;
 
         public delegate CallCommandInfo TryResolveCommandFromStringDelegate(string text);
         private readonly TryResolveCommandFromStringDelegate _tryResolveCommandFromStringFunc;
@@ -55,6 +60,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
             _bindedControl.KeyUp += (sender, args) =>{changeCaretPos();};
             _bindedControl.TextChanged += (sender, args) =>
             {
+                AutocompleteTextPart focusedPart = null;
                 if (_changedEventEnabled)
                 {
                     changeCaretPos(true);
@@ -62,13 +68,17 @@ namespace MonkeyJobTool.Entities.Autocomplete
                     ClearParts();
                     CorrectParts();
 
-                    var focusedPart = GetFocusedPart();
+                    focusedPart = GetFocusedPart();
                     CheckForAvailableArgumentSuggestions(ref focusedPart);
                     TryResolveCommandIfRequired(focusedPart);
                     TryNotifyCommandAndArg(focusedPart);
                     RefreshText();
+                    if (this.ToString() == "" && OnTextEmpty != null)
+                        OnTextEmpty();
                     Log();
                 }
+                TryToShowHideHelp(focusedPart??GetFocusedPart());
+                
             };
             
             _parts = new List<AutocompleteTextPart>();
@@ -76,6 +86,13 @@ namespace MonkeyJobTool.Entities.Autocomplete
             _lastText = bindedControl.Text;
         }
 
+        private void TryToShowHideHelp(AutocompleteTextPart focusedPart)
+        {
+            if (HelpShouldBeShown != null)
+                HelpShouldBeShown(CommandPart != null && HelpSignPart != null || IsCaretAtEndOfCommand(focusedPart) && CommandPart != null && CommandPart.Command != null,
+                    CommandPart != null && HelpSignPart != null,
+                    CommandPart != null && CommandPart.Command!=null ? CommandPart.Command.Command : "");
+        }
 
         private AutocompleteTextPart GetFocusedPart()
         {
@@ -112,6 +129,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
                 if (!fromChangedTextEvent)
                 {
                     TryNotifyCommandAndArg();
+                    TryToShowHideHelp(GetFocusedPart());
                 }
             }
         }
@@ -183,6 +201,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
             if (IsCommandInFocus(focusedPart))
             {
                 var command = _tryResolveCommandFromStringFunc(CommandPart.Text);
+                Console.WriteLine("TryResolveCommandIfRequired command set");
                 CommandPart.Command = command;
             }
         }
@@ -218,6 +237,11 @@ namespace MonkeyJobTool.Entities.Autocomplete
         private bool IsCommandInFocus(AutocompleteTextPart focusedPart)
         {
             return (focusedPart!=null && focusedPart.Type == AutocompleteTextPartType.Command) || (_currCaretPos <= CommandPart.Text.Length && !string.IsNullOrEmpty(CommandPart.Text));
+        }
+
+        private bool IsCaretAtEndOfCommand(AutocompleteTextPart focusedPart)
+        {
+            return (focusedPart != null && focusedPart.Type == AutocompleteTextPartType.Command) && (_currCaretPos == CommandPart.Text.Length && !string.IsNullOrEmpty(CommandPart.Text));
         }
 
         private bool IsArgInFocus(ref AutocompleteTextPart focusedPart)
@@ -344,16 +368,29 @@ namespace MonkeyJobTool.Entities.Autocomplete
                     
                 }
             }
-
-            if (CommandPart.Text.EndsWith(" ") && CommandPart.Command != null)
+            var helpPartExist = HelpSignPart != null;
+            if ((CommandPart.Text.EndsWith(" ") || (helpPartExist && HelpSignPart.Text.EndsWith(" "))) && CommandPart.Command != null)
             {
-                CommandPart.Text = CommandPart.Text.TrimEnd(' ');
-                if (_parts.Count == 1 || (_parts.Count > 1 && _parts[1].Type != AutocompleteTextPartType.Delimeter))
+                var partToChange = helpPartExist ? (AutocompleteTextPart)HelpSignPart : CommandPart;
+                partToChange.Text = partToChange.Text.TrimEnd(' ');
+                if (_parts.Count == (helpPartExist ? 2 : 1) || (_parts.Count > 1 && (helpPartExist?_parts[2].Type != AutocompleteTextPartType.CommandHelp:_parts[1].Type != AutocompleteTextPartType.Delimeter)))
                 {
                     AppendParts(new AutoCompleteDelimeterPart()
                     {
                         
                         Text = " "
+                    }, false);
+                }
+            }
+
+            if (CommandPart.Text.EndsWith("?") && CommandPart.Command != null)
+            {
+                CommandPart.Text = CommandPart.Text.TrimEnd('?');
+                if (_parts.Count == 1 || (_parts.Count > 1 && _parts[1].Type != AutocompleteTextPartType.Delimeter))
+                {
+                    AppendParts(new AutoCompleteHelpSignPart()
+                    {
+                        Text = "?"
                     }, false);
                 }
             }
@@ -524,7 +561,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
         }
 
         private AutoCompleteCommandPart CommandPart { get { return _parts.First() as AutoCompleteCommandPart; } }
-
+        private AutoCompleteHelpSignPart HelpSignPart { get { return _parts.Count>1?_parts[1] as AutoCompleteHelpSignPart:null; } }
         public void Log()
         {
             foreach (var part in _parts)
@@ -753,6 +790,11 @@ namespace MonkeyJobTool.Entities.Autocomplete
         public override AutocompleteTextPartType Type { get { return AutocompleteTextPartType.Delimeter; } }
         public override int Priority { get { return 0; } }
     }
+    public class AutoCompleteHelpSignPart : AutocompleteTextPart
+    {
+        public override AutocompleteTextPartType Type { get { return AutocompleteTextPartType.CommandHelp; } }
+        public override int Priority { get { return 0; } }
+    }
     public class AutoCompleteArgumentSuggestPart : AutocompleteTextPart
     {
         public override AutocompleteTextPartType Type { get { return AutocompleteTextPartType.ArgumentSuggestion; } }
@@ -782,6 +824,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
         ArgumentSuggestion,
         Command,
         PartOfText,
-        Delimeter
+        Delimeter,
+        CommandHelp
     }
 }

@@ -135,7 +135,8 @@ namespace MonkeyJobTool.Forms
             };
             _autocomplete.OnKeyPressed += _autocomplete_OnKeyPressed;
             _autocomplete.OnCommandReceived += autocomplete_OnCommandReceived;
-            
+            _autocomplete.HelpShouldBeShown += autocomplete_HelpShouldBeShown;
+            _autocomplete.OnTextEmpty += _autocomplete_OnTextEmpty;
             this.Controls.Add(_autocomplete);
 
             
@@ -143,11 +144,50 @@ namespace MonkeyJobTool.Forms
             LogAnalytic();
         }
 
+        void _autocomplete_OnTextEmpty()
+        {
+            App.Instance.CloseFixedPopup();
+            _autocomplete.HidePopup();
+            CloseHelpInfo();
+        }
+
+        
+
         void MainForm_Activated(object sender, EventArgs e)
         {
             Debug.WriteLine("MainForm_Activated");
         }
 
+        void autocomplete_HelpShouldBeShown(bool exist, bool forcedByUser, string command)
+        {
+            if (exist)
+            {
+                string fcommand;
+                string args;
+                var foundCommand = _bot.FindModule(command, out fcommand, out args);
+                bool closeHelpInfo=true;
+                if (forcedByUser)
+                {
+                    if (App.Instance.AppConf.ShowCommandHelp)
+                    {
+                        ShowHelpInfo(foundCommand);
+                        closeHelpInfo = false;
+                    }
+                }
+                else
+                {
+                    ShowHelpInfo(foundCommand);
+                    closeHelpInfo = false;
+                }
+                if (closeHelpInfo)
+                    CloseHelpInfo();
+            }
+            else
+            {
+                CloseHelpInfo();
+            }
+            
+        }
         void autocomplete_OnTextChanged(string text)
         {
             //string args;
@@ -200,7 +240,7 @@ namespace MonkeyJobTool.Forms
 
         private HelpPopup _helpPopupForm = null;
 
-        private void ShowHelpInfo(ModuleCommandInfo command)
+        private void ShowHelpInfo(ModuleInfoBase command)
         {
             {
                 if (_helpPopupForm != null && _helpPopupForm.HelpData.ForCommand == command.SystemName)
@@ -606,9 +646,9 @@ namespace MonkeyJobTool.Forms
             }
         }
 
-        private DataFilterInfo GetCommandListByTerm(string term)
+        private DataFilterInfo GetCommandListByTerm(string term, bool strongSearch)
         {
-           var foundItems = _bot.FindCommands(term);
+            var foundItems = _bot.FindCommands(term, strongSearch);
             
             return new DataFilterInfo()
             {

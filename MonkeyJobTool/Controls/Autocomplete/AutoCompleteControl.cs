@@ -31,7 +31,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         public Form ParentForm { get; set; }
         
-        public delegate DataFilterInfo GetItemsFromSource(string term);
+        public delegate DataFilterInfo GetItemsFromSource(string term,bool strongSearch);
         public GetItemsFromSource DataFilterFunc;
         //private bool _isPopupOpen;
         private string _lastPreselectCommand = string.Empty;
@@ -39,6 +39,12 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         public delegate void OnCommandReceivedDelegate(string command);
         public event OnCommandReceivedDelegate OnCommandReceived;
+
+        public delegate void HelpShouldBeShownDelegate(bool exist, bool forcedByUser, string command);
+        public event HelpShouldBeShownDelegate HelpShouldBeShown;
+
+        public delegate void OnTextEmptyDelegate();
+        public event OnTextEmptyDelegate OnTextEmpty;
 
         //public delegate void OnTextChangeDelegate(string text);
         //public event OnTextChangeDelegate OnTextChanged;
@@ -64,7 +70,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
             _commandArgumentSuggester.OnItemSelected += _commandArgumentSuggester_OnItemSelected;
             txtCommand.Init(command =>
             {
-                var commands = DataFilterFunc(command).FoundCommands;
+                var commands = DataFilterFunc(command,true).FoundCommands;
                 if (commands.Count == 1)
                     return commands.First();
                 return null;
@@ -74,6 +80,20 @@ namespace MonkeyJobTool.Controls.Autocomplete
             txtCommand.ArgSuggestRequired += txtCommand_ArgSuggestRequired;
             txtCommand.OnCommandBlured += txtCommand_OnCommandBlured;
             txtCommand.OnArgumentBlured += txtCommand_OnArgumentBlured;
+            txtCommand.HelpShouldBeShown += txtCommand_HelpShouldBeShown;
+            txtCommand.OnTextEmpty += txtCommand_OnTextEmpty;
+        }
+
+        void txtCommand_OnTextEmpty()
+        {
+            if (OnTextEmpty != null)
+                OnTextEmpty();
+        }
+
+        void txtCommand_HelpShouldBeShown(bool exist, bool forcedByUser, string command)
+        {
+            if (HelpShouldBeShown != null)
+                HelpShouldBeShown(exist,forcedByUser, command);
         }
 
         void _commandArgumentSuggester_OnItemSelected(AutocompleteItem item)
@@ -152,7 +172,7 @@ namespace MonkeyJobTool.Controls.Autocomplete
             if (term.Length >= StartSuggestFrom)
             {
 
-                var filterResult = DataFilterFunc(term);
+                var filterResult = DataFilterFunc(term,false);
 
                 if (filterResult.FoundCommands.Any())
                 {

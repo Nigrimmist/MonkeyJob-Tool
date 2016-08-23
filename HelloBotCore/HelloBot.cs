@@ -523,14 +523,16 @@ namespace HelloBotCore
             return toReturn;
         }
 
-        public List<CallCommandInfo> FindCommands(string incCommand)
+        public List<CallCommandInfo> FindCommands(string incCommand, bool strongSearch)
         {
             return (
                 from module in EnabledCommands
                 from cmd in module.CallCommandList
                 where
-                    cmd.Command.StartsWith(incCommand, StringComparison.InvariantCultureIgnoreCase) ||
-                    cmd.Aliases.Any(y => y.StartsWith(incCommand, StringComparison.InvariantCultureIgnoreCase))
+                    (!strongSearch && (cmd.Command.StartsWith(incCommand, StringComparison.InvariantCultureIgnoreCase) ||
+                    cmd.Aliases.Any(y => y.StartsWith(incCommand, StringComparison.InvariantCultureIgnoreCase)))) ||
+                    (strongSearch && (cmd.Command.Equals(incCommand, StringComparison.InvariantCultureIgnoreCase) ||
+                    cmd.Aliases.Any(y => y.Equals(incCommand, StringComparison.InvariantCultureIgnoreCase))))
                 select cmd).ToList();
         }
 
