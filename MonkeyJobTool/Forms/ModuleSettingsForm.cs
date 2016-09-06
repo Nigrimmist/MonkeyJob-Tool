@@ -324,6 +324,10 @@ namespace MonkeyJobTool.Forms
                 }
 
                 var serviceData = ms != null ? ms.ServiceData : null;
+
+                if (Module.ModuleType == ModuleType.IntegrationClient)
+                    if (serviceData == null) serviceData = new ClientSettings();
+
                 ms = new ModuleSettings(Module.Version, Module.SettingsModuleVersion, FillObjectFromUI(moduleSettings),serviceData);
                 
                 var json = JsonConvert.SerializeObject(ms, Formatting.Indented);

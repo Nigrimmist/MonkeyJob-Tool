@@ -13,7 +13,7 @@ namespace HelloBotCore.Entities
     {
         void SaveSettings<T>(ComponentInfoBase info, T serializableSettingObject) where T : class;
         T GetSettings<T>(ComponentInfoBase info) where T : class;
-        void ShowMessage(ComponentInfoBase moduleInfo, CommunicationMessage message, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default, Guid? commandToken = null, bool useBaseClient = false);
+        void ShowMessage(ComponentInfoBase moduleInfo, CommunicationMessage message, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default, Guid? commandToken = null, bool useBaseClient = false, string uniqueMsgKey=null);
         void RegisterUserReactionCallback(Guid commandToken, UserReactionToCommandType userCallbackType, Action callback);
         Language GetCurrentLanguage();
         double GetCurrentVersion();

@@ -86,7 +86,11 @@ namespace MonkeyJobTool.Forms
             commForm.OnSave += data =>
             {
                 client.InstanceCommunication = data;
-                client.SaveServiceData(data);
+                ClientSettings serviceData;
+                client.GetSettings<object, ClientSettings>(out serviceData);
+                if (serviceData == null) serviceData = new ClientSettings();
+                serviceData.ClientInstanceToModuleCommunication = data;
+                client.SaveServiceData(serviceData);
             };
             commForm.ShowDialog();
         }

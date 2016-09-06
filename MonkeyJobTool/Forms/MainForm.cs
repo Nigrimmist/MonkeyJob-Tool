@@ -508,14 +508,7 @@ namespace MonkeyJobTool.Forms
                 var answerType = answerInfo.AnswerType;
                 
                 string title = string.IsNullOrEmpty(answerInfo.Title) ? answerInfo.CommandName : answerInfo.Title;
-                if (answerInfo.MessageSourceType == ModuleType.Event)
-                {
-                    //do not show already exist popup for events
-                    if (App.Instance.NotificationPopupExist(answerInfo.Answer.ToString(), answerInfo.Title))
-                    {
-                        return;
-                    }
-                }
+                
 
                 if (answerType == AnswerBehaviourType.CopyToClipBoard || (clientCommandContext != null && clientCommandContext.IsToBuffer))
                 {

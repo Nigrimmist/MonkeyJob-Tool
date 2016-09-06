@@ -44,13 +44,14 @@ namespace HelloBotCore.Entities
             return GetSettings<T,object>(out additionalData);
         }
 
-        public T GetSettings<T,T2>(out T2 serviceData) where T : class
+        public T GetSettings<T, T2>(out T2 serviceData)
+            where T : class
             where T2 : class
         {
             serviceData = null;
             string fullPath = GetSettingFileFullPath();
             if (!File.Exists(fullPath)) return null;
-            //todo: refactoring required (cache)
+            //todo: refactoring required (cache/lock)
             string data = File.ReadAllText(fullPath);
             var settings = JsonConvert.DeserializeObject<ModuleSettings<T,T2>>(data);
             serviceData = settings.ServiceData;
@@ -67,7 +68,12 @@ namespace HelloBotCore.Entities
         public void SaveServiceData<T>(T serviceData) where T : class
         {
             string fullPath = GetSettingFileFullPath();
-            if (!File.Exists(fullPath)) return;
+            if (!File.Exists(fullPath))
+            {
+                //create new file with raw settings and filled servicedata
+                SaveSettings(new object(),serviceData);
+                return;
+            };
             string data = File.ReadAllText(fullPath);
             var settings = JsonConvert.DeserializeObject<ModuleSettings<object, T>>(data);
             SaveSettings(settings.ModuleData, serviceData);

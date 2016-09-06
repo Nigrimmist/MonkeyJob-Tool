@@ -15,6 +15,7 @@ namespace HelloBotCommunication.Interfaces
         /// <param name="title">Message title. if null, command name will be displayed instead</param>
         /// <param name="answerType">Answer type</param>
         /// <param name="messageType">Message type</param>
-        IBotCallback ShowMessage(Guid token, CommunicationMessage message, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default);
+        /// <param name="uniqueMsgKey">Provide message unique string to prevent sending identical multiple messages to client. By default, we use message param as unique "string".</param>
+        IBotCallback ShowMessage(Guid token, CommunicationMessage message, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default,string uniqueMsgKey=null);
     }
 }

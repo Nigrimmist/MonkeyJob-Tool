@@ -382,13 +382,7 @@ namespace MonkeyJobTool.Entities
                 }
         }
 
-        public bool NotificationPopupExist(string text, string title)
-        {
-            lock (_openedPopupsLock)
-            {
-                return _openedPopups.Where(x=>x.PopupType==PopupType.Notification).Any(x => x.Text == text);
-            }
-        }
+        
 
         public bool AnyPopupExist()
         {

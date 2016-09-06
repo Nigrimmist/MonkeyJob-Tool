@@ -279,10 +279,10 @@ namespace HelloBotCore
                         {
                             var instId = mainModuleSettings.Instances[i];
                             var inst = getNewInstance(instId);
-                            ClientInstanceToModuleCommunication clientServiceData;
-                            inst.GetSettings<object, ClientInstanceToModuleCommunication>(out clientServiceData);
+                            ClientSettings clientServiceData;
+                            inst.GetSettings<object, ClientSettings>(out clientServiceData);
                             if (clientServiceData!=null)
-                                inst.InstanceCommunication = clientServiceData;
+                                inst.InstanceCommunication = clientServiceData.ClientInstanceToModuleCommunication;
                             mainModule.Instances.Add(inst);
                         }
 
@@ -554,8 +554,7 @@ namespace HelloBotCore
             }
         }
 
-        
-        public void ShowMessage(ComponentInfoBase moduleInfo, CommunicationMessage content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default, Guid? commandToken = null, bool useBaseClient = false)
+        public void ShowMessage(ComponentInfoBase moduleInfo, CommunicationMessage content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default, Guid? commandToken = null, bool useBaseClient = false, string uniqueMsgKey = null)
         {
             BotContextBase commandBaseContext = null;
             //todo:refactoring required (should be cleared time to time)
@@ -578,20 +577,28 @@ namespace HelloBotCore
                 
                 if (enabledIntegrationClients.Any() && !useBaseClient)
                 {
-                    foreach (IntegrationClientBase client in enabledIntegrationClients)
+                    foreach (var client in enabledIntegrationClients)
                     {
-                        Guid token = Guid.NewGuid();
-                        AddNewCommandContext(token, new BotCommandContext()
+                        ClientSettings settings;
+                        client.GetSettings<object, ClientSettings>(out settings);
+                        if (settings == null) settings = new ClientSettings();
+                        var msgHash = string.IsNullOrEmpty(uniqueMsgKey) ? (content.ToString().GetHashCode()) : uniqueMsgKey.GetHashCode();
+                        if (!settings.MessageHashExist(moduleInfo.SystemName, msgHash.ToString()))
                         {
-                            CommandName = !string.IsNullOrEmpty(client.ProvidedTitle) ? client.ProvidedTitle : "",
-                            ModuleType = ModuleType.IntegrationClient,
-                            ModuleId = client.Id
-                        });
+                            settings.AddHash(moduleInfo.SystemName, msgHash.ToString());
+                            client.SaveServiceData(settings);
 
-                        client.SendMessageToClient(token, new CommunicationClientMessage(content)
-                        {
-                            FromModule = moduleInfo.ProvidedTitle ?? ""
-                        });
+                            Guid token = Guid.NewGuid();
+                            AddNewCommandContext(token,
+                                new BotCommandContext()
+                                {
+                                    CommandName = !string.IsNullOrEmpty(client.ProvidedTitle) ? client.ProvidedTitle : "",
+                                    ModuleType = ModuleType.IntegrationClient,
+                                    ModuleId = client.Id
+                                });
+
+                            client.SendMessageToClient(token, new CommunicationClientMessage(content) {FromModule = moduleInfo.ProvidedTitle ?? ""});
+                        }
                     }
                 }
                 else
