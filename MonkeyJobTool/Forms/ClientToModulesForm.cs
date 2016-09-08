@@ -62,7 +62,7 @@ namespace MonkeyJobTool.Forms
         {
             cmb.DataSource = new List<object>()
             {
-                new {Id = (int)ModuleType.Event, Value = "Событийный"},
+                new {Id = (int)ModuleType.Event, Value = "Интервальный"},
                 new {Id = (int)ModuleType.Handler, Value = "Команда"},
                 new {Id = (int)ModuleType.Tray, Value = "Трей"},
             };

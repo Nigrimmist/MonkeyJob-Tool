@@ -50,7 +50,7 @@ namespace HelloBotCore.Entities
                     toReturn = "Команда";
                     break;
                 case ModuleType.Event:
-                    toReturn = "Событийный";
+                    toReturn = "Интервальный";
                     break;
                 case ModuleType.Tray:
                     toReturn = "Трей";

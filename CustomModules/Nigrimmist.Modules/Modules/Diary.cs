@@ -82,28 +82,36 @@ namespace Nigrimmist.Modules.Modules
                         GetNotifies(hrm.Html, out newUmails, out newComments, out newDiscussions, ref goToUrl);
                         _client.LogTrace(string.Format("Retrieving data successfull"));
                         StringBuilder sbMessage = new StringBuilder();
+                        StringBuilder uniqueMsgHash = new StringBuilder(goToUrl);
                         if (newUmails > 0 && diary.CheckUmails)
                         {
-                            sbMessage.Append("Новые U-Mail (" + newUmails + ")" + Environment.NewLine);
+                            int umailId;
+                            var lastFrom = GetLastNicknameFromUmail(hrm, out umailId);
+                            sbMessage.AppendLine(string.Format("Новые U-Mail ({0}) [{1}]", newUmails, lastFrom));
+
+                            uniqueMsgHash.Append("umailId" + umailId);
                         }
                         if (newDiscussions > 0 && diary.CheckDiscussions)
                         {
-                            sbMessage.Append("Новые дискуссии (" + newDiscussions + ")" + Environment.NewLine);
+                            sbMessage.AppendLine(string.Format("Новые дискуссии ({0})", newDiscussions));
+                            uniqueMsgHash.Append("disc" + newDiscussions);
                         }
                         if (newComments > 0 && diary.CheckNewComments)
                         {
-                            sbMessage.Append("Новые комментарии (" + newComments + ")");
+                            sbMessage.AppendLine(string.Format("Новые комментарии ({0})", newComments));
+                            uniqueMsgHash.Append("comm" + newComments);
                         }
 
                         string toReturn = sbMessage.ToString();
                         if (!string.IsNullOrEmpty(toReturn))
                         {
                             toReturn = (@"На дневнике """ + diary.UserName + @""" : " + Environment.NewLine + Environment.NewLine) + toReturn;
-
-                            _client.ShowMessage(eventToken, CommunicationMessage.FromString(toReturn).AppendUrl(goToUrl)).OnClick(() =>
-                            {
-                                _client.ShowMessage(eventToken, CommunicationMessage.FromUrl(goToUrl), answerType: AnswerBehaviourType.OpenLink);
-                            });
+                            var uniqueHash = new UniqueMessageHash(uniqueMsgHash.ToString(), diary.UserName);
+                            _client.ShowMessage(eventToken, CommunicationMessage.FromString(toReturn).AppendUrl(goToUrl), uniqueMsgKey: uniqueHash)
+                                .OnClick(() =>
+                                {
+                                    _client.ShowMessage(eventToken, CommunicationMessage.FromUrl(goToUrl), answerType: AnswerBehaviourType.OpenLink);
+                                });
                         }
                     }
                 }
@@ -112,17 +120,17 @@ namespace Nigrimmist.Modules.Modules
             {
                 if (ex is WebException)
                 {
-                    if (((WebException)ex).Status == WebExceptionStatus.NameResolutionFailure)
+                    if (((WebException) ex).Status == WebExceptionStatus.NameResolutionFailure)
                     {
                         _client.LogTrace("The remote name could not be resolved");
                         return;
                     }
-                    else if (((WebException)ex).Status == WebExceptionStatus.ProtocolError)
+                    else if (((WebException) ex).Status == WebExceptionStatus.ProtocolError)
                     {
                         _client.LogTrace("The remote name could not be resolved");
                         return;
                     }
-                    
+
                 }
                 throw;
             }
@@ -200,6 +208,25 @@ namespace Nigrimmist.Modules.Modules
                 newComments = Convert.ToInt32(comNode.InnerText);
                 goToUrl = comNode.Attributes["href"].Value + "#msg_form";
             }
+        }
+
+        private string GetLastNicknameFromUmail(HtmlReaderManager hrm, out int lastId)
+        {
+            string toReturn = string.Empty;
+            lastId = -1;
+
+            hrm.Get("http://www.diary.ru/u-mail/folder/?f_id=1");
+            HtmlDocument htmlDoc = new HtmlDocument();
+            htmlDoc.OptionFixNestedTags = true;
+            htmlDoc.LoadHtml(hrm.Html);
+
+            var lastUmailNode = htmlDoc.DocumentNode.SelectSingleNode("//tr[@class='not_readed_umail'][1]");
+            if (lastUmailNode != null)
+            {
+                lastId = Convert.ToInt32(lastUmailNode.Attributes["id"].Value.Replace("umailtr",""));
+                toReturn = lastUmailNode.SelectSingleNode("td[@nowrap='nowrap']/a").InnerText;
+            }
+            return toReturn;
         }
 
         public override string IconInBase64

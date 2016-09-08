@@ -554,7 +554,7 @@ namespace HelloBotCore
             }
         }
 
-        public void ShowMessage(ComponentInfoBase moduleInfo, CommunicationMessage content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default, Guid? commandToken = null, bool useBaseClient = false, string uniqueMsgKey = null)
+        public void ShowMessage(ComponentInfoBase moduleInfo, CommunicationMessage content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default, Guid? commandToken = null, bool useBaseClient = false, UniqueMessageHash uniqueMsgKey = null)
         {
             BotContextBase commandBaseContext = null;
             //todo:refactoring required (should be cleared time to time)
@@ -582,10 +582,20 @@ namespace HelloBotCore
                         ClientSettings settings;
                         client.GetSettings<object, ClientSettings>(out settings);
                         if (settings == null) settings = new ClientSettings();
-                        var msgHash = string.IsNullOrEmpty(uniqueMsgKey) ? (content.ToString().GetHashCode()) : uniqueMsgKey.GetHashCode();
-                        if (!settings.MessageHashExist(moduleInfo.SystemName, msgHash.ToString()))
+                        int msgHash;
+                        string hashGroup=string.Empty;
+                        if (uniqueMsgKey == null)
                         {
-                            settings.AddHash(moduleInfo.SystemName, msgHash.ToString());
+                            msgHash = content.ToString().GetHashCode();
+                        }
+                        else
+                        {
+                            msgHash = uniqueMsgKey.UniqueString.GetHashCode();
+                            hashGroup = uniqueMsgKey.GroupId;
+                        }
+                        if (!settings.MessageHashExist(moduleInfo.SystemName,hashGroup, msgHash.ToString()))
+                        {
+                            settings.AddHash(moduleInfo.SystemName,hashGroup, msgHash.ToString());
                             client.SaveServiceData(settings);
 
                             Guid token = Guid.NewGuid();

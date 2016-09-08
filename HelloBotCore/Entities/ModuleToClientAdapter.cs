@@ -31,7 +31,7 @@ namespace HelloBotCore.Entities
             return _moduleClientHandler.GetSettings<T>(_componentInfoBase);
         }
 
-        public IBotCallback ShowMessage(Guid token, CommunicationMessage message, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default, string uniqueMsgKey = null)
+        public IBotCallback ShowMessage(Guid token, CommunicationMessage message, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default, UniqueMessageHash uniqueMsgKey = null)
         {
             _lastToken = token;
             _moduleClientHandler.ShowMessage(_componentInfoBase, message, title, answerType, messageType, token,uniqueMsgKey:uniqueMsgKey);

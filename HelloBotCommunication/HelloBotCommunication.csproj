@@ -73,6 +73,7 @@
     <Compile Include="ModuleHandlerBase.cs" />
     <Compile Include="SuggestionDetails.cs" />
     <Compile Include="TooltipType.cs" />
+    <Compile Include="UniqueMessageHash.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
