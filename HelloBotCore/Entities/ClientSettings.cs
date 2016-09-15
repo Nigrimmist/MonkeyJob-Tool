@@ -44,7 +44,7 @@ namespace HelloBotCore.Entities
                 if (groupHashes.TryGetValue(groupId, out messageHashes))
                 {
                     var storeLimit = 10;
-                    if (messageHashes.Count > storeLimit - 1)
+                    if (messageHashes.Count > storeLimit )
                         messageHashes.RemoveRange(0, messageHashes.Count - storeLimit - 1);
                     messageHashes.Add(hash);
                 }

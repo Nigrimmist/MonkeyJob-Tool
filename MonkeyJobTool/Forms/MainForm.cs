@@ -314,6 +314,7 @@ namespace MonkeyJobTool.Forms
                     _bot.RegisterIntegrationClients(App.Instance.AppConf.SystemData.EnabledModules);
                     _bot.OnSuggestRecieved += BotOnSuggestRecieved;
                     _bot.OnModuleRemoved += _bot_OnModuleRemoved;
+                    _bot.CanNotifyClient = () => !App.Instance.AppConf.SystemData.DoNotNotify;
                     App.Instance.Bot = _bot;
                     SetLoading(false);
                     if (afterInitActionClbck != null)
@@ -508,7 +509,14 @@ namespace MonkeyJobTool.Forms
                 var answerType = answerInfo.AnswerType;
                 
                 string title = string.IsNullOrEmpty(answerInfo.Title) ? answerInfo.CommandName : answerInfo.Title;
-                
+                if (answerInfo.MessageSourceType == ModuleType.Event)
+                {
+                    //do not show already exist popup for events
+                    if (App.Instance.NotificationPopupExist(answerInfo.Answer.ToString(), answerInfo.Title))
+                    {
+                        return;
+                    }
+                }
 
                 if (answerType == AnswerBehaviourType.CopyToClipBoard || (clientCommandContext != null && clientCommandContext.IsToBuffer))
                 {

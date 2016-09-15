@@ -75,8 +75,9 @@ namespace HelloBotCore
         public event Action<List<AutoSuggestItem>> OnSuggestRecieved;
 
         public delegate void OnModuleRemovedDelegate(string moduleSystemName);
-
         public event OnModuleRemovedDelegate OnModuleRemoved;
+
+        public Func<bool> CanNotifyClient;
 
         /// <summary>
         /// Bot costructor
@@ -572,7 +573,9 @@ namespace HelloBotCore
             BotCommandContext commandContext = commandBaseContext as BotCommandContext;
             if (commandContext != null || !commandToken.HasValue)
             {
-                //&& _isClientEnabledForModuleFunc(x.SystemName, moduleInfo.SystemName, moduleInfo.ModuleType)
+                //do not notify if main client in silent mode
+                if (moduleInfo.ModuleType==ModuleType.Event && !CanNotifyClient()) return; 
+               
                 var enabledIntegrationClients = IntegrationClients.Where(x => x.IsEnabled).SelectMany(x => x.Instances.Where(y=>y.IsEnabled)).Where(x=>x.InstanceCommunication.IsEnabledFor(x.SystemName,moduleInfo.ModuleType)).ToList();
                 
                 if (enabledIntegrationClients.Any() && !useBaseClient)

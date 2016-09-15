@@ -66,8 +66,9 @@ namespace Nigrimmist.Modules.Modules
             bool isRu = r.IsMatch(args);
             string fromLang = isRu ? "ru" : "en";
             string toLang = isRu ? "en" : "ru";
-
-            hrm.Get(string.Format("https://translate.google.com/translate_a/single?client=t&sl={0}&tl={1}&hl=ru&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=at&ie=UTF-8&oe=UTF-8&otf=2&srcrom=1&ssel=0&tsel=0&kc=1&tk=296212|170720&q=", fromLang, toLang) + HttpUtility.UrlEncode(args));
+            //https://translate.google.com/translate_a/single?client=t&sl=en&tl=ru&hl=ru&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&otf=2&ssel=0&tsel=0&kc=5&tk=121871.516795&q=привет
+            hrm.Get("https://translate.google.com/#en/ru/%D0%BF%D1%80%D0%B8%D0%B2%D0%B5%D1%82");
+            hrm.Get(string.Format("https://translate.google.com/translate_a/single?client=t&sl={0}&tl={1}&hl=ru&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&otf=2&ssel=0&tsel=0&kc=5&tk=121871.516795&q=ет", fromLang, toLang) + HttpUtility.UrlEncode(args));
             string html = hrm.Html;
             string anwser = html.Substring(4, html.IndexOf(@""",""") - 4);
             _client.ShowMessage(commandToken, CommunicationMessage.FromString(anwser));

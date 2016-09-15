@@ -15,6 +15,7 @@ using System.Threading;
 using System.Web;
 using System.Xml;
 using HelloBotCore;
+using HtmlAgilityPack;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MonkeyJobTool.Extensions;
 using Newtonsoft.Json;
@@ -43,9 +44,65 @@ namespace Test
         static void Main(string[] args)
         {
 
-            var t = new test();
-            t.gg = new List<string>();
-            t.gg.Add("");
+            HtmlReaderManager hrm = new HtmlReaderManager();
+
+            Regex r = new Regex("[а-яА-ЯЁё]+");
+            //bool isRu = r.IsMatch(args);
+            //string fromLang = isRu ? "ru" : "en";
+            //string toLang = isRu ? "en" : "ru";
+
+            
+            //hrm.SendReferer = "http://www.translate.ru/";
+            try
+            {
+                while (true)
+                {
+                    Console.WriteLine("слово :");
+                    var s = Console.ReadLine();
+
+                    hrm.Get("http://www.translate.ru/");
+                    hrm.ContentType = "application/json; charset=utf-8";
+                    hrm.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:48.0) Gecko/20100101 Firefox/48.0";
+                    hrm.Post("http://www.translate.ru/services/TranslationService.asmx/GetTranslateNew",
+                    string.Format("{{dirCode:'en-ru', template:'General', text:'{0}', lang:'en', limit:3000,useAutoDetect:true, key:'', ts:'MainSite',tid:'',IsMobile:false}}", HttpUtility.UrlEncode(s)));
+                    string decoded = DecodeEncodedNonAsciiCharacters(hrm.Html);
+                    decoded = decoded.Replace(@"\""", @"""");
+                    HtmlDocument doc = new HtmlDocument();
+                    doc.LoadHtml(decoded);
+                    var variantsNodes = doc.DocumentNode.SelectNodes("//div[@class='cforms_result']");
+                    foreach (var node in variantsNodes)
+                    {
+                        var title = node.SelectSingleNode("//span[@class='source_only']").InnerText;
+
+                    }
+                    
+                    //Console.WriteLine(string.Join("\r\n", variants));
+                    
+                }
+                
+                
+
+                
+
+                
+
+                
+
+                
+                
+            }
+            catch (WebException e)
+            {
+                if (e.Status == WebExceptionStatus.ProtocolError)
+                {
+                    WebResponse resp = e.Response;
+                    using (StreamReader sr = new StreamReader(resp.GetResponseStream()))
+                    {
+                        Console.WriteLine(sr.ReadToEnd());
+                    }
+                }
+            }
+            
 
             //var token = GetAuthorizationHeader2();
             ////
@@ -76,94 +133,20 @@ namespace Test
             Console.ReadLine();
 
         }
-        private static string GetAuthorizationHeader()
+
+
+
+        
+
+        static string DecodeEncodedNonAsciiCharacters(string value)
         {
-            AuthenticationResult result = null;
-
-            var context = new AuthenticationContext("https://login.microsoftonline.com/91c6f46c-de8c-46f7-bbd7-67f8b9be58c6/oauth2/token");
-
-            var thread = new Thread(() =>
-            {
-                result = context.AcquireTokenAsync("https://management.core.windows.net/", "85a6eb44-8ef4-49a0-aa68-fbc07fb45f91", new Uri("http://localhost"),new PlatformParameters(PromptBehavior.Auto)).Result;
-            });
-
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Name = "AquireTokenThread";
-            thread.Start();
-            thread.Join();
-
-            if (result == null)
-            {
-                throw new InvalidOperationException("Failed to obtain the JWT token");
-            }
-
-            string token = result.AccessToken;
-            var s = result.CreateAuthorizationHeader();
-            
-            return token;
-        }
-
-        private static string GetAuthorizationHeader2()
-        {
-            AuthenticationResult result = null;
-
-            var context = new AuthenticationContext("https://login.microsoftonline.com/91c6f46c-de8c-46f7-bbd7-67f8b9be58c6/oauth2/authorize");
-
-            var thread = new Thread(() =>
-            {
-                result = context.AcquireTokenAsync("https://management.core.windows.net/", "85a6eb44-8ef4-49a0-aa68-fbc07fb45f91", new Uri("http://localhost"), new PlatformParameters(PromptBehavior.Auto)).Result;
-            });
-
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Name = "AquireTokenThread";
-            thread.Start();
-            thread.Join();
-
-            if (result == null)
-            {
-                throw new InvalidOperationException("Failed to obtain the JWT token");
-            }
-
-            string token = result.AccessToken;
-            var s = result.CreateAuthorizationHeader();
-
-            return token;
-        }
-
-        public static bool SetFirewallRuleAutoDetect(string certFilename, string certPassword, string subscriptionId, string serverName, string ruleName)
-        {
-
-            try
-            {
-                string url = string.Format("https://management.database.windows.net:8443/{0}/servers/{1}/firewallrules/{2}?op=AutoDetectClientIP",
-                                           subscriptionId,
-                                           serverName,
-                                           ruleName);
-
-                HttpWebRequest webRequest = HttpWebRequest.Create(url) as HttpWebRequest;
-
-                
-                webRequest.Method = "POST";
-                webRequest.Headers["x-ms-version"] = "1.0";
-                webRequest.ContentLength = 0;
-
-                // call the management api
-                // there is no information contained in the response, it only needs to work
-                using (WebResponse response = webRequest.GetResponse())
-                using (Stream stream = response.GetResponseStream())
-                using (StreamReader sr = new StreamReader(stream))
+            return Regex.Replace(
+                value,
+                @"\\u(?<Value>[a-zA-Z0-9]{4})",
+                m =>
                 {
-                    Console.WriteLine(sr.ReadToEnd());
-                }
-
-                // the firewall was successfully updated
-                return true;
-            }
-            catch
-            {
-                // there was an error and the firewall possibly not updated
-                return false;
-            }
+                    return ((char)int.Parse(m.Groups["Value"].Value, NumberStyles.HexNumber)).ToString();
+                });
         }
 
         
