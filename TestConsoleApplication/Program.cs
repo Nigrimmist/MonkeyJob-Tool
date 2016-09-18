@@ -60,36 +60,13 @@ namespace Test
                     Console.WriteLine("слово :");
                     var s = Console.ReadLine();
 
-                    hrm.Get("http://www.translate.ru/");
-                    hrm.ContentType = "application/json; charset=utf-8";
-                    hrm.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:48.0) Gecko/20100101 Firefox/48.0";
-                    hrm.Post("http://www.translate.ru/services/TranslationService.asmx/GetTranslateNew",
-                    string.Format("{{dirCode:'en-ru', template:'General', text:'{0}', lang:'en', limit:3000,useAutoDetect:true, key:'', ts:'MainSite',tid:'',IsMobile:false}}", HttpUtility.UrlEncode(s)));
-                    string decoded = DecodeEncodedNonAsciiCharacters(hrm.Html);
-                    decoded = decoded.Replace(@"\""", @"""");
-                    HtmlDocument doc = new HtmlDocument();
-                    doc.LoadHtml(decoded);
-                    var variantsNodes = doc.DocumentNode.SelectNodes("//div[@class='cforms_result']");
-                    foreach (var node in variantsNodes)
-                    {
-                        var title = node.SelectSingleNode("//span[@class='source_only']").InnerText;
-
-                    }
                     
-                    //Console.WriteLine(string.Join("\r\n", variants));
+
+
+
+                    //Console.WriteLine(sb.ToString());
                     
                 }
-                
-                
-
-                
-
-                
-
-                
-
-                
-                
             }
             catch (WebException e)
             {
@@ -133,23 +110,6 @@ namespace Test
             Console.ReadLine();
 
         }
-
-
-
-        
-
-        static string DecodeEncodedNonAsciiCharacters(string value)
-        {
-            return Regex.Replace(
-                value,
-                @"\\u(?<Value>[a-zA-Z0-9]{4})",
-                m =>
-                {
-                    return ((char)int.Parse(m.Groups["Value"].Value, NumberStyles.HexNumber)).ToString();
-                });
-        }
-
-        
     }
 
 }

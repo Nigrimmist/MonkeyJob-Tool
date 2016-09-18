@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using HelloBotCommunication;
 using HelloBotCommunication.Interfaces;
 using HelloBotModuleHelper;
+using HtmlAgilityPack;
+using Newtonsoft.Json;
 
 namespace Nigrimmist.Modules.Modules
 {
@@ -62,16 +65,40 @@ namespace Nigrimmist.Modules.Modules
             
             HtmlReaderManager hrm = new HtmlReaderManager();
 
-            Regex r = new Regex("[а-яА-ЯЁё]+");
-            bool isRu = r.IsMatch(args);
-            string fromLang = isRu ? "ru" : "en";
-            string toLang = isRu ? "en" : "ru";
-            //https://translate.google.com/translate_a/single?client=t&sl=en&tl=ru&hl=ru&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&otf=2&ssel=0&tsel=0&kc=5&tk=121871.516795&q=привет
-            hrm.Get("https://translate.google.com/#en/ru/%D0%BF%D1%80%D0%B8%D0%B2%D0%B5%D1%82");
-            hrm.Get(string.Format("https://translate.google.com/translate_a/single?client=t&sl={0}&tl={1}&hl=ru&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&otf=2&ssel=0&tsel=0&kc=5&tk=121871.516795&q=ет", fromLang, toLang) + HttpUtility.UrlEncode(args));
-            string html = hrm.Html;
-            string anwser = html.Substring(4, html.IndexOf(@""",""") - 4);
-            _client.ShowMessage(commandToken, CommunicationMessage.FromString(anwser));
+            StringBuilder sb = new StringBuilder();
+
+            hrm.ContentType = "application/json; charset=utf-8";
+            hrm.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:48.0) Gecko/20100101 Firefox/48.0";
+            hrm.Post("http://www.translate.ru/services/TranslationService.asmx/GetTranslateNew",
+            string.Format("{{dirCode:'ru-en', template:'General', text:'{0}', lang:'ru', limit:3000,useAutoDetect:true, key:'', ts:'MainSite',tid:'',IsMobile:false}}", HttpUtility.UrlEncode(args)));
+
+            var jsonType = new { d = new { result = "", isWord = false } };
+            var data = JsonConvert.DeserializeAnonymousType(hrm.Html, jsonType);
+            if (data.d.isWord)
+            {
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(data.d.result);
+                var variantsNodes = doc.DocumentNode.SelectNodes("//div[@class='cforms_result']");
+                foreach (var node in variantsNodes)
+                {
+                    var title = node.SelectSingleNode(".//span[@class='source_only']").InnerText;
+                    var type = node.SelectSingleNode(".//span[@class='ref_psp']").InnerText;
+                    sb.AppendLine(string.Format("{0} ({1}) :", title, type));
+                    var translationNodes = node.SelectNodes(".//div[@id='translations']/.//span[@class='ref_result']");
+                    foreach (var translatioNode in translationNodes)
+                    {
+                        var transl = translatioNode.InnerText;
+                        sb.AppendLine(transl.TrimStart());
+                    }
+                    sb.AppendLine();
+                }
+            }
+            else
+            {
+                sb.AppendLine(data.d.result);
+            }
+
+            _client.ShowMessage(commandToken, CommunicationMessage.FromString(sb.ToString()));
         }
 
        
