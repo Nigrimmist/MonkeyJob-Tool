@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using HelloBotCommunication;
+using HelloBotCommunication.Attributes.SettingAttributes;
 using HelloBotCommunication.Interfaces;
 using HelloBotModuleHelper;
 using HtmlAgilityPack;
@@ -68,6 +69,9 @@ namespace Nigrimmist.Modules.Modules
             }
         }
 
+        private bool _yandexGetInited = false;
+        private HtmlReaderManager hrm;
+
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
             if (string.IsNullOrEmpty(args))
@@ -75,12 +79,46 @@ namespace Nigrimmist.Modules.Modules
 
             var queryInfo = new WeatherQueryInfo();
             args = queryInfo.ParseQuery(args);
-
-            HtmlReaderManager hrm = new HtmlReaderManager();
-
+            if (hrm == null)
+                hrm = new HtmlReaderManager();
+            string html;
             try
             {
-                hrm.Get(string.Format("http://pogoda.yandex.by/{0}", HttpUtility.UrlEncode(args)));
+                var settings = _client.GetSettings<WeatherSettings>() ?? new WeatherSettings();
+                string cityTranslate;
+                if (!settings.ContainsCity(args, out cityTranslate))
+                {
+                    hrm.Get(string.Format("https://yandex.by/search/?text={0}&lr=157&rnd=30864", HttpUtility.UrlEncode(string.Format("погода {0} яндекс", args))));
+                    _yandexGetInited = true;
+                    html = hrm.Html.Replace("yandex.ru", "yandex.by");
+                    List<string> searchPhs = new List<string>(){@"//pogoda.yandex.by/",@"//yandex.by/pogoda/"};
+                    for (int i = 0; i < searchPhs.Count; i++)
+                    {
+                        var pos = html.IndexOf(searchPhs[i]);
+                        if(pos<0) continue;
+
+                        var cityWeatherLinkPart = html.Substring(pos + searchPhs[i].Length);
+                        if(cityWeatherLinkPart.StartsWith("search")) continue;
+                        cityTranslate = cityWeatherLinkPart.Substring(0, cityWeatherLinkPart.IndexOf(@""""));
+                        settings.AddCity(args, cityTranslate);
+                        _client.SaveSettings(settings);
+                        break;
+                    }
+                    
+                }
+                else if(!_yandexGetInited)
+                {
+                    hrm.Get("https://yandex.by");
+                    _yandexGetInited = true;
+                }
+
+                if(!string.IsNullOrEmpty(cityTranslate))
+                    hrm.Get(string.Format("https://yandex.by/pogoda/{0}", HttpUtility.UrlEncode(cityTranslate)));
+                else
+                {
+                    _client.ShowMessage(commandToken, CommunicationMessage.FromString(string.Format(@"Проблема с определением города")));
+                    return;
+                }
             }
             catch (WebException wex)
             {
@@ -91,13 +129,13 @@ namespace Nigrimmist.Modules.Modules
                 }
             }
 
-            string html = hrm.Html;
+            html = hrm.Html;
             HtmlDocument htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(html);
 
             StringBuilder sb = new StringBuilder();
 
-            string title = htmlDoc.DocumentNode.SelectSingleNode("//./div[@class='navigation-city']/h1").InnerText;
+            string title = htmlDoc.DocumentNode.SelectSingleNode("//./div[contains(@class,'navigation-city')]/h1").InnerText;
             sb.AppendLine(title);
 
             if (queryInfo.Type == WeatherQueryType.NotDefined)
@@ -111,9 +149,9 @@ namespace Nigrimmist.Modules.Modules
                 sb.AppendFormat("Сейчас {0} {1}", currTemp, currTempDescr, windSpeed);
                 sb.Append(Environment.NewLine);
             }
-            
 
-            var detailedItems = htmlDoc.DocumentNode.SelectNodes("//./dl[@class='forecast-detailed']/*");
+
+            var detailedItems = htmlDoc.DocumentNode.SelectNodes("//./dl[contains(@class,'forecast-detailed')]/*");
             for (int i = 0; i < detailedItems.Count; i += 2)
             {
                 
@@ -121,7 +159,7 @@ namespace Nigrimmist.Modules.Modules
                 var detailsBlock = detailedItems[i + 1];
 
                 var dayOfWeek = dateBlock.SelectSingleNode("small").InnerText;
-                var date = dateBlock.SelectSingleNode("strong").InnerText;
+                var date = dateBlock.SelectSingleNode("strong").InnerText.Replace("завтра","").Replace("сегодня","");
                 var dayDetailRows = detailsBlock.SelectNodes(".//./tr[contains(@class,'weather-table__row')]");
 
                 switch (queryInfo.Type)
@@ -162,15 +200,20 @@ namespace Nigrimmist.Modules.Modules
                     var dayPart = detailRow.SelectSingleNode(".//./div[@class='weather-table__daypart']").InnerText;
                     var dayTempRange = detailRow.SelectSingleNode(".//./div[@class='weather-table__temp']").InnerText.Replace("&hellip;", "...");
                     var dayWDescr = detailRow.SelectSingleNode("td[@class='weather-table__body-cell weather-table__body-cell_type_condition']").InnerText;
-                    var dayWindSpeed = detailRow.SelectSingleNode(".//./span[@class='weather-table__wind']").InnerText;
-                    var dayWindDirection = detailRow.SelectSingleNode(".//./abbr").InnerText;
-                    var dayHumidity = detailRow.SelectSingleNode("td[@class='weather-table__body-cell weather-table__body-cell_type_humidity']").InnerText;
-                    sb.AppendLine(string.Format("{0} {1}. {2}.", dayPart, dayTempRange, dayWDescr, dayWindSpeed, dayWindDirection, dayHumidity));
+                    //var dayWindSpeed="";
+                    //var dayWindSpeedNode = detailRow.SelectSingleNode(".//./span[@class='weather-table__wind']");
+                    //if (dayWindSpeedNode != null)
+                    //    dayWindSpeed = dayWindSpeedNode.InnerText;
+                    //else
+                    //    dayWindSpeed = detailRow.SelectSingleNode("td[contains(@class,'weather-table__body-cell_type_wind')]").InnerText;
+                    //var dayWindDirection = detailRow.SelectSingleNode(".//./abbr").InnerText;
+                    //var dayHumidity = detailRow.SelectSingleNode("td[@class='weather-table__body-cell weather-table__body-cell_type_humidity']").InnerText;
+                    sb.AppendLine(string.Format("{0} {1}. {2}.", dayPart, dayTempRange, dayWDescr));
                 }
 
             }
 
-            _client.ShowMessage(commandToken, CommunicationMessage.FromString(sb.ToString().Replace("&deg;", "°")));
+            _client.ShowMessage(commandToken, CommunicationMessage.FromString(sb.ToString().Replace("&deg;", "°").Replace("&nbsp;", " ")));
         }
 
         private string ClearText(string str)
@@ -198,7 +241,18 @@ namespace Nigrimmist.Modules.Modules
 
         public string ParseQuery(string query)
         {
-            List<string> daysOfWeek = new List<string>() {"пн", "вт", "ср", "чт", "пт", "сб", "вс"};
+            IDictionary<string,string> replaces = new Dictionary<string, string>()
+            {
+                {"понедельник","пн"},
+                {"вторник","вт"},
+                {"среда","ср"},
+                {"четверг","чт"},
+                {"пятница","пт"},
+                {"суббота","сб"},
+                {"воскресенье","вс"},
+            };
+            replaces.ToList().ForEach(pair => query= query.Replace(pair.Key, pair.Value));
+            List<string> daysOfWeek = replaces.Keys.ToList();
             query = query.ToLower().Trim();
             var endWith = daysOfWeek.SingleOrDefault(x => query.EndsWith(" " + x));
             if (endWith != null)
@@ -242,6 +296,28 @@ namespace Nigrimmist.Modules.Modules
                 Data = "";
             }
             return query.TrimEnd(Data.ToString().ToCharArray()).TrimEnd();
+        }
+    }
+
+    [ModuleSettingsFor(typeof(Weather))]
+    public class WeatherSettings
+    {
+        public IDictionary<string,string> CityTranslates { get; set; }
+
+        public WeatherSettings()
+        {
+            CityTranslates = new Dictionary<string, string>();
+        }
+
+        public bool ContainsCity(string city, out string translate)
+        {
+            return CityTranslates.TryGetValue(city, out translate);
+        }
+
+        public void AddCity(string city, string translate)
+        {
+            if(!string.IsNullOrEmpty(translate))
+                CityTranslates.Add(new KeyValuePair<string, string>(city,translate));
         }
     }
 }

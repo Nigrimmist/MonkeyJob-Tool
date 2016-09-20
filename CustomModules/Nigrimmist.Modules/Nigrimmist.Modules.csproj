@@ -71,6 +71,7 @@
     <Compile Include="Modules\Bash.cs" />
     <Compile Include="Modules\MemoryUsageTrayModule.cs" />
     <Compile Include="Modules\MtsEthernetBYModule.cs" />
+    <Compile Include="Modules\SpellCheckerModule.cs" />
     <Compile Include="Modules\WeatherTrayModule.cs" />
     <Compile Include="Modules\Diary.cs" />
     <Compile Include="Modules\PingModule.cs" />

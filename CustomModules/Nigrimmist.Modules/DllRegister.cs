@@ -30,7 +30,8 @@ namespace Nigrimmist.Modules
                 new BrowserUrlsOpen(),
                 new IpChecker(),
                 new CopyToBufferModule(),
-                new LocalDnsBlockerModule()
+                new LocalDnsBlockerModule(),
+                new SpellCheckerModule()
             };
         }
 

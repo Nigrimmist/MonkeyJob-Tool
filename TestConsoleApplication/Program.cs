@@ -58,14 +58,15 @@ namespace Test
                 while (true)
                 {
                     Console.WriteLine("слово :");
-                    var s = Console.ReadLine();
+                    //var s = Console.ReadLine();
 
-                    
+                    hrm.Get("https://yandex.by/search/?lr=157&msid=1474230209.49634.22903.3782&text=" + HttpUtility.UrlEncode(Console.ReadLine()));
+                    var jsPh = @"var title = ";
+                    string res = hrm.Html.Substring(hrm.Html.IndexOf(jsPh)+jsPh.Length+1);
+                    res = res.Substring(0, res.IndexOf(@"—")).Trim();
 
+                    Console.WriteLine(DecodeEncodedNonAsciiCharacters(res));
 
-
-                    //Console.WriteLine(sb.ToString());
-                    
                 }
             }
             catch (WebException e)
@@ -109,6 +110,17 @@ namespace Test
             Console.WriteLine("test");
             Console.ReadLine();
 
+        }
+
+        static string DecodeEncodedNonAsciiCharacters(string value)
+        {
+            return Regex.Replace(
+                value,
+                @"\\u(?<Value>[a-zA-Z0-9]{4})",
+                m =>
+                {
+                    return ((char)int.Parse(m.Groups["Value"].Value, NumberStyles.HexNumber)).ToString();
+                });
         }
     }
 
