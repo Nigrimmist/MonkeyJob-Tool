@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Entities\AppVersionInfo.cs" />
     <Compile Include="Helpers\WeatherHelper.cs" />
+    <Compile Include="Modules\SerialNotifierModule.cs" />
     <Compile Include="Modules\LocalDnsBlockerModule.cs" />
     <Compile Include="Modules\NeagentBY.cs" />
     <Compile Include="Modules\OnlinerRent.cs" />

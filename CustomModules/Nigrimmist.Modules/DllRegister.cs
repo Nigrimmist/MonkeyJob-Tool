@@ -44,7 +44,8 @@ namespace Nigrimmist.Modules
                 new MtsEthernetBYModule(),
                 new MtsGsmByModule(),
                 new OnlinerRent(),
-                new NeagentBY()
+                new NeagentBY(),
+                new SerialNotifierModule()
             };
         }
 
