@@ -22,6 +22,7 @@ namespace MonkeyJobTool.Entities
         public SystemData SystemData { get; set; }
         public Language Language { get; set; }
         public bool DevelopmentModeEnabled { get; set; }
+        public bool DebugModeEnabled { get; set; }
         public double InstalledAppVersion { get; set; }
         public bool ShowCommandHelp { get; set; }
         public double ConfigVersion { get; set; }
@@ -81,37 +82,10 @@ namespace MonkeyJobTool.Entities
 
         public bool DoNotNotify { get; set; }
         public TimeSpan ClearCommandAfterMinOfInactivity { get; set; }
-
-        //public List<ModuleToModuleCommunication> ClientToModulesCommunications { get; set; }
-
-        //public bool ModuleEnabledForModule(string mainModule, string dependentModule, ModuleType dependentModuleType)
-        //{
-        //    var found = ClientToModulesCommunications.FirstOrDefault(x => x.MainModule == mainModule);
-
-        //    return (found ?? ModuleToModuleCommunication.GetDefaultForClient(mainModule)).IsEnabledFor(dependentModule, dependentModuleType);
-        //}
-
-        //public ModuleToModuleCommunication GetToModuleCommunicationForClient(string clientName, out bool wasFound)
-        //{
-        //    var found = ClientToModulesCommunications.FirstOrDefault(x => x.MainModule == clientName);
-        //    wasFound = found != null;
-        //    return found ?? ModuleToModuleCommunication.GetDefaultForClient(clientName);
-        //}
-
-        //public void AddUpdateModuleCommunicationForClient(ModuleToModuleCommunication moduleCommunication)
-        //{
-        //    bool wasFound;
-        //    var comm = GetToModuleCommunicationForClient(moduleCommunication.MainModule, out wasFound);
-        //    comm = moduleCommunication;
-        //    if(!wasFound)
-        //        ClientToModulesCommunications.Add(comm);
-        //}
-
         public SystemData()
         {
             EnabledModules = new List<string>();
             DisabledModules = new List<string>();
-            //ClientToModulesCommunications = new List<ModuleToModuleCommunication>();
         }
     }
 

@@ -23,7 +23,7 @@ namespace HelloBotCore.Entities
 
         public Color? BodyBackgroundColor { get; set; }
         public Color? HeaderBackgroundColor { get; set; }
-
+        
         public void Init(string dllName, ModuleEventBase eventModuleBase, IModuleClientHandler moduleClientHandler,AuthorInfo author)
         {
             EventFireCallback = eventModuleBase.OnFire;
@@ -40,6 +40,8 @@ namespace HelloBotCore.Entities
         {
             EventFireCallback(commandToken);
         }
+
+        
 
         public override ModuleType ModuleType
         {

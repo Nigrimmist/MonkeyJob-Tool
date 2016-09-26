@@ -65,6 +65,7 @@ namespace Nigrimmist.Modules.Modules
         
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
+            throw new ApplicationException("asdasdas!");
             if (!string.IsNullOrEmpty(args.Trim()))
             {
                 Expression expr = new Expression(args);

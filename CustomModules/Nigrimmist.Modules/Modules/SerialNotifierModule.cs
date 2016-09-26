@@ -58,7 +58,8 @@ namespace Nigrimmist.Modules.Modules
                     var href = lastSeasonNode.SelectSingleNode("a").Attributes["href"].Value;
                     if (!serial.Url.Trim().EndsWith(href.Trim()))
                     {
-                        href = "http://seasonvar.ru" + href;
+                        //jump to the last season
+                        href = "http://seasonvar.ru" + href; 
                         hrm.Get(href);
                         doc.LoadHtml(hrm.Html);
                         lastSeasonNode = doc.DocumentNode.SelectSingleNode("//div[contains(@class,'seasonlist')]/h2[last()]");

@@ -47,21 +47,16 @@ namespace MonkeyJobTool.Forms
         public MainForm()
         {
             InitializeComponent();
-
-            
         }
         
         private void MainForm_Load(object sender, EventArgs e)
         {
-            //new Thread(o =>
-            //{
-            //    Thread.Sleep(5000);
-            //    this.ToTop();
-            //    Debug.WriteLine("to top main form");
-            //}).Start();
+           
+            
             try
             {
                 App.Instance.Init(openFormHotKeyRaised, this);
+                LogManager.Trace("Main load started. inited");
                 App.Instance.OnSettingsChanged += Instance_OnSettingsChanged;
                 App.Instance.OnNotificationCountChanged += Instance_OnNotificationCountChanged;
 
@@ -72,11 +67,14 @@ namespace MonkeyJobTool.Forms
                     _isFirstRun = firstRunKeyVal == null;
                     if (_isFirstRun)
                     {
+                        LogManager.Trace("First run");
                         App.Instance.UserID = Guid.NewGuid();
                         appRegistry.SetValue(AppConstants.Registry.FirstRun, App.Instance.UserID);
+                        LogManager.Trace("Value to registry has been set");
                     }
                     else
                     {
+                        LogManager.Trace("Second or more run. id : "+firstRunKeyVal);
                         App.Instance.UserID = new Guid(firstRunKeyVal.ToString());
                     }
                 }
@@ -89,6 +87,7 @@ namespace MonkeyJobTool.Forms
                 InitBot((continueClbck) =>
                 {
                     var changedSettingModules = _bot.GetIncompatibleSettingModules();
+                    LogManager.Trace("changed module count : "+changedSettingModules.Count);
                     this.Invoke(new MethodInvoker(delegate
                     {
                         if (_isFirstRun || changedSettingModules.Any())
@@ -282,10 +281,13 @@ namespace MonkeyJobTool.Forms
 
         private void ShowHelpInfo()
         {
+            LogManager.Trace("Start ShowHelpInfo");
             if (_helpPopupForm != null)
             {
                 _helpPopupForm.ToTop();
             }
+            LogManager.Trace("End ShowHelpInfo");
+
         }
         private void HideHelpInfo()
         {
@@ -315,6 +317,7 @@ namespace MonkeyJobTool.Forms
                     _bot.OnSuggestRecieved += BotOnSuggestRecieved;
                     _bot.OnModuleRemoved += _bot_OnModuleRemoved;
                     _bot.CanNotifyClient = () => !App.Instance.AppConf.SystemData.DoNotNotify;
+                    
                     App.Instance.Bot = _bot;
                     SetLoading(false);
                     if (afterInitActionClbck != null)
@@ -328,6 +331,7 @@ namespace MonkeyJobTool.Forms
                                 App.Instance.AppConf.Save();
                                 App.Instance.ShowFixedPopup("Обновление", "MonkeyJob Tool успешно обновилась до версии " + App.Instance.AppConf.InstalledAppVersion+".\r\n\r\nПриятного пользования, камрад!",null);
                             }
+                            ApplyDebugMode(true);
                         });
                     }
                     else
@@ -341,6 +345,33 @@ namespace MonkeyJobTool.Forms
                     LogManager.Error(ex, "InitBot error");
                 }
             }).Start();
+        }
+
+        private void OnDebugStateChanged(bool changedTo)
+        {
+            App.Instance.AppConf.DebugModeEnabled = changedTo;
+            App.Instance.AppConf.Save();
+            ApplyDebugMode(false);
+        }
+
+        private void ApplyDebugMode(bool startCheck)
+        {
+            var enabled = App.Instance.AppConf.DebugModeEnabled;
+            this.BackColor = enabled ? Color.OrangeRed : SystemColors.Control;
+            _autocomplete.SetBackColor(this.BackColor);
+
+            string msg = string.Format("Режим отладки {0}ключен", enabled ? "в" : "вы");
+            if (enabled)
+            {
+                msg +=
+                    ". \r\n\r\nНе забудьте выключить этот режим командой 'debug off', когда он вам перестанет быть нужен, т.к он пишет все события, происходящие в программе в лог файл, что может повлиять на производительность как программы, так и вашей операционной системы.\r\n\r\nЯркая подсветка будет сигнализировать о включенном режиме отладке.";
+            }
+            else
+            {
+                msg += ". \r\n\r\nФайл лога лежит в папке с программой и называется log.txt, скиньте его разработчику на Nigrimmist@gmail.com. Спасибо!";
+            }
+            if (!(!enabled && startCheck))
+                App.Instance.ShowFixedPopup("Отладка",msg , null, titleBackgroundColor: Color.OrangeRed);
         }
 
         void _bot_OnModuleRemoved(string moduleSystemName)
@@ -627,6 +658,12 @@ namespace MonkeyJobTool.Forms
                 }
                 else
                 {
+                    if (command.ToLower().Trim() == "debug on" || command.ToLower().Trim() == "debug off")
+                    {
+                        OnDebugStateChanged(command.ToLower().Trim().EndsWith("on"));
+                        return;
+                    }
+
                     bool toBuffer = false;
                     if (command.Trim().EndsWith(_copyToBufferPostFix, StringComparison.InvariantCultureIgnoreCase))
                     {
@@ -736,9 +773,12 @@ namespace MonkeyJobTool.Forms
 
         void ShowMain()
         {
+            LogManager.Trace("Start ShowMain()");
             //do not show old commands after min of inactivity
             if (_lastDeactivateFormDate.HasValue && DateTime.Now - _lastDeactivateFormDate.Value > App.Instance.AppConf.SystemData.ClearCommandAfterMinOfInactivity)
             {
+                LogManager.Trace("Clearing autocomplete");
+
                 _autocomplete.Clear();
                 App.Instance.CloseFixedPopup();
                 _lastDeactivateFormDate = null;
@@ -757,7 +797,9 @@ namespace MonkeyJobTool.Forms
                     _autocomplete.PopupToTop();
                 }
             }
-            _autocomplete.SelectAllText();
+            
+            LogManager.Trace("End ShowMain()");
+
         }
 
         private void LogAnalytic()
@@ -768,6 +810,7 @@ namespace MonkeyJobTool.Forms
                 {
                     try
                     {
+                        LogManager.Trace("Start log analytics");
                         DateTime lastLogDate = DateTime.Today;
 
                         RegistryKey appRegistry = Registry.CurrentUser.CreateSubKey(AppConstants.AppName);
@@ -787,6 +830,7 @@ namespace MonkeyJobTool.Forms
 
 
                         appRegistry.SetValue(AppConstants.Registry.LastStatsCollectedDateKey, DateTime.Now.Date.ToString(AppConstants.DateTimeFormat));
+                        LogManager.Trace("End log analytics");
                     }
                     catch (Exception ex)
                     {
@@ -832,6 +876,7 @@ namespace MonkeyJobTool.Forms
 
         private void MainForm_Paint(object sender, PaintEventArgs e)
         {
+            LogManager.Trace("Start MainForm_Paint()");
             int borderSize = 1;
 
             using (Pen p = new Pen(Color.Black, borderSize))
@@ -841,6 +886,7 @@ namespace MonkeyJobTool.Forms
                 e.Graphics.DrawLine(p, this.ClientSize.Width - borderSize, 0, this.ClientSize.Width - borderSize, this.ClientSize.Height - borderSize);
                 e.Graphics.DrawLine(p, this.ClientSize.Width - borderSize, this.ClientSize.Height - borderSize, 0, this.ClientSize.Height - borderSize);
             }
+            LogManager.Trace("End MainForm_Paint()");
         }
         
 

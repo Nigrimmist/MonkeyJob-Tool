@@ -44,7 +44,7 @@ namespace MonkeyJobTool.Forms
             DatabindHelpTooltips();
 
            
-
+            throw new ApplicationException("test exception");
         }
 
         private void DatabindHelpTooltips()
@@ -62,6 +62,7 @@ namespace MonkeyJobTool.Forms
                                  "Поддерживается не более 20 связных перенаправлений.";
             hsSendErrorReport.HelpText = @"Если в приложении случается ошибка, то программа автоматически отсылает лог ошибки с базовой информацией о системе (тип ОС, версия .net Framework, версия программы). Пожалуйста, не отключайте эту опцию, отчёты об ошибках позволяют делать программу стабильнее";
             hsShowHelpForCommands.HelpText = @"Показывает дополнительную информацию по команде в момент её набора, если таковая имеется";
+            htModuleTest.HelpText = @"Запуск интервального модуля для тестирования прямо сейчас, без ожидания";
         }
 
 
@@ -392,7 +393,9 @@ namespace MonkeyJobTool.Forms
             {
                 App.Instance.EnableModule(module.SystemName);
             }
-            
+
+            if (module.ModuleType == ModuleType.Event)
+                btnModuleRun.Enabled = module.IsEnabled;
 
             if (gridType == SettingGridType.Modules)
             {
@@ -547,6 +550,8 @@ namespace MonkeyJobTool.Forms
                     }
                     btnEnabledDisableModule.Text = (!module.IsEnabled ? "В" : "Вы") + "ключить модуль";
                     btnShowLogs.Enabled = gridType == SettingGridType.Modules ? module.Trace.TraceMessages.Any() : (module as IntegrationClientInfo).Instances.Any(x => x.Trace.TraceMessages.Any());
+                    pnlRunModule.Visible = module.ModuleType==ModuleType.Event;
+                    btnModuleRun.Enabled = module.IsEnabled;
                 }
                 else
                 {
@@ -556,10 +561,25 @@ namespace MonkeyJobTool.Forms
                     }
                     btnEnabledDisableClient.Text = (!module.IsEnabled ? "Под" : "Вы") + "ключить клиент";
                     btnShowClientLogs.Enabled = module.Trace.TraceMessages.Any();
-
                 }
             }
         }
+
+
+        private void btnModuleRun_Click(object sender, EventArgs e)
+        {
+            DataGridView grid = gridModules;
+            if (grid.SelectedRows.Count == 1)
+            {
+                var moduleKey = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
+                var gridType = GridTypeBySender(grid);
+                var module = (gridType == SettingGridType.Modules ? App.Instance.Bot.Modules : App.Instance.Bot.IntegrationClients.Select(x => (ComponentInfoBase)x)).SingleOrDefault(x => x.SystemName == moduleKey);
+                App.Instance.Bot.RunEvent(module as ModuleEventInfo);
+            }
+           
+        }
+
+        
         
     }
 }

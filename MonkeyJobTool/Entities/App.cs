@@ -108,9 +108,11 @@ namespace MonkeyJobTool.Entities
                 _appConf = new ApplicationConfiguration(true);
                 _appConf.Save();
             }
+            
             var json = File.ReadAllText(ExecutionFolder + AppConstants.Paths.MainConfFileName);
             var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = AppConstants.DateTimeFormat };
             _appConf = JsonConvert.DeserializeObject<ApplicationConfiguration>(json, dateTimeConverter);
+            LogManager.Trace("App.Conf loaded");
             _mainForm = mainForm;
 
             //register open program hotkey using incoming (main form) delegate
@@ -250,6 +252,7 @@ namespace MonkeyJobTool.Entities
         
         public void ReorderPopupsPositions()
         {
+            LogManager.Trace("Start ReorderPopupsPositions");
             
             lock (_openedPopups)
             {
@@ -277,6 +280,7 @@ namespace MonkeyJobTool.Entities
                 }
 
             }
+            LogManager.Trace("End ReorderPopupsPositions");
         }
 
         void PopupOnPopupClosedBy(ClosePopupReasonType reason, object sessionData)
@@ -306,6 +310,7 @@ namespace MonkeyJobTool.Entities
 
         public void AllPopupsToTop()
         {
+            LogManager.Trace("Start AllPopupsToTop");
             lock (_openedPopupsLock)
             {
                 if (_openedPopups.Any())
@@ -313,6 +318,7 @@ namespace MonkeyJobTool.Entities
                     _openedPopups.ForEach(p => p.ToTop());
                 }
             }
+            LogManager.Trace("End AllPopupsToTop");
         }
 
         public void HideAllPopupsAvailableForHiding()
@@ -373,13 +379,13 @@ namespace MonkeyJobTool.Entities
 
         public void CheckAllNotificationAsRead()
         {
+            LogManager.Trace("Start CheckAllNotificationAsRead()");
                 lock (_openedPopupsLock)
                 {
                    var toClose = _openedPopups.Where(x => x.PopupType == PopupType.Notification).ToList();
                    toClose.ForEach(x => x.Close());
-                   //_openedPopups = _openedPopups.Where(x => x.PopupType != PopupType.Notification).ToList();
-                   Debug.WriteLine("CheckAllNotificationAsRead " + _openedPopups.Count);
                 }
+            LogManager.Trace("End CheckAllNotificationAsRead()");
         }
 
         public bool NotificationPopupExist(string text, string title)

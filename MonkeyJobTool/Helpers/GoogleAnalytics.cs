@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using MonkeyJobTool.Managers;
 
 namespace MonkeyJobTool.Helpers
 {
@@ -41,6 +42,7 @@ namespace MonkeyJobTool.Helpers
 
         private static void GACall(string trackingId, string campaign)
         {
+            LogManager.Trace("Start GACall " + trackingId + " " + campaign);
 
             string culture = Thread.CurrentThread.CurrentCulture.Name;
             string screenRes = Screen.PrimaryScreen.Bounds.Width + "x" + Screen.PrimaryScreen.Bounds.Height;
@@ -69,7 +71,7 @@ namespace MonkeyJobTool.Helpers
             {
                 client.DownloadData(statsRequest);
             }
-
+            LogManager.Trace("End GACall");
         }
 
         public static string GetOSFriendlyName()

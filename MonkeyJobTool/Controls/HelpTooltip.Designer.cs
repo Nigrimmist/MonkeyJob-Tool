@@ -36,12 +36,12 @@
             // 
             this.picBox.Image = global::MonkeyJobTool.Properties.Resources.question__1_;
             this.picBox.Location = new System.Drawing.Point(0, 0);
+            this.picBox.Margin = new System.Windows.Forms.Padding(0);
             this.picBox.Name = "picBox";
             this.picBox.Size = new System.Drawing.Size(16, 16);
             this.picBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.picBox.TabIndex = 0;
             this.picBox.TabStop = false;
-            
             // 
             // HelpTooltip
             // 
@@ -50,7 +50,7 @@
             this.AutoSize = true;
             this.Controls.Add(this.picBox);
             this.Name = "HelpTooltip";
-            this.Size = new System.Drawing.Size(41, 44);
+            this.Size = new System.Drawing.Size(16, 16);
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

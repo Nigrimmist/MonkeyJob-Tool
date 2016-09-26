@@ -116,40 +116,48 @@ namespace HelloBotCore
             foreach (var ev in Events)
             {
                 var tEv = ev;
-                new Thread(() =>
+                RunEvent(tEv);
+            }
+        }
+
+        public void RunEvent(ModuleEventInfo tEv, Func<bool> callback=null)
+        {
+            new Thread(() =>
+            {
+
+                Guid commandToken = Guid.NewGuid();
+                AddNewCommandContext(commandToken, new BotCommandContext()
                 {
+                    CommandName = tEv.GetModuleName(),
+                    ModuleType = ModuleType.Event,
+                    ModuleId = tEv.Id
+                });
 
-                    Guid commandToken = Guid.NewGuid();
-                    AddNewCommandContext(commandToken, new BotCommandContext()
+                while (true)
+                {
+                    try
                     {
-                        CommandName = tEv.GetModuleName(),
-                        ModuleType = ModuleType.Event,
-                        ModuleId = tEv.Id
-                    });
-
-                    while (true)
+                        if (tEv.IsEnabled)
+                        {
+                            tEv.CallEvent(commandToken);
+                        }
+                    }
+                    catch (Exception ex)
                     {
-                        try
-                        {
-                            if (tEv.IsEnabled)
-                            {
-                                tEv.CallEvent(commandToken);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            if (OnModuleErrorOccured != null)
-                            {
-                                OnModuleErrorOccured(ex, tEv);
-                            }
-                            Thread.Sleep(TimeSpan.FromSeconds(30));
-                        }
 
-                        Thread.Sleep(tEv.EventRunEvery);
+                        if (OnModuleErrorOccured != null)
+                        {
+                            OnModuleErrorOccured(ex, tEv);
+                        }
+                        tEv.Trace.AddMessage("System : error occured. " + ex);
+                        tEv.Trace.Save();
+                        Thread.Sleep(TimeSpan.FromSeconds(30));
                     }
 
-                }).Start();
-            }
+                    Thread.Sleep(tEv.EventRunEvery);
+                }
+
+            }).Start();
         }
 
         private void RunTrayModuleTimers()
@@ -390,6 +398,7 @@ namespace HelloBotCore
 
         public bool HandleMessage(string incomingMessage, ClientCommandContext clientCommandContext, bool runWithTimeout)
         {
+            
             if (incomingMessage.Contains(_botCommandPrefix))
             {
                 var command = incomingMessage.Substring(incomingMessage.IndexOf(_botCommandPrefix, StringComparison.InvariantCulture) + _botCommandPrefix.Length);

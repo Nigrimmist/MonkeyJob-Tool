@@ -16,6 +16,7 @@ using MonkeyJobTool.Entities.Autocomplete;
 using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Forms;
 using MonkeyJobTool.Helpers;
+using MonkeyJobTool.Managers;
 using CallCommandInfo = HelloBotCore.Entities.CallCommandInfo;
 
 namespace MonkeyJobTool.Controls.Autocomplete
@@ -264,22 +265,19 @@ namespace MonkeyJobTool.Controls.Autocomplete
 
         public void PopupToTop()
         {
+            LogManager.Trace("Start PopupToTop");
             if(_commandSuggester.IsPopupOpen)
                 _commandSuggester.PopupToTop();
             if (_commandArgumentSuggester.IsPopupOpen)
             _commandArgumentSuggester.PopupToTop();
+            LogManager.Trace("End PopupToTop");
         }
 
         public int GetPopupHeight()
         {
             return _commandSuggester.GetPopupHeight();
         }
-
-        public void SelectAllText()
-        {
-            //txtCommand.SelectAll();
-        }
-
+        
         public bool IsTextSelected()
         {
             return !string.IsNullOrEmpty(txtCommand.SelectedText);
@@ -348,6 +346,9 @@ namespace MonkeyJobTool.Controls.Autocomplete
             //_commandArgumentSuggester.ShowItems(args);
         }
 
-        
+        public void SetBackColor(Color color)
+        {
+            txtCommand.SetColor(color);
+        }
     }
 }

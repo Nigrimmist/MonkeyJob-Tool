@@ -35,23 +35,18 @@
             this.cmbKey3 = new System.Windows.Forms.ComboBox();
             this.TCSettings = new System.Windows.Forms.TabControl();
             this.TPGeneral = new System.Windows.Forms.TabPage();
-            this.hsShowHelpForCommands = new MonkeyJobTool.Controls.HelpTooltip();
             this.chkIsShowCommandHelp = new System.Windows.Forms.CheckBox();
-            this.hsSendErrorReport = new MonkeyJobTool.Controls.HelpTooltip();
             this.chkDenyErrorInfoSend = new System.Windows.Forms.CheckBox();
-            this.htDonateBtn = new MonkeyJobTool.Controls.HelpTooltip();
-            this.htStatsCollect = new MonkeyJobTool.Controls.HelpTooltip();
             this.chkIsDenyCollectingStats = new System.Windows.Forms.CheckBox();
             this.chkIsHideDonateBtn = new System.Windows.Forms.CheckBox();
             this.TPHotkeys = new System.Windows.Forms.TabPage();
-            this.htHotKey = new MonkeyJobTool.Controls.HelpTooltip();
             this.label1 = new System.Windows.Forms.Label();
             this.TPReplaces = new System.Windows.Forms.TabPage();
-            this.htReplace = new MonkeyJobTool.Controls.HelpTooltip();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.pnlCommandReplaces = new System.Windows.Forms.FlowLayoutPanel();
             this.TPModuleSettings = new System.Windows.Forms.TabPage();
+            this.btnModuleRun = new System.Windows.Forms.Button();
             this.btnShowLogs = new System.Windows.Forms.Button();
             this.btnEnabledDisableModule = new System.Windows.Forms.Button();
             this.gridModules = new System.Windows.Forms.DataGridView();
@@ -67,6 +62,14 @@
             this.colIsEnabledClients = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.settingsColClients = new System.Windows.Forms.DataGridViewImageColumn();
             this.btnSaveConfig = new System.Windows.Forms.Button();
+            this.pnlRunModule = new System.Windows.Forms.Panel();
+            this.hsShowHelpForCommands = new MonkeyJobTool.Controls.HelpTooltip();
+            this.hsSendErrorReport = new MonkeyJobTool.Controls.HelpTooltip();
+            this.htDonateBtn = new MonkeyJobTool.Controls.HelpTooltip();
+            this.htStatsCollect = new MonkeyJobTool.Controls.HelpTooltip();
+            this.htHotKey = new MonkeyJobTool.Controls.HelpTooltip();
+            this.htReplace = new MonkeyJobTool.Controls.HelpTooltip();
+            this.htModuleTest = new MonkeyJobTool.Controls.HelpTooltip();
             this.TCSettings.SuspendLayout();
             this.TPGeneral.SuspendLayout();
             this.TPHotkeys.SuspendLayout();
@@ -75,6 +78,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.gridModules)).BeginInit();
             this.TPClients.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridClients)).BeginInit();
+            this.pnlRunModule.SuspendLayout();
             this.SuspendLayout();
             // 
             // chkIsWithWindowsStart
@@ -146,14 +150,6 @@
             this.TPGeneral.Text = "Общие";
             this.TPGeneral.UseVisualStyleBackColor = true;
             // 
-            // hsShowHelpForCommands
-            // 
-            this.hsShowHelpForCommands.AutoSize = true;
-            this.hsShowHelpForCommands.Location = new System.Drawing.Point(220, 107);
-            this.hsShowHelpForCommands.Name = "hsShowHelpForCommands";
-            this.hsShowHelpForCommands.Size = new System.Drawing.Size(19, 19);
-            this.hsShowHelpForCommands.TabIndex = 8;
-            // 
             // chkIsShowCommandHelp
             // 
             this.chkIsShowCommandHelp.AutoSize = true;
@@ -164,14 +160,6 @@
             this.chkIsShowCommandHelp.Text = "Показывать подсказки для команд";
             this.chkIsShowCommandHelp.UseVisualStyleBackColor = true;
             // 
-            // hsSendErrorReport
-            // 
-            this.hsSendErrorReport.AutoSize = true;
-            this.hsSendErrorReport.Location = new System.Drawing.Point(334, 84);
-            this.hsSendErrorReport.Name = "hsSendErrorReport";
-            this.hsSendErrorReport.Size = new System.Drawing.Size(19, 19);
-            this.hsSendErrorReport.TabIndex = 6;
-            // 
             // chkDenyErrorInfoSend
             // 
             this.chkDenyErrorInfoSend.AutoSize = true;
@@ -181,22 +169,6 @@
             this.chkDenyErrorInfoSend.TabIndex = 5;
             this.chkDenyErrorInfoSend.Text = "Запретить отсылать информацию об ошибках программы";
             this.chkDenyErrorInfoSend.UseVisualStyleBackColor = true;
-            // 
-            // htDonateBtn
-            // 
-            this.htDonateBtn.AutoSize = true;
-            this.htDonateBtn.Location = new System.Drawing.Point(255, 38);
-            this.htDonateBtn.Name = "htDonateBtn";
-            this.htDonateBtn.Size = new System.Drawing.Size(19, 19);
-            this.htDonateBtn.TabIndex = 4;
-            // 
-            // htStatsCollect
-            // 
-            this.htStatsCollect.AutoSize = true;
-            this.htStatsCollect.Location = new System.Drawing.Point(370, 61);
-            this.htStatsCollect.Name = "htStatsCollect";
-            this.htStatsCollect.Size = new System.Drawing.Size(19, 19);
-            this.htStatsCollect.TabIndex = 3;
             // 
             // chkIsDenyCollectingStats
             // 
@@ -233,14 +205,6 @@
             this.TPHotkeys.Text = "Хоткеи";
             this.TPHotkeys.UseVisualStyleBackColor = true;
             // 
-            // htHotKey
-            // 
-            this.htHotKey.AutoSize = true;
-            this.htHotKey.Location = new System.Drawing.Point(318, 14);
-            this.htHotKey.Name = "htHotKey";
-            this.htHotKey.Size = new System.Drawing.Size(19, 19);
-            this.htHotKey.TabIndex = 5;
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -263,14 +227,6 @@
             this.TPReplaces.TabIndex = 2;
             this.TPReplaces.Text = "Сокращения команд";
             this.TPReplaces.UseVisualStyleBackColor = true;
-            // 
-            // htReplace
-            // 
-            this.htReplace.AutoSize = true;
-            this.htReplace.Location = new System.Drawing.Point(395, 43);
-            this.htReplace.Name = "htReplace";
-            this.htReplace.Size = new System.Drawing.Size(19, 19);
-            this.htReplace.TabIndex = 6;
             // 
             // label3
             // 
@@ -304,6 +260,7 @@
             // 
             // TPModuleSettings
             // 
+            this.TPModuleSettings.Controls.Add(this.pnlRunModule);
             this.TPModuleSettings.Controls.Add(this.btnShowLogs);
             this.TPModuleSettings.Controls.Add(this.btnEnabledDisableModule);
             this.TPModuleSettings.Controls.Add(this.gridModules);
@@ -314,6 +271,20 @@
             this.TPModuleSettings.TabIndex = 3;
             this.TPModuleSettings.Text = "Управление модулями";
             this.TPModuleSettings.UseVisualStyleBackColor = true;
+            
+            // 
+            // btnModuleRun
+            // 
+            this.btnModuleRun.BackColor = System.Drawing.Color.Moccasin;
+            this.btnModuleRun.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnModuleRun.ForeColor = System.Drawing.Color.Black;
+            this.btnModuleRun.Location = new System.Drawing.Point(0, 3);
+            this.btnModuleRun.Name = "btnModuleRun";
+            this.btnModuleRun.Size = new System.Drawing.Size(118, 39);
+            this.btnModuleRun.TabIndex = 8;
+            this.btnModuleRun.Text = "Тест модуля";
+            this.btnModuleRun.UseVisualStyleBackColor = false;
+            this.btnModuleRun.Click += new System.EventHandler(this.btnModuleRun_Click);
             // 
             // btnShowLogs
             // 
@@ -503,6 +474,72 @@
             this.btnSaveConfig.UseVisualStyleBackColor = false;
             this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
             // 
+            // pnlRunModule
+            // 
+            this.pnlRunModule.Controls.Add(this.htModuleTest);
+            this.pnlRunModule.Controls.Add(this.btnModuleRun);
+            this.pnlRunModule.Location = new System.Drawing.Point(436, 85);
+            this.pnlRunModule.Name = "pnlRunModule";
+            this.pnlRunModule.Size = new System.Drawing.Size(118, 45);
+            this.pnlRunModule.TabIndex = 10;
+            this.pnlRunModule.Visible = false;
+            // 
+            // hsShowHelpForCommands
+            // 
+            this.hsShowHelpForCommands.AutoSize = true;
+            this.hsShowHelpForCommands.Location = new System.Drawing.Point(220, 107);
+            this.hsShowHelpForCommands.Name = "hsShowHelpForCommands";
+            this.hsShowHelpForCommands.Size = new System.Drawing.Size(19, 19);
+            this.hsShowHelpForCommands.TabIndex = 8;
+            // 
+            // hsSendErrorReport
+            // 
+            this.hsSendErrorReport.AutoSize = true;
+            this.hsSendErrorReport.Location = new System.Drawing.Point(334, 84);
+            this.hsSendErrorReport.Name = "hsSendErrorReport";
+            this.hsSendErrorReport.Size = new System.Drawing.Size(19, 19);
+            this.hsSendErrorReport.TabIndex = 6;
+            // 
+            // htDonateBtn
+            // 
+            this.htDonateBtn.AutoSize = true;
+            this.htDonateBtn.Location = new System.Drawing.Point(255, 38);
+            this.htDonateBtn.Name = "htDonateBtn";
+            this.htDonateBtn.Size = new System.Drawing.Size(19, 19);
+            this.htDonateBtn.TabIndex = 4;
+            // 
+            // htStatsCollect
+            // 
+            this.htStatsCollect.AutoSize = true;
+            this.htStatsCollect.Location = new System.Drawing.Point(370, 61);
+            this.htStatsCollect.Name = "htStatsCollect";
+            this.htStatsCollect.Size = new System.Drawing.Size(19, 19);
+            this.htStatsCollect.TabIndex = 3;
+            // 
+            // htHotKey
+            // 
+            this.htHotKey.AutoSize = true;
+            this.htHotKey.Location = new System.Drawing.Point(318, 14);
+            this.htHotKey.Name = "htHotKey";
+            this.htHotKey.Size = new System.Drawing.Size(19, 19);
+            this.htHotKey.TabIndex = 5;
+            // 
+            // htReplace
+            // 
+            this.htReplace.AutoSize = true;
+            this.htReplace.Location = new System.Drawing.Point(395, 43);
+            this.htReplace.Name = "htReplace";
+            this.htReplace.Size = new System.Drawing.Size(19, 19);
+            this.htReplace.TabIndex = 6;
+            // 
+            // htModuleTest
+            // 
+            this.htModuleTest.AutoSize = true;
+            this.htModuleTest.Location = new System.Drawing.Point(100, 5);
+            this.htModuleTest.Name = "htModuleTest";
+            this.htModuleTest.Size = new System.Drawing.Size(16, 16);
+            this.htModuleTest.TabIndex = 9;
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -528,6 +565,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.gridModules)).EndInit();
             this.TPClients.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gridClients)).EndInit();
+            this.pnlRunModule.ResumeLayout(false);
+            this.pnlRunModule.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -572,5 +611,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colClient;
         private System.Windows.Forms.DataGridViewTextBoxColumn colIsEnabledClients;
         private System.Windows.Forms.DataGridViewImageColumn settingsColClients;
+        private Controls.HelpTooltip htModuleTest;
+        private System.Windows.Forms.Button btnModuleRun;
+        private System.Windows.Forms.Panel pnlRunModule;
     }
 }

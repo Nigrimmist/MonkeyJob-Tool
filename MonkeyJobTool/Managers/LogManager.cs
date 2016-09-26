@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Management;
@@ -42,9 +43,26 @@ namespace MonkeyJobTool.Managers
                     }
 
                     string errorInfo = string.Format("{0} : \r\n {1} \r\n {2}\r\n App version : {3}\r\n BotCore version : {4}", message, ex, _systemInfo, AppConstants.AppVersion, App.Instance.Bot!=null ? App.Instance.Bot.Version.ToString():"null");
-                    _log.Error(errorInfo);
+                    if(App.Instance.AppConf.DebugModeEnabled)
+                        _log.Warn(errorInfo);
+                    else
+                        _log.Error(errorInfo);
                 }
             }
+        }
+
+        public static void Trace(string msg)
+        {
+            if (App.Instance.AppConf.DebugModeEnabled)
+            {
+                StackFrame frame = new StackFrame(1);
+                var method = frame.GetMethod();
+                var type = method.DeclaringType;
+                var name = method.Name;
+                
+                _log.Warn("{0}.{1} : {2}", type, name, msg);
+            }
+            
         }
 
         public static string CollectSystemInfo()

@@ -528,7 +528,7 @@ namespace MonkeyJobTool.Entities.Autocomplete
                 int pos = 0;
                 foreach (AutocompleteTextPart part in _parts)
                 {
-                    SetBackColor(part.BackColor);
+                    SetBackColor(_forcedColor!=SystemColors.Control?_forcedColor:part.BackColor);
                     _bindedControl.AppendText(part.Text);
                     pos += part.Text.Length;
                 }
@@ -747,6 +747,13 @@ namespace MonkeyJobTool.Entities.Autocomplete
             {
                 _parts[i].Index = i;
             }
+        }
+
+        private Color _forcedColor = SystemColors.Control;
+        public void SetColor(Color color)
+        {
+            _bindedControl.BackColor = color;
+            _forcedColor = color;
         }
     }
 

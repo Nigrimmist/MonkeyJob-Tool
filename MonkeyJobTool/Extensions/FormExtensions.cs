@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using MonkeyJobTool.Forms;
 using MonkeyJobTool.Helpers;
+using MonkeyJobTool.Managers;
 
 namespace MonkeyJobTool.Extensions
 {
@@ -14,8 +15,8 @@ namespace MonkeyJobTool.Extensions
     {
         public static void ToTop(this Form form, bool isWithFocus=false)
         {
-            if(form is InfoPopup)
-                Debug.WriteLine("to top "+(form as InfoPopup).Title);
+            LogManager.Trace("Form to top : "+form.Name);
+            
             MultithreadHelper.ThreadSafeCall(form, () => 
             {
                 if (form.WindowState == FormWindowState.Minimized)
@@ -49,6 +50,7 @@ namespace MonkeyJobTool.Extensions
 
         static void ShowInactiveTopmost(Form frm)
         {
+            LogManager.Trace("ShowInactiveTopmost()");
             ShowWindow(frm.Handle, SW_SHOWNOACTIVATE);
             var res = SetWindowPos(frm.Handle.ToInt32(), HWND_TOPMOST,
             frm.Left, frm.Top, frm.Width, frm.Height,

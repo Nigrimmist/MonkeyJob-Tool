@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -115,6 +116,12 @@ namespace MonkeyJobTool.Controls.Autocomplete
         public void NotifyAboutAvailableCommandSuggests(List<string> commands)
         {
             _textWrapper.NotifyAboutAvailableCommandSuggests(commands);
+        }
+
+        public void SetColor(Color color)
+        {
+            this.BackColor = color;
+            _textWrapper.SetColor(color);
         }
     }
 }
