@@ -19,6 +19,8 @@ namespace MonkeyJobTool.Entities
 
         public static void UpdateAppMigrations()
         {
+            LogManager.Trace("Start UpdateAppMigrations()");
+
             //config migration
             var topMigrationVersion = _configMigrations.Max(x => x.ToVersion);
             if (App.Instance.AppConf.ConfigVersion < topMigrationVersion)
@@ -39,6 +41,8 @@ namespace MonkeyJobTool.Entities
                     }
                 }
             }
+            LogManager.Trace("End UpdateAppMigrations()");
+
         }
     }
 

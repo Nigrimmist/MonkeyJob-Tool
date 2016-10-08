@@ -13,6 +13,7 @@ using HelloBotCommunication;
 using HelloBotCommunication.Attributes.SettingAttributes;
 using HelloBotCommunication.Interfaces;
 using HelloBotCore.Helpers;
+using HelloBotCore.Manager;
 using Newtonsoft.Json;
 using CallCommandInfo = HelloBotCore.Entities.CallCommandInfo;
 using IntegrationClientBase = HelloBotCore.Entities.IntegrationClientBase;
@@ -78,6 +79,7 @@ namespace HelloBotCore
         public event OnModuleRemovedDelegate OnModuleRemoved;
 
         public Func<bool> CanNotifyClient;
+        
 
         /// <summary>
         /// Bot costructor
@@ -85,8 +87,10 @@ namespace HelloBotCore
         /// <param name="settingsFolderAbsolutePath">folder for module settings, will be created if not exist</param>
         /// <param name="moduleDllmask">File mask for retrieving client command dlls</param>
         /// <param name="botCommandPrefix">Prefix for bot commands. Only messages with that prefix will be handled</param>
-        public HelloBot(string settingsFolderAbsolutePath, string logsFolderAbsolutePath,double currentUIClientVersion, string moduleDllmask = "*.dll", string botCommandPrefix = "!", string moduleFolderPath = ".")
+        public HelloBot(Action<string> logTraceFunc,string settingsFolderAbsolutePath, string logsFolderAbsolutePath,double currentUIClientVersion, string moduleDllmask = "*.dll", string botCommandPrefix = "!", string moduleFolderPath = ".")
         {
+            App.Instance.Init(logTraceFunc);
+            App.Instance.LogTrace("Start HelloBot() const");
             _currentUIClientVersion = currentUIClientVersion;
             _settingsFolderAbsolutePath = settingsFolderAbsolutePath;
             _logsFolderAbsolutePath = logsFolderAbsolutePath;
@@ -103,6 +107,7 @@ namespace HelloBotCore
             _commandContexts = new Dictionary<Guid, BotContextBase>();
             
             new Thread(SaveModuleTraces).Start();
+            App.Instance.LogTrace("End HelloBot() const");
         }
 
         public void RunEventBasedModules()
@@ -326,6 +331,8 @@ namespace HelloBotCore
 
         protected virtual List<ModuleInfoBase> LoadModules(List<string> enabledModules, List<string> disabledModules)
         {
+            App.Instance.LogTrace(string.Format("Start LoadModules(). _moduleFolderPath : {0} , {1}", _moduleFolderPath, _moduleDllmask));
+
             List<ModuleInfoBase> toReturn = new List<ModuleInfoBase>();
             var dlls = Directory.GetFiles(_moduleFolderPath, _moduleDllmask);
             var i = typeof (ModuleRegisterBase);
@@ -335,6 +342,8 @@ namespace HelloBotCore
             if (disabledModules == null) disabledModules = new List<string>();
             foreach (var dll in dlls)
             {
+                App.Instance.LogTrace(string.Format("LoadModules().iterate dlls. dll : "+dll));
+
                 var ass = Assembly.LoadFile(dll);
                 var fi = new FileInfo(dll);
                 //get types from assembly
@@ -392,12 +401,14 @@ namespace HelloBotCore
                     toReturn.AddRange(trayModules);
                 }
             }
+            App.Instance.LogTrace("End LoadModules()");
 
             return toReturn;
         }
 
         public bool HandleMessage(string incomingMessage, ClientCommandContext clientCommandContext, bool runWithTimeout)
         {
+            App.Instance.LogTrace("Start HandleMessage(). incomingMessage : " + incomingMessage);
             
             if (incomingMessage.Contains(_botCommandPrefix))
             {
@@ -411,6 +422,8 @@ namespace HelloBotCore
                         ModuleCommandInfo hnd = foundModuleCommand;
                         new Thread(() => //running in separate thread
                         {
+                            App.Instance.LogTrace("HandleMessage(). Thread started. incomingMessage : " + incomingMessage);
+
                             if (!RunWithTimeout(() => //check for timing
                             {
                                 try
@@ -424,8 +437,11 @@ namespace HelloBotCore
                                         ModuleType = ModuleType.Handler,
                                         ModuleId = hnd.Id
                                     });
+                                    App.Instance.LogTrace("HandleMessage(). Thread started -> module.HandleMessage starting. command : " + command+". args : "+args);
 
                                     hnd.HandleMessage(command, args.TrimStart(), commandTempGuid);
+
+                                    App.Instance.LogTrace("HandleMessage(). Thread started -> module.HandleMessage ended. command : " + command + ". args : " + args);
 
                                     if (OnMessageHandled != null) 
                                         OnMessageHandled();
@@ -443,6 +459,7 @@ namespace HelloBotCore
                                 }
                             }, TimeSpan.FromSeconds(_commandTimeoutSec), runWithTimeout))
                             {
+                                App.Instance.LogTrace("HandleMessage(). Module blowe. command. time expired : " + command + ". args : " + args);
                                 ShowInternalMessage(command, CommunicationMessage.FromString("модуль сломался. Причина : время модуля на выполнение команды истекло"));
                             }
                         }).Start();
@@ -458,6 +475,8 @@ namespace HelloBotCore
 
         private static bool RunWithTimeout(ThreadStart threadStart, TimeSpan timeout, bool timeoutEnabled)
         {
+            App.Instance.LogTrace("Start RunWithTimeout()");
+
             Thread workerThread = new Thread(threadStart);
             workerThread.SetApartmentState(ApartmentState.STA);
             workerThread.Start();
@@ -550,10 +569,14 @@ namespace HelloBotCore
 
         public void SaveSettings<T>(ComponentInfoBase info, T serializableSettingObject) where T : class
         {
+            App.Instance.LogTrace("Start SaveSettings() module : " + info.SystemName);
+
             lock (_commandDictLocks[info.Id].SettingsLock)
             {
                 info.SaveSettings(serializableSettingObject);
             }
+
+            App.Instance.LogTrace("End SaveSettings() module : " + info.SystemName);
         }
 
         public T GetSettings<T>(ComponentInfoBase module) where T : class
@@ -566,6 +589,7 @@ namespace HelloBotCore
 
         public void ShowMessage(ComponentInfoBase moduleInfo, CommunicationMessage content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default, Guid? commandToken = null, bool useBaseClient = false, UniqueMessageHash uniqueMsgKey = null)
         {
+            App.Instance.LogTrace("Start HelloBot.ShowMessage()");
             BotContextBase commandBaseContext = null;
             //todo:refactoring required (should be cleared time to time)
             if (commandToken.HasValue)
@@ -583,12 +607,18 @@ namespace HelloBotCore
             if (commandContext != null || !commandToken.HasValue)
             {
                 //do not notify if main client in silent mode
-                if (moduleInfo.ModuleType==ModuleType.Event && !CanNotifyClient()) return; 
+                if (moduleInfo.ModuleType == ModuleType.Event && !CanNotifyClient())
+                {
+                    App.Instance.LogTrace("HelloBot.ShowMessage() doNotNotify enabled");
+                    return;
+                } 
                
                 var enabledIntegrationClients = IntegrationClients.Where(x => x.IsEnabled).SelectMany(x => x.Instances.Where(y=>y.IsEnabled)).Where(x=>x.InstanceCommunication.IsEnabledFor(x.SystemName,moduleInfo.ModuleType)).ToList();
                 
                 if (enabledIntegrationClients.Any() && !useBaseClient)
                 {
+                    App.Instance.LogTrace("HelloBot.ShowMessage() integration clients found");
+
                     foreach (var client in enabledIntegrationClients)
                     {
                         ClientSettings settings;
@@ -607,6 +637,8 @@ namespace HelloBotCore
                         }
                         if (!settings.MessageHashExist(moduleInfo.SystemName,hashGroup, msgHash.ToString()))
                         {
+                            App.Instance.LogTrace("HelloBot.ShowMessage() adding new msg hash");
+
                             settings.AddHash(moduleInfo.SystemName,hashGroup, msgHash.ToString());
                             client.SaveServiceData(settings);
 
@@ -618,13 +650,17 @@ namespace HelloBotCore
                                     ModuleType = ModuleType.IntegrationClient,
                                     ModuleId = client.Id
                                 });
-
+                            App.Instance.LogTrace("HelloBot.ShowMessage() sending message to client "+client.SystemName);
                             client.SendMessageToClient(token, new CommunicationClientMessage(content) {FromModule = moduleInfo.ProvidedTitle ?? ""});
+                            App.Instance.LogTrace("HelloBot.ShowMessage() message sent. client " + client.SystemName);
+
                         }
                     }
                 }
                 else
                 {
+                    App.Instance.LogTrace("HelloBot.ShowMessage() start sending msg to popup");
+
                     if (OnMessageRecieved != null)
                     {
                         Color? bodyBackgroundColor = null;
@@ -661,6 +697,8 @@ namespace HelloBotCore
                     OnMessageHandled();
 
             }
+            App.Instance.LogTrace("End HelloBot.ShowMessage()");
+
         }
 
         //todo : should be refactoring to show error (remove method and call error event)
@@ -711,6 +749,8 @@ namespace HelloBotCore
 
         public void ShowTrayBalloonTip(Guid token, string text, TimeSpan? timeout = null, TooltipType? tooltipType = null)
         {
+            App.Instance.LogTrace(string.Format("Start ShowTrayBalloonTip(). token : {0}", token));
+
             var trayModuleContext = GetCommandContextByToken(token) as BotTrayModuleContext;
             if (trayModuleContext != null)
             {
@@ -719,14 +759,21 @@ namespace HelloBotCore
                 if (OnTrayBalloonTipRequested != null)
                     OnTrayBalloonTipRequested(trayModuleContext.ModuleId, title, text, timeout ?? TimeSpan.FromSeconds(10), tooltipType ?? TooltipType.None);
             }
+            App.Instance.LogTrace(string.Format("End ShowTrayBalloonTip(). token : {0}", token));
+
         }
 
         public void LogModuleTraceRequest(ComponentInfoBase moduleInfo, string message)
         {
+            App.Instance.LogTrace("Start LogModuleTraceRequest() message : " + message);
+
             lock (_commandDictLocks[moduleInfo.Id].LogTraceLock)
             {
                 moduleInfo.Trace.AddMessage(message);
             }
+
+            App.Instance.LogTrace("End LogModuleTraceRequest() ");
+
         }
 
         #endregion
@@ -743,6 +790,8 @@ namespace HelloBotCore
 
         public void HandleUserReactionToCommand(Guid commandToken, UserReactionToCommandType reactionType)
         {
+            App.Instance.LogTrace(string.Format("Start HandleUserReactionToCommand(). commandToken : {0}, reactionType : {1}", commandToken, reactionType));
+
             BotCommandContext commandContext = GetCommandContextByToken(commandToken) as BotCommandContext;
 
             if (commandContext != null)
@@ -771,6 +820,8 @@ namespace HelloBotCore
                         throw new ArgumentOutOfRangeException("reactionType");
                 }
             }
+            App.Instance.LogTrace(string.Format("End HandleUserReactionToCommand(). commandToken : {0}, reactionType : {1}", commandToken, reactionType));
+
         }
 
 
@@ -832,6 +883,8 @@ namespace HelloBotCore
 
         public List<ComponentInfoBase> GetIncompatibleSettingModules()
         {
+            App.Instance.LogTrace("Start GetIncompatibleSettingModules()");
+
             List<ComponentInfoBase> toReturn = new List<ComponentInfoBase>();
             foreach (ComponentInfoBase module in Modules.Union(IntegrationClients).Select(x => (ComponentInfoBase)x).Union(IntegrationClients).Where(x => x.SettingsType != null))
             {
@@ -850,14 +903,19 @@ namespace HelloBotCore
 
                 }
             }
+            App.Instance.LogTrace(string.Format("End GetIncompatibleSettingModules(). toReturn.Count : {0}", toReturn.Count));
+
             return toReturn;
         }
 
 
         private void SaveModuleTraces()
         {
+            App.Instance.LogTrace("SaveModuleTraces() called");
+
             while (true)
             {
+                
                 Thread.Sleep(RunTraceSaveEveryMin*1000*60);
                 try
                 {
@@ -909,10 +967,15 @@ namespace HelloBotCore
 
         public void ShowSuggestionsToClient(List<AutoSuggestItem> items)
         {
+            App.Instance.LogTrace("Start ShowSuggestionsToClient()");
+
             if (OnSuggestRecieved != null)
             {
                 OnSuggestRecieved(items);
             }
+
+            App.Instance.LogTrace("End ShowSuggestionsToClient()");
+
         }
 
         

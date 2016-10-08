@@ -56,17 +56,17 @@ namespace MonkeyJobTool.Forms
                 AutoSize = true,
             };
             pnlSettings.Controls.Add(table);
-            BindObject(moduleSettings, table);
+            BindObject("",moduleSettings, table);
         }
 
         
 
-        public void BindObject(object obj, TableLayoutPanel parentControl, int deepLevel=1, int? collectionIndex = null)
+        public void BindObject(string parentName, object obj, TableLayoutPanel parentControl, int deepLevel=1, int? collectionIndex = null)
         {
             var objType = obj.GetType();
             if (objType == typeof (string))
             {
-                AddControl("", new DataTextBox() {Text = obj.ToString()}, "", parentControl, deepLevel, collectionIndex);
+                AddControl("", new DataTextBox() { Text = obj.ToString() }, parentName, parentControl, deepLevel, collectionIndex);
             }
             else
             {
@@ -142,10 +142,11 @@ namespace MonkeyJobTool.Forms
                                 btnAddNewItem.Data = new CloneObjData()
                                 {
                                     Data = item,
-                                    DataType = item.GetType()
+                                    DataType = item.GetType(),
+                                    ParentPropName = info.Name
                                 }; //save last for clone by btn click
 
-                                AddItemCollectionToUI(item, collectionPanel, deepLevel, i);
+                                AddItemCollectionToUI(info.Name,item, collectionPanel, deepLevel, i);
                             }
 
 
@@ -159,7 +160,7 @@ namespace MonkeyJobTool.Forms
                                     var materializedObj = JsonConvert.DeserializeObject(jsonObj, clonedObj.DataType);
                                     var colPanel = (DataTableLayoutPanel)((DataButton)sender).ParentPanel;
                                     colPanel.ChildCount++;
-                                    AddItemCollectionToUI(materializedObj, colPanel, ((DataButton)sender).DeepLevel, colPanel.ChildCount - 1);
+                                    AddItemCollectionToUI(clonedObj.ParentPropName, materializedObj, colPanel, ((DataButton)sender).DeepLevel, colPanel.ChildCount - 1);
                                 }
                             };
 
@@ -178,7 +179,7 @@ namespace MonkeyJobTool.Forms
                             {
                                 objVal = Activator.CreateInstance(tInfo.UnderlyingSystemType);
                             }
-                            BindObject(objVal, collectionPanel, deepLevel + 1);
+                            BindObject(info.Name,objVal, collectionPanel, deepLevel + 1);
                         }
                     }
 
@@ -190,14 +191,14 @@ namespace MonkeyJobTool.Forms
             
         }
 
-        private void AddItemCollectionToUI(object item, TableLayoutPanel parentControl, int deepLevel, int collectionIndex)
+        private void AddItemCollectionToUI(string parentPropName,object item, TableLayoutPanel parentControl, int deepLevel, int collectionIndex)
         {
             var collectionItemPanel = new TableLayoutPanel()
             {
                 AutoSize = true
             };
             AddControlToNewPanelRow(parentControl, collectionItemPanel, 0);
-            BindObject(item, collectionItemPanel, deepLevel+1, collectionIndex);
+            BindObject(parentPropName,item, collectionItemPanel, deepLevel+1, collectionIndex);
             AddRemoveBtn(collectionItemPanel, parentControl, deepLevel, collectionIndex);
         }
 
@@ -328,7 +329,7 @@ namespace MonkeyJobTool.Forms
                 if (Module.ModuleType == ModuleType.IntegrationClient)
                     if (serviceData == null) serviceData = new ClientSettings();
 
-                ms = new ModuleSettings(Module.Version, Module.SettingsModuleVersion, FillObjectFromUI(moduleSettings),serviceData);
+                ms = new ModuleSettings(Module.Version, Module.SettingsModuleVersion, FillObjectFromUI("",moduleSettings),serviceData);
                 
                 var json = JsonConvert.SerializeObject(ms, Formatting.Indented);
                 File.WriteAllText(fullPath, json);
@@ -341,11 +342,11 @@ namespace MonkeyJobTool.Forms
         }
 
 
-        private object FillObjectFromUI(object fillingObject, int deepLevel=1,int? collectionIndex=null)
+        private object FillObjectFromUI(string parentPropName,object fillingObject, int deepLevel=1,int? collectionIndex=null)
         {
             if (fillingObject.GetType() == typeof (string))
             {
-                return GetItemValueFromUI(this, "", deepLevel, collectionIndex);
+                return GetItemValueFromUI(this, parentPropName, deepLevel, collectionIndex);
             }
             else
             {
@@ -381,7 +382,7 @@ namespace MonkeyJobTool.Forms
                                     collectionItem = "";
                                 else
                                     collectionItem = Activator.CreateInstance(listItemType);
-                                var filedCollectionItemValue = FillObjectFromUI(collectionItem, deepLevel + 1, i);
+                                var filedCollectionItemValue = FillObjectFromUI(info.Name,collectionItem, deepLevel + 1, i);
                                 if (filedCollectionItemValue == null) break; //no any new items in collection found on ui
                                 objVal.GetType().GetMethod("Add").Invoke(objVal, new[] { filedCollectionItemValue });
                                 i++;
@@ -390,7 +391,7 @@ namespace MonkeyJobTool.Forms
                         }
                         else //complex object
                         {
-                            var filledComplexObject = FillObjectFromUI(Activator.CreateInstance(tInfo), deepLevel + 1);
+                            var filledComplexObject = FillObjectFromUI(info.Name,Activator.CreateInstance(tInfo), deepLevel + 1);
                             info.SetValue(fillingObject, Convert.ChangeType(filledComplexObject, info.PropertyType), null);
                         }
                     }

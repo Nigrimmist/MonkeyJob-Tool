@@ -78,6 +78,7 @@
     <Compile Include="Entities\UserReactionToCommandType.cs" />
     <Compile Include="HelloBot.cs" />
     <Compile Include="Entities\Language.cs" />
+    <Compile Include="Manager\App.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\KeyboardLayoutHelper.cs" />
   </ItemGroup>

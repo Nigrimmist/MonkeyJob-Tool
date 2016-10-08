@@ -25,6 +25,7 @@ namespace MonkeyJobTool
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());
+            
         }
 
         static Mutex _appSingleton;

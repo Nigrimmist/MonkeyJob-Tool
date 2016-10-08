@@ -65,7 +65,7 @@ namespace Nigrimmist.Modules.Modules
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
             HtmlReaderManager hrm = new HtmlReaderManager();
-            hrm.Get("https://yandex.by/search/?lr=157&msid=1474230209.49634.22903.3782&text=" + HttpUtility.UrlEncode(args));
+            hrm.Get("https://yandex.by/search/?lr=157&msid=1474230209.49634.22903.3782&text=" + HttpUtility.UrlEncode(args+" как пишется"));
             var jsPh = new string[] { @"var title = ", "el.innerHTML = " };
             string res = string.Empty;
             for (int i = 0; i < jsPh.Count(); i++)
@@ -74,7 +74,7 @@ namespace Nigrimmist.Modules.Modules
                 if (pos > 0)
                 {
                     res = hrm.Html.Substring(pos + jsPh[i].Length + 1);
-                    res = res.Substring(0, res.IndexOf(@"—")).Trim();
+                    res = res.Substring(0, res.IndexOf(@"—")).Trim().Replace(" как пишется",string.Empty);
                     break;
                 }
                 

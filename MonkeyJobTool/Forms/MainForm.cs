@@ -51,7 +51,7 @@ namespace MonkeyJobTool.Forms
         
         private void MainForm_Load(object sender, EventArgs e)
         {
-           
+            
             
             try
             {
@@ -301,9 +301,12 @@ namespace MonkeyJobTool.Forms
             new Thread(() =>
             {
                 try
-                {   
+                {
+                    LogManager.Trace("Start InitBot()");
+
                     SetLoading(true);
-                    _bot = new HelloBot(App.Instance.FolderSettingPath, App.Instance.FolderLogPath, AppConstants.AppVersion, botCommandPrefix: "", moduleFolderPath: App.Instance.ExecutionFolder);
+                    _bot = new HelloBot(LogManager.Trace,App.Instance.FolderSettingPath, App.Instance.FolderLogPath, AppConstants.AppVersion, botCommandPrefix: "", moduleFolderPath: App.Instance.ExecutionFolder);
+                    
                     _bot.OnModuleErrorOccured +=BotOnModuleOnModuleErrorOccured;
                     _bot.OnErrorOccured+= BotOnGeneralErrorOccured;
                     _bot.OnMessageRecieved += BotOnMessageRecieved;
@@ -316,8 +319,9 @@ namespace MonkeyJobTool.Forms
                     _bot.RegisterIntegrationClients(App.Instance.AppConf.SystemData.EnabledModules);
                     _bot.OnSuggestRecieved += BotOnSuggestRecieved;
                     _bot.OnModuleRemoved += _bot_OnModuleRemoved;
-                    _bot.CanNotifyClient = () => !App.Instance.AppConf.SystemData.DoNotNotify;
+                    _bot.CanNotifyClient += () => !App.Instance.AppConf.SystemData.DoNotNotify;
                     
+
                     App.Instance.Bot = _bot;
                     SetLoading(false);
                     if (afterInitActionClbck != null)
@@ -344,6 +348,8 @@ namespace MonkeyJobTool.Forms
                 {
                     LogManager.Error(ex, "InitBot error");
                 }
+                LogManager.Trace("End InitBot()");
+
             }).Start();
         }
 
@@ -386,6 +392,8 @@ namespace MonkeyJobTool.Forms
 
         private void BotOnOnTrayBalloonTipRequested(Guid moduleId, string title, string body, TimeSpan timeout, TooltipType tooltipType)
         {
+            LogManager.Trace("Start BotOnOnTrayBalloonTipRequested()");
+
             NotifyIcon notifyIcon;
             lock (_trayIconLocker)
             {
@@ -398,11 +406,15 @@ namespace MonkeyJobTool.Forms
                     notifyIcon.ShowBalloonTip((int) timeout.TotalMilliseconds, title, body, tooltipType.ToTooltipType());
                 });
             }
+            LogManager.Trace("End BotOnOnTrayBalloonTipRequested()");
+
         }
 
 
         private void OnTrayIconStateChangeRequested(Guid moduleId, Icon originalIcon, string text, Color? textColor = null, Color? backgroundColor = null, int fontSize = 12, string fontName = "Tahoma", Color? iconBorderColor = null)
         {
+            LogManager.Trace("Start OnTrayIconStateChangeRequested()");
+
             if (!string.IsNullOrEmpty(text))
             {
                 NotifyIcon notifyIcon;
@@ -418,11 +430,15 @@ namespace MonkeyJobTool.Forms
                     });
                 }
             }
+            LogManager.Trace("End OnTrayIconStateChangeRequested()");
+
             
         }
 
         private void OnTrayIconSetupRequired(Guid moduleId, Icon icon, string title)
         {
+            LogManager.Trace("Start OnTrayIconSetupRequired()");
+
             lock (_trayIconLocker)
             {
                 _trayModuleIcons.Add(moduleId, new NotifyIcon
@@ -432,6 +448,8 @@ namespace MonkeyJobTool.Forms
                     Visible = true
                 });
             }
+            LogManager.Trace("End OnTrayIconSetupRequired()");
+
         }
 
         private void BotOnModuleOnModuleErrorOccured(Exception exception, ModuleInfoBase module)
@@ -480,12 +498,17 @@ namespace MonkeyJobTool.Forms
         
         void Instance_OnNotificationCountChanged(int notificationCount)
         {
+            LogManager.Trace(string.Format("Start Instance_OnNotificationCountChanged() notificationCount : {0} ", notificationCount));
             UpdateTrayicon(notificationCount);
             tsCheckAllAsDisplayed.Visible = notificationCount > 0;
+            LogManager.Trace(string.Format("End Instance_OnNotificationCountChanged() notificationCount : {0} ", notificationCount));
+
         }
 
         private void UpdateTrayicon(int? notificationCount = null)
         {
+            LogManager.Trace(string.Format("Start UpdateTrayicon() notificationCount : {0} ", notificationCount));
+
             if (!notificationCount.HasValue)
                 notificationCount = App.Instance.NotificationCount;
 
@@ -496,6 +519,7 @@ namespace MonkeyJobTool.Forms
                             ? ImageHelper.GetIconWithNotificationCount(notificationCount.Value.ToString(), GetCurrentClearTrayIcon(), Color.White, Color.OrangeRed, 6, useEllipseAsBackground: true)
                             : GetCurrentClearTrayIcon();
             });
+            LogManager.Trace(string.Format("End UpdateTrayicon() notificationCount : {0} ", notificationCount));
         }
 
         private Icon GetCurrentClearTrayIcon()
@@ -536,6 +560,8 @@ namespace MonkeyJobTool.Forms
         }
         void BotOnMessageRecieved(Guid? commandToken,AnswerInfo answerInfo, ClientCommandContext clientCommandContext)
         {
+            LogManager.Trace(string.Format("Start BotOnMessageRecieved() commandToken : {0} ", commandToken));
+
                 var answer = answerInfo.Answer.ToString();
                 var answerType = answerInfo.AnswerType;
                 
@@ -562,6 +588,8 @@ namespace MonkeyJobTool.Forms
                     {
                         if (answer.StartsWith("http://") || answer.StartsWith("https://"))
                         {
+                            LogManager.Trace(string.Format("Start BotOnMessageRecieved().openLink commandToken : {0}, answer : {1} ", commandToken, answer));
+
                             Process.Start(answer);
                             //close fixed popup with previous answer if exist
                             this.Invoke(new MethodInvoker(delegate
@@ -599,11 +627,15 @@ namespace MonkeyJobTool.Forms
                         }
                     }
                 }
+                LogManager.Trace(string.Format("End BotOnMessageRecieved() commandToken : {0} ", commandToken));
+
         }
 
         
         private string TryToReplaceCommand(string command, out bool replaceCountExceed)
         {
+            LogManager.Trace(string.Format("Start TryToReplaceCommand(). command : {0}", command));
+
             int replaceChainCount = 0;
             var commandReplacesToUse = new List<CommandReplace>();
             commandReplacesToUse.AddRange(App.Instance.AppConf.CommandReplaces);
@@ -639,17 +671,22 @@ namespace MonkeyJobTool.Forms
                     else
                         replaceCountExceed = true;
                 }
+                LogManager.Trace(string.Format("End TryToReplaceCommand(). command : {0}", command));
+
                 return toReturn;
             }
+
         }
 
         void autocomplete_OnCommandReceived(string command)
         {
-            Debug.WriteLine(_formBusy);
+            LogManager.Trace(string.Format("Start autocomplete_OnCommandReceived() command : {0}", command));
+
             if (!_formBusy)
             {
                 _autocomplete.HidePopup();
                 bool commandReplaceCountExceed;
+
                 command = TryToReplaceCommand(command, out commandReplaceCountExceed);
 
                 if (commandReplaceCountExceed)
@@ -682,11 +719,16 @@ namespace MonkeyJobTool.Forms
 
                 }
             }
+            LogManager.Trace(string.Format("End autocomplete_OnCommandReceived() command : {0}", command));
+
         }
 
         private DataFilterInfo GetCommandListByTerm(string term, bool strongSearch)
         {
+            LogManager.Trace(string.Format("Start GetCommandListByTerm(). term : {0}, strongSearch : {1}", term, strongSearch));
+
             var foundItems = _bot.FindCommands(term, strongSearch);
+            LogManager.Trace(string.Format("End GetCommandListByTerm(). term : {0}, strongSearch : {1}", term, strongSearch));
             
             return new DataFilterInfo()
             {
@@ -718,10 +760,14 @@ namespace MonkeyJobTool.Forms
         private bool _formBusy = false;
         private void SetLoading(bool isLoading)
         {
+            LogManager.Trace("Start SetLoading()");
+
             if (isLoading)
                 _preLoadingImg = MainIcon.Image;
             _formBusy = isLoading;
             MainIcon.Image = isLoading ? _loadingIcon : _preLoadingImg ?? _defaultIcon;
+            LogManager.Trace("End SetLoading()");
+
         }
 
         private void _autocomplete_OnKeyPressed(Keys key,KeyEventArgs e)
@@ -758,10 +804,12 @@ namespace MonkeyJobTool.Forms
 
         private void HideMain()
         {
+            LogManager.Trace("Start HideMain()");
             this.Hide();
             _autocomplete.HidePopup();
             App.Instance.HideAllPopupsAvailableForHiding();
             HideHelpInfo();
+            LogManager.Trace("End HideMain()");
         }
         private void trayIcon_MouseDown(object sender, MouseEventArgs e)
         {

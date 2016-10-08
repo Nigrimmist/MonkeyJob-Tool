@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using HelloBotCore.Entities;
+using MonkeyJobTool.Managers;
 using Newtonsoft.Json;
 
 namespace MonkeyJobTool.Entities
@@ -52,8 +53,11 @@ namespace MonkeyJobTool.Entities
 
         public void Save()
         {
+            LogManager.Trace("Start AppConf.Save()");
             string json = JsonConvert.SerializeObject(this, Formatting.Indented);
             File.WriteAllText(App.Instance.ExecutionFolder + AppConstants.Paths.MainConfFileName, json);
+            LogManager.Trace("End AppConf.Save()");
+
         }
     }
 

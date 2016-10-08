@@ -112,13 +112,15 @@ namespace MonkeyJobTool.Entities
             var json = File.ReadAllText(ExecutionFolder + AppConstants.Paths.MainConfFileName);
             var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = AppConstants.DateTimeFormat };
             _appConf = JsonConvert.DeserializeObject<ApplicationConfiguration>(json, dateTimeConverter);
-            LogManager.Trace("App.Conf loaded");
+            LogManager.Trace("App.Conf deserialized");
             _mainForm = mainForm;
 
             //register open program hotkey using incoming (main form) delegate
             _hotKeysHadlers.Add(HotKeyType.OpenProgram, mainFormOpenHotKeyRaisedHandler);
             ReInitHotKeys();
             ApplicationMigrations.UpdateAppMigrations();
+            LogManager.Trace("End App.Init()");
+
         }
 
        
@@ -179,6 +181,8 @@ namespace MonkeyJobTool.Entities
 
         private void ShowPopup(string title, string text, PopupType popupType, TimeSpan? displayTime = null, Guid? commandToken = null, Image icon = null, Color? titleBackgroundColor = null, Color? bodyBackgroundColor = null)
         {
+            LogManager.Trace("Start ShowPopup()");
+
             if (popupType == PopupType.Notification)
             {
                 displayTime = TimeSpan.FromSeconds(10);
@@ -223,6 +227,8 @@ namespace MonkeyJobTool.Entities
                 }
             }
             ReorderPopupsPositions();
+            LogManager.Trace("End ShowPopup()");
+
         }
 
         void popup_OnPopupHided()
@@ -354,6 +360,7 @@ namespace MonkeyJobTool.Entities
         /// <summary>Returns true if the current application has focus, false otherwise</summary>
         public static bool ApplicationIsActivated()
         {
+            LogManager.Trace("Start ApplicationIsActivated()");
             
             var activatedHandle = GetForegroundWindow();
             if (activatedHandle == IntPtr.Zero)
@@ -365,7 +372,8 @@ namespace MonkeyJobTool.Entities
             var procId = Process.GetCurrentProcess().Id;
             int activeProcId;
             GetWindowThreadProcessId(activatedHandle, out activeProcId);
-            Debug.WriteLine("ApplicationIsActivated : activeProcId == procId => " + (activeProcId == procId)+" "+activeProcId+" "+procId);
+
+            LogManager.Trace("End ApplicationIsActivated()");
             return activeProcId == procId;
         }
 
@@ -441,8 +449,11 @@ namespace MonkeyJobTool.Entities
         }
         public void CopyToClipboard(string popupTitle, string text)
         {
-            Clipboard.SetText(text);
+            LogManager.Trace("Start CopyToClipboard()");
+            Clipboard.SetText(text.Trim());
             ShowInternalPopup(popupTitle, "Результат команды скопирован в буфер обмена", TimeSpan.FromSeconds(3));
+            LogManager.Trace("End CopyToClipboard()");
+
         }
     }
 }

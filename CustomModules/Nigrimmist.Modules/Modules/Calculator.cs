@@ -65,14 +65,14 @@ namespace Nigrimmist.Modules.Modules
         
         public override void HandleMessage(string command, string args, Guid commandToken)
         {
-            throw new ApplicationException("asdasdas!");
+           // throw new ApplicationException("asdasdas!");
             if (!string.IsNullOrEmpty(args.Trim()))
             {
                 Expression expr = new Expression(args);
                 var exprAnswer = expr.Evaluate();
                 string answer = string.Empty;
 
-                answer = string.Format("{0}", exprAnswer);
+                answer = string.Format("{0}", exprAnswer).Replace(",",".");
 
                 _client.ShowMessage(commandToken, CommunicationMessage.FromString(answer));
             }

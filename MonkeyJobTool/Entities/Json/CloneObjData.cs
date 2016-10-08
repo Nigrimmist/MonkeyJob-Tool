@@ -9,5 +9,6 @@ namespace MonkeyJobTool.Entities.Json
     {
         public object Data { get; set; }
         public Type DataType { get; set; }
+        public string ParentPropName { get; set; }
     }
 }

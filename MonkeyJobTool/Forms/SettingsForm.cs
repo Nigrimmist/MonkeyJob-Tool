@@ -42,9 +42,6 @@ namespace MonkeyJobTool.Forms
             DatabindGrid(SettingGridType.Modules);
             DatabindGrid(SettingGridType.Clients);
             DatabindHelpTooltips();
-
-           
-            throw new ApplicationException("test exception");
         }
 
         private void DatabindHelpTooltips()

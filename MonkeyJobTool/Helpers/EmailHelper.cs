@@ -18,6 +18,8 @@ namespace MonkeyJobTool.Helpers
                 {
                     try
                     {
+                        LogManager.Trace("Start SendModuleErrorEmail()");
+
                         string email = "monkeyjobsender@gmail.com";
                         string password = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String("ZnBtampxdXl5endkdndocGF3ZXNvbWVzYWx0LWRqYXNoZGxod2JAKjcwMTIzNw==")).Replace("awesomesalt-djashdlhwb@*701237", string.Empty);
 
@@ -39,6 +41,8 @@ namespace MonkeyJobTool.Helpers
                             Body = ex + Environment.NewLine + LogManager.CollectSystemInfo()
                         };
                         smtp.Send(message);
+                        LogManager.Trace("End SendModuleErrorEmail()");
+
                     }
                     catch (SmtpException inEx)
                     {
