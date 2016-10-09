@@ -59,13 +59,16 @@ namespace Nigrimmist.Modules.Modules
                         SyndicationFeed feed = SyndicationFeed.Load(reader);
                         foreach (SyndicationItem item in feed.Items)
                         {
-                            string subject = item.Title.Text;
-                            string summary = item.Summary.Text;
-                            string url = item.Id;
+                            if (rss.LastDisplayedDateTime.HasValue && item.PublishDate.DateTime <= rss.LastDisplayedDateTime.Value)
+                            {
+                                continue;
+                            }
+                            
                             responseItems.Add(new RssResponseItem()
                             {
-                                Url = url,
-                                Title = subject
+                                Url = item.Id,
+                                Title = item.Title.Text,
+                                PublishDate = item.PublishDate.DateTime
                             });
                         }
                         reader.Close();
@@ -113,12 +116,16 @@ namespace Nigrimmist.Modules.Modules
                             if (validItem)
                             {
                                 _client.ShowMessage(eventToken, CommunicationMessage.FromUrl(item.Url));
+                                rss.LastDisplayedDateTime = item.PublishDate;
+                                updateSettings = true;
                             }
                         }
                         
                     }
 
                 }
+                if(updateSettings)
+                    _client.SaveSettings(settings);
             }
         }
     }
@@ -127,6 +134,8 @@ namespace Nigrimmist.Modules.Modules
     {
         public string Url { get; set; }
         public string Title { get; set; }
+        public DateTime PublishDate { get; set; }
+        
     }
 
     [ModuleSettingsFor(typeof(RssGrabModule))]
@@ -154,6 +163,8 @@ namespace Nigrimmist.Modules.Modules
 
         [SettingsNameField("Список стоп-слов")]
         public List<string> StopList { get; set; }
+
+        public DateTime? LastDisplayedDateTime { get; set; }
 
         public RssSettingsItem()
         {

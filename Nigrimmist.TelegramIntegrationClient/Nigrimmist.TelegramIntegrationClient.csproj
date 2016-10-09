@@ -47,8 +47,8 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Telegram.Bot, Version=10.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Telegram.Bot.10.3.0\lib\net45\Telegram.Bot.dll</HintPath>
+    <Reference Include="Telegram.Bot, Version=10.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Telegram.Bot.10.4.0\lib\net45\Telegram.Bot.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

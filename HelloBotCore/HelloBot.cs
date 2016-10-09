@@ -613,7 +613,7 @@ namespace HelloBotCore
                     return;
                 } 
                
-                var enabledIntegrationClients = IntegrationClients.Where(x => x.IsEnabled).SelectMany(x => x.Instances.Where(y=>y.IsEnabled)).Where(x=>x.InstanceCommunication.IsEnabledFor(x.SystemName,moduleInfo.ModuleType)).ToList();
+                var enabledIntegrationClients = IntegrationClients.Where(x => x.IsEnabled).SelectMany(x => x.Instances.Where(y=>y.IsEnabled)).Where(x=>x.InstanceCommunication.IsEnabledFor(moduleInfo.SystemName,moduleInfo.ModuleType)).ToList();
                 
                 if (enabledIntegrationClients.Any() && !useBaseClient)
                 {

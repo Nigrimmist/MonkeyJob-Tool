@@ -40,7 +40,8 @@ namespace Nigrimmist.TelegramIntegrationClient
                     _bots.Add(new ClientTelegramWrapper()
                     {
                         Token = bot.Token,
-                        ChatId = bot.ChatId
+                        ChatId = bot.ChatId,
+                        IsChannel = bot.IsChannel
                     });
                 }
             }
@@ -50,8 +51,6 @@ namespace Nigrimmist.TelegramIntegrationClient
             {
                 foreach (var bot in _bots)
                 {
-                    
-
                     if (bot.Bot == null && !bot.BotInited)
                     {
                         _client.LogTrace("Init start");
@@ -62,6 +61,7 @@ namespace Nigrimmist.TelegramIntegrationClient
                             try
                             {
                                 bot.Bot = new Api(bot.Token);
+                                
                             }
                             catch (Exception ex)
                             {
@@ -108,7 +108,9 @@ namespace Nigrimmist.TelegramIntegrationClient
                             foundBot.Offset = bot.Offset;
                             _client.SaveSettings(settings);
                         }
-                        string answer = message.FromModule + " :" + Environment.NewLine;
+                        string answer = "";
+                        if (!bot.IsChannel)
+                            answer = message.FromModule + " :" + Environment.NewLine;
                         SendMessage(bot.Bot,bot.ChatId,token, answer + message);
                     }
                 }
@@ -162,6 +164,10 @@ namespace Nigrimmist.TelegramIntegrationClient
         [SettingsNameField("Телеграм токен, который отдаёт BotFather")]
         public string Token { get; set; }
 
+        [SettingsNameField("Бот для канала (channel)?")]
+        public bool IsChannel { get; set; }
+
+        [SettingsNameField("Если да, то введите id канала")]
         public long ChatId { get; set; }
         public int Offset { get; set; }
 
@@ -178,6 +184,7 @@ namespace Nigrimmist.TelegramIntegrationClient
         public int Offset { get; set; }
         public long ChatId { get; set; }
         public TelegramBotClient Bot { get; set; }
+        public bool IsChannel { get; set; }
 
         public ClientTelegramWrapper()
         {

@@ -81,7 +81,7 @@ namespace MonkeyJobTool.Forms
                     if (propTitle != null)
                     {
                         var objVal = info.GetValue(obj, null);
-                        if (tInfo == typeof(int))
+                        if (tInfo == typeof(int) || tInfo == typeof(long))
                         {
                             AddControl(propTitle.Label, new DataTextBox() { Text = objVal != null ? objVal.ToString() : "" }, info.Name, parentControl, deepLevel, collectionIndex);
                         }
@@ -361,7 +361,7 @@ namespace MonkeyJobTool.Forms
                     if (propTitle != null)
                     {
 
-                        if (tInfo == typeof(int) || tInfo == typeof(string) || tInfo == typeof(bool))
+                        if (tInfo == typeof(int) || tInfo == typeof(string) || tInfo == typeof(bool) || tInfo == typeof(long))
                         {
                             var filledVal = GetItemValueFromUI(this, info.Name, deepLevel, collectionIndex);
                             //return null for detecting empty object and non-exist ui-controls for that object
@@ -383,7 +383,7 @@ namespace MonkeyJobTool.Forms
                                 else
                                     collectionItem = Activator.CreateInstance(listItemType);
                                 var filedCollectionItemValue = FillObjectFromUI(info.Name,collectionItem, deepLevel + 1, i);
-                                if (filedCollectionItemValue == null) break; //no any new items in collection found on ui
+                                if (filedCollectionItemValue == null || filedCollectionItemValue == "") break; //no any new items in collection found on ui
                                 objVal.GetType().GetMethod("Add").Invoke(objVal, new[] { filedCollectionItemValue });
                                 i++;
                             } while (true);

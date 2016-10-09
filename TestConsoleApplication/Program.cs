@@ -44,43 +44,9 @@ namespace Test
         static void Main(string[] args)
         {
 
-            HtmlReaderManager hrm = new HtmlReaderManager();
-
-            Regex r = new Regex("[а-яА-ЯЁё]+");
-            //bool isRu = r.IsMatch(args);
-            //string fromLang = isRu ? "ru" : "en";
-            //string toLang = isRu ? "en" : "ru";
-
-            
-            //hrm.SendReferer = "http://www.translate.ru/";
-            try
-            {
-                while (true)
-                {
-                    Console.WriteLine("слово :");
-                    //var s = Console.ReadLine();
-
-                    hrm.Get("https://yandex.by/search/?lr=157&msid=1474230209.49634.22903.3782&text=" + HttpUtility.UrlEncode(Console.ReadLine()));
-                    var jsPh = @"var title = ";
-                    string res = hrm.Html.Substring(hrm.Html.IndexOf(jsPh)+jsPh.Length+1);
-                    res = res.Substring(0, res.IndexOf(@"—")).Trim();
-
-                    Console.WriteLine(DecodeEncodedNonAsciiCharacters(res));
-
-                }
-            }
-            catch (WebException e)
-            {
-                if (e.Status == WebExceptionStatus.ProtocolError)
-                {
-                    WebResponse resp = e.Response;
-                    using (StreamReader sr = new StreamReader(resp.GetResponseStream()))
-                    {
-                        Console.WriteLine(sr.ReadToEnd());
-                    }
-                }
-            }
-            
+            var bot = new Telegram.Bot.Api("247995979:AAFRMNTilitQYypinYQ9epLOf7p8isU30k8");
+            var s = bot.SendTextMessageAsync(-1001055587016, "Тест").Result;
+            //var s = bot.GetUpdatesAsync(0).Result;
 
             //var token = GetAuthorizationHeader2();
             ////
