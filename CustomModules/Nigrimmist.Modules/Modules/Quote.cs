@@ -61,7 +61,7 @@ namespace Nigrimmist.Modules.Modules
             var answerParts = hrm.Html.Split(new string[]{"##"},StringSplitOptions.RemoveEmptyEntries);
             string quote = answerParts[0];
             string author = answerParts[1];
-            _client.ShowMessage(commandToken, CommunicationMessage.FromString(string.Format("{0} ©{1}", quote, author)));
+            _client.SendMessage(commandToken, CommunicationMessage.FromString(string.Format("{0} ©{1}", quote, author)));
         }
     }
 }

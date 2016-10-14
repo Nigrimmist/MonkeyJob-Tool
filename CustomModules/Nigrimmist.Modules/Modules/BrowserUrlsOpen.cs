@@ -77,7 +77,7 @@ namespace Nigrimmist.Modules.Modules
                         url = uri.Scheme + "://" + uri.Host;
                     }
                 }
-                _client.ShowMessage(commandToken, CommunicationMessage.FromString(string.Format(url, args)), answerType: AnswerBehaviourType.OpenLink);
+                _client.SendMessage(commandToken, CommunicationMessage.FromString(string.Format(url, args)), answerType: AnswerBehaviourType.OpenLink);
             }
         }
     }

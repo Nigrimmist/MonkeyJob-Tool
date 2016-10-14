@@ -36,6 +36,15 @@ namespace HelloBotCommunication
             return new CommunicationMessage() { MessageParts = new List<CommunicationMessagePart>() { new CommunicationMessagePart() { Value = url, MessageFormat = CommunicationMessageFormat.Url } } };
         }
 
+        /// <summary>
+        /// Use it when you should like to reset all previous message hashes. For example, when you call sendMessage with identical content - client will receive only one of them, but if you will call one, then second with NoContent and third - the same as first - two messages will appear.
+        /// </summary>
+        /// <returns></returns>
+        public static CommunicationMessage NoContent()
+        {
+            return new CommunicationMessage() { MessageParts = new List<CommunicationMessagePart>() { new CommunicationMessagePart() { MessageFormat = CommunicationMessageFormat.NoContent } } };
+        }
+
         public CommunicationMessage AppendString(string content)
         {
             MessageParts.Add(new CommunicationMessagePart(){MessageFormat = CommunicationMessageFormat.Text,Value = content});

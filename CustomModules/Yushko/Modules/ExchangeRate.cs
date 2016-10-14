@@ -225,7 +225,7 @@ namespace Yushko.Modules
                     break;
             }
 
-            _client.ShowMessage(commandToken, CommunicationMessage.FromString(result));
+            _client.SendMessage(commandToken, CommunicationMessage.FromString(result));
         }
 
         //сконвертировать из одной валюты в другую

@@ -64,7 +64,7 @@ namespace Nigrimmist.Modules.Modules
             var foundCommand = _commandUrls.SingleOrDefault(x => x.Command == command);
             if (foundCommand!=null)
             {
-                _client.ShowMessage(commandToken, CommunicationMessage.FromString(string.Format(foundCommand.Text, args)), answerType: AnswerBehaviourType.CopyToClipBoard);
+                _client.SendMessage(commandToken, CommunicationMessage.FromString(string.Format(foundCommand.Text, args)), answerType: AnswerBehaviourType.CopyToClipBoard);
             }
         }
     }

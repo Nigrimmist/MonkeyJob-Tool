@@ -76,10 +76,10 @@ namespace Nigrimmist.Modules.Modules
                 if (latestVersion.Version > _client.UiClientVersion)
                 {
                     string message = "Версия v" + latestVersion.Version + " доступна для скачивания. " + Environment.NewLine + "Кликните сюда для перехода на новую версию" + Environment.NewLine+Environment.NewLine+"В новой версии :" + Environment.NewLine + Environment.NewLine + latestVersion.WhatsNew;
-                    _client.ShowMessage(eventToken, CommunicationMessage.FromString(message), "Вышла новая версия.").OnClick(() =>
+                    _client.SendMessage(eventToken, CommunicationMessage.FromString(message), "Вышла новая версия.").OnClick(() =>
                     {
                         var openLink = !string.IsNullOrEmpty(latestVersion.InstallerLink) ? latestVersion.InstallerLink : "https://github.com/Nigrimmist/MonkeyJob-Tool/releases";
-                        _client.ShowMessage(eventToken, CommunicationMessage.FromUrl(openLink), answerType: AnswerBehaviourType.OpenLink);
+                        _client.SendMessage(eventToken, CommunicationMessage.FromUrl(openLink), answerType: AnswerBehaviourType.OpenLink);
                     });
                 }
             }

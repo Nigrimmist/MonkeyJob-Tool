@@ -76,7 +76,7 @@ namespace Yushko.Modules
             else {
                 result = "Факты кончились... :(";
             }
-            _client.ShowMessage(commandToken, CommunicationMessage.FromString(result));
+            _client.SendMessage(commandToken, CommunicationMessage.FromString(result));
         }
     }
 }

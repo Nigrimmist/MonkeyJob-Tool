@@ -81,7 +81,7 @@ namespace Nigrimmist.Modules.Modules
             joke = Regex.Replace(joke, "[\r\n]{3,}", "\r\n\r\n");
 
 
-            _client.ShowMessage(commandToken, CommunicationMessage.FromString(joke));
+            _client.SendMessage(commandToken, CommunicationMessage.FromString(joke));
         }
     }
 }

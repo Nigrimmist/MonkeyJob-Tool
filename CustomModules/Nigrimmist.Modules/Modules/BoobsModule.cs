@@ -79,7 +79,7 @@ namespace Nigrimmist.Modules.Modules
             string url = _images[rPos];
             _images.RemoveAt(rPos);
 
-            _client.ShowMessage(commandToken, CommunicationMessage.FromUrl(url), answerType: AnswerBehaviourType.OpenLink);
+            _client.SendMessage(commandToken, CommunicationMessage.FromUrl(url), answerType: AnswerBehaviourType.OpenLink);
         }
 
 

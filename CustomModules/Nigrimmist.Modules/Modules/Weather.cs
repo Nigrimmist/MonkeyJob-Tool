@@ -116,7 +116,7 @@ namespace Nigrimmist.Modules.Modules
                     hrm.Get(string.Format("https://yandex.by/pogoda/{0}", HttpUtility.UrlEncode(cityTranslate)));
                 else
                 {
-                    _client.ShowMessage(commandToken, CommunicationMessage.FromString(string.Format(@"Проблема с определением города")));
+                    _client.SendMessage(commandToken, CommunicationMessage.FromString(string.Format(@"Проблема с определением города")));
                     return;
                 }
             }
@@ -124,7 +124,7 @@ namespace Nigrimmist.Modules.Modules
             {
                 if (((HttpWebResponse) wex.Response).StatusCode == HttpStatusCode.NotFound)
                 {
-                    _client.ShowMessage(commandToken, CommunicationMessage.FromString(string.Format(@"Погоды для ""{0}"" нет, проверьте правильность написания города.", args)));
+                    _client.SendMessage(commandToken, CommunicationMessage.FromString(string.Format(@"Погоды для ""{0}"" нет, проверьте правильность написания города.", args)));
                     return;
                 }
             }
@@ -213,7 +213,7 @@ namespace Nigrimmist.Modules.Modules
 
             }
 
-            _client.ShowMessage(commandToken, CommunicationMessage.FromString(sb.ToString().Replace("&deg;", "°").Replace("&nbsp;", " ")));
+            _client.SendMessage(commandToken, CommunicationMessage.FromString(sb.ToString().Replace("&deg;", "°").Replace("&nbsp;", " ")));
         }
 
         private string ClearText(string str)

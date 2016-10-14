@@ -92,7 +92,7 @@ namespace Nigrimmist.Modules.Modules
 
                             if (statusValidated)
                             {
-                                _client.ShowMessage(eventToken,
+                                _client.SendMessage(eventToken,
                                     CommunicationMessage.FromString("У сериала " + serial.Name + " обновился статус новой серии : " + Environment.NewLine + Environment.NewLine + serial.LastStatus)
                                         .AppendUrl(serial.Url));
                             }

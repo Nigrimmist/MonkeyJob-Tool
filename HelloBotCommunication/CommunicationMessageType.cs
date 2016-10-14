@@ -12,6 +12,7 @@ namespace HelloBotCommunication
         Url,
         Photo,
         Video,
-        Other
+        Other,
+        NoContent
     }
 }

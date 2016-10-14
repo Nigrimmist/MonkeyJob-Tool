@@ -100,11 +100,11 @@ namespace Rextester
             if (!string.IsNullOrEmpty(toReturn))
             {
                 toReturn = toReturn.Replace(Environment.NewLine, " ").Trim();
-                _client.ShowMessage(commandToken, CommunicationMessage.FromString(toReturn.Length > 200 ? toReturn.Substring(0, 50) + "..." : toReturn));
+                _client.SendMessage(commandToken, CommunicationMessage.FromString(toReturn.Length > 200 ? toReturn.Substring(0, 50) + "..." : toReturn));
             }
             else
             {
-                _client.ShowMessage(commandToken, CommunicationMessage.FromString("Что-то скомпилилось не так, попробуйте по другому"),messageType:MessageType.Error);
+                _client.SendMessage(commandToken, CommunicationMessage.FromString("Что-то скомпилилось не так, попробуйте по другому"),messageType:MessageType.Error);
             }
 
 

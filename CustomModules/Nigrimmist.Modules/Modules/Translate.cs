@@ -98,7 +98,7 @@ namespace Nigrimmist.Modules.Modules
                 sb.AppendLine(data.d.result);
             }
 
-            _client.ShowMessage(commandToken, CommunicationMessage.FromString(sb.ToString()));
+            _client.SendMessage(commandToken, CommunicationMessage.FromString(sb.ToString()));
         }
 
        

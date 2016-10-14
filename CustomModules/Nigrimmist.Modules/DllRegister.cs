@@ -46,7 +46,8 @@ namespace Nigrimmist.Modules
                 new OnlinerRent(),
                 new NeagentBY(),
                 new SerialNotifierModule(),
-                new RssGrabModule()
+                new RssGrabModule(),
+                new ProcessTitleCheck()
             };
         }
 

@@ -144,7 +144,10 @@ namespace HelloBotCore
                     {
                         if (tEv.IsEnabled)
                         {
+                            tEv.Trace.AddMessage("Start");
                             tEv.CallEvent(commandToken);
+                            tEv.Trace.AddMessage("End");
+                            tEv.Trace.Save();
                         }
                     }
                     catch (Exception ex)
@@ -635,7 +638,12 @@ namespace HelloBotCore
                             msgHash = uniqueMsgKey.UniqueString.GetHashCode();
                             hashGroup = uniqueMsgKey.GroupId;
                         }
-                        if (!settings.MessageHashExist(moduleInfo.SystemName,hashGroup, msgHash.ToString()))
+                        if (content.MessageParts.Any(x => x.MessageFormat == CommunicationMessageFormat.NoContent))
+                        {
+                            settings.DeleteHashes(hashGroup,moduleInfo.SystemName); //delete all hashes for that groupId.
+                            client.SaveServiceData(settings);
+                        }
+                        else if (!settings.MessageHashExist(moduleInfo.SystemName,hashGroup, msgHash.ToString()))
                         {
                             App.Instance.LogTrace("HelloBot.ShowMessage() adding new msg hash");
 
@@ -775,6 +783,8 @@ namespace HelloBotCore
             App.Instance.LogTrace("End LogModuleTraceRequest() ");
 
         }
+
+       
 
         #endregion
 

@@ -67,7 +67,7 @@ namespace Nigrimmist.Modules.Modules
             hrm.Get("http://fucking-great-advice.ru/api/random");
             var json = JsonConvert.DeserializeObject<AdviceResponse>(hrm.Html);
             string advice = json.text;
-            _client.ShowMessage(commandToken, CommunicationMessage.FromString(HttpUtility.HtmlDecode(advice.RemoveAllTags())));
+            _client.SendMessage(commandToken, CommunicationMessage.FromString(HttpUtility.HtmlDecode(advice.RemoveAllTags())));
         }
     }
 }

@@ -34,5 +34,6 @@
         /// </summary>
         /// <param name="message"></param>
         void LogTrace(string message);
+        
     }
 }

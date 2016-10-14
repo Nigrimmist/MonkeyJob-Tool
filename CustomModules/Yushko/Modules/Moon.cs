@@ -74,7 +74,7 @@ namespace Yushko.Modules
                     result.Append(tds[1].InnerText);//.InnerHtml.Replace("<br>", Environment.NewLine).RemoveAllTags().Trim();
                 }
             }
-            _client.ShowMessage(commandToken, CommunicationMessage.FromString(result.ToString()));
+            _client.SendMessage(commandToken, CommunicationMessage.FromString(result.ToString()));
         }
     }
 }

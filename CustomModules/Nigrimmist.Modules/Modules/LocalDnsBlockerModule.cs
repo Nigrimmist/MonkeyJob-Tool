@@ -97,7 +97,7 @@ namespace Nigrimmist.Modules.Modules
                 {
                     if (_lastTaskToken != null) _lastTaskToken.Cancel();
                     DnsBlockOn(dns);
-                    _client.ShowMessage(commandToken, CommunicationMessage.FromString("Доступ к " + dnsTitle + " заблокирован"));
+                    _client.SendMessage(commandToken, CommunicationMessage.FromString("Доступ к " + dnsTitle + " заблокирован"));
                 }
             }
             if (args.EndsWith("+"))
@@ -130,10 +130,10 @@ namespace Nigrimmist.Modules.Modules
                             {
                                 Thread.Sleep((int) timeout.Value.TotalMilliseconds);
                                 DnsBlockOn(dns);
-                                _client.ShowMessage(commandToken, CommunicationMessage.FromString("Доступ к " + dnsTitle + " заблокирован"));
+                                _client.SendMessage(commandToken, CommunicationMessage.FromString("Доступ к " + dnsTitle + " заблокирован"));
                             },_lastTaskToken, ct);
                         }
-                        _client.ShowMessage(commandToken, CommunicationMessage.FromString(msg));
+                        _client.SendMessage(commandToken, CommunicationMessage.FromString(msg));
 
                     }
                 }

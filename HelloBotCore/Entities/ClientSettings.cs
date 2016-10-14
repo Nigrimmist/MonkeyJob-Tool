@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -54,6 +55,19 @@ namespace HelloBotCore.Entities
             else
             {
                 ModuleMessageHashes.Add(moduleSystemName, new Dictionary<string, List<string>>() { { groupId, new List<string> { hash } } });
+            }
+        }
+
+        public void DeleteHashes(string groupId, string moduleSystemName)
+        {
+            IDictionary<string, List<string>> groupHashes;
+            if (ModuleMessageHashes.TryGetValue(moduleSystemName, out groupHashes))
+            {
+                List<string> messageHashes;
+                if (groupHashes.TryGetValue(groupId, out messageHashes))
+                {
+                    messageHashes.Clear();
+                }
             }
         }
     }

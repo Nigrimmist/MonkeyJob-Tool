@@ -81,7 +81,7 @@ namespace Nigrimmist.Modules.Modules
             }
 
             
-            _client.ShowMessage(commandToken, CommunicationMessage.FromString(res));
+            _client.SendMessage(commandToken, CommunicationMessage.FromString(res));
         }
     }
 }

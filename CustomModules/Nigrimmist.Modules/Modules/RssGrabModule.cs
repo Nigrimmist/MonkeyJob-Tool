@@ -115,7 +115,7 @@ namespace Nigrimmist.Modules.Modules
 
                             if (validItem)
                             {
-                                _client.ShowMessage(eventToken, CommunicationMessage.FromUrl(item.Url));
+                                _client.SendMessage(eventToken, CommunicationMessage.FromUrl(item.Url));
                                 rss.LastDisplayedDateTime = item.PublishDate;
                                 updateSettings = true;
                             }
