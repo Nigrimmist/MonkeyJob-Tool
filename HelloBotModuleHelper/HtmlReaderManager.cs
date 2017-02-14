@@ -172,7 +172,10 @@ namespace HelloBotModuleHelper
             request.UserAgent = UserAgent;
             request.Accept = Accept;
             request.Headers.Add("Accept-Language", "ru-ru,ru;q=0.8,en-us;q=0.5,en;q=0.3");
-
+            
+            if(_timeout>0)
+                request.Timeout = _timeout;
+            
             request.Method = method;
             request.KeepAlive = true;
 

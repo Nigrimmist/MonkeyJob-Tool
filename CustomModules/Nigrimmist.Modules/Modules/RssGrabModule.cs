@@ -53,6 +53,7 @@ namespace Nigrimmist.Modules.Modules
                 bool updateSettings = false;
                 foreach (var rss in settings.Rss)
                 {
+                    _client.LogTrace("start work with "+rss.URL);
                     List<RssResponseItem> responseItems = new List<RssResponseItem>();
                     using (XmlReader reader = XmlReader.Create(rss.URL))
                     {
@@ -75,7 +76,7 @@ namespace Nigrimmist.Modules.Modules
                     }
                     if (responseItems.Any())
                     {
-                        string[] separators = { ",", ".", "!", "\'", " ", "\'s","(",")","\"","<<",">>","?" };
+                        string[] separators = { ",", ".", "!", "\'", " ", "\'s","(",")","\"","<<",">>","?","-" };
 
                         foreach (var item in responseItems)
                         {

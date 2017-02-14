@@ -20,7 +20,18 @@ namespace HelloBotCommunication
             StringBuilder sb = new StringBuilder();
             foreach (var messagePart in MessageParts)
             {
-                if (messagePart.MessageFormat == CommunicationMessageFormat.Text || messagePart.MessageFormat == CommunicationMessageFormat.Url)
+                if (messagePart.MessageFormat == CommunicationMessageFormat.Text || messagePart.MessageFormat == CommunicationMessageFormat.Url || messagePart.MessageFormat==CommunicationMessageFormat.ImageUrl)
+                    sb.AppendLine(messagePart.Value.ToString());
+            }
+            return sb.ToString();
+        }
+
+        public string GetTextContent()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var messagePart in MessageParts)
+            {
+                if (messagePart.MessageFormat == CommunicationMessageFormat.Text)
                     sb.AppendLine(messagePart.Value.ToString());
             }
             return sb.ToString();
@@ -34,6 +45,11 @@ namespace HelloBotCommunication
         public static CommunicationMessage FromUrl(string url)
         {
             return new CommunicationMessage() { MessageParts = new List<CommunicationMessagePart>() { new CommunicationMessagePart() { Value = url, MessageFormat = CommunicationMessageFormat.Url } } };
+        }
+
+        public static CommunicationMessage FromImage(string url)
+        {
+            return new CommunicationMessage() { MessageParts = new List<CommunicationMessagePart>() { new CommunicationMessagePart() { Value = url, MessageFormat = CommunicationMessageFormat.ImageUrl } } };
         }
 
         /// <summary>

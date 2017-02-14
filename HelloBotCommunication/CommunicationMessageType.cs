@@ -10,7 +10,8 @@ namespace HelloBotCommunication
     {
         Text,
         Url,
-        Photo,
+        Image,
+        ImageUrl,
         Video,
         Other,
         NoContent

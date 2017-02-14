@@ -47,7 +47,8 @@ namespace Nigrimmist.Modules
                 new NeagentBY(),
                 new SerialNotifierModule(),
                 new RssGrabModule(),
-                new ProcessTitleCheck()
+                new ProcessTitleCheck(),
+                new InstagramGrabberModule()
             };
         }
 

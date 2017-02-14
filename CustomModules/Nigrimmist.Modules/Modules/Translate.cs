@@ -67,10 +67,15 @@ namespace Nigrimmist.Modules.Modules
 
             StringBuilder sb = new StringBuilder();
 
+            string translateDirection = "en-ru";
+            if (Regex.IsMatch(args, "[а-яА-Я]"))
+                translateDirection = "ru-en";
+
             hrm.ContentType = "application/json; charset=utf-8";
             hrm.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:48.0) Gecko/20100101 Firefox/48.0";
+
             hrm.Post("http://www.translate.ru/services/TranslationService.asmx/GetTranslateNew",
-            string.Format("{{dirCode:'ru-en', template:'General', text:'{0}', lang:'ru', limit:3000,useAutoDetect:true, key:'', ts:'MainSite',tid:'',IsMobile:false}}", HttpUtility.UrlEncode(args)));
+            string.Format("{{dirCode:'{1}', template:'auto', text:'{0}', lang:'ru', limit:3000,useAutoDetect:true, key:'', ts:'MainSite',tid:'',IsMobile:false}}", HttpUtility.UrlEncode(args), translateDirection));
 
             var jsonType = new { d = new { result = "", isWord = false } };
             var data = JsonConvert.DeserializeAnonymousType(hrm.Html, jsonType);

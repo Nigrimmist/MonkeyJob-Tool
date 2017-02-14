@@ -57,6 +57,7 @@ namespace Nigrimmist.Modules.Modules
                         {
                             hrm = new HtmlReaderManager();
                             hrm.Encoding = Encoding.GetEncoding(1251);
+                            hrm.Timeout = 9999;
                             _dict.Add(diary.UserName, hrm);
                             if (!Login(eventToken, diary.UserName, diary.Password, hrm))
                             {
@@ -112,6 +113,10 @@ namespace Nigrimmist.Modules.Modules
                                 {
                                     _client.SendMessage(eventToken, CommunicationMessage.FromUrl(goToUrl), answerType: AnswerBehaviourType.OpenLink);
                                 });
+                        }
+                        else
+                        {
+                            _client.SendMessage(eventToken, CommunicationMessage.NoContent());
                         }
                     }
                 }

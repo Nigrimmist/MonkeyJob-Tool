@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using HelloBotCommunication;
 using HelloBotCommunication.Attributes.SettingAttributes;
 using HelloBotCommunication.Interfaces;
+using HelloBotModuleHelper;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -41,7 +44,7 @@ namespace Nigrimmist.TelegramIntegrationClient
                     {
                         Token = bot.Token,
                         ChatId = bot.ChatId,
-                        IsChannel = bot.IsChannel
+                        ShowTitle = bot.ShowTitle
                     });
                 }
             }
@@ -81,16 +84,16 @@ namespace Nigrimmist.TelegramIntegrationClient
                     }
                     if (bot.BotInited && bot.Bot != null)
                     {
-                        if (bot.ChatId == -1 || bot.ChatId == 0)
+                        if (string.IsNullOrEmpty(bot.ChatId))
                         {
                             var updates = bot.Bot.GetUpdatesAsync(bot.Offset).Result;
                             _client.LogTrace("updates received");
                             if (updates.Any())
                             {
-                                bot.ChatId = updates.First().Message.Chat.Id;
+                                bot.ChatId = updates.First().Message.Chat.Id.ToString();
                                 _client.LogTrace("chatId found " + bot.ChatId);
                                 settingsShouldBeSave = true;
-                                SendMessage(bot.Bot, bot.ChatId,token, "MonkeyJob connected! Thanks for using!");
+                                SendMessage(bot.Bot, bot.ChatId, token, "MonkeyJob connected! Thanks for using!", null);
                             }
                             else
                             {
@@ -109,22 +112,67 @@ namespace Nigrimmist.TelegramIntegrationClient
                             _client.SaveSettings(settings);
                         }
                         string answer = "";
-                        if (!bot.IsChannel)
+                        if (bot.ShowTitle)
                             answer = message.FromModule + " :" + Environment.NewLine;
-                        SendMessage(bot.Bot,bot.ChatId,token, answer + message);
+                        SendMessage(bot.Bot,bot.ChatId,token, answer, message);
                     }
                 }
                 
             }
             
         }
-        
 
-        private void SendMessage(TelegramBotClient bot, long chatId,Guid clientToken, string message)
+
+        private void SendMessage(TelegramBotClient bot, string chatId, Guid clientToken,string msgPrefix, CommunicationClientMessage message)
         {
             try
             {
-                var result = bot.SendTextMessageAsync(chatId, message).Result;
+                if (message!=null && message.MessageParts.Any(x => x.MessageFormat == CommunicationMessageFormat.ImageUrl))
+                {
+                    Exception ex;
+                    using (var str = new MemoryStream())
+                    {
+                        string urlToDownload = message.MessageParts.SingleOrDefault(x => x.MessageFormat == CommunicationMessageFormat.ImageUrl).Value.ToString();
+                        var downloadRes =
+                            new HtmlReaderManager().TryDownloadFileByUrl(urlToDownload, str,
+                                out ex);
+                        str.Flush();
+                        str.Seek(0, SeekOrigin.Begin);
+                        if (downloadRes)
+                        {
+                            string caption = message.GetTextContent();
+                            long id;
+                            if (!chatId.StartsWith("@") && long.TryParse(chatId, out id))
+                            {
+                                var result = bot.SendPhotoAsync(id, new FileToSend("moto.jpeg", str), caption).Result;
+                            }
+                            else
+                            {
+                                var result = bot.SendPhotoAsync(chatId, new FileToSend("moto.jpeg", str), caption).Result;
+                                
+                            }
+                        }
+                        else
+                        {
+                            _client.LogTrace("download file exception " + ex);
+                        }
+
+                    }
+
+                }
+                else
+                {
+                    long id;
+                    if (!chatId.StartsWith("@") && long.TryParse(chatId, out id))
+                    {
+                        var result = bot.SendTextMessageAsync(id, message==null?msgPrefix:msgPrefix + message).Result;
+                    }
+                    else
+                    {
+                        var result = bot.SendTextMessageAsync(chatId, message == null ? msgPrefix : msgPrefix + message).Result;
+                    }
+                }
+
             }
             catch (Exception ex)
             {
@@ -164,11 +212,11 @@ namespace Nigrimmist.TelegramIntegrationClient
         [SettingsNameField("Телеграм токен, который отдаёт BotFather")]
         public string Token { get; set; }
 
-        [SettingsNameField("Бот для канала (channel)?")]
-        public bool IsChannel { get; set; }
+        [SettingsNameField("Показывать системный TITLE перед каждым сообщением?")]
+        public bool ShowTitle { get; set; }
 
         [SettingsNameField("Если да, то введите id канала")]
-        public long ChatId { get; set; }
+        public string ChatId { get; set; }
         public int Offset { get; set; }
 
         public TelegramBotSettings()
@@ -182,9 +230,9 @@ namespace Nigrimmist.TelegramIntegrationClient
         public bool BotInited { get; set; }
         public string Token { get; set; }
         public int Offset { get; set; }
-        public long ChatId { get; set; }
+        public string ChatId { get; set; }
         public TelegramBotClient Bot { get; set; }
-        public bool IsChannel { get; set; }
+        public bool ShowTitle { get; set; }
 
         public ClientTelegramWrapper()
         {
