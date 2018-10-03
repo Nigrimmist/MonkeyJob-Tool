@@ -46,7 +46,7 @@ namespace Test
         static void Main(string[] args)
         {
 
-            //var bot = new Telegram.Bot.Api("247995979:AAFRMNTilitQYypinYQ9epLOf7p8isU30k8");
+            //var bot = new Telegram.Bot.Api("");
             //var s = bot.SendTextMessageAsync(-1001055587016, "Тест").Result;
             //var s = bot.GetUpdatesAsync(0).Result;
 
