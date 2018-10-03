@@ -1,5 +1,6 @@
 [Oo]bj
 [Bb]in
+packages
 *.user
 *.suo
 *.[Cc]ache
@@ -13,3 +14,4 @@ _ReSharper.*
 Ankh.NoLoad
 .svn
 /Other/*.exe
+.vs

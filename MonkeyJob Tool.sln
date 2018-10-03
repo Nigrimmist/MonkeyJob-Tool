@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2041
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloBotCommunication", "HelloBotCommunication\HelloBotCommunication.csproj", "{53EB844B-B3A7-4397-9DB3-84F5D9F30840}"
 EndProject
@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "TestConsoleApplicat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloBotCore", "HelloBotCore\HelloBotCore.csproj", "{F9500B18-085E-4A3D-B215-75EC409E05DA}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CusomModules", "CusomModules", "{C054E547-999A-4B50-AB90-CA42165D817B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CustomModules", "CustomModules", "{C054E547-999A-4B50-AB90-CA42165D817B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VariousHandlersLib", "CustomModules\Alex\VariousHandlersLib.csproj", "{111CF492-6831-47CB-8297-B22C9A752CB5}"
 EndProject
@@ -95,5 +95,8 @@ Global
 		{5B94E739-FAD8-4A23-AB11-3EDD24F57D35} = {C054E547-999A-4B50-AB90-CA42165D817B}
 		{0C619AB2-4ACA-487E-B9FA-DE5DF81523AE} = {66E9739F-BB12-41D6-85BA-749BD930E7A6}
 		{F69D4DD7-B6F5-44E0-8E50-716BE7894F7B} = {0C619AB2-4ACA-487E-B9FA-DE5DF81523AE}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A41C457A-17AD-4202-87BE-9CF8E87180FC}
 	EndGlobalSection
 EndGlobal
