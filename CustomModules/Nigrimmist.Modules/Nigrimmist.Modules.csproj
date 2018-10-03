@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Entities\AppVersionInfo.cs" />
     <Compile Include="Helpers\WeatherHelper.cs" />
+    <Compile Include="Modules\OnlinerAuto.cs" />
     <Compile Include="Modules\ProcessTitleCheck.cs" />
     <Compile Include="Modules\InstagramGrabberModule.cs" />
     <Compile Include="Modules\RssGrabModule.cs" />

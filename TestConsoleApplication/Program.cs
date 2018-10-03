@@ -20,6 +20,8 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MonkeyJobTool.Extensions;
 using Newtonsoft.Json;
 using NetFwTypeLib;
+using Newtonsoft.Json.Linq;
+
 namespace Test
 {
     public class test
@@ -44,13 +46,13 @@ namespace Test
         static void Main(string[] args)
         {
 
-            var bot = new Telegram.Bot.Api("247995979:AAFRMNTilitQYypinYQ9epLOf7p8isU30k8");
-            var s = bot.SendTextMessageAsync(-1001055587016, "Тест").Result;
+            //var bot = new Telegram.Bot.Api("247995979:AAFRMNTilitQYypinYQ9epLOf7p8isU30k8");
+            //var s = bot.SendTextMessageAsync(-1001055587016, "Тест").Result;
             //var s = bot.GetUpdatesAsync(0).Result;
 
             //var token = GetAuthorizationHeader2();
             ////
-            
+
             ////https://management.core.windows.net:8443/{subscriptionId}/services/sqlservers/servers/Contoso/firewallrules
 
             //string url = string.Format("https://management.core.windows.net:8443/{0}/services/sqlservers/servers/{1}/firewallrules",
@@ -59,7 +61,7 @@ namespace Test
             //                               "test1");
 
 
-            
+
 
 
             //HtmlReaderManager hrm = new HtmlReaderManager();
@@ -72,8 +74,10 @@ namespace Test
             ////tenant : 91c6f46c-de8c-46f7-bbd7-67f8b9be58c6
 
             ////SetFirewallRuleAutoDetect("Nigrimmist@gmail.com", "5716188xf3z54dlc", "b67bb366-fcc0-497f-b027-de1c33d507ba", "tce6f5yqv6", "test1");
+
             
-            Console.WriteLine("test");
+
+            
             Console.ReadLine();
 
         }
