@@ -303,37 +303,38 @@ namespace MonkeyJobTool.Forms
         {
             try
             {
-                ModuleSettings ms = Module.GetSettings<ModuleSettings>();
-                if (ms == null)
+                var ms = Module.GetSettings<ModuleSettings>();
+                object moduleSettings;
+                
+                if (ms != null)
                 {
-                    ms = Activator.CreateInstance(Module.SettingsType) as ModuleSettings;
+                    moduleSettings = Activator.CreateInstance(Module.SettingsType);
                 }
                 else
                 {
 
-                    if (ms.ModuleData == null)
+                    if (ms.ModuleData != null)
                     {
-                        ms.ModuleData = Activator.CreateInstance(Module.SettingsType);
+                        var rawSettingsJson = JsonConvert.SerializeObject(ms.ModuleData);
+                        moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.SettingsType);
                     }
+                    else
+                        moduleSettings = Activator.CreateInstance(Module.SettingsType);
                 }
 
-                var serviceData = ms?.ServiceData;
+                var serviceData = ms != null ? ms.ServiceData : null;
 
                 if (Module.ModuleType == ModuleType.IntegrationClient)
                     if (serviceData == null) serviceData = new ClientSettings();
 
-                ms = new ModuleSettings(Module.Version, Module.SettingsModuleVersion, FillObjectFromUI("",moduleSettings),serviceData);
-                
-                App.Instance.Bot.Storage.Save(Module.SystemName,);
+                ms = new ModuleSettings(Module.Version, Module.SettingsModuleVersion, FillObjectFromUI("", moduleSettings), serviceData);
 
-                var json = JsonConvert.SerializeObject(ms, Formatting.Indented);
-                File.WriteAllText(fullPath, json);
-                Module.SaveSettings();
+                Module.SaveSettings(ms);
                 this.Close();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                LogManager.Error(ex,"save config from ui");
+                LogManager.Error(ex, "save config from ui");
             }
         }
 
