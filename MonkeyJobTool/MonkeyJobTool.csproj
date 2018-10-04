@@ -119,6 +119,9 @@
     </Compile>
     <Compile Include="Controls\Settings\IUIDataItem.cs" />
     <Compile Include="Controls\CommandArgumentSuggester.cs" />
+    <Compile Include="DAL\Interfaces\IDataStorage.cs" />
+    <Compile Include="DAL\StorageServices\FileStorage.cs" />
+    <Compile Include="DAL\StorageServices\SqlLiteStorage.cs" />
     <Compile Include="Entities\AppConstants.cs" />
     <Compile Include="Entities\ApplicationConfiguration.cs" />
     <Compile Include="Entities\ApplicationMigrations.cs" />

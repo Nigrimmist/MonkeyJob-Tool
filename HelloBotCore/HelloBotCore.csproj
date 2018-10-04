@@ -50,6 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DAL\Interfaces\IDataStorage.cs" />
+    <Compile Include="DAL\StorageServices\FileStorage.cs" />
+    <Compile Include="DAL\StorageServices\SqlLiteStorage.cs" />
     <Compile Include="Entities\AnswerInfo.cs" />
     <Compile Include="Entities\ClientSettings.cs" />
     <Compile Include="Entities\ModuleToModuleCommunication.cs" />
@@ -79,6 +82,7 @@
     <Compile Include="HelloBot.cs" />
     <Compile Include="Entities\Language.cs" />
     <Compile Include="Manager\App.cs" />
+    <Compile Include="Manager\StorageManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\KeyboardLayoutHelper.cs" />
   </ItemGroup>

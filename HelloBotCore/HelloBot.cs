@@ -12,6 +12,8 @@ using HelloBotCore.Entities;
 using HelloBotCommunication;
 using HelloBotCommunication.Attributes.SettingAttributes;
 using HelloBotCommunication.Interfaces;
+using HelloBotCore.DAL.Interfaces;
+using HelloBotCore.DAL.StorageServices;
 using HelloBotCore.Helpers;
 using HelloBotCore.Manager;
 using Newtonsoft.Json;
@@ -79,7 +81,9 @@ namespace HelloBotCore
         public event OnModuleRemovedDelegate OnModuleRemoved;
 
         public Func<bool> CanNotifyClient;
-        
+        private StorageManager _storage;
+
+        public StorageManager Storage => _storage;
 
         /// <summary>
         /// Bot costructor
@@ -89,8 +93,13 @@ namespace HelloBotCore
         /// <param name="botCommandPrefix">Prefix for bot commands. Only messages with that prefix will be handled</param>
         public HelloBot(Action<string> logTraceFunc,string settingsFolderAbsolutePath, string logsFolderAbsolutePath,double currentUIClientVersion, string moduleDllmask = "*.dll", string botCommandPrefix = "!", string moduleFolderPath = ".")
         {
-            App.Instance.Init(logTraceFunc);
-            App.Instance.LogTrace("Start HelloBot() const");
+
+            App.Instance.Init(logTraceFunc,moduleFolderPath);
+            App.Instance.LogTrace("Start HelloBot class cctr");
+
+            IDataStorage storageService = new FileStorage();
+            _storage = new StorageManager(storageService);
+
             _currentUIClientVersion = currentUIClientVersion;
             _settingsFolderAbsolutePath = settingsFolderAbsolutePath;
             _logsFolderAbsolutePath = logsFolderAbsolutePath;
@@ -107,7 +116,7 @@ namespace HelloBotCore
             _commandContexts = new Dictionary<Guid, BotContextBase>();
             
             new Thread(SaveModuleTraces).Start();
-            App.Instance.LogTrace("End HelloBot() const");
+            App.Instance.LogTrace("End HelloBot class cctr");
         }
 
         public void RunEventBasedModules()
@@ -939,8 +948,7 @@ namespace HelloBotCore
                 }
                 catch(Exception ex)
                 {
-                    if (OnErrorOccured != null)
-                        OnErrorOccured(ex);
+                    OnErrorOccured?.Invoke(ex);
                 }
             }
         }
@@ -959,8 +967,7 @@ namespace HelloBotCore
                 settings.Instances.Remove(instanceId);
                 client.SaveSettings(settings);
                 inst.Dispose();
-                if (OnModuleRemoved != null)
-                    OnModuleRemoved(systemName);
+                OnModuleRemoved?.Invoke(systemName);
             }
         }
 
@@ -979,10 +986,7 @@ namespace HelloBotCore
         {
             App.Instance.LogTrace("Start ShowSuggestionsToClient()");
 
-            if (OnSuggestRecieved != null)
-            {
-                OnSuggestRecieved(items);
-            }
+            OnSuggestRecieved?.Invoke(items);
 
             App.Instance.LogTrace("End ShowSuggestionsToClient()");
 

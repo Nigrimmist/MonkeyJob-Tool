@@ -29,14 +29,19 @@ namespace HelloBotCore.Manager
         }
 
         Action<string> _logTraceFunc = delegate {  };
-        public void Init(Action<string> logTraceFunc)
+        private string _executionFolderPath;
+
+        public void Init(Action<string> logTraceFunc,string executionFolderPath)
         {
             _logTraceFunc = logTraceFunc;
+            _executionFolderPath = executionFolderPath;
         }
 
         public void LogTrace(string msg)
         {
             _logTraceFunc(msg);
         }
+
+        public string ExecutionFolderPath => _executionFolderPath;
     }
 }

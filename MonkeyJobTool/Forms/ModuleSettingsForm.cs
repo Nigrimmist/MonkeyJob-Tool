@@ -303,36 +303,32 @@ namespace MonkeyJobTool.Forms
         {
             try
             {
-                string fullPath = Module.GetSettingFileFullPath();
-                object moduleSettings;
-                ModuleSettings ms=null;
-                if (!File.Exists(fullPath))
+                ModuleSettings ms = Module.GetSettings<ModuleSettings>();
+                if (ms == null)
                 {
-                    moduleSettings = Activator.CreateInstance(Module.SettingsType);
+                    ms = Activator.CreateInstance(Module.SettingsType) as ModuleSettings;
                 }
                 else
                 {
-                    string data = File.ReadAllText(fullPath);
-                    ms = JsonConvert.DeserializeObject(data, typeof (ModuleSettings)) as ModuleSettings;
 
-                    if (ms.ModuleData != null)
+                    if (ms.ModuleData == null)
                     {
-                        var rawSettingsJson = JsonConvert.SerializeObject(ms.ModuleData);
-                        moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.SettingsType);
+                        ms.ModuleData = Activator.CreateInstance(Module.SettingsType);
                     }
-                    else
-                        moduleSettings = Activator.CreateInstance(Module.SettingsType);
                 }
 
-                var serviceData = ms != null ? ms.ServiceData : null;
+                var serviceData = ms?.ServiceData;
 
                 if (Module.ModuleType == ModuleType.IntegrationClient)
                     if (serviceData == null) serviceData = new ClientSettings();
 
                 ms = new ModuleSettings(Module.Version, Module.SettingsModuleVersion, FillObjectFromUI("",moduleSettings),serviceData);
                 
+                App.Instance.Bot.Storage.Save(Module.SystemName,);
+
                 var json = JsonConvert.SerializeObject(ms, Formatting.Indented);
                 File.WriteAllText(fullPath, json);
+                Module.SaveSettings();
                 this.Close();
             }
             catch(Exception ex)
