@@ -25,5 +25,10 @@ namespace HelloBotCore.Manager
         {
             return _storageService.Read<T>(key);
         }
+
+        public void Delete(string key)
+        {
+            _storageService.Delete(key);
+        }
     }
 }

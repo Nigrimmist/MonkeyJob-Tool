@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HelloBotCommunication;
+using HelloBotCore.Manager;
 
 namespace HelloBotCore.Entities
 {
@@ -11,7 +12,7 @@ namespace HelloBotCore.Entities
     {
         private ClientInstanceToModuleCommunication _instanceCommunication;
 
-        protected IntegrationClientBase(string settingsFolderAbsolutePath, string logsFolderAbsolutePath) : base(settingsFolderAbsolutePath, logsFolderAbsolutePath)
+        protected IntegrationClientBase(StorageManager storageManager) : base(storageManager)
         {
         }
 

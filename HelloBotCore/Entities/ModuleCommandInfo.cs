@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using HelloBotCommunication;
 using HelloBotCommunication.Interfaces;
+using HelloBotCore.Manager;
 
 namespace HelloBotCore.Entities
 {
@@ -19,7 +20,7 @@ namespace HelloBotCore.Entities
         public Color? HeaderBackgroundColor { get; set; }
         
 
-        public ModuleCommandInfo(string settingsFolderAbsolutePath, string logsFolderAbsolutePath) : base(settingsFolderAbsolutePath, logsFolderAbsolutePath)
+        public ModuleCommandInfo(StorageManager storageManager) : base(storageManager)
         {
             OriginalAliases = new List<string>();
         }

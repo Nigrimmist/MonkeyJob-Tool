@@ -279,7 +279,7 @@ namespace HelloBotCore
                         var settingClass = settingForClients.FirstOrDefault(x => x.moduleForParentClass == module.GetType());
                         var getNewInstance = new Func<int?, IntegrationClientInfo>((instId) =>
                         {
-                            var tModule = new IntegrationClientInfo(_settingsFolderAbsolutePath, _logsFolderAbsolutePath);
+                            var tModule = new IntegrationClientInfo(_storage);
                             _commandDictLocks.Add(tModule.Id, new ModuleLocker());
                             tModule.InstanceId = instId;
                             var newModuleiInstance = (HelloBotCommunication.IntegrationClientBase)Activator.CreateInstance(module.GetType());
@@ -375,7 +375,7 @@ namespace HelloBotCore
                     var modules = ((ModuleRegisterBase) obj).GetModules().Select(module =>
                     {
                         var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == module.GetType());
-                        var tModule = new ModuleCommandInfo(_settingsFolderAbsolutePath,_logsFolderAbsolutePath);
+                        var tModule = new ModuleCommandInfo(_storage);
                         _commandDictLocks.Add(tModule.Id, new ModuleLocker());
                         tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this, ((ModuleRegisterBase) obj).AuthorInfo);
                         tModule.IsEnabled = !disabledModules.Contains(tModule.SystemName);
@@ -387,7 +387,7 @@ namespace HelloBotCore
                     var events = ((ModuleRegisterBase) obj).GetEvents().Select(ev =>
                     {
                         var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == ev.GetType());
-                        var tModule = new ModuleEventInfo(_settingsFolderAbsolutePath, _logsFolderAbsolutePath);
+                        var tModule = new ModuleEventInfo(_storage);
                         _commandDictLocks.Add(tModule.Id, new ModuleLocker());
                         tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this, ((ModuleRegisterBase) obj).AuthorInfo);
                         tModule.IsEnabled = enabledModules.Contains(tModule.SystemName);
@@ -399,7 +399,7 @@ namespace HelloBotCore
                     var trayModules = ((ModuleRegisterBase) obj).GetTrayModules().Select(ev =>
                     {
                         var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == ev.GetType());
-                        var tModule = new ModuleTrayInfo(_settingsFolderAbsolutePath, _logsFolderAbsolutePath);
+                        var tModule = new ModuleTrayInfo(_storage);
                         _commandDictLocks.Add(tModule.Id, new ModuleLocker());
                         tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this, ((ModuleRegisterBase) obj).AuthorInfo);
                         tModule.IsEnabled = enabledModules.Contains(tModule.SystemName);
@@ -909,20 +909,15 @@ namespace HelloBotCore
             {
                 lock (_commandDictLocks[module.Id].SettingsLock)
                 {
-                    string fullPath = module.GetSettingFileFullPath();
-                    if (File.Exists(fullPath))
+                    var settings = module.GetSettings<ModuleSettings>();
+                    if (settings!=null && settings.SettingsVersion < module.SettingsModuleVersion)
                     {
-                        string data = File.ReadAllText(fullPath);
-                        var settings = JsonConvert.DeserializeObject<ModuleSettings>(data);
-                        if (settings.SettingsVersion < module.SettingsModuleVersion)
-                        {
-                            toReturn.Add(module);
-                        }
+                        toReturn.Add(module);
                     }
 
                 }
             }
-            App.Instance.LogTrace(string.Format("End GetIncompatibleSettingModules(). toReturn.Count : {0}", toReturn.Count));
+            App.Instance.LogTrace($"End GetIncompatibleSettingModules(). toReturn.Count : {toReturn.Count}");
 
             return toReturn;
         }

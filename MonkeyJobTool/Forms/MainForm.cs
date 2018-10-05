@@ -14,6 +14,7 @@ using System.Threading;
 using System.Windows.Forms;
 using HelloBotCommunication;
 using HelloBotCore;
+using HelloBotCore.DAL.StorageServices;
 using HelloBotCore.Entities;
 using Microsoft.Win32;
 using MonkeyJobTool.Controls;
@@ -22,9 +23,11 @@ using MonkeyJobTool.Entities;
 using MonkeyJobTool.Entities.Autocomplete;
 using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Helpers;
+using MonkeyJobTool.Managers;
+using MonkeyJobTool.Managers.Interfaces;
 using MonkeyJobTool.Properties;
 using Newtonsoft.Json;
-using NLog;
+using Newtonsoft.Json.Converters;
 using SharedHelper;
 using Language = HelloBotCore.Entities.Language;
 using LogManager = MonkeyJobTool.Managers.LogManager;
@@ -43,6 +46,7 @@ namespace MonkeyJobTool.Forms
         private bool _isFirstRun;
         private object _trayIconLocker = new object();
         private Dictionary<Guid, NotifyIcon> _trayModuleIcons = new Dictionary<Guid, NotifyIcon>();
+        private IStorageManager _storageManager;
 
         public MainForm()
         {
@@ -55,7 +59,11 @@ namespace MonkeyJobTool.Forms
             
             try
             {
-                App.Instance.Init(openFormHotKeyRaised, this);
+                var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = AppConstants.DateTimeFormat };
+                var fs = new FileStorage(App.Instance.ExecutionFolder, dateTimeConverter);
+                _storageManager = new StorageManager(fs);
+
+                App.Instance.Init(openFormHotKeyRaised, this, _storageManager);
                 LogManager.Trace("Main load started. inited");
                 App.Instance.OnSettingsChanged += Instance_OnSettingsChanged;
                 App.Instance.OnNotificationCountChanged += Instance_OnNotificationCountChanged;

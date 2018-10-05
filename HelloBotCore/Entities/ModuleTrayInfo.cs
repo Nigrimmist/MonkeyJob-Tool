@@ -6,6 +6,7 @@ using System.Text;
 using HelloBotCommunication;
 using HelloBotCommunication.Interfaces;
 using HelloBotCore.Helpers;
+using HelloBotCore.Manager;
 using SharedHelper;
 
 namespace HelloBotCore.Entities
@@ -17,7 +18,7 @@ namespace HelloBotCore.Entities
         public TimeSpan EventRunEvery { get; set; }
         public OnEventFireDelegate EventFireCallback;
 
-        public ModuleTrayInfo(string settingsFolderAbsolutePath, string logsFolderAbsolutePath) : base(settingsFolderAbsolutePath, logsFolderAbsolutePath)
+        public ModuleTrayInfo(StorageManager storageManager) : base(storageManager)
         {
             
         }

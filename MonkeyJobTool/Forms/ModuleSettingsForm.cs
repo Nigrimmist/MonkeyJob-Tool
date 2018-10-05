@@ -33,19 +33,17 @@ namespace MonkeyJobTool.Forms
 
         private void ModuleSettingsForm_Load(object sender, EventArgs e)
         {
-            string fullPath = Module.GetSettingFileFullPath();
+            var ms = Module.GetSettings<ModuleSettings>();
             object moduleSettings;
-            if (!File.Exists(fullPath))
+            if (ms == null)
             {
                 moduleSettings = Activator.CreateInstance(Module.SettingsType);
             }
             else
             {
-                string data = File.ReadAllText(fullPath);
-                var settingsWrapper = JsonConvert.DeserializeObject(data, typeof (ModuleSettings)) as ModuleSettings;
-                if (settingsWrapper.ModuleData != null)
+                if (ms.ModuleData != null)
                 {
-                    var rawSettingsJson = JsonConvert.SerializeObject(settingsWrapper.ModuleData);
+                    var rawSettingsJson = JsonConvert.SerializeObject(ms.ModuleData);
                     moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.SettingsType);
                 }
                 else
@@ -306,13 +304,12 @@ namespace MonkeyJobTool.Forms
                 var ms = Module.GetSettings<ModuleSettings>();
                 object moduleSettings;
                 
-                if (ms != null)
+                if (ms == null)
                 {
                     moduleSettings = Activator.CreateInstance(Module.SettingsType);
                 }
                 else
                 {
-
                     if (ms.ModuleData != null)
                     {
                         var rawSettingsJson = JsonConvert.SerializeObject(ms.ModuleData);
@@ -322,7 +319,7 @@ namespace MonkeyJobTool.Forms
                         moduleSettings = Activator.CreateInstance(Module.SettingsType);
                 }
 
-                var serviceData = ms != null ? ms.ServiceData : null;
+                var serviceData = ms?.ServiceData;
 
                 if (Module.ModuleType == ModuleType.IntegrationClient)
                     if (serviceData == null) serviceData = new ClientSettings();

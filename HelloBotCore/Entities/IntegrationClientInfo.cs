@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HelloBotCommunication;
+using HelloBotCore.Manager;
 using Newtonsoft.Json;
 
 namespace HelloBotCore.Entities
@@ -18,7 +19,7 @@ namespace HelloBotCore.Entities
 
         public List<IntegrationClientBase> Instances { get; set; }
 
-        public IntegrationClientInfo(string settingsFolderAbsolutePath, string logsFolderAbsolutePath) : base(settingsFolderAbsolutePath, logsFolderAbsolutePath)
+        public IntegrationClientInfo(StorageManager storageManager) : base(storageManager)
         {
             Instances = new List<IntegrationClientBase>();
         }
@@ -53,11 +54,7 @@ namespace HelloBotCore.Entities
 
         public override void Dispose()
         {
-            var settingsFilePath = GetSettingFileFullPath();
-            if (File.Exists(settingsFilePath))
-            {
-                File.Delete(settingsFilePath);
-            }
+           DeleteSettings();
         }
 
         public IntegrationClientSettings GetSettings()

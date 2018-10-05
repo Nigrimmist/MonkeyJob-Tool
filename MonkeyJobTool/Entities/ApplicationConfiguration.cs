@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using HelloBotCore.Entities;
 using MonkeyJobTool.Managers;
+using MonkeyJobTool.Managers.Interfaces;
 using Newtonsoft.Json;
 
 namespace MonkeyJobTool.Entities
@@ -15,6 +16,11 @@ namespace MonkeyJobTool.Entities
     /// </summary>
     public class ApplicationConfiguration
     {
+        private IStorageManager _storageManager;
+        public IStorageManager StorageManager{
+            set => _storageManager = value;
+        }
+
         public AppConfHotkeys HotKeys { get; set; }
         public List<CommandReplace> CommandReplaces { get; set; }
         public bool AllowUsingGoogleAnalytics { get; set; }
@@ -28,12 +34,14 @@ namespace MonkeyJobTool.Entities
         public bool ShowCommandHelp { get; set; }
         public double ConfigVersion { get; set; }
 
+        
+
         /// <summary>
         /// Defaults will be used for clear first installation
         /// </summary>
-        public ApplicationConfiguration(bool initDefaults = false)
+        public ApplicationConfiguration(IStorageManager storageManager=null, bool initDefaults = false)
         {
-
+            _storageManager = storageManager;
             CommandReplaces = new List<CommandReplace>();
             SystemData = new SystemData();
             if (initDefaults)
@@ -51,11 +59,12 @@ namespace MonkeyJobTool.Entities
             }
         }
 
+        
+
         public void Save()
         {
             LogManager.Trace("Start AppConf.Save()");
-            string json = JsonConvert.SerializeObject(this, Formatting.Indented);
-            File.WriteAllText(App.Instance.ExecutionFolder + AppConstants.Paths.MainConfFileName, json);
+            _storageManager.Save(AppConstants.Paths.MainConfFileName, this);
             LogManager.Trace("End AppConf.Save()");
 
         }

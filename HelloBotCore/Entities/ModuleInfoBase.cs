@@ -7,6 +7,7 @@ using System.Text;
 using HelloBotCommunication;
 using HelloBotCommunication.Interfaces;
 using HelloBotCore.Helpers;
+using HelloBotCore.Manager;
 using Newtonsoft.Json;
 using SharedHelper;
 
@@ -14,8 +15,8 @@ namespace HelloBotCore.Entities
 {
     public abstract class ModuleInfoBase : ComponentInfoBase
     {
-        protected ModuleInfoBase(string settingsFolderAbsolutePath, string logsFolderAbsolutePath)
-            : base(settingsFolderAbsolutePath, logsFolderAbsolutePath)
+        protected ModuleInfoBase(StorageManager storageManager)
+            : base(storageManager)
         {
             
         }

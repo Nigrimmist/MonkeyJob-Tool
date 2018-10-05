@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using HelloBotCore.Manager;
 using Newtonsoft.Json;
 
 namespace HelloBotCore.Entities
@@ -10,18 +11,20 @@ namespace HelloBotCore.Entities
     public class ModuleLogStorageInfo
     {
         public List<LogMessage> TraceMessages { get; set; }
+        private const string LOG_KEY_PREFIX = "module_logs_";
         private int _limit;
         private readonly string _moduleSystemName;
         private readonly int? _instanceId;
+        private readonly StorageManager _storageManager;
         private bool _dataAddedSinceLastSave = false;
         private string _savePath { get; set; }
 
-        public ModuleLogStorageInfo(int limit, string savePath, string moduleName, int? instanceId)
+        public ModuleLogStorageInfo(int limit, string moduleName, int? instanceId, StorageManager storageManager)
         {
             _limit = limit;
             _moduleSystemName = moduleName;
             _instanceId = instanceId;
-            _savePath = savePath;
+            _storageManager = storageManager;
             TraceMessages = new List<LogMessage>();
         }
         
@@ -39,27 +42,20 @@ namespace HelloBotCore.Entities
         {
             if (_dataAddedSinceLastSave && TraceMessages.Any())
             {
-                var fPath = GetLogFileFullPath();
-                if (!File.Exists(fPath))
-                    File.Create(fPath);
-                File.WriteAllText(fPath,JsonConvert.SerializeObject(TraceMessages));
+                _storageManager.Save(GetLogModuleKey(), TraceMessages);
+                
                 _dataAddedSinceLastSave = false;
             }
         }
 
         public void Load()
         {
-            if (File.Exists(GetLogFileFullPath()))
-            {
-                TraceMessages = JsonConvert.DeserializeObject<List<LogMessage>>(File.ReadAllText(GetLogFileFullPath()));
-                if (TraceMessages == null)
-                    TraceMessages = new List<LogMessage>();
-            }
+            TraceMessages = _storageManager.Get<List<LogMessage>>(GetLogModuleKey()) ?? new List<LogMessage>();
         }
 
-        public string GetLogFileFullPath()
+        private string GetLogModuleKey()
         {
-            return _savePath + "/" + _moduleSystemName  + ".json";
+            return LOG_KEY_PREFIX+_moduleSystemName;
         }
     }
 }

@@ -13,6 +13,7 @@ using Microsoft.Win32;
 using MonkeyJobTool.Extensions;
 using MonkeyJobTool.Forms;
 using MonkeyJobTool.Managers;
+using MonkeyJobTool.Managers.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -97,22 +98,21 @@ namespace MonkeyJobTool.Entities
             LogManager.Error(e.ExceptionObject as Exception);
         }
 
-        public void Init(EventHandler<KeyPressedEventArgs> mainFormOpenHotKeyRaisedHandler, MainForm mainForm)
+        public void Init(EventHandler<KeyPressedEventArgs> mainFormOpenHotKeyRaisedHandler, MainForm mainForm, IStorageManager storageManager)
         {
             Application.ThreadException += (OnError);
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
             //read and load config
-            if (!File.Exists(ExecutionFolder + AppConstants.Paths.MainConfFileName))
+            if (!storageManager.Exist(AppConstants.Paths.MainConfFileName))
             {
-                _appConf = new ApplicationConfiguration(true);
+                _appConf = new ApplicationConfiguration(storageManager,true);
                 _appConf.Save();
             }
             
-            var json = File.ReadAllText(ExecutionFolder + AppConstants.Paths.MainConfFileName);
-            var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = AppConstants.DateTimeFormat };
-            _appConf = JsonConvert.DeserializeObject<ApplicationConfiguration>(json, dateTimeConverter);
-            LogManager.Trace("App.Conf deserialized");
+            _appConf = storageManager.Get<ApplicationConfiguration>(AppConstants.Paths.MainConfFileName);
+            _appConf.StorageManager = storageManager;
+            LogManager.Trace("App.Conf retrieved");
             _mainForm = mainForm;
 
             //register open program hotkey using incoming (main form) delegate

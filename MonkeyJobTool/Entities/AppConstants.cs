@@ -25,7 +25,7 @@ namespace MonkeyJobTool.Entities
 
         public class Paths
         {
-            public const string MainConfFileName = @"conf.json";
+            public const string MainConfFileName = @"conf";
         }
 
         public class Urls

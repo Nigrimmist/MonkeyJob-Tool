@@ -29,17 +29,13 @@ namespace HelloBotCore.Entities
         public AuthorInfo Author { get; set; }
         public Type SettingsType { get; set; }
         public ModuleLogStorageInfo Trace { get; set; }
-        private string _settingsFolderAbsolutePath { get; set; }
-        private string _logsFolderAbsolutePath { get; set; }
         public abstract ModuleType ModuleType { get; }
         public int? InstanceId { get; set; }
         
-        protected ComponentInfoBase(string settingsFolderAbsolutePath, string logsFolderAbsolutePath, StorageManager storageManager)
+        protected ComponentInfoBase(StorageManager storageManager)
         {
             _storageManager = storageManager;
             Id = Guid.NewGuid();
-            _settingsFolderAbsolutePath = settingsFolderAbsolutePath;
-            _logsFolderAbsolutePath = logsFolderAbsolutePath;
         }
 
         
@@ -57,6 +53,11 @@ namespace HelloBotCore.Entities
             var settings = _storageManager.Get<ModuleSettings<T, T2>>(SystemName);
             serviceData = settings.ServiceData;
             return settings.ModuleData;
+        }
+
+        public void DeleteSettings()
+        {
+            _storageManager.Delete(SystemName);
         }
 
         public void SaveSettings<T>(T serializableSettingObject, object settingsAdditionalData=null) where T : class
@@ -98,7 +99,7 @@ namespace HelloBotCore.Entities
             
             Author = author;
 
-            Trace = new ModuleLogStorageInfo(30, _logsFolderAbsolutePath, SystemName,InstanceId);
+            Trace = new ModuleLogStorageInfo(30, SystemName,InstanceId,_storageManager);
             Trace.Load();
         }
         
