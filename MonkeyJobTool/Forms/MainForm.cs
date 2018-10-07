@@ -52,15 +52,14 @@ namespace MonkeyJobTool.Forms
         {
             InitializeComponent();
         }
-        
+
         private void MainForm_Load(object sender, EventArgs e)
         {
-            
-            
+
+
             try
             {
-                var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = AppConstants.DateTimeFormat };
-                var fs = new FileStorage(App.Instance.ExecutionFolder, dateTimeConverter);
+                var fs = new FileStorage(App.Instance.ExecutionFolder, App.Instance.DefaultDateTimeConverter);
                 _storageManager = new StorageManager(fs);
 
                 App.Instance.Init(openFormHotKeyRaised, this, _storageManager);
@@ -82,7 +81,7 @@ namespace MonkeyJobTool.Forms
                     }
                     else
                     {
-                        LogManager.Trace("Second or more run. id : "+firstRunKeyVal);
+                        LogManager.Trace("Second or more run. id : " + firstRunKeyVal);
                         App.Instance.UserID = new Guid(firstRunKeyVal.ToString());
                     }
                 }
@@ -95,7 +94,7 @@ namespace MonkeyJobTool.Forms
                 InitBot((continueClbck) =>
                 {
                     var changedSettingModules = _bot.GetIncompatibleSettingModules();
-                    LogManager.Trace("changed module count : "+changedSettingModules.Count);
+                    LogManager.Trace("changed module count : " + changedSettingModules.Count);
                     this.Invoke(new MethodInvoker(delegate
                     {
                         if (_isFirstRun || changedSettingModules.Any())
@@ -112,10 +111,10 @@ namespace MonkeyJobTool.Forms
                         else
                         {
                             Init();
-                            continueClbck(); 
+                            continueClbck();
                         }
                     }));
-                    
+
                 });
                 SetupNotifyOffMode();
 
@@ -124,7 +123,7 @@ namespace MonkeyJobTool.Forms
             {
                 LogManager.Error(ex, "MainForm_Load error");
             }
-            }
+        }
 
         private void Init()
         {

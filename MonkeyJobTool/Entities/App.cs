@@ -56,6 +56,8 @@ namespace MonkeyJobTool.Entities
 
         private readonly string _executionFolder;
         private readonly string _executionPath;
+        private readonly IsoDateTimeConverter _defaultDateTimeConverter;
+        public IsoDateTimeConverter DefaultDateTimeConverter => _defaultDateTimeConverter;
         readonly int _popupMarginTop = 5;
 
         public string ExecutionFolder {get { return _executionFolder; }}
@@ -136,6 +138,7 @@ namespace MonkeyJobTool.Entities
         {
             _executionFolder = Application.StartupPath+@"\";
             _executionPath = Application.ExecutablePath;
+            _defaultDateTimeConverter =  new IsoDateTimeConverter { DateTimeFormat = AppConstants.DateTimeFormat };
         }
 
         private void RegisterHotKey(ModifierHookKeys modifierHook, Keys key, HotKeyType hkType)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,15 @@ namespace HelloBotCore.Manager
     {
         private static object _appLocker= new object();
         private static App _instance;
+        private readonly IsoDateTimeConverter _defaultDateTimeConverter;
+        public IsoDateTimeConverter DefaultDateTimeConverter => _defaultDateTimeConverter;
+        public const string DateTimeFormat = "dd-MM-yyyy";
+
+        public App()
+        {
+            _defaultDateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = DateTimeFormat };
+        }
+
         public static App Instance
         {
             get
@@ -43,5 +53,7 @@ namespace HelloBotCore.Manager
         }
 
         public string ExecutionFolderPath => _executionFolderPath;
+
+
     }
 }

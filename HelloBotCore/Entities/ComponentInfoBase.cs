@@ -51,6 +51,8 @@ namespace HelloBotCore.Entities
         {
             serviceData = null;
             var settings = _storageManager.Get<ModuleSettings<T, T2>>(SystemName);
+            if (settings == null)
+                return null;
             serviceData = settings.ServiceData;
             return settings.ModuleData;
         }

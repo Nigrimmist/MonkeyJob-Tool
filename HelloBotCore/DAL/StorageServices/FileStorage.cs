@@ -22,16 +22,13 @@ namespace HelloBotCore.DAL.StorageServices
 
         public FileStorage()
         {
-            _executionFolder = App.Instance.ExecutionFolderPath;
+            _executionFolder = App.Instance.ExecutionFolderPath;            
         }
 
         public void Save(string key, object data)
         {
-            string serializedObject = JsonConvert.SerializeObject(data);
-            if (File.Exists(GetFilePath(key)))
-            {
-                File.WriteAllText(GetFilePath(key), serializedObject);
-            }
+            string serializedObject = JsonConvert.SerializeObject(data);  
+            File.WriteAllText(GetFilePath(key), serializedObject);
         }
 
         public T Read<T>(string key) where T : class
