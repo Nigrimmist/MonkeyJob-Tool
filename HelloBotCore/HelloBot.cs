@@ -42,11 +42,9 @@ namespace HelloBotCore
         private List<ComponentInfoBase> _modules = new List<ComponentInfoBase>();
         private readonly string _moduleDllmask;
         private readonly string _botCommandPrefix;
-        private readonly string _moduleFolderPath;
+        private readonly string _moduleScanPath;
         private readonly int _commandTimeoutSec;
         private readonly Dictionary<Guid, ModuleLocker> _commandDictLocks;
-        private readonly string _settingsFolderAbsolutePath;
-        private readonly string _logsFolderAbsolutePath;
         private Language _currentLanguage = Language.English;
 
         private readonly Dictionary<Guid, BotContextBase> _commandContexts;
@@ -83,34 +81,26 @@ namespace HelloBotCore
         public Func<bool> CanNotifyClient;
         private StorageManager _storage;
 
-        public StorageManager Storage => _storage;
-
         /// <summary>
         /// Bot costructor
         /// </summary>
-        /// <param name="settingsFolderAbsolutePath">folder for module settings, will be created if not exist</param>
         /// <param name="moduleDllmask">File mask for retrieving client command dlls</param>
         /// <param name="botCommandPrefix">Prefix for bot commands. Only messages with that prefix will be handled</param>
-        public HelloBot(Action<string> logTraceFunc,string settingsFolderAbsolutePath, string logsFolderAbsolutePath,double currentUIClientVersion, string moduleDllmask = "*.dll", string botCommandPrefix = "!", string moduleFolderPath = ".")
+        public HelloBot(Action<string> logTraceFunc,double currentUIClientVersion, string moduleDllmask = "*.dll", string botCommandPrefix = "!", string rootFolder = ".")
         {
 
-            App.Instance.Init(logTraceFunc,moduleFolderPath);
+            App.Instance.Init(logTraceFunc, rootFolder);
             App.Instance.LogTrace("Start HelloBot class cctr");
 
-            IDataStorage storageService = new FileStorage(App.Instance.ExecutionFolderPath,App.Instance.DefaultDateTimeConverter);
+            IDataStorage storageService = new FileStorage(App.Instance.ExecutionFolderPath+AppConstants.Names.ModuleSettingsFolderPostFix,App.Instance.DefaultDateTimeConverter);
             _storage = new StorageManager(storageService);
 
             _currentUIClientVersion = currentUIClientVersion;
-            _settingsFolderAbsolutePath = settingsFolderAbsolutePath;
-            _logsFolderAbsolutePath = logsFolderAbsolutePath;
-            if (!Directory.Exists(settingsFolderAbsolutePath))
-                Directory.CreateDirectory(settingsFolderAbsolutePath);
-            if (!Directory.Exists(logsFolderAbsolutePath))
-                Directory.CreateDirectory(logsFolderAbsolutePath);
+            
             
             _moduleDllmask = moduleDllmask;
             _botCommandPrefix = botCommandPrefix;
-            _moduleFolderPath = moduleFolderPath;
+            _moduleScanPath = rootFolder;
             _commandTimeoutSec = 30;
             _commandDictLocks = new Dictionary<Guid, ModuleLocker>();
             _commandContexts = new Dictionary<Guid, BotContextBase>();
@@ -251,7 +241,7 @@ namespace HelloBotCore
         public List<IntegrationClientInfo> LoadIntegrationClients(List<string> enabledClients = null)
         {
             List<IntegrationClientInfo> toReturn = new List<IntegrationClientInfo>();
-            var dlls = Directory.GetFiles(_moduleFolderPath, _moduleDllmask);
+            var dlls = Directory.GetFiles(_moduleScanPath, _moduleDllmask);
             var baseType = typeof(IntegrationClientRegisterBase);
             var settingsAttr = typeof(ModuleSettingsForAttribute);
 
@@ -343,10 +333,10 @@ namespace HelloBotCore
 
         protected virtual List<ModuleInfoBase> LoadModules(List<string> enabledModules, List<string> disabledModules)
         {
-            App.Instance.LogTrace(string.Format("Start LoadModules(). _moduleFolderPath : {0} , {1}", _moduleFolderPath, _moduleDllmask));
+            App.Instance.LogTrace(string.Format("Start LoadModules(). _moduleScanPath : {0} , {1}", _moduleScanPath, _moduleDllmask));
 
             List<ModuleInfoBase> toReturn = new List<ModuleInfoBase>();
-            var dlls = Directory.GetFiles(_moduleFolderPath, _moduleDllmask);
+            var dlls = Directory.GetFiles(_moduleScanPath, _moduleDllmask);
             var i = typeof (ModuleRegisterBase);
             var settingsAttr = typeof (ModuleSettingsForAttribute);
 

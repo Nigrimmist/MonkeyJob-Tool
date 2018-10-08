@@ -54,6 +54,6 @@ namespace HelloBotCore.Manager
 
         public string ExecutionFolderPath => _executionFolderPath;
 
-
+        
     }
 }

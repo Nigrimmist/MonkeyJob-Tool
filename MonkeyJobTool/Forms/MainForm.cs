@@ -312,7 +312,7 @@ namespace MonkeyJobTool.Forms
                     LogManager.Trace("Start InitBot()");
 
                     SetLoading(true);
-                    _bot = new HelloBot(LogManager.Trace,App.Instance.FolderSettingPath, App.Instance.FolderLogPath, AppConstants.AppVersion, botCommandPrefix: "", moduleFolderPath: App.Instance.ExecutionFolder);
+                    _bot = new HelloBot(LogManager.Trace,AppConstants.AppVersion, botCommandPrefix: "", rootFolder: App.Instance.ExecutionFolder);
                     
                     _bot.OnModuleErrorOccured +=BotOnModuleOnModuleErrorOccured;
                     _bot.OnErrorOccured+= BotOnGeneralErrorOccured;

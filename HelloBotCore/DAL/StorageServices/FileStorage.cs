@@ -16,6 +16,8 @@ namespace HelloBotCore.DAL.StorageServices
 
         public FileStorage(string executionFolder, IsoDateTimeConverter isoDateTimeConverter)
         {
+            if (!Directory.Exists(executionFolder))
+                Directory.CreateDirectory(executionFolder);
             _executionFolder = executionFolder;
             _isoDateTimeConverter = isoDateTimeConverter;
         }

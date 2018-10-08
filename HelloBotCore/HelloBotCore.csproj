@@ -54,6 +54,7 @@
     <Compile Include="DAL\StorageServices\FileStorage.cs" />
     <Compile Include="DAL\StorageServices\SqlLiteStorage.cs" />
     <Compile Include="Entities\AnswerInfo.cs" />
+    <Compile Include="Entities\AppConstants.cs" />
     <Compile Include="Entities\ClientSettings.cs" />
     <Compile Include="Entities\ModuleToModuleCommunication.cs" />
     <Compile Include="Entities\BotContextBase.cs" />

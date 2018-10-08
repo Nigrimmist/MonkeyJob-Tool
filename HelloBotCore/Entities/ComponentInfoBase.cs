@@ -17,7 +17,7 @@ namespace HelloBotCore.Entities
 {
     public abstract class ComponentInfoBase
     {
-        private readonly StorageManager _storageManager;
+        private readonly StorageManager _moduleStorageManager;
         public bool IsEnabled { get; set; }
         public Guid Id { get; set; }
         public DescriptionInfo CommandDescription { get; set; }
@@ -32,9 +32,9 @@ namespace HelloBotCore.Entities
         public abstract ModuleType ModuleType { get; }
         public int? InstanceId { get; set; }
         
-        protected ComponentInfoBase(StorageManager storageManager)
+        protected ComponentInfoBase(StorageManager moduleStorageManager)
         {
-            _storageManager = storageManager;
+            _moduleStorageManager = moduleStorageManager;
             Id = Guid.NewGuid();
         }
 
@@ -50,7 +50,7 @@ namespace HelloBotCore.Entities
             where T2 : class
         {
             serviceData = null;
-            var settings = _storageManager.Get<ModuleSettings<T, T2>>(SystemName);
+            var settings = _moduleStorageManager.Get<ModuleSettings<T, T2>>(SystemName);
             if (settings == null)
                 return null;
             serviceData = settings.ServiceData;
@@ -59,18 +59,18 @@ namespace HelloBotCore.Entities
 
         public void DeleteSettings()
         {
-            _storageManager.Delete(SystemName);
+            _moduleStorageManager.Delete(SystemName);
         }
 
         public void SaveSettings<T>(T serializableSettingObject, object settingsAdditionalData=null) where T : class
         {
             var settings = new ModuleSettings<T>(Version, SettingsModuleVersion, serializableSettingObject,settingsAdditionalData);
-            _storageManager.Save(SystemName,settings);
+            _moduleStorageManager.Save(SystemName,settings);
         }
 
         public void SaveServiceData<T>(T serviceData) where T : class
         {
-            var settings = _storageManager.Get<ModuleSettings<object, T>>(SystemName);
+            var settings = _moduleStorageManager.Get<ModuleSettings<object, T>>(SystemName);
             
             if (settings==null)
             {
@@ -101,7 +101,7 @@ namespace HelloBotCore.Entities
             
             Author = author;
 
-            Trace = new ModuleLogStorageInfo(30, SystemName,InstanceId,_storageManager);
+            Trace = new ModuleLogStorageInfo(AppConstants.DefaultModuleTraceCount, SystemName,InstanceId,_moduleStorageManager);
             Trace.Load();
         }
         
