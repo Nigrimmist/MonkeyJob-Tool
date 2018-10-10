@@ -38,19 +38,23 @@ namespace HelloBotCore.Entities
             Id = Guid.NewGuid();
         }
 
-        
-        public T GetSettings<T>() where T : class
+        public ModuleSettings GetSettings() 
         {
-            object additionalData;
-            return GetSettings<T,object>(out additionalData);
+            return _moduleStorageManager.Get<ModuleSettings>(SystemName); 
         }
 
-        public T GetSettings<T, T2>(out T2 serviceData)
-            where T : class
-            where T2 : class
+        public TModuleType GetSettings<TModuleType>() where TModuleType : class
+        {
+            object additionalData;
+            return GetSettings<TModuleType, object>(out additionalData);
+        }
+
+        public TModuleType GetSettings<TModuleType, TServiceType>(out TServiceType serviceData)
+            where TModuleType : class
+            where TServiceType : class
         {
             serviceData = null;
-            var settings = _moduleStorageManager.Get<ModuleSettings<T, T2>>(SystemName);
+            var settings = _moduleStorageManager.Get<ModuleSettings<TModuleType, TServiceType>>(SystemName);
             if (settings == null)
                 return null;
             serviceData = settings.ServiceData;
@@ -62,20 +66,20 @@ namespace HelloBotCore.Entities
             _moduleStorageManager.Delete(SystemName);
         }
 
-        public void SaveSettings<T>(T serializableSettingObject, object settingsAdditionalData=null) where T : class
+        public void SaveSettings<TModuleType>(TModuleType serializableSettingObject, object settingsAdditionalData=null) where TModuleType : class
         {
-            var settings = new ModuleSettings<T>(Version, SettingsModuleVersion, serializableSettingObject,settingsAdditionalData);
+            var settings = new ModuleSettings<TModuleType>(Version, SettingsModuleVersion, serializableSettingObject,settingsAdditionalData);
             _moduleStorageManager.Save(SystemName,settings);
         }
 
-        public void SaveServiceData<T>(T serviceData) where T : class
+        public void SaveServiceData<TServiceType>(TServiceType serviceData) where TServiceType : class
         {
-            var settings = _moduleStorageManager.Get<ModuleSettings<object, T>>(SystemName);
+            var settings = _moduleStorageManager.Get<ModuleSettings<object, TServiceType>>(SystemName);
             
             if (settings==null)
             {
                 //create new raw settings with filled servicedata
-                settings = new ModuleSettings<object,T>(Version, SettingsModuleVersion, new object(), serviceData);
+                settings = new ModuleSettings<object, TServiceType>(Version, SettingsModuleVersion, new object(), serviceData);
             };
 
             SaveSettings(settings.ModuleData, serviceData);

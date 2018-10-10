@@ -33,7 +33,7 @@ namespace MonkeyJobTool.Forms
 
         private void ModuleSettingsForm_Load(object sender, EventArgs e)
         {
-            var ms = Module.GetSettings<ModuleSettings>();
+            var ms = Module.GetSettings();
             object moduleSettings;
             if (ms == null)
             {
@@ -301,7 +301,7 @@ namespace MonkeyJobTool.Forms
         {
             try
             {
-                var ms = Module.GetSettings<ModuleSettings>();
+                var ms = Module.GetSettings();
                 object moduleSettings;
                 
                 if (ms == null)

@@ -899,7 +899,7 @@ namespace HelloBotCore
             {
                 lock (_commandDictLocks[module.Id].SettingsLock)
                 {
-                    var settings = module.GetSettings<ModuleSettings>();
+                    var settings = module.GetSettings();
                     if (settings!=null && settings.SettingsVersion < module.SettingsModuleVersion)
                     {
                         toReturn.Add(module);

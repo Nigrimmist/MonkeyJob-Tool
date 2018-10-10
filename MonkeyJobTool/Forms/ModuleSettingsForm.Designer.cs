@@ -36,9 +36,10 @@
             // 
             this.pnlSettings.AutoScroll = true;
             this.pnlSettings.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.pnlSettings.Location = new System.Drawing.Point(12, 12);
+            this.pnlSettings.Location = new System.Drawing.Point(16, 15);
+            this.pnlSettings.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pnlSettings.Name = "pnlSettings";
-            this.pnlSettings.Size = new System.Drawing.Size(459, 280);
+            this.pnlSettings.Size = new System.Drawing.Size(612, 345);
             this.pnlSettings.TabIndex = 0;
             // 
             // btnSaveConfig
@@ -46,9 +47,10 @@
             this.btnSaveConfig.BackColor = System.Drawing.Color.Moccasin;
             this.btnSaveConfig.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnSaveConfig.ForeColor = System.Drawing.Color.Black;
-            this.btnSaveConfig.Location = new System.Drawing.Point(396, 298);
+            this.btnSaveConfig.Location = new System.Drawing.Point(528, 367);
+            this.btnSaveConfig.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnSaveConfig.Name = "btnSaveConfig";
-            this.btnSaveConfig.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveConfig.Size = new System.Drawing.Size(100, 28);
             this.btnSaveConfig.TabIndex = 6;
             this.btnSaveConfig.Text = "Сохранить";
             this.btnSaveConfig.UseVisualStyleBackColor = false;
@@ -56,14 +58,15 @@
             // 
             // ModuleSettingsForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(483, 328);
+            this.ClientSize = new System.Drawing.Size(644, 404);
             this.Controls.Add(this.btnSaveConfig);
             this.Controls.Add(this.pnlSettings);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "ModuleSettingsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Настройки модуля";

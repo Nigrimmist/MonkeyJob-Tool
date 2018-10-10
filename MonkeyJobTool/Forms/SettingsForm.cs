@@ -482,7 +482,7 @@ namespace MonkeyJobTool.Forms
                     moduleType = "клиенты";
                 }
 
-                MessageBox.Show(string.Format("Внимание!\r\nСледующие {0} изменили свои настройки ввиду новой версии.\r\n\r\nПроверьте пожалуйста, что все ваши настройки верны. Изменённые {0} подсвечены красным цветом.\r\n\r\nДля того, чтобы это сообщение больше не появлялось, зайдите в настройки и пересохраните их.", moduleType), AppConstants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"Внимание!\r\nСледующие {moduleType} изменили свои настройки ввиду новой версии.\r\n\r\nПроверьте пожалуйста, что все ваши настройки верны. Изменённые {moduleType} подсвечены красным цветом.\r\n\r\nДля того, чтобы это сообщение больше не появлялось, зайдите в настройки и пересохраните их.", AppConstants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             gridClients.ClearSelection();
         }

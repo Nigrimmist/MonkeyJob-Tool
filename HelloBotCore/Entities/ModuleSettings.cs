@@ -5,16 +5,16 @@ using System.Text;
 
 namespace HelloBotCore.Entities
 {
-    public class ModuleSettings<T,T2> 
-        where T : class 
-        where T2 : class
+    public class ModuleSettings<TModuleType, TServiceType> 
+        where TModuleType : class 
+        where TServiceType : class
     {
         public double ModuleVersion { get; set; }
-        public T ModuleData { get; set; }
-        public T2 ServiceData { get; set; }
+        public TModuleType ModuleData { get; set; }
+        public TServiceType ServiceData { get; set; }
         public double SettingsVersion { get; set; }
 
-        public ModuleSettings(double moduleVersion,double settingsVersion, T moduleData,T2 serviceData)
+        public ModuleSettings(double moduleVersion,double settingsVersion, TModuleType moduleData, TServiceType serviceData)
         {
             ModuleVersion = moduleVersion;
             ModuleData = moduleData;
@@ -23,16 +23,16 @@ namespace HelloBotCore.Entities
         }
     }
 
-    public class ModuleSettings<T>
-        where T : class
+    public class ModuleSettings<TModuleType>
+        where TModuleType : class
         
     {
         public double ModuleVersion { get; set; }
-        public T ModuleData { get; set; }
+        public TModuleType ModuleData { get; set; }
         public object ServiceData { get; set; }
         public double SettingsVersion { get; set; }
 
-        public ModuleSettings(double moduleVersion, double settingsVersion, T moduleData, object serviceData)
+        public ModuleSettings(double moduleVersion, double settingsVersion, TModuleType moduleData, object serviceData)
         {
             ModuleVersion = moduleVersion;
             ModuleData = moduleData;
