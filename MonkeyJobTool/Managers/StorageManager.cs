@@ -20,7 +20,7 @@ namespace MonkeyJobTool.Managers
 
         public T Get<T>(string key) where T : class
         {
-            return _botStorageStrategy.Read<T>(key);
+            return _botStorageStrategy.Get<T>(key);
         }
 
         public bool Exist(string key)

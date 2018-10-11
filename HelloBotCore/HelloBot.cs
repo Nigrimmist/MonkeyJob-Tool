@@ -92,7 +92,7 @@ namespace HelloBotCore
             App.Instance.Init(logTraceFunc, rootFolder);
             App.Instance.LogTrace("Start HelloBot class cctr");
 
-            IDataStorage storageService = new FileStorage(App.Instance.ExecutionFolderPath+AppConstants.Names.ModuleSettingsFolderPostFix,App.Instance.DefaultDateTimeConverter);
+            IDataStorage storageService = new SqlLiteStorage(App.Instance.ExecutionFolderPath,App.Instance.DefaultDateTimeConverter);
             _storage = new StorageManager(storageService);
 
             _currentUIClientVersion = currentUIClientVersion;

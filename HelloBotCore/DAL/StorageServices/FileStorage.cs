@@ -33,7 +33,7 @@ namespace HelloBotCore.DAL.StorageServices
             File.WriteAllText(GetFilePath(key), serializedObject);
         }
 
-        public T Read<T>(string key) where T : class
+        public T Get<T>(string key) where T : class
         {
             if (!File.Exists(GetFilePath(key)))
                 return  null;

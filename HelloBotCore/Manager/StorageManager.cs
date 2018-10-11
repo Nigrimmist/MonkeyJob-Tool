@@ -23,7 +23,7 @@ namespace HelloBotCore.Manager
 
         public T Get<T>(string key) where T : class
         {
-            return _storageService.Read<T>(key);
+            return _storageService.Get<T>(key);
         }
 
         public void Delete(string key)

@@ -15,6 +15,7 @@ namespace HelloBotCore.Entities
         public static class Names
         {
             public static string ModuleSettingsFolderPostFix = "Settings\\";
+            public static string DbName = "mj.db";
         }
     }
 }
