@@ -42,7 +42,7 @@ namespace MonkeyJobTool.Managers
                         _systemInfo = CollectSystemInfo();
                     }
 
-                    string errorInfo = string.Format("{0} : \r\n {1} \r\n {2}\r\n App version : {3}\r\n BotCore version : {4}", message, ex, _systemInfo, AppConstants.AppVersion, App.Instance.Bot!=null ? App.Instance.Bot.Version.ToString():"null");
+                    string errorInfo = $"{message} : \r\n {ex} \r\n {_systemInfo}\r\n App version : {AppConstants.AppVersion}\r\n BotCore version : {(App.Instance.Bot != null ? App.Instance.Bot.Version.ToString() : "null")}";
                     if(App.Instance.AppConf.DebugModeEnabled)
                         _log.Warn(errorInfo);
                     else
