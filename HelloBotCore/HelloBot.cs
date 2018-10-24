@@ -39,7 +39,7 @@ namespace HelloBotCore
         public readonly double Version = 0.6;
         private const int RunTraceSaveEveryMin = 5;
 
-        private List<ComponentInfoBase> _modules = new List<ComponentInfoBase>();
+        private List<ModuleInfoBase> _modules = new List<ModuleInfoBase>();
         private readonly string _moduleDllmask;
         private readonly string _botCommandPrefix;
         private readonly string _moduleScanPath;
@@ -869,7 +869,7 @@ namespace HelloBotCore
             get { return _modules.OfType<ModuleTrayInfo>(); }
         }
 
-        public List<ComponentInfoBase> Modules
+        public List<ModuleInfoBase> Modules
         {
             get { return _modules; }
         }
@@ -882,20 +882,20 @@ namespace HelloBotCore
 
         public void DisableModule(string moduleSystemName)
         {
-            Modules.Union(_integrationClients).Union(_integrationClients.SelectMany(x=>x.Instances)).Single(x => x.SystemName == moduleSystemName).IsEnabled = false;
+            Modules.Union(_integrationClients.Cast<ComponentInfoBase>()).Union(_integrationClients.SelectMany(x=>x.Instances)).Single(x => x.SystemName == moduleSystemName).IsEnabled = false;
         }
 
         public void EnableModule(string moduleSystemName)
         {
-            Modules.Union(_integrationClients).Union(_integrationClients.SelectMany(x=>x.Instances)).Single(x => x.SystemName == moduleSystemName).IsEnabled = true;
+            Modules.Union(_integrationClients.Cast<ComponentInfoBase>()).Union(_integrationClients.SelectMany(x=>x.Instances)).Single(x => x.SystemName == moduleSystemName).IsEnabled = true;
         }
 
-        public List<ComponentInfoBase> GetIncompatibleSettingModules()
+        public List<ComponentInfoBase> GetIncompatibleSettingComponents()
         {
-            App.Instance.LogTrace("Start GetIncompatibleSettingModules()");
+            App.Instance.LogTrace("Start GetIncompatibleSettingComponents()");
 
             List<ComponentInfoBase> toReturn = new List<ComponentInfoBase>();
-            foreach (ComponentInfoBase module in Modules.Union(IntegrationClients).Select(x => (ComponentInfoBase)x).Union(IntegrationClients).Where(x => x.SettingsType != null))
+            foreach (ComponentInfoBase module in Modules.Union(IntegrationClients.Cast<ComponentInfoBase>()).Select(x => x).Where(x => x.SettingsType != null))
             {
                 lock (_commandDictLocks[module.Id].SettingsLock)
                 {
@@ -907,7 +907,7 @@ namespace HelloBotCore
 
                 }
             }
-            App.Instance.LogTrace($"End GetIncompatibleSettingModules(). toReturn.Count : {toReturn.Count}");
+            App.Instance.LogTrace($"End GetIncompatibleSettingComponents(). toReturn.Count : {toReturn.Count}");
 
             return toReturn;
         }

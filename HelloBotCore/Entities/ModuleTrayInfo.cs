@@ -61,5 +61,10 @@ namespace HelloBotCore.Entities
 
             return "Запускается раз в " + runEveryStr;
         }
+
+        public override string GetTypeDescription()
+        {
+            return "Трей";
+        }
     }
 }

@@ -37,33 +37,11 @@ namespace HelloBotCore.Entities
             {
                 toReturn += moduleDescription + Environment.NewLine + Environment.NewLine;
             }
-
-            
+                        
             return toReturn + base.ToString(includingAuthorInfo);
         }
 
-        public override string GetTypeDescription()
-        {
-            string toReturn;
-            switch (ModuleType)
-            {
-                case ModuleType.Handler:
-                    toReturn = "Команда";
-                    break;
-                case ModuleType.Event:
-                    toReturn = "Интервальный";
-                    break;
-                case ModuleType.Tray:
-                    toReturn = "Трей";
-                    break;
-                case ModuleType.IntegrationClient:
-                    toReturn = "Клиент";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-            return toReturn;
-        }
+        public abstract string GetTypeDescription();
     }
 
 

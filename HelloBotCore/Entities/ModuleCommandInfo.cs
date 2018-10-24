@@ -49,5 +49,10 @@ namespace HelloBotCore.Entities
         {
             return "Варианты команды : "+Environment.NewLine+string.Join(Environment.NewLine,OriginalAliases.ToArray());
         }
+
+        public override string GetTypeDescription()
+        {
+            return "Команда"; 
+        }
     }
 }

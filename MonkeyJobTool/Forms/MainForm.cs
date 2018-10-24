@@ -93,14 +93,14 @@ namespace MonkeyJobTool.Forms
 
                 InitBot((continueClbck) =>
                 {
-                    var changedSettingModules = _bot.GetIncompatibleSettingModules();
-                    LogManager.Trace("changed module count : " + changedSettingModules.Count);
+                    var changedSettingComponents = _bot.GetIncompatibleSettingComponents();
+                    LogManager.Trace("changed component count : " + changedSettingComponents.Count);
                     this.Invoke(new MethodInvoker(delegate
                     {
-                        if (_isFirstRun || changedSettingModules.Any())
+                        if (_isFirstRun || changedSettingComponents.Any())
                         {
                             var settingForm = new SettingsForm();
-                            settingForm.ChangedModules = changedSettingModules;
+                            settingForm.ChangedComponents = changedSettingComponents;
                             settingForm.Closed += (s, ev) =>
                             {
                                 Init();

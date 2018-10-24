@@ -29,15 +29,7 @@ namespace HelloBotCore.Entities
             get { return ModuleType.IntegrationClient; }
         }
 
-        public override string ToString(bool includingAuthorInfo = true)
-        {
-            return base.ToString(includingAuthorInfo);
-        }
-
-        public override string GetTypeDescription()
-        {
-            return "";
-        }
+              
 
         public override void SendMessageToClient(Guid token, CommunicationClientMessage message)
         {

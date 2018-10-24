@@ -21,12 +21,12 @@ namespace MonkeyJobTool.Forms
     public partial class SettingsForm : Form
     {
         private List<CommandReplaceBlock> _replaceBlocks = new List<CommandReplaceBlock>();
-        public List<ComponentInfoBase> ChangedModules { get; set; }
+        public List<ComponentInfoBase> ChangedComponents { get; set; }
 
 
         public SettingsForm()
         {
-            ChangedModules = new List<ComponentInfoBase>();
+            ChangedComponents = new List<ComponentInfoBase>();
             InitializeComponent();
         }
         
@@ -267,18 +267,19 @@ namespace MonkeyJobTool.Forms
         private void DatabindGrid(SettingGridType gridType)
         {
             var items = gridType == SettingGridType.Modules ? App.Instance.Bot.Modules : App.Instance.Bot.IntegrationClients.Select(x=>(ComponentInfoBase)x);
-            var orderedItems = items.OrderByDescending(x => ChangedModules.Contains(x)).ThenByDescending(x => x.ModuleType).ThenBy(x => x.SystemName).ToList();
+            var orderedItems = items.OrderByDescending(x => ChangedComponents.Contains(x)).ThenByDescending(x => x.ModuleType).ThenBy(x => x.SystemName).ToList();
 
             foreach (var mod in orderedItems)
             {
                 Color? rowColor = null;
-                if (ChangedModules.Any(x => x.Id == mod.Id))
+                if (ChangedComponents.Any(x => x.Id == mod.Id))
                 {
                     rowColor = Color.PaleVioletRed;
                 }
-                    
-                
-                AddModuleInfoToGrid(gridType,mod.GetModuleName(), mod.GetTypeDescription(), mod.IsEnabled, mod.SystemName, mod.SettingsType != null,rowColor);
+                string typeDescr = "";
+                if (mod is ModuleInfoBase)
+                    typeDescr = (mod as ModuleInfoBase).GetTypeDescription();
+                AddModuleInfoToGrid(gridType,mod.GetModuleName(), typeDescr, mod.IsEnabled, mod.SystemName, mod.SettingsType != null,rowColor);
             }
            
         }
@@ -468,10 +469,10 @@ namespace MonkeyJobTool.Forms
             TCSettings.SelectedTab = TPClients;
             gridClients.ClearSelection();
             _gridRowsInited = true;
-            if (ChangedModules.Any())
+            if (ChangedComponents.Any())
             {
                 string moduleType;
-                if (ChangedModules.Any(x => x.ModuleType != ModuleType.IntegrationClient))
+                if (ChangedComponents.Any(x => x.ModuleType != ModuleType.IntegrationClient))
                 {
                     TCSettings.SelectedTab = TPModuleSettings;
                     moduleType = "модули";

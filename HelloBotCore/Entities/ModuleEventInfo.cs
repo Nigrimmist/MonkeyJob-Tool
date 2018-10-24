@@ -39,9 +39,7 @@ namespace HelloBotCore.Entities
         public void CallEvent(Guid commandToken)
         {
             EventFireCallback(commandToken);
-        }
-
-        
+        }        
 
         public override ModuleType ModuleType
         {
@@ -51,6 +49,11 @@ namespace HelloBotCore.Entities
         public override string GetDescriptionText()
         {
             return "Запускается раз в " + EventRunEvery.Humanize();
+        }
+
+        public override string GetTypeDescription()
+        {
+            return "Интервальный";
         }
     }
 }

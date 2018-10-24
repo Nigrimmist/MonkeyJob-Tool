@@ -125,9 +125,7 @@ namespace HelloBotCore.Entities
                     toReturn += "Email для связи : " + Author.ContactEmail + Environment.NewLine + Environment.NewLine;
             }
             return toReturn;
-        }
-
-        public abstract string GetTypeDescription();
+        }       
 
        
     }
