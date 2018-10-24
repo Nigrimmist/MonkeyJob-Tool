@@ -25,7 +25,6 @@ namespace HelloBotCore.DAL.StorageServices
             using (SQLiteContext dataContext = CreateContext())
             {
                 dataContext.Database.CreateIfNotExists();
-                //dataContext.Database.Initialize(false);
             }
 
         }
