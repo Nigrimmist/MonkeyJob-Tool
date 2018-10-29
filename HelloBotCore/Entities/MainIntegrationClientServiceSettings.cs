@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HelloBotCore.Entities
 {
-    public class ClientSettings
+    public class MainIntegrationClientServiceSettings
     {
         public ClientInstanceToModuleCommunication ClientInstanceToModuleCommunication { get; set; }
 
@@ -17,7 +17,7 @@ namespace HelloBotCore.Entities
         /// </summary>
         public IDictionary<string, IDictionary<string, List<string>>> ModuleMessageHashes { get; set; }
 
-        public ClientSettings()
+        public MainIntegrationClientServiceSettings()
         {
             ModuleMessageHashes = new Dictionary<string, IDictionary<string, List<string>>>();
         }

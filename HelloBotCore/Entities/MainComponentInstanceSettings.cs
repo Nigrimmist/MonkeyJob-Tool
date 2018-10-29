@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace HelloBotCore.Entities
 {
-    public class IntegrationClientSettings
+    public class MainComponentInstanceSettings
     {
         public List<int> Instances { get; set; }
         
-        public IntegrationClientSettings()
+        public MainComponentInstanceSettings()
         {
             Instances = new List<int>();
         }

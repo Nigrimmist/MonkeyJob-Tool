@@ -25,8 +25,9 @@ namespace HelloBotCore.Entities
 
         public Icon TrayIcon { get; set; }
 
-        public void Init(string dllName, ModuleTrayBase trayModuleBase, IModuleClientHandler moduleClientHandler, AuthorInfo author)
+        public override void Init(string dllName, ComponentBase rootComponent, IModuleClientHandler moduleClientHandler, AuthorInfo author)
         {
+            ModuleTrayBase trayModuleBase = rootComponent as ModuleTrayBase;
             EventFireCallback = trayModuleBase.OnFire;
             EventRunEvery = trayModuleBase.RunEvery;
             CommandDescription = new DescriptionInfo() { Description = trayModuleBase.ModuleDescription };

@@ -24,16 +24,17 @@ namespace HelloBotCore.Entities
         public Color? BodyBackgroundColor { get; set; }
         public Color? HeaderBackgroundColor { get; set; }
         
-        public void Init(string dllName, ModuleEventBase eventModuleBase, IModuleClientHandler moduleClientHandler,AuthorInfo author)
+        public override void Init(string dllName, ComponentBase rootComponent, IModuleClientHandler moduleClientHandler,AuthorInfo author)
         {
-            EventFireCallback = eventModuleBase.OnFire;
-            EventRunEvery = eventModuleBase.RunEvery;
-            CommandDescription = new DescriptionInfo() {Description = eventModuleBase.ModuleDescription};
-            base.Init(dllName, eventModuleBase, author);
-            BodyBackgroundColor = eventModuleBase.BodyBackgroundColor;
-            HeaderBackgroundColor = eventModuleBase.HeaderBackGroundColor;
+            var rootModule = rootComponent as ModuleEventBase;
+            EventFireCallback = rootModule.OnFire;
+            EventRunEvery = rootModule.RunEvery;
+            CommandDescription = new DescriptionInfo() {Description = rootModule.ModuleDescription};
+            base.Init(dllName, rootModule, author);
+            BodyBackgroundColor = rootModule.BodyBackgroundColor;
+            HeaderBackgroundColor = rootModule.HeaderBackGroundColor;
             IClient client = new ModuleToClientAdapter(moduleClientHandler, this);
-            eventModuleBase.Init(client);
+            rootModule.Init(client);
         }
 
         public void CallEvent(Guid commandToken)
@@ -55,5 +56,7 @@ namespace HelloBotCore.Entities
         {
             return "Интервальный";
         }
+
+       
     }
 }

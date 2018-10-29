@@ -287,16 +287,16 @@ namespace HelloBotCore
                         var mainModuleSettings = mainModule.GetSettings();
                         if (mainModuleSettings == null)
                         {
-                            mainModuleSettings = new IntegrationClientSettings();
+                            mainModuleSettings = new MainComponentInstanceSettings();
                             mainModule.SaveSettings(mainModuleSettings);
                         }
                         mainModule.CreateNewInstanceFunc = getNewInstance;
                         for (var i = 0; i < mainModuleSettings.Instances.Count; i++)
                         {
                             var instId = mainModuleSettings.Instances[i];
-                            var inst = getNewInstance(instId);
-                            ClientSettings clientServiceData;
-                            inst.GetSettings<object, ClientSettings>(out clientServiceData);
+                            var inst = mainModule.CreateNewInstanceFunc(instId);
+                            MainIntegrationClientServiceSettings clientServiceData;
+                            inst.GetSettings<object, MainIntegrationClientServiceSettings>(out clientServiceData);
                             if (clientServiceData!=null)
                                 inst.InstanceCommunication = clientServiceData.ClientInstanceToModuleCommunication;
                             mainModule.Instances.Add(inst);
@@ -365,47 +365,69 @@ namespace HelloBotCore
                     var modules = ((ModuleRegisterBase) obj).GetModules().Select(module =>
                     {
                         var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == module.GetType());
-                        var tModule = new ModuleCommandInfo(_storage);
-                        _commandDictLocks.Add(tModule.Id, new ModuleLocker());
-                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), module, this, ((ModuleRegisterBase) obj).AuthorInfo);
-                        tModule.IsEnabled = !disabledModules.Contains(tModule.SystemName);
-                        if (settingClass != null)
-                            tModule.SettingsType = settingClass.moduleSettingsClass;
-                        return (ModuleInfoBase) tModule;
+                        return FillMainComponentObj(module, (ModuleRegisterBase)obj, settingClass?.moduleSettingsClass, fi, enabledModules, x => new ModuleCommandInfo(_storage));                        
                     }).ToList();
 
                     var events = ((ModuleRegisterBase) obj).GetEvents().Select(ev =>
                     {
                         var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == ev.GetType());
-                        var tModule = new ModuleEventInfo(_storage);
-                        _commandDictLocks.Add(tModule.Id, new ModuleLocker());
-                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this, ((ModuleRegisterBase) obj).AuthorInfo);
-                        tModule.IsEnabled = enabledModules.Contains(tModule.SystemName);
-                        if (settingClass != null)
-                            tModule.SettingsType = settingClass.moduleSettingsClass;
-                        return (ModuleInfoBase) tModule;
+                        return FillMainComponentObj(ev, (ModuleRegisterBase)obj, settingClass?.moduleSettingsClass, fi, enabledModules, x => new ModuleEventInfo(_storage));
                     }).ToList();
 
-                    var trayModules = ((ModuleRegisterBase) obj).GetTrayModules().Select(ev =>
+                    var trayModules = ((ModuleRegisterBase) obj).GetTrayModules().Select(tr =>
                     {
-                        var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == ev.GetType());
-                        var tModule = new ModuleTrayInfo(_storage);
-                        _commandDictLocks.Add(tModule.Id, new ModuleLocker());
-                        tModule.Init(Path.GetFileNameWithoutExtension(fi.Name), ev, this, ((ModuleRegisterBase) obj).AuthorInfo);
-                        tModule.IsEnabled = enabledModules.Contains(tModule.SystemName);
-                        if (settingClass != null)
-                            tModule.SettingsType = settingClass.moduleSettingsClass;
-                        return (ModuleInfoBase) tModule;
+                        var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == tr.GetType());
+                        return FillMainComponentObj(tr, (ModuleRegisterBase)obj, settingClass?.moduleSettingsClass, fi, enabledModules, x => new ModuleTrayInfo(_storage));
                     }).ToList();
+
+                    
 
                     toReturn.AddRange(modules);
                     toReturn.AddRange(events);
                     toReturn.AddRange(trayModules);
+
+                    toReturn = toReturn.Select(mainComponent => {
+                        var mainModuleSettings = mainComponent.GetSettings();
+                        if (mainModuleSettings == null)
+                        {
+                            mainModuleSettings = new MainComponentInstanceSettings();
+                            mainComponent.SaveSettings(mainModuleSettings);
+                        }
+
+                        foreach (var instId in mainModuleSettings.Instances)
+                        {
+                            var inst = mainComponent.CreateNewInstanceFunc(instId);                            
+                            mainComponent.Instances.Add(inst);
+                        }
+                        return mainComponent;
+                    }).ToList();
                 }
             }
             App.Instance.LogTrace("End LoadModules()");
 
             return toReturn;
+        }
+
+        private ModuleInfoBase FillMainComponentObj<T>(T module, ModuleRegisterBase moduleRegister, Type componentSettingsType, FileInfo fi, List<string> enabledModules, Func<StorageManager,ModuleInfoBase> newInstanceFunc) where T : ComponentBase
+        {
+            var getNewInstance = new Func<int?, ModuleInfoBase>((instId) =>
+            {
+                var lModule = newInstanceFunc(_storage);
+                _commandDictLocks.Add(lModule.Id, new ModuleLocker());
+                lModule.InstanceId = instId;
+                var newModuleInstance = (ModuleCommandBase)Activator.CreateInstance(module.GetType());
+                lModule.Init(Path.GetFileNameWithoutExtension(fi.Name), newModuleInstance, this, moduleRegister.AuthorInfo);
+                lModule.IsEnabled = enabledModules.Contains(lModule.SystemName);
+
+                if (componentSettingsType != null)
+                    lModule.SettingsType = componentSettingsType;                
+
+                return lModule;
+            });
+
+            var mainModule = getNewInstance(null);
+            mainModule.CreateNewInstanceFunc = getNewInstance;
+            return (ModuleInfoBase)mainModule;             
         }
 
         public bool HandleMessage(string incomingMessage, ClientCommandContext clientCommandContext, bool runWithTimeout)
@@ -623,9 +645,9 @@ namespace HelloBotCore
 
                     foreach (var client in enabledIntegrationClients)
                     {
-                        ClientSettings settings;
-                        client.GetSettings<object, ClientSettings>(out settings);
-                        if (settings == null) settings = new ClientSettings();
+                        MainIntegrationClientServiceSettings settings;
+                        client.GetSettings<object, MainIntegrationClientServiceSettings>(out settings);
+                        if (settings == null) settings = new MainIntegrationClientServiceSettings();
                         int msgHash;
                         string hashGroup=string.Empty;
                         if (uniqueMsgKey == null)

@@ -322,7 +322,7 @@ namespace MonkeyJobTool.Forms
                 var serviceData = ms?.ServiceData;
 
                 if (Module.ModuleType == ModuleType.IntegrationClient)
-                    if (serviceData == null) serviceData = new ClientSettings();
+                    if (serviceData == null) serviceData = new HelloBotCore.Entities.MainIntegrationClientServiceSettings();
 
                 ms = new ModuleSettings(Module.Version, Module.SettingsModuleVersion, FillObjectFromUI("", moduleSettings), serviceData);
 

@@ -73,7 +73,8 @@
     <Compile Include="DAL\StorageServices\SqlLiteStorage.cs" />
     <Compile Include="Entities\AnswerInfo.cs" />
     <Compile Include="Entities\AppConstants.cs" />
-    <Compile Include="Entities\ClientSettings.cs" />
+    <Compile Include="Entities\MainComponentInstanceSettings.cs" />
+    <Compile Include="Entities\MainIntegrationClientServiceSettings.cs" />
     <Compile Include="Entities\ModuleToModuleCommunication.cs" />
     <Compile Include="Entities\BotContextBase.cs" />
     <Compile Include="Entities\BotTrayModuleContext.cs" />
@@ -81,7 +82,6 @@
     <Compile Include="Entities\CommandArgumentSuggestionInfo.cs" />
     <Compile Include="Entities\IntegrationClientBase.cs" />
     <Compile Include="Entities\IntegrationClientInfo.cs" />
-    <Compile Include="Entities\IntegrationClientSettings.cs" />
     <Compile Include="Entities\LogMessage.cs" />
     <Compile Include="Entities\ComponentInfoBase.cs" />
     <Compile Include="Entities\ModuleInfoBase.cs" />

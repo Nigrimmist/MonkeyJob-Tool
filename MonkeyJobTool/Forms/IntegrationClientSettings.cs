@@ -86,9 +86,9 @@ namespace MonkeyJobTool.Forms
             commForm.OnSave += data =>
             {
                 client.InstanceCommunication = data;
-                ClientSettings serviceData;
-                client.GetSettings<object, ClientSettings>(out serviceData);
-                if (serviceData == null) serviceData = new ClientSettings();
+                HelloBotCore.Entities.MainIntegrationClientServiceSettings serviceData;
+                client.GetSettings<object, HelloBotCore.Entities.MainIntegrationClientServiceSettings>(out serviceData);
+                if (serviceData == null) serviceData = new HelloBotCore.Entities.MainIntegrationClientServiceSettings();
                 serviceData.ClientInstanceToModuleCommunication = data;
                 client.SaveServiceData(serviceData);
             };

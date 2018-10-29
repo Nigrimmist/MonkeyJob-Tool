@@ -25,8 +25,9 @@ namespace HelloBotCore.Entities
             OriginalAliases = new List<string>();
         }
 
-        public void Init(string dllName,ModuleCommandBase commandModuleBase, IModuleClientHandler moduleClientHandler, AuthorInfo author)
+        public override void Init(string dllName,ComponentBase rootComponent, IModuleClientHandler moduleClientHandler, AuthorInfo author)
         {
+            var commandModuleBase = rootComponent as ModuleCommandBase;
             HandleMessage = commandModuleBase.HandleMessage;
             base.Init(dllName, commandModuleBase, author);
             BodyBackgroundColor = commandModuleBase.BodyBackgroundColor;

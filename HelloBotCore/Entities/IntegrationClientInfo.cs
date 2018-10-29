@@ -49,9 +49,9 @@ namespace HelloBotCore.Entities
            DeleteSettings();
         }
 
-        public IntegrationClientSettings GetSettings()
+        public new MainComponentInstanceSettings GetSettings()
         {
-            return GetSettings<IntegrationClientSettings>();
+            return GetSettings<MainComponentInstanceSettings>();
         }
     }
 }
