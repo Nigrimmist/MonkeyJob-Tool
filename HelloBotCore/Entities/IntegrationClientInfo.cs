@@ -16,12 +16,10 @@ namespace HelloBotCore.Entities
 
         public Func<int?, IntegrationClientInfo> CreateNewInstanceFunc { get; set; }
 
-
-        public List<IntegrationClientBase> Instances { get; set; }
+         
 
         public IntegrationClientInfo(StorageManager storageManager) : base(storageManager)
         {
-            Instances = new List<IntegrationClientBase>();
         }
         
         public override ModuleType ModuleType
@@ -52,6 +50,11 @@ namespace HelloBotCore.Entities
         public new MainComponentInstanceSettings GetSettings()
         {
             return GetSettings<MainComponentInstanceSettings>();
+        }
+
+        public override string GetTypeDescription()
+        {
+            return "Клиент";
         }
     }
 }

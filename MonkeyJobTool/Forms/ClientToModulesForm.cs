@@ -72,7 +72,7 @@ namespace MonkeyJobTool.Forms
 
         private void InitModuleLists()
         {
-            lstAvailableModules.DataSource = App.Instance.Bot.Modules.Select(x => new
+            lstAvailableModules.DataSource = App.Instance.Bot.Modules.SelectMany(x=>x.Instances).Select(x => new
             {
                 Name = x.GetModuleName()+" ("+x.GetTypeDescription()+")",
                 x.Id,x.SystemName

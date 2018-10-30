@@ -22,9 +22,7 @@ namespace HelloBotCore.Entities
             set { _instanceCommunication = value; }
         }
 
-        public abstract void SendMessageToClient(Guid token, CommunicationClientMessage message);
-
-        public abstract void Dispose();
+        public abstract void SendMessageToClient(Guid token, CommunicationClientMessage message);       
 
     }
 }

@@ -169,47 +169,48 @@ namespace HelloBotCore
 
         private void RunTrayModuleTimers()
         {
-            foreach (var tm in TrayModules)
-            {
-                var tTm = tm;
-                new Thread(() =>
+                foreach (var trayInstance in TrayModules.SelectMany(x=>x.Instances).Cast<ModuleTrayInfo>())
                 {
+                    var tTi = trayInstance;
 
-                    Guid commandToken = Guid.NewGuid();
-                    AddNewCommandContext(commandToken, new BotTrayModuleContext()
+                    new Thread(() =>
                     {
-                        ModuleType = ModuleType.Tray,
-                        ModuleId = tTm.Id,
-                        TrayIcon = tTm.TrayIcon,
-                        CommandName = tTm.GetModuleName(),
-                    });
-                    if (tTm.IsEnabled)
-                    {
-                        if (OnTrayIconSetupRequired != null)
-                            OnTrayIconSetupRequired(tTm.Id, tTm.TrayIcon, tTm.GetModuleName());
-                    }
-                    while (true)
-                    {
-                        try
+
+                        Guid commandToken = Guid.NewGuid();
+                        AddNewCommandContext(commandToken, new BotTrayModuleContext()
                         {
-                            if (tTm.IsEnabled)
-                            {
-                                tTm.CallEvent(commandToken);
-                            }
-                        }
-                        catch (Exception ex)
+                            ModuleType = ModuleType.Tray,
+                            ModuleId = tTi.Id,
+                            TrayIcon = tTi.TrayIcon,
+                            CommandName = tTi.GetModuleName(),
+                        });
+                        if (tTi.IsEnabled)
                         {
-                            if (OnModuleErrorOccured != null)
+                            if (OnTrayIconSetupRequired != null)
+                                OnTrayIconSetupRequired(tTi.Id, tTi.TrayIcon, tTi.GetModuleName());
+                        }
+                        while (true)
+                        {
+                            try
                             {
-                                OnModuleErrorOccured(ex, tTm);
+                                if (tTi.IsEnabled)
+                                {
+                                    tTi.CallEvent(commandToken);
+                                }
                             }
-                            Thread.Sleep(TimeSpan.FromSeconds(30));
+                            catch (Exception ex)
+                            {
+                                if (OnModuleErrorOccured != null)
+                                {
+                                    OnModuleErrorOccured(ex, tTi);
+                                }
+                                Thread.Sleep(TimeSpan.FromSeconds(30));
+                            }
+
+                            Thread.Sleep(tTi.EventRunEvery);
                         }
 
-                        Thread.Sleep(tTm.EventRunEvery);
-                    }
-
-                }).Start();
+                    }).Start();
             }
         }
 
@@ -380,17 +381,12 @@ namespace HelloBotCore
                         return FillMainComponentObj(tr, (ModuleRegisterBase)obj, settingClass?.moduleSettingsClass, fi, enabledModules, x => new ModuleTrayInfo(_storage));
                     }).ToList();
 
-                    
-
-                    toReturn.AddRange(modules);
-                    toReturn.AddRange(events);
-                    toReturn.AddRange(trayModules);
-
-                    toReturn = toReturn.Select(mainComponent => {
+                    toReturn.AddRange(modules.Union(events).Union(trayModules).Select(mainComponent => {
                         var mainModuleSettings = mainComponent.GetSettings();
-                        if (mainModuleSettings == null)
+                        if (mainModuleSettings == null || mainModuleSettings.Instances.Count==0) // || settings of main module was inited from base module, reset it and override
                         {
                             mainModuleSettings = new MainComponentInstanceSettings();
+                            mainModuleSettings.Instances.Add(1);//each main module must have at least one child module
                             mainComponent.SaveSettings(mainModuleSettings);
                         }
 
@@ -400,7 +396,7 @@ namespace HelloBotCore
                             mainComponent.Instances.Add(inst);
                         }
                         return mainComponent;
-                    }).ToList();
+                    }).ToList());
                 }
             }
             App.Instance.LogTrace("End LoadModules()");
@@ -415,7 +411,7 @@ namespace HelloBotCore
                 var lModule = newInstanceFunc(_storage);
                 _commandDictLocks.Add(lModule.Id, new ModuleLocker());
                 lModule.InstanceId = instId;
-                var newModuleInstance = (ModuleCommandBase)Activator.CreateInstance(module.GetType());
+                var newModuleInstance = (ComponentBase)Activator.CreateInstance(module.GetType());
                 lModule.Init(Path.GetFileNameWithoutExtension(fi.Name), newModuleInstance, this, moduleRegister.AuthorInfo);
                 lModule.IsEnabled = enabledModules.Contains(lModule.SystemName);
 
@@ -637,7 +633,7 @@ namespace HelloBotCore
                     return;
                 } 
                
-                var enabledIntegrationClients = IntegrationClients.Where(x => x.IsEnabled).SelectMany(x => x.Instances.Where(y=>y.IsEnabled)).Where(x=>x.InstanceCommunication.IsEnabledFor(moduleInfo.SystemName,moduleInfo.ModuleType)).ToList();
+                var enabledIntegrationClients = IntegrationClients.Where(x => x.IsEnabled).SelectMany(x => x.Instances.Cast<IntegrationClientInfo>().Where(y=>y.IsEnabled)).Where(x=>x.InstanceCommunication.IsEnabledFor(moduleInfo.SystemName,moduleInfo.ModuleType)).ToList();
                 
                 if (enabledIntegrationClients.Any() && !useBaseClient)
                 {
@@ -902,14 +898,19 @@ namespace HelloBotCore
         }
 
 
-        public void DisableModule(string moduleSystemName)
+        public void DisableModule(string moduleSystemName/*, out List<string> disabledInstancesSystemNames*/)
         {
-            Modules.Union(_integrationClients.Cast<ComponentInfoBase>()).Union(_integrationClients.SelectMany(x=>x.Instances)).Single(x => x.SystemName == moduleSystemName).IsEnabled = false;
+            var found = Modules.Union(Modules.SelectMany(x=>x.Instances).Union(_integrationClients.Cast<ComponentInfoBase>()).Union(_integrationClients.SelectMany(x=>x.Instances))).Single(x => x.SystemName == moduleSystemName);
+            found.IsEnabled = false;
+            //if (found.IsMainComponent)
+            //{
+            //    foreach(var ComponentInfoBase)
+            //}
         }
 
         public void EnableModule(string moduleSystemName)
         {
-            Modules.Union(_integrationClients.Cast<ComponentInfoBase>()).Union(_integrationClients.SelectMany(x=>x.Instances)).Single(x => x.SystemName == moduleSystemName).IsEnabled = true;
+            Modules.SelectMany(x => x.Instances).Union(_integrationClients.Cast<ComponentInfoBase>()).Union(_integrationClients.SelectMany(x=>x.Instances)).Single(x => x.SystemName == moduleSystemName).IsEnabled = true;
         }
 
         public List<ComponentInfoBase> GetIncompatibleSettingComponents()
@@ -945,7 +946,7 @@ namespace HelloBotCore
                 Thread.Sleep(RunTraceSaveEveryMin*1000*60);
                 try
                 {
-                    foreach (var module in Modules)
+                    foreach (var module in Modules.SelectMany(x=>x.Instances))
                     {
                         lock (_commandDictLocks[module.Id].LogTraceLock)
                         {

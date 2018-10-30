@@ -18,7 +18,7 @@ namespace HelloBotCore.Entities
     public abstract class ComponentInfoBase
     {
         private readonly StorageManager _moduleStorageManager;
-        public bool IsEnabled { get; set; }
+        public virtual bool IsEnabled { get; set; }
         public Guid Id { get; set; }
         public DescriptionInfo CommandDescription { get; set; }
         public double Version { get; set; }
@@ -31,11 +31,17 @@ namespace HelloBotCore.Entities
         public ModuleLogStorageInfo Trace { get; set; }
         public abstract ModuleType ModuleType { get; }
         public int? InstanceId { get; set; }
-        
+        public bool IsMainComponent { get { return !InstanceId.HasValue; } }
+        private List<ComponentInfoBase> _instances;
+        public List<ComponentInfoBase> Instances { get => _instances; set => _instances = value; }
+        public virtual void Dispose() { }
+
         protected ComponentInfoBase(StorageManager moduleStorageManager)
         {
             _moduleStorageManager = moduleStorageManager;
             Id = Guid.NewGuid();
+            Instances = new List<ComponentInfoBase>();
+
         }
 
         public ModuleSettings GetSettings() 
@@ -125,9 +131,9 @@ namespace HelloBotCore.Entities
                     toReturn += "Email для связи : " + Author.ContactEmail + Environment.NewLine + Environment.NewLine;
             }
             return toReturn;
-        }       
+        }
 
-       
+        public abstract string GetTypeDescription();
     }
 
 

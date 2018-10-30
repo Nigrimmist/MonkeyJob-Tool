@@ -81,11 +81,11 @@ namespace MonkeyJobTool.Forms
             var client = Client.Instances.SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
             var commForm = new ClientToModulesForm()
             {
-                ClientData = client.InstanceCommunication,
+                ClientData = (client as IntegrationClientInfo).InstanceCommunication,
             };
             commForm.OnSave += data =>
             {
-                client.InstanceCommunication = data;
+                (client as IntegrationClientInfo).InstanceCommunication = data;
                 HelloBotCore.Entities.MainIntegrationClientServiceSettings serviceData;
                 client.GetSettings<object, HelloBotCore.Entities.MainIntegrationClientServiceSettings>(out serviceData);
                 if (serviceData == null) serviceData = new HelloBotCore.Entities.MainIntegrationClientServiceSettings();

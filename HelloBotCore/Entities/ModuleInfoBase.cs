@@ -15,15 +15,26 @@ namespace HelloBotCore.Entities
 {
     public abstract class ModuleInfoBase : ComponentInfoBase
     {
-        private List<ComponentInfoBase> _instances;
 
         protected ModuleInfoBase(StorageManager storageManager)
 : base(storageManager)
         {
-
         }
 
-        public List<ComponentInfoBase> Instances { get => _instances; set => _instances = value; }
+        public override bool IsEnabled
+        {
+            get
+            {
+                return base.IsEnabled;
+            }
+
+            set
+            {
+                base.IsEnabled = value;
+                Instances.ForEach(x => x.IsEnabled = value);
+            }
+        }
+
         public Func<int?, ModuleInfoBase> CreateNewInstanceFunc { get; set; }
         public override string ToString(bool includingAuthorInfo = true)
         {
@@ -46,8 +57,6 @@ namespace HelloBotCore.Entities
         }
 
         public abstract void Init(string dllName, ComponentBase componentBase, IModuleClientHandler moduleClientHandler, AuthorInfo author);        
-
-        public abstract string GetTypeDescription();
 
         public new MainComponentInstanceSettings GetSettings()
         {

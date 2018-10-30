@@ -12,7 +12,7 @@ namespace HelloBotCore.Entities
         
         public MainComponentInstanceSettings()
         {
-            Instances = new List<int>();
+            Instances = new List<int>() ;
         }
     }
 }
