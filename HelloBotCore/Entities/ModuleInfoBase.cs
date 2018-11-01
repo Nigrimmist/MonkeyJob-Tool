@@ -35,6 +35,7 @@ namespace HelloBotCore.Entities
             }
         }
 
+        public abstract bool IsEnabledByDefault { get; }
         public Func<int?, ModuleInfoBase> CreateNewInstanceFunc { get; set; }
         public override string ToString(bool includingAuthorInfo = true)
         {

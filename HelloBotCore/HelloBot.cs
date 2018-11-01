@@ -366,19 +366,19 @@ namespace HelloBotCore
                     var modules = ((ModuleRegisterBase) obj).GetModules().Select(module =>
                     {
                         var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == module.GetType());
-                        return FillMainComponentObj(module, (ModuleRegisterBase)obj, settingClass?.moduleSettingsClass, fi, enabledModules, x => new ModuleCommandInfo(_storage));                        
+                        return FillMainComponentObj(module, (ModuleRegisterBase)obj, settingClass?.moduleSettingsClass, fi, enabledModules,disabledModules, x => new ModuleCommandInfo(_storage));                        
                     }).ToList();
 
                     var events = ((ModuleRegisterBase) obj).GetEvents().Select(ev =>
                     {
                         var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == ev.GetType());
-                        return FillMainComponentObj(ev, (ModuleRegisterBase)obj, settingClass?.moduleSettingsClass, fi, enabledModules, x => new ModuleEventInfo(_storage));
+                        return FillMainComponentObj(ev, (ModuleRegisterBase)obj, settingClass?.moduleSettingsClass, fi, enabledModules, disabledModules, x => new ModuleEventInfo(_storage));
                     }).ToList();
 
                     var trayModules = ((ModuleRegisterBase) obj).GetTrayModules().Select(tr =>
                     {
                         var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == tr.GetType());
-                        return FillMainComponentObj(tr, (ModuleRegisterBase)obj, settingClass?.moduleSettingsClass, fi, enabledModules, x => new ModuleTrayInfo(_storage));
+                        return FillMainComponentObj(tr, (ModuleRegisterBase)obj, settingClass?.moduleSettingsClass, fi, enabledModules, disabledModules, x => new ModuleTrayInfo(_storage));
                     }).ToList();
 
                     toReturn.AddRange(modules.Union(events).Union(trayModules).Select(mainComponent => {
@@ -406,7 +406,7 @@ namespace HelloBotCore
 
         
 
-        private ModuleInfoBase FillMainComponentObj<T>(T module, ModuleRegisterBase moduleRegister, Type componentSettingsType, FileInfo fi, List<string> enabledModules, Func<StorageManager,ModuleInfoBase> newInstanceFunc) where T : ComponentBase
+        private ModuleInfoBase FillMainComponentObj<T>(T module, ModuleRegisterBase moduleRegister, Type componentSettingsType, FileInfo fi, List<string> enabledModules, List<string> disabledModules, Func<StorageManager,ModuleInfoBase> newInstanceFunc) where T : ComponentBase
         {
             var getNewInstance = new Func<int?, ModuleInfoBase>((instId) =>
             {
@@ -415,7 +415,11 @@ namespace HelloBotCore
                 lModule.InstanceId = instId;
                 var newModuleInstance = (ComponentBase)Activator.CreateInstance(module.GetType());
                 lModule.Init(Path.GetFileNameWithoutExtension(fi.Name), newModuleInstance, this, moduleRegister.AuthorInfo);
-                lModule.IsEnabled = enabledModules.Contains(lModule.SystemName);
+
+                if(lModule.IsEnabledByDefault)
+                    lModule.IsEnabled = !disabledModules.Contains(lModule.SystemName);//if disable was forced
+                else
+                    lModule.IsEnabled = enabledModules.Contains(lModule.SystemName); //if enable was forced
 
                 if (componentSettingsType != null)
                     lModule.SettingsType = componentSettingsType;                

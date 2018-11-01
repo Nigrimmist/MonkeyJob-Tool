@@ -51,6 +51,7 @@ namespace HelloBotCore.Entities
             get { return ModuleType.Tray; }
         }
 
+        public override bool IsEnabledByDefault => false;
         public override string GetDescriptionText()
         {
             string runEveryStr = string.Empty;

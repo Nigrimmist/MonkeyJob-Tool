@@ -47,6 +47,8 @@ namespace HelloBotCore.Entities
             get { return ModuleType.Event; }
         }
 
+        public override bool IsEnabledByDefault => false;
+
         public override string GetDescriptionText()
         {
             return "Запускается раз в " + EventRunEvery.Humanize();

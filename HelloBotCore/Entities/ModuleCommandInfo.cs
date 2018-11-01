@@ -46,6 +46,8 @@ namespace HelloBotCore.Entities
             get { return ModuleType.Handler; }
         }
 
+        public override bool IsEnabledByDefault => true;
+
         public override string GetDescriptionText()
         {
             return "Варианты команды : "+Environment.NewLine+string.Join(Environment.NewLine,OriginalAliases.ToArray());
