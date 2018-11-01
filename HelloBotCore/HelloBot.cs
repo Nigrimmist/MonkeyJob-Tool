@@ -404,6 +404,8 @@ namespace HelloBotCore
             return toReturn;
         }
 
+        
+
         private ModuleInfoBase FillMainComponentObj<T>(T module, ModuleRegisterBase moduleRegister, Type componentSettingsType, FileInfo fi, List<string> enabledModules, Func<StorageManager,ModuleInfoBase> newInstanceFunc) where T : ComponentBase
         {
             var getNewInstance = new Func<int?, ModuleInfoBase>((instId) =>
@@ -898,19 +900,26 @@ namespace HelloBotCore
         }
 
 
-        public void DisableModule(string moduleSystemName/*, out List<string> disabledInstancesSystemNames*/)
+        public void DisableModule(string moduleSystemName, out List<string> disabledInstancesSystemNames)
         {
+            disabledInstancesSystemNames = new List<string>() { moduleSystemName };
             var found = Modules.Union(Modules.SelectMany(x=>x.Instances).Union(_integrationClients.Cast<ComponentInfoBase>()).Union(_integrationClients.SelectMany(x=>x.Instances))).Single(x => x.SystemName == moduleSystemName);
             found.IsEnabled = false;
-            //if (found.IsMainComponent)
-            //{
-            //    foreach(var ComponentInfoBase)
-            //}
+            if (found.IsMainComponent)
+            {
+                disabledInstancesSystemNames.AddRange(found.Instances.Select(x => x.SystemName));                
+            }
         }
 
-        public void EnableModule(string moduleSystemName)
+        public void EnableModule(string moduleSystemName, out List<string> enabledInstancesSystemNames)
         {
-            Modules.SelectMany(x => x.Instances).Union(_integrationClients.Cast<ComponentInfoBase>()).Union(_integrationClients.SelectMany(x=>x.Instances)).Single(x => x.SystemName == moduleSystemName).IsEnabled = true;
+            enabledInstancesSystemNames = new List<string>() { moduleSystemName };
+            var found = Modules.Union(Modules.SelectMany(x => x.Instances).Union(_integrationClients.Cast<ComponentInfoBase>()).Union(_integrationClients.SelectMany(x => x.Instances))).Single(x => x.SystemName == moduleSystemName);
+            found.IsEnabled = true;
+            if (found.IsMainComponent)
+            {
+                enabledInstancesSystemNames.AddRange(found.Instances.Select(x => x.SystemName).Take(1));
+            }
         }
 
         public List<ComponentInfoBase> GetIncompatibleSettingComponents()

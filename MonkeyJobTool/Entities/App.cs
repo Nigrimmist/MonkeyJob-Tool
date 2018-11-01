@@ -416,25 +416,33 @@ namespace MonkeyJobTool.Entities
 
         public void DisableModule(string moduleSystemName)
         {
-            Bot.DisableModule(moduleSystemName);
-            if (!AppConf.SystemData.DisabledModules.Contains(moduleSystemName))
+            List<string> disabledInstancesSystemNames;
+            Bot.DisableModule(moduleSystemName, out disabledInstancesSystemNames);
+            foreach(var sysName in disabledInstancesSystemNames)
             {
-                AppConf.SystemData.DisabledModules.Add(moduleSystemName);
-            }
-            if (AppConf.SystemData.EnabledModules.Contains(moduleSystemName))
-                AppConf.SystemData.EnabledModules.Remove(moduleSystemName);
+                if (!AppConf.SystemData.DisabledModules.Contains(sysName))
+                {
+                    AppConf.SystemData.DisabledModules.Add(sysName);
+                }
+                if (AppConf.SystemData.EnabledModules.Contains(sysName))
+                    AppConf.SystemData.EnabledModules.Remove(sysName);
+            }            
             AppConf.Save();
         }
 
         public void EnableModule(string moduleSystemName)
         {
-            Bot.EnableModule(moduleSystemName);
-            if (AppConf.SystemData.DisabledModules.Contains(moduleSystemName))
+            List<string> enabledInstancesSystemNames;
+            Bot.EnableModule(moduleSystemName, out enabledInstancesSystemNames);
+            foreach (var sysName in enabledInstancesSystemNames)
             {
-                AppConf.SystemData.DisabledModules.Remove(moduleSystemName);
+                if (AppConf.SystemData.DisabledModules.Contains(sysName))
+                {
+                    AppConf.SystemData.DisabledModules.Remove(sysName);
+                }
+                if (!AppConf.SystemData.EnabledModules.Contains(sysName))
+                    AppConf.SystemData.EnabledModules.Add(sysName);
             }
-            if (!AppConf.SystemData.EnabledModules.Contains(moduleSystemName))
-                AppConf.SystemData.EnabledModules.Add(moduleSystemName);
             AppConf.Save();
         }
         public void RemoveModuleFromConfig(string moduleSystemName)
