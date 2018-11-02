@@ -14,17 +14,19 @@ using NLog.LayoutRenderers;
 
 namespace MonkeyJobTool.Forms
 {
-    public partial class IntegrationClientSettings : Form
+    public partial class MainComponentSettings : Form
     {
-        public IntegrationClientSettings()
+        public MainComponentSettings()
         {
             InitializeComponent();
         }
         private bool _gridRowsInited = false;
-        public IntegrationClientInfo Client { get; set; }
+        public ComponentInfoBase Component { get; set; }
 
-        private void IntegrationClientSettings_Load(object sender, EventArgs e)
+        private void MainComponentSettings_Load(object sender, EventArgs e)
         {
+            btnShowModuleCommunication.Visible = Component.ModuleType == ModuleType.IntegrationClient;
+            this.Text =  "Экземпляр "+(Component.ModuleType == ModuleType.IntegrationClient ? "клиента" : "модуля");
             DatabindGrid();
         }
 
@@ -35,7 +37,7 @@ namespace MonkeyJobTool.Forms
             if (e.RowIndex >= 0 && e.ColumnIndex == grid.Rows[e.RowIndex].Cells["settingsCol"].ColumnIndex)
             {
                 var moduleKey = grid.Rows[e.RowIndex].ErrorText;
-                var client = Client.Instances.SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
+                var client = Component.Instances.SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
 
                 if (client.SettingsType != null)
                 {
@@ -56,13 +58,14 @@ namespace MonkeyJobTool.Forms
 
                 var moduleKey = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
 
-                var client = Client.Instances.SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
+                var client = Component.Instances.SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
                 if (_gridRowsInited)
                 {
                     btnEnabledDisableClient.Enabled = true;
-                    btnShowModuleCommunication.Enabled = true;
+                    if(Component.ModuleType==ModuleType.IntegrationClient)
+                        btnShowModuleCommunication.Enabled = true;
                 }
-                btnEnabledDisableClient.Text = (!client.IsEnabled ? "В" : "Вы") + "ключить клиент";
+                btnEnabledDisableClient.Text = (!client.IsEnabled ? "В" : "Вы") + "ключить";
                 btnShowClientLogs.Enabled = client.Trace.TraceMessages.Any();
                 btnRemoveClient.Enabled = true;
             }
@@ -70,7 +73,8 @@ namespace MonkeyJobTool.Forms
             {
                 btnRemoveClient.Enabled = false;
                 btnShowClientLogs.Enabled = false;
-                btnShowModuleCommunication.Enabled = false;
+                if(Component.ModuleType==ModuleType.IntegrationClient)
+                    btnShowModuleCommunication.Enabled = false;
                 btnEnabledDisableClient.Enabled = false;
             }
         }
@@ -78,7 +82,7 @@ namespace MonkeyJobTool.Forms
         private void btnShowModuleCommunication_Click(object sender, EventArgs e)
         {
             var moduleKey = gridClients.Rows[gridClients.SelectedRows[0].Index].ErrorText;
-            var client = Client.Instances.SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
+            var client = Component.Instances.SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
             var commForm = new ClientToModulesForm()
             {
                 ClientData = (client as IntegrationClientInfo).InstanceCommunication,
@@ -98,7 +102,7 @@ namespace MonkeyJobTool.Forms
         private void DatabindGrid()
         {   
             gridClients.Rows.Clear();
-            var items = Client.Instances;
+            var items = Component.Instances;
             foreach (var inst in items)
             {
                 AddModuleInfoToGrid(inst.InstanceId.Value,inst.IsEnabled, inst.InstanceId.Value.ToString(), inst.SettingsType != null);
@@ -138,7 +142,7 @@ namespace MonkeyJobTool.Forms
             
             var moduleKey = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
 
-            var instance = Client.Instances.Select(x => (ComponentInfoBase)x).SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
+            var instance = Component.Instances.Select(x => (ComponentInfoBase)x).SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
             if (instance.IsEnabled)
             {
                 App.Instance.DisableModule(instance.SystemName);
@@ -160,14 +164,14 @@ namespace MonkeyJobTool.Forms
             {
                 var moduleKey = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
 
-                var instance = Client.Instances.Select(x => (ComponentInfoBase)x).SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
+                var instance = Component.Instances.Select(x => (ComponentInfoBase)x).SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
                 var messages = instance.Trace.TraceMessages;
                 var mlForm = new ModuleLogsForm() { LogMessages = messages };
                 mlForm.ShowDialog();
             }
         }
 
-        private void IntegrationClientSettings_Shown(object sender, EventArgs e)
+        private void MainComponentSettings_Shown(object sender, EventArgs e)
         {
             _gridRowsInited = true;
             gridClients.ClearSelection();
@@ -175,7 +179,7 @@ namespace MonkeyJobTool.Forms
 
         private void btnAddClient_Click(object sender, EventArgs e)
         {
-            App.Instance.Bot.AddIntegrationClientInstance(Client.Id);
+            App.Instance.Bot.AddIntegrationClientInstance(Component.Id);
             DatabindGrid();
         }
 
@@ -186,8 +190,8 @@ namespace MonkeyJobTool.Forms
             {
                 var moduleKey = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
 
-                var instance = Client.Instances.Select(x => (ComponentInfoBase)x).SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
-                App.Instance.Bot.RemoveIntegrationClientInstance(Client.Id, instance.InstanceId.Value);
+                var instance = Component.Instances.Select(x => (ComponentInfoBase)x).SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
+                App.Instance.Bot.RemoveIntegrationClientInstance(Component.Id, instance.InstanceId.Value);
                 DatabindGrid();
             }
         }

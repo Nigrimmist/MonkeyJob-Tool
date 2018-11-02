@@ -144,10 +144,7 @@ namespace MonkeyJobTool.Forms
             cmbKey3.SelectedIndex = cmbKey3.FindString(oahkParts.Last()); 
             if(oahkParts.Length==3)
                 cmbKey2.SelectedIndex = cmbKey2.FindString(oahkParts[1]); 
-            cmbKey1.SelectedIndex = cmbKey1.FindString(oahkParts.First());
-
-
-            
+            cmbKey1.SelectedIndex = cmbKey1.FindString(oahkParts.First());            
         }
 
          
@@ -279,12 +276,12 @@ namespace MonkeyJobTool.Forms
                 string typeDescr = "";
                 if (mod is ModuleInfoBase)
                     typeDescr = (mod as ModuleInfoBase).GetTypeDescription();
-                AddModuleInfoToGrid(gridType,mod.GetModuleName(), typeDescr, mod.IsEnabled, mod.SystemName, mod.SettingsType != null,rowColor);
+                AddModuleInfoToGrid(gridType,mod.GetModuleName(), typeDescr, mod.IsEnabled,mod.Instances.Count(), mod.SystemName, mod.SettingsType != null,rowColor);
             }
            
         }
         
-        private void AddModuleInfoToGrid(SettingGridType gridType,string name, string type, bool enabled, string uniqueName, bool isWithSettings, Color? rowColor = null)
+        private void AddModuleInfoToGrid(SettingGridType gridType,string name, string type, bool enabled,int instanceCount, string uniqueName, bool isWithSettings, Color? rowColor = null)
         {
             DataGridViewRow r = new DataGridViewRow {ErrorText = uniqueName};
             if (rowColor.HasValue)
@@ -308,12 +305,19 @@ namespace MonkeyJobTool.Forms
                 Value = enabled?"Вкл":"Выкл",
                 Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleCenter }
             });
+            r.Cells.Add(new DataGridViewTextBoxCell()
+            {
+                Value = instanceCount,
+                Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleCenter }
+            });
+
             r.Cells.Add(new DataGridViewImageCell()
             {
                 Value = isWithSettings?Resources.settings_small:new Bitmap(1,1),
-
                 Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleCenter }
             });
+            
+            
             Grid(gridType).Rows.Add(r);
         }
 
@@ -414,23 +418,16 @@ namespace MonkeyJobTool.Forms
             if (e.RowIndex >= 0 && e.ColumnIndex == grid.Rows[e.RowIndex].Cells[ColumnNameByGridType(gridType, "settingsCol")].ColumnIndex)
             {
                 var moduleKey = grid.Rows[e.RowIndex].ErrorText;
-                
-                var module = (gridType == SettingGridType.Modules ? App.Instance.Bot.Modules : App.Instance.Bot.IntegrationClients.Select(x => (ComponentInfoBase)x)).SingleOrDefault(x => x.SystemName == moduleKey);
 
-                if (gridType == SettingGridType.Modules)
+                var component = (gridType == SettingGridType.Modules ? App.Instance.Bot.Modules : App.Instance.Bot.IntegrationClients.Select(x => (ComponentInfoBase)x)).SingleOrDefault(x => x.SystemName == moduleKey);
+                               
+                if (component.SettingsType != null)
                 {
-                    if (module.SettingsType != null)
-                    {
-                        var setMod = new ModuleSettingsForm() {Module = module};
-                        setMod.ShowDialog();
-                    }
-                }
-                else
-                {
-                    var clientSettingsForm = new IntegrationClientSettings() {Client = (module as IntegrationClientInfo)};
-                    clientSettingsForm.ShowDialog();
+                    var compSettingsForm = new MainComponentSettings() { Component = component };
+                    compSettingsForm.ShowDialog();
                 }
             }
+            
         }
 
         private void grid_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)

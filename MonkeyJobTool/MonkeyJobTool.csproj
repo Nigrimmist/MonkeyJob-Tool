@@ -197,11 +197,11 @@
     <Compile Include="Forms\InfoPopup.Designer.cs">
       <DependentUpon>InfoPopup.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\IntegrationClientSettings.cs">
+    <Compile Include="Forms\MainComponentSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\IntegrationClientSettings.Designer.cs">
-      <DependentUpon>IntegrationClientSettings.cs</DependentUpon>
+    <Compile Include="Forms\MainComponentSettings.Designer.cs">
+      <DependentUpon>MainComponentSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ModuleLogsForm.cs">
       <SubType>Form</SubType>
@@ -283,8 +283,8 @@
       <DependentUpon>InfoPopup.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\IntegrationClientSettings.resx">
-      <DependentUpon>IntegrationClientSettings.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\MainComponentSettings.resx">
+      <DependentUpon>MainComponentSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

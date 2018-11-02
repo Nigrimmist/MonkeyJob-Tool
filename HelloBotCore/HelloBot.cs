@@ -911,7 +911,8 @@ namespace HelloBotCore
             found.IsEnabled = false;
             if (found.IsMainComponent)
             {
-                disabledInstancesSystemNames.AddRange(found.Instances.Select(x => x.SystemName));                
+                disabledInstancesSystemNames.AddRange(found.Instances.Select(x => x.SystemName));
+                found.Instances.ForEach(x => x.IsEnabled = false);
             }
         }
 
@@ -922,7 +923,12 @@ namespace HelloBotCore
             found.IsEnabled = true;
             if (found.IsMainComponent)
             {
-                enabledInstancesSystemNames.AddRange(found.Instances.Select(x => x.SystemName).Take(1));
+                var firstInstance = found.Instances.FirstOrDefault();
+                if (firstInstance != null)
+                {
+                    enabledInstancesSystemNames.Add(firstInstance.SystemName);
+                    firstInstance.IsEnabled = true;
+                }                
             }
         }
 
