@@ -981,26 +981,22 @@ namespace HelloBotCore
         }
 
 
-        public void RemoveIntegrationClientInstance(Guid clientId, int instanceId)
+        public void RemoveComponentInstance(string systemName)
         {
-            var client = IntegrationClients.SingleOrDefault(x => x.Id == clientId);
-            var inst = client.Instances.SingleOrDefault(x => x.InstanceId.Value == instanceId);
+            var component = IntegrationClients.Cast<ComponentInfoBase>().Union(Modules).SingleOrDefault(x => x.Instances.Any(y => y.SystemName == systemName));
+            var inst = component.Instances.SingleOrDefault(x=>x.SystemName == systemName);
             if (inst != null)
             {
-                string systemName = inst.SystemName;
-                client.Instances.Remove(inst);
-                
-                var settings = client.GetSettings();
-                settings.Instances.Remove(instanceId);
-                client.SaveSettings(settings);
+                component.RemoveInstance(systemName);                
                 inst.Dispose();
                 OnModuleRemoved?.Invoke(systemName);
             }
+
         }
 
-        public void AddIntegrationClientInstance(Guid clientId)
+        public void AddIntegrationClientInstance(string systemName)
         {
-            var client = IntegrationClients.SingleOrDefault(x => x.Id == clientId);
+            var client = IntegrationClients.SingleOrDefault(x => x.SystemName == systemName);
             var newInst = client.CreateNewInstanceFunc(client.Instances.Any()?client.Instances.Max(x => x.InstanceId) + 1:1);
             client.Instances.Add(newInst);
             var settings = client.GetSettings();

@@ -147,7 +147,7 @@
             this.btnRemoveClient.TabIndex = 15;
             this.btnRemoveClient.Text = "Удалить";
             this.btnRemoveClient.UseVisualStyleBackColor = false;
-            this.btnRemoveClient.Click += new System.EventHandler(this.btnRemoveClient_Click);
+            this.btnRemoveClient.Click += new System.EventHandler(this.btnRemoveComponent_Click);
             // 
             // btnAddClient
             // 

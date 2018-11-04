@@ -56,5 +56,14 @@ namespace HelloBotCore.Entities
         {
             return "Клиент";
         }
+
+        public override void RemoveInstance(string systemName)
+        {
+            var found = Instances.SingleOrDefault(x => x.SystemName == systemName);
+            var settings = GetSettings();
+            settings.Instances.Remove(found.InstanceId.Value);
+            base.RemoveInstance(systemName);
+            SaveSettings(settings);
+        }
     }
 }

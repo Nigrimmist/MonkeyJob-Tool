@@ -36,6 +36,10 @@ namespace HelloBotCore.Entities
         public List<ComponentInfoBase> Instances { get => _instances; set => _instances = value; }
         public virtual void Dispose() { }
 
+        public virtual void RemoveInstance(string systemName)
+        {
+            Instances = Instances.Where(x => x.SystemName == systemName).ToList();
+        }
         protected ComponentInfoBase(StorageManager moduleStorageManager)
         {
             _moduleStorageManager = moduleStorageManager;

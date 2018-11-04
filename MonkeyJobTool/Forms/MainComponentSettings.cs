@@ -36,8 +36,8 @@ namespace MonkeyJobTool.Forms
 
             if (e.RowIndex >= 0 && e.ColumnIndex == grid.Rows[e.RowIndex].Cells["settingsCol"].ColumnIndex)
             {
-                var moduleKey = grid.Rows[e.RowIndex].ErrorText;
-                var client = Component.Instances.SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
+                var compSystemName = grid.Rows[e.RowIndex].ErrorText;
+                var client = Component.Instances.SingleOrDefault(x => x.SystemName == compSystemName);
 
                 if (client.SettingsType != null)
                 {
@@ -56,9 +56,9 @@ namespace MonkeyJobTool.Forms
             if (grid.SelectedRows.Count == 1)
             {
 
-                var moduleKey = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
+                var compSystemName = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
 
-                var client = Component.Instances.SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
+                var client = Component.Instances.SingleOrDefault(x => x.SystemName == compSystemName);
                 if (_gridRowsInited)
                 {
                     btnEnabledDisableClient.Enabled = true;
@@ -81,8 +81,8 @@ namespace MonkeyJobTool.Forms
 
         private void btnShowModuleCommunication_Click(object sender, EventArgs e)
         {
-            var moduleKey = gridClients.Rows[gridClients.SelectedRows[0].Index].ErrorText;
-            var client = Component.Instances.SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
+            var compSystemName = gridClients.Rows[gridClients.SelectedRows[0].Index].ErrorText;
+            var client = Component.Instances.SingleOrDefault(x => x.SystemName== compSystemName);
             var commForm = new ClientToModulesForm()
             {
                 ClientData = (client as IntegrationClientInfo).InstanceCommunication,
@@ -105,20 +105,20 @@ namespace MonkeyJobTool.Forms
             var items = Component.Instances;
             foreach (var inst in items)
             {
-                AddModuleInfoToGrid(inst.InstanceId.Value,inst.IsEnabled, inst.InstanceId.Value.ToString(), inst.SettingsType != null);
+                AddModuleInfoToGrid(inst.SystemName,inst.IsEnabled,  inst.SettingsType != null);
             }
         }
 
-        private void AddModuleInfoToGrid(int instanceId, bool enabled, string uniqueName, bool isWithSettings, Color? rowColor = null)
+        private void AddModuleInfoToGrid(string systemName, bool enabled, bool isWithSettings, Color? rowColor = null)
         {
-            DataGridViewRow r = new DataGridViewRow { ErrorText = uniqueName };
+            DataGridViewRow r = new DataGridViewRow { ErrorText = systemName };
             if (rowColor.HasValue)
             {
                 r.DefaultCellStyle.BackColor = rowColor.Value;
             }
             r.Cells.Add(new DataGridViewTextBoxCell()
             {
-                Value = instanceId.ToString(),
+                Value = systemName,
                 Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleLeft }
             });
             
@@ -140,9 +140,9 @@ namespace MonkeyJobTool.Forms
         {
             DataGridView grid =  gridClients;
             
-            var moduleKey = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
+            var compSystemName = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
 
-            var instance = Component.Instances.Select(x => (ComponentInfoBase)x).SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
+            var instance = Component.Instances.Select(x => x).SingleOrDefault(x => x.SystemName == compSystemName);
             if (instance.IsEnabled)
             {
                 App.Instance.DisableModule(instance.SystemName);
@@ -162,9 +162,9 @@ namespace MonkeyJobTool.Forms
             DataGridView grid =  gridClients;
             if (grid.SelectedRows.Count == 1)
             {
-                var moduleKey = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
+                var compSystemName = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
 
-                var instance = Component.Instances.Select(x => (ComponentInfoBase)x).SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
+                var instance = Component.Instances.Select(x => (ComponentInfoBase)x).SingleOrDefault(x => x.SystemName == compSystemName);
                 var messages = instance.Trace.TraceMessages;
                 var mlForm = new ModuleLogsForm() { LogMessages = messages };
                 mlForm.ShowDialog();
@@ -179,19 +179,19 @@ namespace MonkeyJobTool.Forms
 
         private void btnAddClient_Click(object sender, EventArgs e)
         {
-            App.Instance.Bot.AddIntegrationClientInstance(Component.Id);
+            App.Instance.Bot.AddIntegrationClientInstance(Component.SystemName);
             DatabindGrid();
         }
 
-        private void btnRemoveClient_Click(object sender, EventArgs e)
+        private void btnRemoveComponent_Click(object sender, EventArgs e)
         {
             DataGridView grid =  gridClients;
             if (grid.SelectedRows.Count == 1)
             {
-                var moduleKey = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
+                var compSystemName = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
 
-                var instance = Component.Instances.Select(x => (ComponentInfoBase)x).SingleOrDefault(x => x.InstanceId == Convert.ToInt32(moduleKey));
-                App.Instance.Bot.RemoveIntegrationClientInstance(Component.Id, instance.InstanceId.Value);
+                var instance = Component.Instances.Select(x => x).SingleOrDefault(x => x.SystemName == compSystemName);
+                App.Instance.Bot.RemoveComponentInstance(Component.SystemName);
                 DatabindGrid();
             }
         }
