@@ -161,7 +161,7 @@
             this.btnAddClient.TabIndex = 16;
             this.btnAddClient.Text = "Добавить новый";
             this.btnAddClient.UseVisualStyleBackColor = false;
-            this.btnAddClient.Click += new System.EventHandler(this.btnAddClient_Click);
+            this.btnAddClient.Click += new System.EventHandler(this.btnAddComponent_Click);
             // 
             // MainComponentSettings
             // 

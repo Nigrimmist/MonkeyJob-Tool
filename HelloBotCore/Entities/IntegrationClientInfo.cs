@@ -14,7 +14,6 @@ namespace HelloBotCore.Entities
     {
         private HelloBotCommunication.IntegrationClientBase baseClient = null;
 
-        public Func<int?, IntegrationClientInfo> CreateNewInstanceFunc { get; set; }
 
          
 

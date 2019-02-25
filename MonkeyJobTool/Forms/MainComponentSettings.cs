@@ -177,9 +177,9 @@ namespace MonkeyJobTool.Forms
             gridClients.ClearSelection();
         }
 
-        private void btnAddClient_Click(object sender, EventArgs e)
+        private void btnAddComponent_Click(object sender, EventArgs e)
         {
-            App.Instance.Bot.AddIntegrationClientInstance(Component.SystemName);
+            App.Instance.Bot.AddComponentInstance(Component.SystemName);
             DatabindGrid();
         }
 

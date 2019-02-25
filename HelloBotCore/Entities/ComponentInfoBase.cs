@@ -40,6 +40,8 @@ namespace HelloBotCore.Entities
         {
             Instances = Instances.Where(x => x.SystemName == systemName).ToList();
         }
+
+
         protected ComponentInfoBase(StorageManager moduleStorageManager)
         {
             _moduleStorageManager = moduleStorageManager;
@@ -138,6 +140,8 @@ namespace HelloBotCore.Entities
         }
 
         public abstract string GetTypeDescription();
+
+        public virtual  Func<int?, ComponentInfoBase> CreateNewInstanceFunc { get; set; }
     }
 
 

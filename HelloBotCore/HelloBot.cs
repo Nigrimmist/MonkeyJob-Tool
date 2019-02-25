@@ -280,6 +280,14 @@ namespace HelloBotCore
                             if (settingClass != null)
                                 tModule.SettingsType = settingClass.moduleSettingsClass;
 
+                            if (instId.HasValue)
+                            {
+                                MainIntegrationClientServiceSettings clientServiceData;
+                                tModule.GetSettings<object, MainIntegrationClientServiceSettings>(out clientServiceData);
+                                if (clientServiceData != null)
+                                    tModule.InstanceCommunication = clientServiceData.ClientInstanceToModuleCommunication;
+                            }
+                            
                             return tModule;
                         });
 
@@ -295,11 +303,7 @@ namespace HelloBotCore
                         for (var i = 0; i < mainModuleSettings.Instances.Count; i++)
                         {
                             var instId = mainModuleSettings.Instances[i];
-                            var inst = mainModule.CreateNewInstanceFunc(instId);
-                            MainIntegrationClientServiceSettings clientServiceData;
-                            inst.GetSettings<object, MainIntegrationClientServiceSettings>(out clientServiceData);
-                            if (clientServiceData!=null)
-                                inst.InstanceCommunication = clientServiceData.ClientInstanceToModuleCommunication;
+                            var inst = mainModule.CreateNewInstanceFunc(instId);                            
                             mainModule.Instances.Add(inst);
                         }
 
@@ -994,14 +998,14 @@ namespace HelloBotCore
 
         }
 
-        public void AddIntegrationClientInstance(string systemName)
+        public void AddComponentInstance(string systemName)
         {
-            var client = IntegrationClients.SingleOrDefault(x => x.SystemName == systemName);
-            var newInst = client.CreateNewInstanceFunc(client.Instances.Any()?client.Instances.Max(x => x.InstanceId) + 1:1);
-            client.Instances.Add(newInst);
-            var settings = client.GetSettings();
+            ComponentInfoBase component = IntegrationClients.Cast<ComponentInfoBase>().Union(Modules).SingleOrDefault(x => x.SystemName == systemName);
+            var newInst = component.CreateNewInstanceFunc(component.Instances.Any()?component.Instances.Max(x => x.InstanceId) + 1:1);
+            component.Instances.Add(newInst);
+            var settings = component.GetSettings();
             settings.Instances.Add(newInst.InstanceId.Value);
-            client.SaveSettings(settings);
+            component.SaveSettings(settings);
             
         }
 
