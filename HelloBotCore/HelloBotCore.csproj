@@ -93,7 +93,7 @@
     <Compile Include="Entities\ModuleCommandInfo.cs" />
     <Compile Include="Entities\ModuleLocker.cs" />
     <Compile Include="Entities\ModuleLogStorageInfo.cs" />
-    <Compile Include="Entities\ModuleSettings.cs" />
+    <Compile Include="Entities\ComponentSettings.cs" />
     <Compile Include="Entities\ModuleTrayInfo.cs" />
     <Compile Include="Entities\ModuleType.cs" />
     <Compile Include="Entities\RegexParseitem.cs" />

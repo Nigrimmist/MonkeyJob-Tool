@@ -41,6 +41,13 @@ namespace HelloBotCore.Entities
             Instances = Instances.Where(x => x.SystemName == systemName).ToList();
         }
 
+        public virtual ComponentInfoBase AddInstance(string systemName)
+        {
+            int? instanceId = Instances.Any() ? Instances.Max(x => x.InstanceId) + 1 : 1;
+            var newInst = CreateNewInstanceFunc(instanceId);
+            Instances.Add(newInst);           
+            return newInst;
+        }
 
         protected ComponentInfoBase(StorageManager moduleStorageManager)
         {
@@ -50,9 +57,9 @@ namespace HelloBotCore.Entities
 
         }
 
-        public ModuleSettings GetSettings() 
+        public ComponentSettings GetSettings() 
         {
-            return _moduleStorageManager.Get<ModuleSettings>(SystemName); 
+            return _moduleStorageManager.Get<ComponentSettings>(SystemName); 
         }
 
         public TModuleType GetSettings<TModuleType>() where TModuleType : class
@@ -66,11 +73,11 @@ namespace HelloBotCore.Entities
             where TServiceType : class
         {
             serviceData = null;
-            var settings = _moduleStorageManager.Get<ModuleSettings<TModuleType, TServiceType>>(SystemName);
+            var settings = _moduleStorageManager.Get<ComponentSettings<TModuleType, TServiceType>>(SystemName);
             if (settings == null)
                 return null;
             serviceData = settings.ServiceData;
-            return settings.ModuleData;
+            return settings.ComponentData;
         }
 
         public void DeleteSettings()
@@ -80,21 +87,21 @@ namespace HelloBotCore.Entities
 
         public void SaveSettings<TModuleType>(TModuleType serializableSettingObject, object settingsAdditionalData=null) where TModuleType : class
         {
-            var settings = new ModuleSettings<TModuleType>(Version, SettingsModuleVersion, serializableSettingObject,settingsAdditionalData);
+            var settings = new ComponentSettings<TModuleType>(Version, SettingsModuleVersion, serializableSettingObject,settingsAdditionalData);
             _moduleStorageManager.Save(SystemName,settings);
         }
 
         public void SaveServiceData<TServiceType>(TServiceType serviceData) where TServiceType : class
         {
-            var settings = _moduleStorageManager.Get<ModuleSettings<object, TServiceType>>(SystemName);
+            var settings = _moduleStorageManager.Get<ComponentSettings<object, TServiceType>>(SystemName);
             
             if (settings==null)
             {
                 //create new raw settings with filled servicedata
-                settings = new ModuleSettings<object, TServiceType>(Version, SettingsModuleVersion, new object(), serviceData);
+                settings = new ComponentSettings<object, TServiceType>(Version, SettingsModuleVersion, new object(), serviceData);
             };
 
-            SaveSettings(settings.ModuleData, serviceData);
+            SaveSettings(settings.ComponentData, serviceData);
         }
 
         public string GetModuleName()

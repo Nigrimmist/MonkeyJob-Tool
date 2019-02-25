@@ -64,5 +64,14 @@ namespace HelloBotCore.Entities
             base.RemoveInstance(systemName);
             SaveSettings(settings);
         }
+
+        public override ComponentInfoBase AddInstance(string systemName)
+        {
+            var addedInstance = base.AddInstance(systemName);
+            var settings = GetSettings();
+            settings.Instances.Add(addedInstance.InstanceId.Value);
+            SaveSettings(settings);
+            return addedInstance;
+        }
     }
 }

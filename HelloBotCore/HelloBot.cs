@@ -292,7 +292,7 @@ namespace HelloBotCore
                         });
 
                         var mainModule = getNewInstance(null);
-
+                        в телеграм клиенте где-то неправильно создаётся изначальный json (при пустой базе), потом не берет сеттинги норм. выяснить первое
                         var mainModuleSettings = mainModule.GetSettings();
                         if (mainModuleSettings == null)
                         {
@@ -1001,12 +1001,11 @@ namespace HelloBotCore
         public void AddComponentInstance(string systemName)
         {
             ComponentInfoBase component = IntegrationClients.Cast<ComponentInfoBase>().Union(Modules).SingleOrDefault(x => x.SystemName == systemName);
-            var newInst = component.CreateNewInstanceFunc(component.Instances.Any()?component.Instances.Max(x => x.InstanceId) + 1:1);
-            component.Instances.Add(newInst);
-            var settings = component.GetSettings();
-            settings.Instances.Add(newInst.InstanceId.Value);
-            component.SaveSettings(settings);
             
+            if (component.IsMainComponent)
+            {
+                component.AddInstance(systemName);                
+            }                       
         }
 
         public void ShowSuggestionsToClient(List<AutoSuggestItem> items)

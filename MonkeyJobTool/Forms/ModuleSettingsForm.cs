@@ -41,9 +41,9 @@ namespace MonkeyJobTool.Forms
             }
             else
             {
-                if (ms.ModuleData != null)
+                if (ms.ComponentData != null)
                 {
-                    var rawSettingsJson = JsonConvert.SerializeObject(ms.ModuleData);
+                    var rawSettingsJson = JsonConvert.SerializeObject(ms.ComponentData);
                     moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.SettingsType);
                 }
                 else
@@ -310,9 +310,9 @@ namespace MonkeyJobTool.Forms
                 }
                 else
                 {
-                    if (ms.ModuleData != null)
+                    if (ms.ComponentData != null)
                     {
-                        var rawSettingsJson = JsonConvert.SerializeObject(ms.ModuleData);
+                        var rawSettingsJson = JsonConvert.SerializeObject(ms.ComponentData);
                         moduleSettings = JsonConvert.DeserializeObject(rawSettingsJson, Module.SettingsType);
                     }
                     else
@@ -324,7 +324,7 @@ namespace MonkeyJobTool.Forms
                 if (Module.ModuleType == ModuleType.IntegrationClient)
                     if (serviceData == null) serviceData = new HelloBotCore.Entities.MainIntegrationClientServiceSettings();
 
-                ms = new ModuleSettings(Module.Version, Module.SettingsModuleVersion, FillObjectFromUI("", moduleSettings), serviceData);
+                ms = new ComponentSettings(Module.Version, Module.SettingsModuleVersion, FillObjectFromUI("", moduleSettings), serviceData);
 
                 Module.SaveSettings(ms);
                 this.Close();
