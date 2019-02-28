@@ -190,8 +190,7 @@ namespace MonkeyJobTool.Forms
             {
                 var compSystemName = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
 
-                var instance = Component.Instances.Select(x => x).SingleOrDefault(x => x.SystemName == compSystemName);
-                App.Instance.Bot.RemoveComponentInstance(Component.SystemName);
+                App.Instance.Bot.RemoveComponentInstance(compSystemName);
                 DatabindGrid();
             }
         }

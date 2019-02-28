@@ -85,9 +85,9 @@ namespace HelloBotCore.Entities
             _moduleStorageManager.Delete(SystemName);
         }
 
-        public void SaveSettings<TModuleType>(TModuleType serializableSettingObject, object settingsAdditionalData=null) where TModuleType : class
+        public void SaveSettings<TModuleType>(TModuleType serializableSettingObject, object settingsServiceData=null) where TModuleType : class
         {
-            var settings = new ComponentSettings<TModuleType>(Version, SettingsModuleVersion, serializableSettingObject,settingsAdditionalData);
+            var settings = new ComponentSettings<TModuleType>(Version, SettingsModuleVersion, serializableSettingObject,settingsServiceData);
             _moduleStorageManager.Save(SystemName,settings);
         }
 

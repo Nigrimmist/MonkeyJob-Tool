@@ -292,7 +292,7 @@ namespace HelloBotCore
                         });
 
                         var mainModule = getNewInstance(null);
-                        в телеграм клиенте где-то неправильно создаётся изначальный json (при пустой базе), потом не берет сеттинги норм. выяснить первое
+                        
                         var mainModuleSettings = mainModule.GetSettings();
                         if (mainModuleSettings == null)
                         {
