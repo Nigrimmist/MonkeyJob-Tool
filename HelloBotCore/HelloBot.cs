@@ -169,7 +169,10 @@ namespace HelloBotCore
 
         private void RunTrayModuleTimers()
         {
-                foreach (var trayInstance in TrayModules.SelectMany(x=>x.Instances).Cast<ModuleTrayInfo>())
+            foreach (var tm in TrayModules)
+            {
+                var tMain = tm;
+                foreach (var trayInstance in tm.Instances.Cast<ModuleTrayInfo>())
                 {
                     var tTi = trayInstance;
 
@@ -184,7 +187,7 @@ namespace HelloBotCore
                             TrayIcon = tTi.TrayIcon,
                             CommandName = tTi.GetModuleName(),
                         });
-                        if (tTi.IsEnabled)
+                        if (tMain.IsEnabled && tTi.IsEnabled)
                         {
                             if (OnTrayIconSetupRequired != null)
                                 OnTrayIconSetupRequired(tTi.Id, tTi.TrayIcon, tTi.GetModuleName());
@@ -193,7 +196,7 @@ namespace HelloBotCore
                         {
                             try
                             {
-                                if (tTi.IsEnabled)
+                                if (tMain.IsEnabled && tTi.IsEnabled)
                                 {
                                     tTi.CallEvent(commandToken);
                                 }
@@ -211,6 +214,7 @@ namespace HelloBotCore
                         }
 
                     }).Start();
+                }
             }
         }
 
@@ -294,9 +298,10 @@ namespace HelloBotCore
                         var mainModule = getNewInstance(null);
                         
                         var mainModuleSettings = mainModule.GetSettings();
-                        if (mainModuleSettings == null)
+                        if (mainModuleSettings == null || mainModule.Instances.Count == 0)
                         {
                             mainModuleSettings = new MainComponentInstanceSettings();
+                            mainModuleSettings.Instances.Add(1);//each main component must have at least one child module
                             mainModule.SaveSettings(mainModuleSettings);
                         }
                         mainModule.CreateNewInstanceFunc = getNewInstance;

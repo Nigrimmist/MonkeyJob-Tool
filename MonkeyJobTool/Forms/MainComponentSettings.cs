@@ -103,13 +103,14 @@ namespace MonkeyJobTool.Forms
         {   
             gridClients.Rows.Clear();
             var items = Component.Instances;
-            foreach (var inst in items)
+            for (int i = 0; i < items.Count; i++)
             {
-                AddModuleInfoToGrid(inst.SystemName,inst.IsEnabled,  inst.SettingsType != null);
+                ComponentInfoBase inst = items[i];
+                AddModuleInfoToGrid(i+1,inst.SystemName,inst.IsEnabled,  inst.SettingsType != null);
             }
         }
 
-        private void AddModuleInfoToGrid(string systemName, bool enabled, bool isWithSettings, Color? rowColor = null)
+        private void AddModuleInfoToGrid(int rowNumber,string systemName, bool enabled, bool isWithSettings, Color? rowColor = null)
         {
             DataGridViewRow r = new DataGridViewRow { ErrorText = systemName };
             if (rowColor.HasValue)
@@ -118,7 +119,7 @@ namespace MonkeyJobTool.Forms
             }
             r.Cells.Add(new DataGridViewTextBoxCell()
             {
-                Value = systemName,
+                Value = rowNumber,
                 Style = new DataGridViewCellStyle() { Alignment = DataGridViewContentAlignment.MiddleLeft }
             });
             
@@ -152,7 +153,7 @@ namespace MonkeyJobTool.Forms
                 App.Instance.EnableModule(instance.SystemName);
             }
             
-            btnEnabledDisableClient.Text = (!instance.IsEnabled ? "Под" : "Вы") + "ключить клиент";
+            btnEnabledDisableClient.Text = (!instance.IsEnabled ? "Активировать" : "Выключить") + " клиент";
 
             grid.Rows[grid.SelectedRows[0].Index].Cells["colIsEnabled"].Value = instance.IsEnabled ? "Вкл" : "Выкл";
         }

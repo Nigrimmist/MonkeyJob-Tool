@@ -401,11 +401,11 @@ namespace MonkeyJobTool.Forms
 
             if (gridType == SettingGridType.Modules)
             {
-                btnEnabledDisableModule.Text = (!module.IsEnabled ? "В" : "Вы") + "ключить модуль";
+                btnEnabledDisableModule.Text = (!module.IsEnabled ? "Активировать" : "Выключить") + " модуль";
             }
             else
             {
-                btnEnabledDisableClient.Text = (!module.IsEnabled ? "Под" : "Вы") + "ключить клиент";
+                btnEnabledDisableClient.Text = (!module.IsEnabled ? "Активировать" : "Выключить") + " клиент";
             }
 
             grid.Rows[grid.SelectedRows[0].Index].Cells[ColumnNameByGridType(gridType, "colIsEnabled")].Value = module.IsEnabled ? "Вкл" : "Выкл";
