@@ -28,8 +28,8 @@ namespace MonkeyJobTool.Forms
 
         private void MainComponentSettings_Load(object sender, EventArgs e)
         {
-            btnShowModuleCommunication.Visible = Component.ModuleType == ModuleType.IntegrationClient;
-            this.Text =  "Экземпляр "+(Component.ModuleType == ModuleType.IntegrationClient ? "клиента" : "модуля");
+            btnShowModuleCommunication.Visible = Component.ModuleType == ComponentType.IntegrationClient;
+            this.Text =  "Экземпляр "+(Component.ModuleType == ComponentType.IntegrationClient ? "клиента" : "модуля");
             DatabindGrid();
         }
 
@@ -65,7 +65,7 @@ namespace MonkeyJobTool.Forms
                 if (_gridRowsInited)
                 {
                     btnEnabledDisableClient.Enabled = true;
-                    if(Component.ModuleType==ModuleType.IntegrationClient)
+                    if(Component.ModuleType==ComponentType.IntegrationClient)
                         btnShowModuleCommunication.Enabled = true;
                 }
                 btnEnabledDisableClient.Text = (!client.IsEnabled ? "В" : "Вы") + "ключить";
@@ -76,7 +76,7 @@ namespace MonkeyJobTool.Forms
             {
                 btnRemoveClient.Enabled = false;
                 btnShowClientLogs.Enabled = false;
-                if(Component.ModuleType==ModuleType.IntegrationClient)
+                if(Component.ModuleType==ComponentType.IntegrationClient)
                     btnShowModuleCommunication.Enabled = false;
                 btnEnabledDisableClient.Enabled = false;
             }

@@ -62,9 +62,9 @@ namespace MonkeyJobTool.Forms
         {
             cmb.DataSource = new List<object>()
             {
-                new {Id = (int)ModuleType.Event, Value = "Интервальный"},
-                new {Id = (int)ModuleType.Handler, Value = "Команда"},
-                new {Id = (int)ModuleType.Tray, Value = "Трей"},
+                new {Id = (int)ComponentType.Event, Value = "Интервальный"},
+                new {Id = (int)ComponentType.Handler, Value = "Команда"},
+                new {Id = (int)ComponentType.Tray, Value = "Трей"},
             };
             cmb.DisplayMember = "Value";
             cmb.ValueMember = "Id";
@@ -74,7 +74,7 @@ namespace MonkeyJobTool.Forms
         {
             lstAvailableModules.DataSource = App.Instance.Bot.Modules.SelectMany(x=>x.Instances).Select(x => new
             {
-                Name = x.GetModuleName()+" ("+x.GetTypeDescription()+")",
+                Name = x.GetComponentName()+" ("+x.GetTypeDescription()+")",
                 x.Id,x.SystemName
             }).ToList();
             lstAvailableModules.DisplayMember = "Name";
@@ -131,7 +131,7 @@ namespace MonkeyJobTool.Forms
                     MoveModule(lstAvailableModules, lstCheckedModules, new
                     {
                         module.Id,
-                        Name = module.GetModuleName()+" (" + module.GetTypeDescription() + ")", module.SystemName
+                        Name = module.GetComponentName()+" (" + module.GetTypeDescription() + ")", module.SystemName
                     });
                 }
             }
@@ -145,7 +145,7 @@ namespace MonkeyJobTool.Forms
                         MoveModule(lstAvailableModules, lstCheckedModules, new
                         {
                             module.Id,
-                            Name = module.GetModuleName() + " (" + module.GetTypeDescription() + ")",
+                            Name = module.GetComponentName() + " (" + module.GetTypeDescription() + ")",
                             module.SystemName
                         });
                     }
@@ -161,11 +161,11 @@ namespace MonkeyJobTool.Forms
             }
             else if (rdByModuleType.Checked)
             {
-                ClientData.EnabledByType = (ModuleType)(int) cmbModuleTypes.SelectedValue;
+                ClientData.EnabledByType = (ComponentType)(int) cmbModuleTypes.SelectedValue;
             }
             else if (rdExceptType.Checked)
             {
-                ClientData.DisabledByType = (ModuleType)(int)cmbExceptType.SelectedValue;
+                ClientData.DisabledByType = (ComponentType)(int)cmbExceptType.SelectedValue;
             }
             else if (rdOnlyModules.Checked)
             {

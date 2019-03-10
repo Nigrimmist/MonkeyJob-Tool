@@ -7,7 +7,7 @@ namespace HelloBotCore.Entities
 {
     public class BotContextBase 
     {
-        public ModuleType ModuleType { get; set; }
+        public ComponentType ComponentType { get; set; }
         public Guid ModuleId { get; set; }
         public string CommandName { get; set; }
     }

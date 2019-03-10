@@ -261,7 +261,7 @@ namespace MonkeyJobTool.Forms
                     {
                         Body = command.ToString(false),
                         Icon = command.Icon ?? Resources.monkey_highres_img,
-                        Title = "Подсказка по команде \"" + command.GetModuleName() + "\"",
+                        Title = "Подсказка по команде \"" + command.GetComponentName() + "\"",
                         ForCommand = command.SystemName
                     }
                 };
@@ -322,7 +322,7 @@ namespace MonkeyJobTool.Forms
                     _bot.OnTrayIconStateChangeRequested += OnTrayIconStateChangeRequested;
                     _bot.OnTrayBalloonTipRequested += BotOnOnTrayBalloonTipRequested;
                     _bot.SetCurrentLanguage((Language) (int) App.Instance.AppConf.Language);
-                    _bot.RegisterModules(App.Instance.AppConf.SystemData.EnabledModules, App.Instance.AppConf.SystemData.DisabledModules);
+                    _bot.RegisterComponents(App.Instance.AppConf.SystemData.EnabledModules, App.Instance.AppConf.SystemData.DisabledModules);
                     _bot.RegisterIntegrationClients(App.Instance.AppConf.SystemData.EnabledModules);
                     _bot.OnSuggestRecieved += BotOnSuggestRecieved;
                     _bot.OnModuleRemoved += _bot_OnModuleRemoved;
@@ -463,7 +463,7 @@ namespace MonkeyJobTool.Forms
         {
             string errorMessage = "Неизвестная ошибка.";
             bool logError = true;
-            if (module.ModuleType == ModuleType.Handler)
+            if (module.ModuleType == ComponentType.Handler)
             {
                 errorMessage = "Увы, что-то пошло не так и модуль сломался, попробуйте как-нибудь по другому.";
 
@@ -499,7 +499,7 @@ namespace MonkeyJobTool.Forms
             }
 
             if (logError && !string.IsNullOrEmpty(module.Author.EmailForLogs) && !string.IsNullOrEmpty(errorMessage))
-                EmailHelper.SendModuleErrorEmail(exception, module.Author.EmailForLogs,"MonkeyJob error report for "+module.GetModuleName()+" module");
+                EmailHelper.SendModuleErrorEmail(exception, module.Author.EmailForLogs,"MonkeyJob error report for "+module.GetComponentName()+" module");
         }
 
         
@@ -573,7 +573,7 @@ namespace MonkeyJobTool.Forms
                 var answerType = answerInfo.AnswerType;
                 
                 string title = string.IsNullOrEmpty(answerInfo.Title) ? answerInfo.CommandName : answerInfo.Title;
-                if (answerInfo.MessageSourceType == ModuleType.Event)
+                if (answerInfo.MessageSourceType == ComponentType.Event)
                 {
                     //do not show already exist popup for events
                     if (App.Instance.NotificationPopupExist(answerInfo.Answer.ToString(), answerInfo.Title))
@@ -614,14 +614,14 @@ namespace MonkeyJobTool.Forms
                             {
 
                                 var mainFormActive = App.ApplicationIsActivated();
-                                if (answerInfo.MessageSourceType == ModuleType.Handler)
+                                if (answerInfo.MessageSourceType == ComponentType.Handler)
                                 {
                                     if (mainFormActive)
                                         App.Instance.ShowFixedPopup(title, answer, commandToken, answerInfo.Icon, answerInfo.HeaderBackgroundColor, answerInfo.BodyBackgroundColor);
                                     else
                                         App.Instance.ShowNotification(title, answer, commandToken, answerInfo.Icon, answerInfo.HeaderBackgroundColor, answerInfo.BodyBackgroundColor);
                                 }
-                                else if (answerInfo.MessageSourceType == ModuleType.Event || answerInfo.MessageSourceType == ModuleType.IntegrationClient)
+                                else if (answerInfo.MessageSourceType == ComponentType.Event || answerInfo.MessageSourceType == ComponentType.IntegrationClient)
                                 {
                                     App.Instance.ShowNotification(title, answer, commandToken, answerInfo.Icon, answerInfo.HeaderBackgroundColor, answerInfo.BodyBackgroundColor);
                                 }

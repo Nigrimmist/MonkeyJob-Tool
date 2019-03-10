@@ -5,7 +5,7 @@ using System.Text;
 
 namespace HelloBotCore.Entities
 {
-    public enum ModuleType
+    public enum ComponentType
     {
         Handler=1,
         Event=2,
@@ -13,7 +13,7 @@ namespace HelloBotCore.Entities
         IntegrationClient=4
     }
 
-    public enum BaseModuleType
+    public enum BaseComponentType
     {
         Modules=1,
         Clients =2
@@ -21,45 +21,45 @@ namespace HelloBotCore.Entities
 
     public static class ModuleTypeExtensions
     {
-        public static string ToReadableName(this ModuleType type)
+        public static string ToReadableName(this ComponentType type)
         {
             switch (type)
             {
-                case ModuleType.Handler:
+                case ComponentType.Handler:
                     return "Команда";
-                case ModuleType.Event:
+                case ComponentType.Event:
                     return "Интервальный";
-                case ModuleType.Tray:
+                case ComponentType.Tray:
                     return "Трей";
-                case ModuleType.IntegrationClient:
+                case ComponentType.IntegrationClient:
                     return "Клиент";
                 default:
                     return "Unknown type";                    
             }
         }
 
-        public static string ToParentReadableName(this ModuleType type)
+        public static string ToParentReadableName(this ComponentType type)
         {
             switch (type.ToBaseType())
             {
-                case BaseModuleType.Modules:                
+                case BaseComponentType.Modules:                
                     return "Модуль";
-                case BaseModuleType.Clients:
+                case BaseComponentType.Clients:
                     return "Клиент";
                 default:
                     return "Unknown type";
             }
         }
-        public static BaseModuleType ToBaseType(this ModuleType type)
+        public static BaseComponentType ToBaseType(this ComponentType type)
         {
             switch (type)
             {
-                case ModuleType.Handler:
-                case ModuleType.Event:
-                case ModuleType.Tray:
-                    return BaseModuleType.Modules;
-                case ModuleType.IntegrationClient:
-                    return BaseModuleType.Clients;
+                case ComponentType.Handler:
+                case ComponentType.Event:
+                case ComponentType.Tray:
+                    return BaseComponentType.Modules;
+                case ComponentType.IntegrationClient:
+                    return BaseComponentType.Clients;
                 default:
                     throw new NotImplementedException("BaseModuleType.ModuleType is unknown");
             }

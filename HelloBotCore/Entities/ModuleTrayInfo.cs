@@ -46,9 +46,9 @@ namespace HelloBotCore.Entities
             EventFireCallback(commandToken);
         }
 
-        public override ModuleType ModuleType
+        public override ComponentType ModuleType
         {
-            get { return ModuleType.Tray; }
+            get { return ComponentType.Tray; }
         }
 
         public override bool IsEnabledByDefault => false;

@@ -10,7 +10,7 @@ namespace HelloBotCore.Entities
         public string Title { get; set; }
         public AnswerBehaviourType AnswerType { get; set; }
         public string CommandName { get; set; }
-        public ModuleType MessageSourceType { get; set; }
+        public ComponentType MessageSourceType { get; set; }
         public Image Icon { get; set; }
         public Color? HeaderBackgroundColor { get; set; }
         public Color? BodyBackgroundColor { get; set; }

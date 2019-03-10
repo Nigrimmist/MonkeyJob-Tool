@@ -73,6 +73,7 @@
     <Compile Include="DAL\StorageServices\SqlLiteStorage.cs" />
     <Compile Include="Entities\AnswerInfo.cs" />
     <Compile Include="Entities\AppConstants.cs" />
+    <Compile Include="Entities\ComponentType.cs" />
     <Compile Include="Entities\MainComponentInstanceSettings.cs" />
     <Compile Include="Entities\MainIntegrationClientServiceSettings.cs" />
     <Compile Include="Entities\ModuleToModuleCommunication.cs" />
@@ -95,7 +96,6 @@
     <Compile Include="Entities\ModuleLogStorageInfo.cs" />
     <Compile Include="Entities\ComponentSettings.cs" />
     <Compile Include="Entities\ModuleTrayInfo.cs" />
-    <Compile Include="Entities\ModuleType.cs" />
     <Compile Include="Entities\RegexParseitem.cs" />
     <Compile Include="Entities\UserReactionToCommandType.cs" />
     <Compile Include="HelloBot.cs" />

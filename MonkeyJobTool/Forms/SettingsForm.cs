@@ -276,7 +276,7 @@ namespace MonkeyJobTool.Forms
                 string typeDescr = "";
                 if (mod is ModuleInfoBase)
                     typeDescr = (mod as ModuleInfoBase).GetTypeDescription();
-                AddModuleInfoToGrid(gridType,mod.GetModuleName(), typeDescr, mod.IsEnabled,mod.Instances.Count(), mod.SystemName, mod.SettingsType != null,rowColor);
+                AddModuleInfoToGrid(gridType,mod.GetComponentName(), typeDescr, mod.IsEnabled,mod.Instances.Count(), mod.SystemName, mod.SettingsType != null,rowColor);
             }
            
         }
@@ -354,7 +354,7 @@ namespace MonkeyJobTool.Forms
                         {
                             Body = module.ToString(),
                             Icon = module.Icon ?? Resources.monkey_highres_img,
-                            Title = "Информация о " + (gridType==SettingGridType.Modules?"модуле":"клиенте") + " " + module.GetModuleName()
+                            Title = "Информация о " + (gridType==SettingGridType.Modules?"модуле":"клиенте") + " " + module.GetComponentName()
                         };
                         _commandHelpCommand.Init();
                     }
@@ -400,11 +400,11 @@ namespace MonkeyJobTool.Forms
                 App.Instance.EnableComponent(component.SystemName);
             }
 
-            if (component.ModuleType == ModuleType.Event)
+            if (component.ModuleType == ComponentType.Event)
                 btnModuleRun.Enabled = component.IsEnabled;
 
             
-            if (component.ModuleType.ToBaseType()==BaseModuleType.Modules)
+            if (component.ModuleType.ToBaseType()==BaseComponentType.Modules)
             {
                 btnEnabledDisableModule.Text = (!component.IsEnabled ? "Включить" : "Выключить") + " модуль";
             }
@@ -449,13 +449,13 @@ namespace MonkeyJobTool.Forms
             var gridType = GridTypeBySender(sender);
             if (e.RowIndex >= 0 && e.ColumnIndex == grid.Rows[e.RowIndex].Cells[ColumnNameByGridType(gridType, "settingsCol")].ColumnIndex)
             {
-                var moduleKey = grid.Rows[e.RowIndex].ErrorText;
+                var componentKey = grid.Rows[e.RowIndex].ErrorText;
 
-                var module =
+                var component =
                     (gridType == SettingGridType.Modules ? App.Instance.Bot.Modules : App.Instance.Bot.IntegrationClients.Select(x => (ComponentInfoBase) x)).SingleOrDefault(
-                        x => x.SystemName == moduleKey);
+                        x => x.SystemName == componentKey);
 
-                grid.Cursor = module.SettingsType != null ? Cursors.Hand : Cursors.Default;
+                grid.Cursor = component.SettingsType != null ? Cursors.Hand : Cursors.Default;
             }
             else
             {
@@ -481,19 +481,19 @@ namespace MonkeyJobTool.Forms
             _gridRowsInited = true;
             if (ChangedComponents.Any())
             {
-                string moduleType;
-                if (ChangedComponents.Any(x => x.ModuleType != ModuleType.IntegrationClient))
+                string componentType;
+                if (ChangedComponents.Any(x => x.ModuleType != ComponentType.IntegrationClient))
                 {
                     TCSettings.SelectedTab = TPModuleSettings;
-                    moduleType = "модули";
+                    componentType = "модули";
                 }
                 else
                 {
                     TCSettings.SelectedTab = TPClients;
-                    moduleType = "клиенты";
+                    componentType = "клиенты";
                 }
 
-                MessageBox.Show($"Внимание!\r\nСледующие {moduleType} изменили свои настройки ввиду новой версии.\r\n\r\nПроверьте пожалуйста, что все ваши настройки верны. Изменённые {moduleType} подсвечены красным цветом.\r\n\r\nДля того, чтобы это сообщение больше не появлялось, зайдите в настройки и пересохраните их.", AppConstants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"Внимание!\r\nСледующие {componentType} изменили свои настройки ввиду новой версии.\r\n\r\nПроверьте пожалуйста, что все ваши настройки верны. Изменённые {componentType} подсвечены красным цветом.\r\n\r\nДля того, чтобы это сообщение больше не появлялось, зайдите в настройки и пересохраните их.", AppConstants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             gridClients.ClearSelection();
         }
@@ -535,9 +535,9 @@ namespace MonkeyJobTool.Forms
             return ((DataGridView) grid).Name == gridModules.Name ? SettingGridType.Modules : SettingGridType.Clients;
         }
 
-        private SettingGridType GridTypeByComponentType(BaseModuleType baseComponentType)
+        private SettingGridType GridTypeByComponentType(BaseComponentType baseComponentType)
         {
-            return baseComponentType==BaseModuleType.Modules ? SettingGridType.Modules : SettingGridType.Clients;
+            return baseComponentType==BaseComponentType.Modules ? SettingGridType.Modules : SettingGridType.Clients;
         }
 
         enum SettingGridType
@@ -563,7 +563,7 @@ namespace MonkeyJobTool.Forms
                     }
                     btnEnabledDisableModule.Text = (!module.IsEnabled ? "В" : "Вы") + "ключить модуль";
                     btnShowLogs.Enabled = gridType == SettingGridType.Modules ? module.Trace.TraceMessages.Any() : (module as IntegrationClientInfo).Instances.Any(x => x.Trace.TraceMessages.Any());
-                    pnlRunModule.Visible = module.ModuleType==ModuleType.Event;
+                    pnlRunModule.Visible = module.ModuleType==ComponentType.Event;
                     btnModuleRun.Enabled = module.IsEnabled;
                 }
                 else

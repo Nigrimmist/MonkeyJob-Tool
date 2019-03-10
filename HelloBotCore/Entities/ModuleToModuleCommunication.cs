@@ -10,8 +10,8 @@ namespace HelloBotCore.Entities
     {
         public List<string> EnabledModules { get; set; }
         public List<string> DisabledModules { get; set; }
-        public ModuleType? EnabledByType { get; set; }
-        public ModuleType? DisabledByType { get; set; }
+        public ComponentType? EnabledByType { get; set; }
+        public ComponentType? DisabledByType { get; set; }
         public bool EnabledForAll { get; set; }
 
         public void Reset()
@@ -23,7 +23,7 @@ namespace HelloBotCore.Entities
             EnabledForAll = false;
         }
 
-        public bool IsEnabledFor(string moduleSystemName, ModuleType moduleType)
+        public bool IsEnabledFor(string moduleSystemName, ComponentType moduleType)
         {
             if (EnabledForAll) return true;
             if (DisabledByType.HasValue) return DisabledByType.Value != moduleType;
@@ -46,7 +46,7 @@ namespace HelloBotCore.Entities
             {
                 
                 EnabledForAll = false,
-                EnabledByType = ModuleType.Event
+                EnabledByType = ComponentType.Event
             };
         }
     }

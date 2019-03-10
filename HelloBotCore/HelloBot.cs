@@ -105,7 +105,7 @@ namespace HelloBotCore
             _commandDictLocks = new Dictionary<Guid, ModuleLocker>();
             _commandContexts = new Dictionary<Guid, BotContextBase>();
 
-            new Thread(SaveModuleTraces).Start();
+            new Thread(SaveComponentTraces).Start();
             App.Instance.LogTrace("End HelloBot class cctr");
         }
 
@@ -132,8 +132,8 @@ namespace HelloBotCore
                 Guid commandToken = Guid.NewGuid();
                 AddNewCommandContext(commandToken, new BotCommandContext()
                 {
-                    CommandName = tEv.GetModuleName(),
-                    ModuleType = ModuleType.Event,
+                    CommandName = tEv.GetComponentName(),
+                    ComponentType = ComponentType.Event,
                     ModuleId = tEv.Id
                 });
 
@@ -152,10 +152,7 @@ namespace HelloBotCore
                     catch (Exception ex)
                     {
 
-                        if (OnModuleErrorOccured != null)
-                        {
-                            OnModuleErrorOccured(ex, tEv);
-                        }
+                        OnModuleErrorOccured?.Invoke(ex, tEv);
                         tEv.Trace.AddMessage("System : error occured. " + ex);
                         tEv.Trace.Save();
                         Thread.Sleep(TimeSpan.FromSeconds(30));
@@ -182,15 +179,15 @@ namespace HelloBotCore
                         Guid commandToken = Guid.NewGuid();
                         AddNewCommandContext(commandToken, new BotTrayModuleContext()
                         {
-                            ModuleType = ModuleType.Tray,
+                            ComponentType = ComponentType.Tray,
                             ModuleId = tTi.Id,
                             TrayIcon = tTi.TrayIcon,
-                            CommandName = tTi.GetModuleName(),
+                            CommandName = tTi.GetComponentName(),
                         });
                         if (tMain.IsEnabled && tTi.IsEnabled)
                         {
                             if (OnTrayIconSetupRequired != null)
-                                OnTrayIconSetupRequired(tTi.Id, tTi.TrayIcon, tTi.GetModuleName());
+                                OnTrayIconSetupRequired(tTi.Id, tTi.TrayIcon, tTi.GetComponentName());
                         }
                         while (true)
                         {
@@ -203,10 +200,7 @@ namespace HelloBotCore
                             }
                             catch (Exception ex)
                             {
-                                if (OnModuleErrorOccured != null)
-                                {
-                                    OnModuleErrorOccured(ex, tTi);
-                                }
+                                OnModuleErrorOccured?.Invoke(ex, tTi);
                                 Thread.Sleep(TimeSpan.FromSeconds(30));
                             }
 
@@ -226,14 +220,14 @@ namespace HelloBotCore
             }
         }
 
-        public void RegisterModules(List<string> enabledModules = null, List<string> disabledModules = null)
+        public void RegisterComponents(List<string> enabledComponents = null, List<string> disabledComponents = null)
         {
-            var allModules = LoadModules(enabledModules, disabledModules);
+            var allComponents = LoadModules(enabledComponents, disabledComponents);
 
-            var handlerModules = allModules.OfType<ModuleCommandInfo>().Where(x => x.CallCommandList.Any()).ToList();
+            var handlerModules = allComponents.OfType<ModuleCommandInfo>().Where(x => x.CallCommandList.Any()).ToList();
             var baseList = ExtendAliases(handlerModules).Select(x => (ModuleInfoBase)x).ToList(); //extend aliases for autocomplete wrong keyboard layout search
-            baseList.AddRange(allModules.OfType<ModuleEventInfo>().Select(x => (ModuleInfoBase)x));
-            baseList.AddRange(allModules.OfType<ModuleTrayInfo>().Select(x => (ModuleInfoBase)x));
+            baseList.AddRange(allComponents.OfType<ModuleEventInfo>().Select(x => (ModuleInfoBase)x));
+            baseList.AddRange(allComponents.OfType<ModuleTrayInfo>().Select(x => (ModuleInfoBase)x));
             Modules.AddRange(baseList);
         }
 
@@ -469,7 +463,7 @@ namespace HelloBotCore
                                     {
                                         ClientCommandContext = clientCommandContext,
                                         CommandName = !string.IsNullOrEmpty(hnd.ProvidedTitle) ? hnd.ProvidedTitle : command,
-                                        ModuleType = ModuleType.Handler,
+                                        ComponentType = ComponentType.Handler,
                                         ModuleId = hnd.Id
                                     });
                                     App.Instance.LogTrace("HandleMessage(). Thread started -> module.HandleMessage starting. command : " + command + ". args : " + args);
@@ -651,7 +645,7 @@ namespace HelloBotCore
             if (commandContext != null || !commandToken.HasValue)
             {
                 //do not notify if main client in silent mode
-                if (moduleInfo.ModuleType == ModuleType.Event && !CanNotifyClient())
+                if (moduleInfo.ModuleType == ComponentType.Event && !CanNotifyClient())
                 {
                     App.Instance.LogTrace("HelloBot.ShowMessage() doNotNotify enabled");
                     return;
@@ -689,7 +683,7 @@ namespace HelloBotCore
                             if (!settings.MessageHashExist(moduleInfo.SystemName, hashGroup, msgHash.ToString()))
                             {
                                 App.Instance.LogTrace("HelloBot.ShowMessage() adding new msg hash");
-                                if (moduleInfo.ModuleType != ModuleType.Handler)
+                                if (moduleInfo.ModuleType != ComponentType.Handler)
                                 {
                                     //skip hash check for handler-like commands, because handlers always must be shown on client
                                     settings.AddHash(moduleInfo.SystemName, hashGroup, msgHash.ToString());
@@ -701,7 +695,7 @@ namespace HelloBotCore
                                     new BotCommandContext()
                                     {
                                         CommandName = !string.IsNullOrEmpty(client.ProvidedTitle) ? client.ProvidedTitle : "",
-                                        ModuleType = ModuleType.IntegrationClient,
+                                        ComponentType = ComponentType.IntegrationClient,
                                         ModuleId = client.Id
                                     });
                                 App.Instance.LogTrace("HelloBot.ShowMessage() sending message to client " + client.SystemName);
@@ -740,7 +734,7 @@ namespace HelloBotCore
                             Title = title,
                             CommandName = commandContext.CommandName,
                             AnswerType = answerType,
-                            MessageSourceType = commandContext.ModuleType,
+                            MessageSourceType = commandContext.ComponentType,
                             Icon = moduleInfo.Icon,
                             BodyBackgroundColor = bodyBackgroundColor,
                             HeaderBackgroundColor = headerBackgroundColor
@@ -768,7 +762,7 @@ namespace HelloBotCore
                     Title = title,
                     AnswerType = answerType,
                     CommandName = commandname,
-                    MessageSourceType = ModuleType.Handler
+                    MessageSourceType = ComponentType.Handler
                 }, clientCommandContext);
         }
 
@@ -927,6 +921,15 @@ namespace HelloBotCore
             get { return _integrationClients; }
         }
 
+        public IEnumerable<ComponentInfoBase> Components
+        {
+            get { return Modules.Union(Modules.SelectMany(x => x.Instances).Union(_integrationClients.Cast<ComponentInfoBase>()).Union(_integrationClients.SelectMany(x => x.Instances))); }
+        }
+
+        public IEnumerable<ComponentInfoBase> MainComponents
+        {
+            get { return Components.Where(x=>x.IsMainComponent); }
+        }
 
         public void DisableComponent(string componentSystemName, out List<string> disabledInstancesSystemNames)
         {
@@ -961,14 +964,14 @@ namespace HelloBotCore
             App.Instance.LogTrace("Start GetIncompatibleSettingComponents()");
 
             List<ComponentInfoBase> toReturn = new List<ComponentInfoBase>();
-            foreach (ComponentInfoBase module in Modules.Union(IntegrationClients.Cast<ComponentInfoBase>()).Select(x => x).Where(x => x.SettingsType != null))
+            foreach (ComponentInfoBase component in MainComponents.Where(x => x.SettingsType != null))
             {
-                lock (_commandDictLocks[module.Id].SettingsLock)
+                lock (_commandDictLocks[component.Id].SettingsLock)
                 {
-                    var settings = module.GetSettings();
-                    if (settings!=null && settings.SettingsVersion < module.SettingsModuleVersion)
+                    var settings = component.GetSettings();
+                    if (settings!=null && settings.SettingsVersion < component.SettingsModuleVersion)
                     {
-                        toReturn.Add(module);
+                        toReturn.Add(component);
                     }
 
                 }
@@ -979,9 +982,9 @@ namespace HelloBotCore
         }
 
 
-        private void SaveModuleTraces()
+        private void SaveComponentTraces()
         {
-            App.Instance.LogTrace("SaveModuleTraces() called");
+            App.Instance.LogTrace("SaveComponentTraces() called");
 
             while (true)
             {
@@ -989,7 +992,7 @@ namespace HelloBotCore
                 Thread.Sleep(RunTraceSaveEveryMin*1000*60);
                 try
                 {
-                    foreach (var module in Modules.SelectMany(x=>x.Instances))
+                    foreach (var module in Components.SelectMany(x=>x.Instances))
                     {
                         lock (_commandDictLocks[module.Id].LogTraceLock)
                         {
