@@ -384,31 +384,38 @@ namespace MonkeyJobTool.Forms
         {
             DataGridView grid = ((Button) sender).Name == btnEnabledDisableModule.Name ? gridModules : gridClients;
             var gridType = GridTypeBySender(grid);
-            var moduleKey = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
+            var systemName = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
+            EnableDisableComponent(systemName);
+        }
 
-            var module = (gridType==SettingGridType.Modules ? App.Instance.Bot.Modules : App.Instance.Bot.IntegrationClients.Select(x=>(ComponentInfoBase)x)).SingleOrDefault(x => x.SystemName == moduleKey);
-            if (module.IsEnabled)
+        private void EnableDisableComponent(string systemName)
+        {
+            var component = App.Instance.Bot.FindComponent(systemName);
+            if (component.IsEnabled)
             {
-                App.Instance.DisableModule(module.SystemName);
+                App.Instance.DisableComponent(component.SystemName);
             }
             else
             {
-                App.Instance.EnableModule(module.SystemName);
+                App.Instance.EnableComponent(component.SystemName);
             }
 
-            if (module.ModuleType == ModuleType.Event)
-                btnModuleRun.Enabled = module.IsEnabled;
+            if (component.ModuleType == ModuleType.Event)
+                btnModuleRun.Enabled = component.IsEnabled;
 
-            if (gridType == SettingGridType.Modules)
+            
+            if (component.ModuleType.ToBaseType()==BaseModuleType.Modules)
             {
-                btnEnabledDisableModule.Text = (!module.IsEnabled ? "Активировать" : "Выключить") + " модуль";
+                btnEnabledDisableModule.Text = (!component.IsEnabled ? "Включить" : "Выключить") + " модуль";
             }
             else
             {
-                btnEnabledDisableClient.Text = (!module.IsEnabled ? "Активировать" : "Выключить") + " клиент";
+                btnEnabledDisableClient.Text = (!component.IsEnabled ? "Включить" : "Выключить") + " клиент";
             }
 
-            grid.Rows[grid.SelectedRows[0].Index].Cells[ColumnNameByGridType(gridType, "colIsEnabled")].Value = module.IsEnabled ? "Вкл" : "Выкл";
+            var gridType = GridTypeByComponentType(component.ModuleType.ToBaseType());
+            var grid = Grid(gridType);
+            grid.Rows[grid.SelectedRows[0].Index].Cells[ColumnNameByGridType(gridType, "colIsEnabled")].Value = component.IsEnabled ? "Вкл" : "Выкл";
         }
 
         private void grid_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -424,10 +431,16 @@ namespace MonkeyJobTool.Forms
                 if (component.SettingsType != null)
                 {
                     var compSettingsForm = new MainComponentSettings() { Component = component };
+                    compSettingsForm.OnEnableComponentRequired += CompSettingsForm_OnEnableComponentRequired;
                     compSettingsForm.ShowDialog();
                 }
             }
             
+        }
+
+        private void CompSettingsForm_OnEnableComponentRequired(string componentSystemName)
+        {
+            EnableDisableComponent(componentSystemName);
         }
 
         private void grid_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
@@ -461,10 +474,10 @@ namespace MonkeyJobTool.Forms
         private bool _gridRowsInited = false;
         private void SettingsForm_Shown(object sender, EventArgs e)
         {
-            TCSettings.SelectedTab = TPModuleSettings;
-            gridModules.ClearSelection();
-            TCSettings.SelectedTab = TPClients;
-            gridClients.ClearSelection();
+            //TCSettings.SelectedTab = TPModuleSettings;
+            //gridModules.ClearSelection();
+            //TCSettings.SelectedTab = TPClients;
+            //gridClients.ClearSelection();
             _gridRowsInited = true;
             if (ChangedComponents.Any())
             {
@@ -520,6 +533,11 @@ namespace MonkeyJobTool.Forms
         private SettingGridType GridTypeBySender(object grid)
         {
             return ((DataGridView) grid).Name == gridModules.Name ? SettingGridType.Modules : SettingGridType.Clients;
+        }
+
+        private SettingGridType GridTypeByComponentType(BaseModuleType baseComponentType)
+        {
+            return baseComponentType==BaseModuleType.Modules ? SettingGridType.Modules : SettingGridType.Clients;
         }
 
         enum SettingGridType

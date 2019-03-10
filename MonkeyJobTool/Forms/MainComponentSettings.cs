@@ -23,6 +23,9 @@ namespace MonkeyJobTool.Forms
         private bool _gridRowsInited = false;
         public ComponentInfoBase Component { get; set; }
 
+        public delegate void OnEnableComponentRequiredDelegate(string componentSystemName);
+        public event OnEnableComponentRequiredDelegate OnEnableComponentRequired;
+
         private void MainComponentSettings_Load(object sender, EventArgs e)
         {
             btnShowModuleCommunication.Visible = Component.ModuleType == ModuleType.IntegrationClient;
@@ -144,16 +147,28 @@ namespace MonkeyJobTool.Forms
             var compSystemName = grid.Rows[grid.SelectedRows[0].Index].ErrorText;
 
             var instance = Component.Instances.Select(x => x).SingleOrDefault(x => x.SystemName == compSystemName);
+            
             if (instance.IsEnabled)
             {
-                App.Instance.DisableModule(instance.SystemName);
+                App.Instance.DisableComponent(instance.SystemName);
             }
             else
             {
-                App.Instance.EnableModule(instance.SystemName);
+                App.Instance.EnableComponent(instance.SystemName);
+                if (!Component.IsEnabled)
+                {
+                    string msg = $"{instance.ModuleType.ToParentReadableName()} включён, однако работать не будет. Причина : родительский элемент по прежнему выключен. Его активация включит также и остальные экземпляры, если таковые имеются и включены.{Environment.NewLine}{Environment.NewLine}Желаете так же ВКЛЮЧИТЬ родительский {instance.ModuleType.ToParentReadableName()}?";
+                    var result = MessageBox.Show(msg, $"{AppConstants.AppName} - Внимание", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    if (result == DialogResult.Yes)
+                    {
+                        OnEnableComponentRequired?.Invoke(instance.MainSystemName);
+                    }
+
+                }
+
             }
-            
-            btnEnabledDisableClient.Text = (!instance.IsEnabled ? "Активировать" : "Выключить") + " клиент";
+
+            btnEnabledDisableClient.Text = (!instance.IsEnabled ? "Включить" : "Выключить") + " клиент";
 
             grid.Rows[grid.SelectedRows[0].Index].Cells["colIsEnabled"].Value = instance.IsEnabled ? "Вкл" : "Выкл";
         }

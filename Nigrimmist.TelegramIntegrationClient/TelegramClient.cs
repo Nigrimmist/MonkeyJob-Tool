@@ -97,7 +97,7 @@ namespace Nigrimmist.TelegramIntegrationClient
                             }
                             else
                             {
-                                _client.ShowMessage(token, "Please, send any message to bot in telegram if you would like to use it as a client in MonkeyJob");
+                                _client.ShowMessage(token, "Please, send any message to bot in telegram from you telegram client if you would like to use it as a client in MonkeyJob. And try again");
                                 return;
                             }
                         }

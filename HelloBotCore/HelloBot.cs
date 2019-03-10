@@ -86,25 +86,25 @@ namespace HelloBotCore
         /// </summary>
         /// <param name="moduleDllmask">File mask for retrieving client command dlls</param>
         /// <param name="botCommandPrefix">Prefix for bot commands. Only messages with that prefix will be handled</param>
-        public HelloBot(Action<string> logTraceFunc,double currentUIClientVersion, string moduleDllmask = "*.dll", string botCommandPrefix = "!", string rootFolder = ".")
+        public HelloBot(Action<string> logTraceFunc, double currentUIClientVersion, string moduleDllmask = "*.dll", string botCommandPrefix = "!", string rootFolder = ".")
         {
 
             App.Instance.Init(logTraceFunc, rootFolder);
             App.Instance.LogTrace("Start HelloBot class cctr");
 
-            IDataStorage storageService = new SqlLiteStorage(App.Instance.ExecutionFolderPath,App.Instance.DefaultDateTimeConverter);
+            IDataStorage storageService = new SqlLiteStorage(App.Instance.ExecutionFolderPath, App.Instance.DefaultDateTimeConverter);
             _storage = new StorageManager(storageService);
 
             _currentUIClientVersion = currentUIClientVersion;
-            
-            
+
+
             _moduleDllmask = moduleDllmask;
             _botCommandPrefix = botCommandPrefix;
             _moduleScanPath = rootFolder;
             _commandTimeoutSec = 30;
             _commandDictLocks = new Dictionary<Guid, ModuleLocker>();
             _commandContexts = new Dictionary<Guid, BotContextBase>();
-            
+
             new Thread(SaveModuleTraces).Start();
             App.Instance.LogTrace("End HelloBot class cctr");
         }
@@ -124,7 +124,7 @@ namespace HelloBotCore
             }
         }
 
-        public void RunEvent(ModuleEventInfo tEv, Func<bool> callback=null)
+        public void RunEvent(ModuleEventInfo tEv, Func<bool> callback = null)
         {
             new Thread(() =>
             {
@@ -228,12 +228,12 @@ namespace HelloBotCore
 
         public void RegisterModules(List<string> enabledModules = null, List<string> disabledModules = null)
         {
-            var allModules = LoadModules(enabledModules,disabledModules);
+            var allModules = LoadModules(enabledModules, disabledModules);
 
             var handlerModules = allModules.OfType<ModuleCommandInfo>().Where(x => x.CallCommandList.Any()).ToList();
-            var baseList = ExtendAliases(handlerModules).Select(x => (ModuleInfoBase) x).ToList(); //extend aliases for autocomplete wrong keyboard layout search
-            baseList.AddRange(allModules.OfType<ModuleEventInfo>().Select(x => (ModuleInfoBase) x));
-            baseList.AddRange(allModules.OfType<ModuleTrayInfo>().Select(x => (ModuleInfoBase) x));
+            var baseList = ExtendAliases(handlerModules).Select(x => (ModuleInfoBase)x).ToList(); //extend aliases for autocomplete wrong keyboard layout search
+            baseList.AddRange(allModules.OfType<ModuleEventInfo>().Select(x => (ModuleInfoBase)x));
+            baseList.AddRange(allModules.OfType<ModuleTrayInfo>().Select(x => (ModuleInfoBase)x));
             Modules.AddRange(baseList);
         }
 
@@ -291,12 +291,12 @@ namespace HelloBotCore
                                 if (clientServiceData != null)
                                     tModule.InstanceCommunication = clientServiceData.ClientInstanceToModuleCommunication;
                             }
-                            
+
                             return tModule;
                         });
 
                         var mainModule = getNewInstance(null);
-                        
+
                         var mainModuleSettings = mainModule.GetSettings();
                         if (mainModuleSettings == null || mainModule.Instances.Count == 0)
                         {
@@ -308,7 +308,7 @@ namespace HelloBotCore
                         for (var i = 0; i < mainModuleSettings.Instances.Count; i++)
                         {
                             var instId = mainModuleSettings.Instances[i];
-                            var inst = mainModule.CreateNewInstanceFunc(instId);                            
+                            var inst = mainModule.CreateNewInstanceFunc(instId);
                             mainModule.Instances.Add(inst);
                         }
 
@@ -347,14 +347,14 @@ namespace HelloBotCore
 
             List<ModuleInfoBase> toReturn = new List<ModuleInfoBase>();
             var dlls = Directory.GetFiles(_moduleScanPath, _moduleDllmask);
-            var i = typeof (ModuleRegisterBase);
-            var settingsAttr = typeof (ModuleSettingsForAttribute);
+            var i = typeof(ModuleRegisterBase);
+            var settingsAttr = typeof(ModuleSettingsForAttribute);
 
             if (enabledModules == null) enabledModules = new List<string>();
             if (disabledModules == null) disabledModules = new List<string>();
             foreach (var dll in dlls)
             {
-                App.Instance.LogTrace(string.Format("LoadModules().iterate dlls. dll : "+dll));
+                App.Instance.LogTrace(string.Format("LoadModules().iterate dlls. dll : " + dll));
 
                 var ass = Assembly.LoadFile(dll);
                 var fi = new FileInfo(dll);
@@ -365,34 +365,34 @@ namespace HelloBotCore
                     new
                     {
                         moduleSettingsClass = x,
-                        moduleForParentClass = ((ModuleSettingsForAttribute) (Attribute.GetCustomAttribute(x, settingsAttr))).ModuleType
+                        moduleForParentClass = ((ModuleSettingsForAttribute)(Attribute.GetCustomAttribute(x, settingsAttr))).ModuleType
                     }).ToList();
 
                 foreach (Type type in typesInAssembly)
                 {
                     object obj = Activator.CreateInstance(type);
 
-                    var modules = ((ModuleRegisterBase) obj).GetModules().Select(module =>
-                    {
-                        var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == module.GetType());
-                        return FillMainComponentObj(module, (ModuleRegisterBase)obj, settingClass?.moduleSettingsClass, fi, enabledModules,disabledModules, x => new ModuleCommandInfo(_storage));                        
-                    }).ToList();
+                    var modules = ((ModuleRegisterBase)obj).GetModules().Select(module =>
+                   {
+                       var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == module.GetType());
+                       return FillMainComponentObj(module, (ModuleRegisterBase)obj, settingClass?.moduleSettingsClass, fi, enabledModules, disabledModules, x => new ModuleCommandInfo(_storage));
+                   }).ToList();
 
-                    var events = ((ModuleRegisterBase) obj).GetEvents().Select(ev =>
-                    {
-                        var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == ev.GetType());
-                        return FillMainComponentObj(ev, (ModuleRegisterBase)obj, settingClass?.moduleSettingsClass, fi, enabledModules, disabledModules, x => new ModuleEventInfo(_storage));
-                    }).ToList();
+                    var events = ((ModuleRegisterBase)obj).GetEvents().Select(ev =>
+                   {
+                       var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == ev.GetType());
+                       return FillMainComponentObj(ev, (ModuleRegisterBase)obj, settingClass?.moduleSettingsClass, fi, enabledModules, disabledModules, x => new ModuleEventInfo(_storage));
+                   }).ToList();
 
-                    var trayModules = ((ModuleRegisterBase) obj).GetTrayModules().Select(tr =>
-                    {
-                        var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == tr.GetType());
-                        return FillMainComponentObj(tr, (ModuleRegisterBase)obj, settingClass?.moduleSettingsClass, fi, enabledModules, disabledModules, x => new ModuleTrayInfo(_storage));
-                    }).ToList();
+                    var trayModules = ((ModuleRegisterBase)obj).GetTrayModules().Select(tr =>
+                   {
+                       var settingClass = settingForModules.FirstOrDefault(x => x.moduleForParentClass == tr.GetType());
+                       return FillMainComponentObj(tr, (ModuleRegisterBase)obj, settingClass?.moduleSettingsClass, fi, enabledModules, disabledModules, x => new ModuleTrayInfo(_storage));
+                   }).ToList();
 
                     toReturn.AddRange(modules.Union(events).Union(trayModules).Select(mainComponent => {
                         var mainModuleSettings = mainComponent.GetSettings();
-                        if (mainModuleSettings == null || mainModuleSettings.Instances.Count==0) // || settings of main module was inited from base module, reset it and override
+                        if (mainModuleSettings == null || mainModuleSettings.Instances.Count == 0) // || settings of main module was inited from base module, reset it and override
                         {
                             mainModuleSettings = new MainComponentInstanceSettings();
                             mainModuleSettings.Instances.Add(1);//each main module must have at least one child module
@@ -401,7 +401,7 @@ namespace HelloBotCore
 
                         foreach (var instId in mainModuleSettings.Instances)
                         {
-                            var inst = mainComponent.CreateNewInstanceFunc(instId);                            
+                            var inst = mainComponent.CreateNewInstanceFunc(instId);
                             mainComponent.Instances.Add(inst);
                         }
                         return mainComponent;
@@ -413,9 +413,9 @@ namespace HelloBotCore
             return toReturn;
         }
 
-        
 
-        private ModuleInfoBase FillMainComponentObj<T>(T module, ModuleRegisterBase moduleRegister, Type componentSettingsType, FileInfo fi, List<string> enabledModules, List<string> disabledModules, Func<StorageManager,ModuleInfoBase> newInstanceFunc) where T : ComponentBase
+
+        private ModuleInfoBase FillMainComponentObj<T>(T module, ModuleRegisterBase moduleRegister, Type componentSettingsType, FileInfo fi, List<string> enabledModules, List<string> disabledModules, Func<StorageManager, ModuleInfoBase> newInstanceFunc) where T : ComponentBase
         {
             var getNewInstance = new Func<int?, ModuleInfoBase>((instId) =>
             {
@@ -425,26 +425,26 @@ namespace HelloBotCore
                 var newModuleInstance = (ComponentBase)Activator.CreateInstance(module.GetType());
                 lModule.Init(Path.GetFileNameWithoutExtension(fi.Name), newModuleInstance, this, moduleRegister.AuthorInfo);
 
-                if(lModule.IsEnabledByDefault)
+                if (lModule.IsEnabledByDefault)
                     lModule.IsEnabled = !disabledModules.Contains(lModule.SystemName);//if disable was forced
                 else
                     lModule.IsEnabled = enabledModules.Contains(lModule.SystemName); //if enable was forced
 
                 if (componentSettingsType != null)
-                    lModule.SettingsType = componentSettingsType;                
+                    lModule.SettingsType = componentSettingsType;
 
                 return lModule;
             });
 
             var mainModule = getNewInstance(null);
             mainModule.CreateNewInstanceFunc = getNewInstance;
-            return (ModuleInfoBase)mainModule;             
+            return (ModuleInfoBase)mainModule;
         }
 
         public bool HandleMessage(string incomingMessage, ClientCommandContext clientCommandContext, bool runWithTimeout)
         {
             App.Instance.LogTrace("Start HandleMessage(). incomingMessage : " + incomingMessage);
-            
+
             if (incomingMessage.Contains(_botCommandPrefix))
             {
                 var command = incomingMessage.Substring(incomingMessage.IndexOf(_botCommandPrefix, StringComparison.InvariantCulture) + _botCommandPrefix.Length);
@@ -472,13 +472,13 @@ namespace HelloBotCore
                                         ModuleType = ModuleType.Handler,
                                         ModuleId = hnd.Id
                                     });
-                                    App.Instance.LogTrace("HandleMessage(). Thread started -> module.HandleMessage starting. command : " + command+". args : "+args);
+                                    App.Instance.LogTrace("HandleMessage(). Thread started -> module.HandleMessage starting. command : " + command + ". args : " + args);
 
                                     hnd.HandleMessage(command, args.TrimStart(), commandTempGuid);
 
                                     App.Instance.LogTrace("HandleMessage(). Thread started -> module.HandleMessage ended. command : " + command + ". args : " + args);
 
-                                    if (OnMessageHandled != null) 
+                                    if (OnMessageHandled != null)
                                         OnMessageHandled();
                                 }
                                 catch (Exception ex)
@@ -515,7 +515,7 @@ namespace HelloBotCore
             Thread workerThread = new Thread(threadStart);
             workerThread.SetApartmentState(ApartmentState.STA);
             workerThread.Start();
-            
+
             if (timeoutEnabled)
             {
                 var finished = workerThread.Join(timeout);
@@ -525,7 +525,16 @@ namespace HelloBotCore
             }
             return true;
         }
-
+        
+        /// <summary>
+        /// Searching through all components and their instances
+        /// </summary>
+        /// <returns></returns>
+        public ComponentInfoBase FindComponent(string systemName)
+        {
+            var found = Modules.Union(Modules.SelectMany(x => x.Instances).Union(_integrationClients.Cast<ComponentInfoBase>()).Union(_integrationClients.SelectMany(x => x.Instances))).Single(x => x.SystemName == systemName);
+            return found;
+        }
 
         public ModuleCommandInfo FindModule(string phrase, out string command, out string args)
         {
@@ -675,24 +684,30 @@ namespace HelloBotCore
                             settings.DeleteHashes(hashGroup,moduleInfo.SystemName); //delete all hashes for that groupId.
                             client.SaveServiceData(settings);
                         }
-                        else if (!settings.MessageHashExist(moduleInfo.SystemName,hashGroup, msgHash.ToString()))
+                        else 
                         {
-                            App.Instance.LogTrace("HelloBot.ShowMessage() adding new msg hash");
-
-                            settings.AddHash(moduleInfo.SystemName,hashGroup, msgHash.ToString());
-                            client.SaveServiceData(settings);
-
-                            Guid token = Guid.NewGuid();
-                            AddNewCommandContext(token,
-                                new BotCommandContext()
+                            if (!settings.MessageHashExist(moduleInfo.SystemName, hashGroup, msgHash.ToString()))
+                            {
+                                App.Instance.LogTrace("HelloBot.ShowMessage() adding new msg hash");
+                                if (moduleInfo.ModuleType != ModuleType.Handler)
                                 {
-                                    CommandName = !string.IsNullOrEmpty(client.ProvidedTitle) ? client.ProvidedTitle : "",
-                                    ModuleType = ModuleType.IntegrationClient,
-                                    ModuleId = client.Id
-                                });
-                            App.Instance.LogTrace("HelloBot.ShowMessage() sending message to client "+client.SystemName);
-                            client.SendMessageToClient(token, new CommunicationClientMessage(content) {FromModule = moduleInfo.ProvidedTitle ?? ""});
-                            App.Instance.LogTrace("HelloBot.ShowMessage() message sent. client " + client.SystemName);
+                                    //skip hash check for handler-like commands, because handlers always must be shown on client
+                                    settings.AddHash(moduleInfo.SystemName, hashGroup, msgHash.ToString());
+                                    client.SaveServiceData(settings);
+                                }                                
+
+                                Guid token = Guid.NewGuid();
+                                AddNewCommandContext(token,
+                                    new BotCommandContext()
+                                    {
+                                        CommandName = !string.IsNullOrEmpty(client.ProvidedTitle) ? client.ProvidedTitle : "",
+                                        ModuleType = ModuleType.IntegrationClient,
+                                        ModuleId = client.Id
+                                    });
+                                App.Instance.LogTrace("HelloBot.ShowMessage() sending message to client " + client.SystemName);
+                                client.SendMessageToClient(token, new CommunicationClientMessage(content) { FromModule = moduleInfo.ProvidedTitle ?? "" });
+                                App.Instance.LogTrace("HelloBot.ShowMessage() message sent. client " + client.SystemName);
+                            }                                
 
                         }
                     }
@@ -913,10 +928,10 @@ namespace HelloBotCore
         }
 
 
-        public void DisableModule(string moduleSystemName, out List<string> disabledInstancesSystemNames)
+        public void DisableComponent(string componentSystemName, out List<string> disabledInstancesSystemNames)
         {
-            disabledInstancesSystemNames = new List<string>() { moduleSystemName };
-            var found = Modules.Union(Modules.SelectMany(x=>x.Instances).Union(_integrationClients.Cast<ComponentInfoBase>()).Union(_integrationClients.SelectMany(x=>x.Instances))).Single(x => x.SystemName == moduleSystemName);
+            disabledInstancesSystemNames = new List<string>() { componentSystemName };
+            var found = FindComponent(componentSystemName);
             found.IsEnabled = false;
             if (found.IsMainComponent)
             {
@@ -925,10 +940,10 @@ namespace HelloBotCore
             }
         }
 
-        public void EnableModule(string moduleSystemName, out List<string> enabledInstancesSystemNames)
+        public void EnableComponent(string componentSystemName, out List<string> enabledInstancesSystemNames)
         {
-            enabledInstancesSystemNames = new List<string>() { moduleSystemName };
-            var found = Modules.Union(Modules.SelectMany(x => x.Instances).Union(_integrationClients.Cast<ComponentInfoBase>()).Union(_integrationClients.SelectMany(x => x.Instances))).Single(x => x.SystemName == moduleSystemName);
+            enabledInstancesSystemNames = new List<string>() { componentSystemName };
+            var found = FindComponent(componentSystemName);
             found.IsEnabled = true;
             if (found.IsMainComponent)
             {

@@ -32,6 +32,11 @@ namespace HelloBotCore.Entities
         public abstract ModuleType ModuleType { get; }
         public int? InstanceId { get; set; }
         public bool IsMainComponent { get { return !InstanceId.HasValue; } }
+        //todo: refactoring with system name format required 
+        /// <summary>
+        /// If component is a child of main component, parent system name will be returned
+        /// </summary>
+        public string MainSystemName { get { return IsMainComponent ? SystemName : (SystemName.Remove(SystemName.LastIndexOf("_" + InstanceId.Value))); } }
         private List<ComponentInfoBase> _instances;
         public List<ComponentInfoBase> Instances { get => _instances; set => _instances = value; }
         public virtual void Dispose() { }

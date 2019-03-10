@@ -414,10 +414,10 @@ namespace MonkeyJobTool.Entities
             }
         }
 
-        public void DisableModule(string moduleSystemName)
+        public void DisableComponent(string componentSystemName)
         {
             List<string> disabledInstancesSystemNames;
-            Bot.DisableModule(moduleSystemName, out disabledInstancesSystemNames);
+            Bot.DisableComponent(componentSystemName, out disabledInstancesSystemNames);
             foreach(var sysName in disabledInstancesSystemNames)
             {
                 if (!AppConf.SystemData.DisabledModules.Contains(sysName))
@@ -430,10 +430,10 @@ namespace MonkeyJobTool.Entities
             AppConf.Save();
         }
 
-        public void EnableModule(string moduleSystemName)
+        public void EnableComponent(string componentSystemName)
         {
             List<string> enabledInstancesSystemNames;
-            Bot.EnableModule(moduleSystemName, out enabledInstancesSystemNames);
+            Bot.EnableComponent(componentSystemName, out enabledInstancesSystemNames);
             foreach (var sysName in enabledInstancesSystemNames)
             {
                 if (AppConf.SystemData.DisabledModules.Contains(sysName))
