@@ -41,7 +41,7 @@ namespace HelloBotCore.Entities
             CallCommandList.ForEach(x=>x.Description = string.IsNullOrEmpty(x.Description)?CommandDescription.Description:x.Description);
         }
 
-        public override ComponentType ModuleType
+        public override ComponentType ComponentType
         {
             get { return ComponentType.Handler; }
         }

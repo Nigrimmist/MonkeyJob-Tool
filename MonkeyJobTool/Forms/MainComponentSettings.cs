@@ -28,8 +28,8 @@ namespace MonkeyJobTool.Forms
 
         private void MainComponentSettings_Load(object sender, EventArgs e)
         {
-            btnShowModuleCommunication.Visible = Component.ModuleType == ComponentType.IntegrationClient;
-            this.Text =  "Экземпляр "+(Component.ModuleType == ComponentType.IntegrationClient ? "клиента" : "модуля");
+            btnShowModuleCommunication.Visible = Component.ComponentType == ComponentType.IntegrationClient;
+            this.Text =  "Экземпляр "+(Component.ComponentType == ComponentType.IntegrationClient ? "клиента" : "модуля");
             DatabindGrid();
         }
 
@@ -65,7 +65,7 @@ namespace MonkeyJobTool.Forms
                 if (_gridRowsInited)
                 {
                     btnEnabledDisableClient.Enabled = true;
-                    if(Component.ModuleType==ComponentType.IntegrationClient)
+                    if(Component.ComponentType==ComponentType.IntegrationClient)
                         btnShowModuleCommunication.Enabled = true;
                 }
                 btnEnabledDisableClient.Text = (!client.IsEnabled ? "В" : "Вы") + "ключить";
@@ -76,7 +76,7 @@ namespace MonkeyJobTool.Forms
             {
                 btnRemoveClient.Enabled = false;
                 btnShowClientLogs.Enabled = false;
-                if(Component.ModuleType==ComponentType.IntegrationClient)
+                if(Component.ComponentType==ComponentType.IntegrationClient)
                     btnShowModuleCommunication.Enabled = false;
                 btnEnabledDisableClient.Enabled = false;
             }
@@ -157,7 +157,7 @@ namespace MonkeyJobTool.Forms
                 App.Instance.EnableComponent(instance.SystemName);
                 if (!Component.IsEnabled)
                 {
-                    string msg = $"{instance.ModuleType.ToParentReadableName()} включён, однако работать не будет. Причина : родительский элемент по прежнему выключен. Его активация включит также и остальные экземпляры, если таковые имеются и включены.{Environment.NewLine}{Environment.NewLine}Желаете так же ВКЛЮЧИТЬ родительский {instance.ModuleType.ToParentReadableName()}?";
+                    string msg = $"{instance.ComponentType.ToParentReadableName()} включён, однако работать не будет. Причина : родительский элемент по прежнему выключен. Его активация включит также и остальные экземпляры, если таковые имеются и включены.{Environment.NewLine}{Environment.NewLine}Желаете так же ВКЛЮЧИТЬ родительский {instance.ComponentType.ToParentReadableName()}?";
                     var result = MessageBox.Show(msg, $"{AppConstants.AppName} - Внимание", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                     if (result == DialogResult.Yes)
                     {

@@ -20,6 +20,6 @@ namespace HelloBotCore.Entities
         double GetUIClientVersion();
         void UpdateTrayText(Guid token, string text, Color? textColor = null, Color? backgroundColor = null, int fontSize = 12, string fontName = "Tahoma", Color? iconBorderColor = null);
         void ShowTrayBalloonTip(Guid token, string text, TimeSpan? timeout = null, TooltipType? tooltipType = null);
-        void LogModuleTraceRequest(ComponentInfoBase moduleInfo, string message);
+        void LogComponentTraceRequest(ComponentInfoBase moduleInfo, string message);
     }
 }

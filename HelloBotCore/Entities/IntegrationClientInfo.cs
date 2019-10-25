@@ -21,7 +21,7 @@ namespace HelloBotCore.Entities
         {
         }
         
-        public override ComponentType ModuleType
+        public override ComponentType ComponentType
         {
             get { return ComponentType.IntegrationClient; }
         }

@@ -75,8 +75,8 @@ namespace HelloBotCore
         public event OnTrayPopupShowRequestedDelegate OnTrayBalloonTipRequested;
         public event Action<List<AutoSuggestItem>> OnSuggestRecieved;
 
-        public delegate void OnModuleRemovedDelegate(string moduleSystemName);
-        public event OnModuleRemovedDelegate OnModuleRemoved;
+        public delegate void OnComponentRemovedDelegate(string componentSystemName);
+        public event OnComponentRemovedDelegate OnComponentRemoved;
 
         public Func<bool> CanNotifyClient;
         private StorageManager _storage;
@@ -479,16 +479,13 @@ namespace HelloBotCore
                                 {
                                     if (!(ex is ThreadAbortException))
                                     {
-                                        if (OnModuleErrorOccured != null)
-                                        {
-                                            OnModuleErrorOccured(ex, hnd);
-                                        }
+                                        OnModuleErrorOccured?.Invoke(ex, hnd);
 
                                     }
                                 }
                             }, TimeSpan.FromSeconds(_commandTimeoutSec), runWithTimeout))
                             {
-                                App.Instance.LogTrace("HandleMessage(). Module blowe. command. time expired : " + command + ". args : " + args);
+                                App.Instance.LogTrace("HandleMessage(). Module  broken. command. time expired : " + command + ". args : " + args);
                                 ShowInternalMessage(command, CommunicationMessage.FromString("модуль сломался. Причина : время модуля на выполнение команды истекло"));
                             }
                         }).Start();
@@ -625,7 +622,7 @@ namespace HelloBotCore
             }
         }
 
-        public void ShowMessage(ComponentInfoBase moduleInfo, CommunicationMessage content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default, Guid? commandToken = null, bool useBaseClient = false, UniqueMessageHash uniqueMsgKey = null)
+        public void ShowMessage(ComponentInfoBase componentInfo, CommunicationMessage content, string title = null, AnswerBehaviourType answerType = AnswerBehaviourType.ShowText, MessageType messageType = MessageType.Default, Guid? commandToken = null, bool useBaseClient = false, UniqueMessageHash uniqueMsgKey = null)
         {
             App.Instance.LogTrace("Start HelloBot.ShowMessage()");
             BotContextBase commandBaseContext = null;
@@ -645,13 +642,13 @@ namespace HelloBotCore
             if (commandContext != null || !commandToken.HasValue)
             {
                 //do not notify if main client in silent mode
-                if (moduleInfo.ModuleType == ComponentType.Event && !CanNotifyClient())
+                if (componentInfo.ComponentType == ComponentType.Event && !CanNotifyClient())
                 {
                     App.Instance.LogTrace("HelloBot.ShowMessage() doNotNotify enabled");
                     return;
                 } 
                
-                var enabledIntegrationClients = IntegrationClients.Where(x => x.IsEnabled).SelectMany(x => x.Instances.Cast<IntegrationClientInfo>().Where(y=>y.IsEnabled)).Where(x=>x.InstanceCommunication.IsEnabledFor(moduleInfo.SystemName,moduleInfo.ModuleType)).ToList();
+                var enabledIntegrationClients = IntegrationClients.Where(x => x.IsEnabled).SelectMany(x => x.Instances.Cast<IntegrationClientInfo>().Where(y=>y.IsEnabled)).Where(x=>x.InstanceCommunication.IsEnabledFor(componentInfo.SystemName,componentInfo.ComponentType)).ToList();
                 
                 if (enabledIntegrationClients.Any() && !useBaseClient)
                 {
@@ -675,18 +672,18 @@ namespace HelloBotCore
                         }
                         if (content.MessageParts.Any(x => x.MessageFormat == CommunicationMessageFormat.NoContent))
                         {
-                            settings.DeleteHashes(hashGroup,moduleInfo.SystemName); //delete all hashes for that groupId.
+                            settings.DeleteHashes(hashGroup,componentInfo.SystemName); //delete all hashes for that groupId.
                             client.SaveServiceData(settings);
                         }
                         else 
                         {
-                            if (!settings.MessageHashExist(moduleInfo.SystemName, hashGroup, msgHash.ToString()))
+                            if (!settings.MessageHashExist(componentInfo.SystemName, hashGroup, msgHash.ToString()))
                             {
                                 App.Instance.LogTrace("HelloBot.ShowMessage() adding new msg hash");
-                                if (moduleInfo.ModuleType != ComponentType.Handler)
+                                if (componentInfo.ComponentType != ComponentType.Handler)
                                 {
                                     //skip hash check for handler-like commands, because handlers always must be shown on client
-                                    settings.AddHash(moduleInfo.SystemName, hashGroup, msgHash.ToString());
+                                    settings.AddHash(componentInfo.SystemName, hashGroup, msgHash.ToString());
                                     client.SaveServiceData(settings);
                                 }                                
 
@@ -699,7 +696,7 @@ namespace HelloBotCore
                                         ModuleId = client.Id
                                     });
                                 App.Instance.LogTrace("HelloBot.ShowMessage() sending message to client " + client.SystemName);
-                                client.SendMessageToClient(token, new CommunicationClientMessage(content) { FromModule = moduleInfo.ProvidedTitle ?? "" });
+                                client.SendMessageToClient(token, new CommunicationClientMessage(content) { FromModule = componentInfo.ProvidedTitle ?? "" });
                                 App.Instance.LogTrace("HelloBot.ShowMessage() message sent. client " + client.SystemName);
                             }                                
 
@@ -714,14 +711,14 @@ namespace HelloBotCore
                     {
                         Color? bodyBackgroundColor = null;
                         Color? headerBackgroundColor = null;
-                        var eventInfo = moduleInfo as ModuleEventInfo;
+                        var eventInfo = componentInfo as ModuleEventInfo;
                         if (eventInfo != null)
                         {
                             bodyBackgroundColor = eventInfo.BodyBackgroundColor;
                             headerBackgroundColor = eventInfo.HeaderBackgroundColor;
                         }
 
-                        var commandInfo = moduleInfo as ModuleCommandInfo;
+                        var commandInfo = componentInfo as ModuleCommandInfo;
                         if (commandInfo != null)
                         {
                             bodyBackgroundColor = commandInfo.BodyBackgroundColor;
@@ -735,7 +732,7 @@ namespace HelloBotCore
                             CommandName = commandContext.CommandName,
                             AnswerType = answerType,
                             MessageSourceType = commandContext.ComponentType,
-                            Icon = moduleInfo.Icon,
+                            Icon = componentInfo.Icon,
                             BodyBackgroundColor = bodyBackgroundColor,
                             HeaderBackgroundColor = headerBackgroundColor
                         }, commandContext.ClientCommandContext);
@@ -812,16 +809,16 @@ namespace HelloBotCore
 
         }
 
-        public void LogModuleTraceRequest(ComponentInfoBase moduleInfo, string message)
+        public void LogComponentTraceRequest(ComponentInfoBase componentInfo, string message)
         {
-            App.Instance.LogTrace("Start LogModuleTraceRequest() message : " + message);
+            App.Instance.LogTrace("Start LogComponentTraceRequest() message : " + message);
 
-            lock (_commandDictLocks[moduleInfo.Id].LogTraceLock)
+            lock (_commandDictLocks[componentInfo.Id].LogTraceLock)
             {
-                moduleInfo.Trace.AddMessage(message);
+                componentInfo.Trace.AddMessage(message);
             }
 
-            App.Instance.LogTrace("End LogModuleTraceRequest() ");
+            App.Instance.LogTrace("End LogComponentTraceRequest() ");
 
         }
 
@@ -992,11 +989,11 @@ namespace HelloBotCore
                 Thread.Sleep(RunTraceSaveEveryMin*1000*60);
                 try
                 {
-                    foreach (var module in Components.SelectMany(x=>x.Instances))
+                    foreach (var component in Components.SelectMany(x=>x.Instances))
                     {
-                        lock (_commandDictLocks[module.Id].LogTraceLock)
+                        lock (_commandDictLocks[component.Id].LogTraceLock)
                         {
-                            module.Trace.Save();
+                            component.Trace.Save();
                         }
                     }
                 }
@@ -1016,7 +1013,7 @@ namespace HelloBotCore
             {
                 component.RemoveInstance(systemName);                
                 inst.Dispose();
-                OnModuleRemoved?.Invoke(systemName);
+                OnComponentRemoved?.Invoke(systemName);
             }
 
         }

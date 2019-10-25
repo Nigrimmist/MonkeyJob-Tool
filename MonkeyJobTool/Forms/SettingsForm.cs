@@ -264,7 +264,7 @@ namespace MonkeyJobTool.Forms
         private void DatabindGrid(SettingGridType gridType)
         {
             var items = gridType == SettingGridType.Modules ? App.Instance.Bot.Modules : App.Instance.Bot.IntegrationClients.Select(x=>(ComponentInfoBase)x);
-            var orderedItems = items.OrderByDescending(x => ChangedComponents.Contains(x)).ThenByDescending(x => x.ModuleType).ThenBy(x => x.SystemName).ToList();
+            var orderedItems = items.OrderByDescending(x => ChangedComponents.Contains(x)).ThenByDescending(x => x.ComponentType).ThenBy(x => x.SystemName).ToList();
 
             foreach (var mod in orderedItems)
             {
@@ -400,11 +400,11 @@ namespace MonkeyJobTool.Forms
                 App.Instance.EnableComponent(component.SystemName);
             }
 
-            if (component.ModuleType == ComponentType.Event)
+            if (component.ComponentType == ComponentType.Event)
                 btnModuleRun.Enabled = component.IsEnabled;
 
             
-            if (component.ModuleType.ToBaseType()==BaseComponentType.Modules)
+            if (component.ComponentType.ToBaseType()==BaseComponentType.Modules)
             {
                 btnEnabledDisableModule.Text = (!component.IsEnabled ? "Включить" : "Выключить") + " модуль";
             }
@@ -413,7 +413,7 @@ namespace MonkeyJobTool.Forms
                 btnEnabledDisableClient.Text = (!component.IsEnabled ? "Включить" : "Выключить") + " клиент";
             }
 
-            var gridType = GridTypeByComponentType(component.ModuleType.ToBaseType());
+            var gridType = GridTypeByComponentType(component.ComponentType.ToBaseType());
             var grid = Grid(gridType);
             grid.Rows[grid.SelectedRows[0].Index].Cells[ColumnNameByGridType(gridType, "colIsEnabled")].Value = component.IsEnabled ? "Вкл" : "Выкл";
         }
@@ -482,7 +482,7 @@ namespace MonkeyJobTool.Forms
             if (ChangedComponents.Any())
             {
                 string componentType;
-                if (ChangedComponents.Any(x => x.ModuleType != ComponentType.IntegrationClient))
+                if (ChangedComponents.Any(x => x.ComponentType != ComponentType.IntegrationClient))
                 {
                     TCSettings.SelectedTab = TPModuleSettings;
                     componentType = "модули";
@@ -563,7 +563,7 @@ namespace MonkeyJobTool.Forms
                     }
                     btnEnabledDisableModule.Text = (!module.IsEnabled ? "В" : "Вы") + "ключить модуль";
                     btnShowLogs.Enabled = gridType == SettingGridType.Modules ? module.Trace.TraceMessages.Any() : (module as IntegrationClientInfo).Instances.Any(x => x.Trace.TraceMessages.Any());
-                    pnlRunModule.Visible = module.ModuleType==ComponentType.Event;
+                    pnlRunModule.Visible = module.ComponentType==ComponentType.Event;
                     btnModuleRun.Enabled = module.IsEnabled;
                 }
                 else

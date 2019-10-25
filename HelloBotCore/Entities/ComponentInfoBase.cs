@@ -29,7 +29,7 @@ namespace HelloBotCore.Entities
         public AuthorInfo Author { get; set; }
         public Type SettingsType { get; set; }
         public ModuleLogStorageInfo Trace { get; set; }
-        public abstract ComponentType ModuleType { get; }
+        public abstract ComponentType ComponentType { get; }
         public int? InstanceId { get; set; }
         public bool IsMainComponent { get { return !InstanceId.HasValue; } }
         //todo: refactoring with system name format required 

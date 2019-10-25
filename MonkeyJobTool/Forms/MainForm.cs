@@ -325,7 +325,7 @@ namespace MonkeyJobTool.Forms
                     _bot.RegisterComponents(App.Instance.AppConf.SystemData.EnabledModules, App.Instance.AppConf.SystemData.DisabledModules);
                     _bot.RegisterIntegrationClients(App.Instance.AppConf.SystemData.EnabledModules);
                     _bot.OnSuggestRecieved += BotOnSuggestRecieved;
-                    _bot.OnModuleRemoved += _bot_OnModuleRemoved;
+                    _bot.OnComponentRemoved += _bot_OnModuleRemoved;
                     _bot.CanNotifyClient += () => !App.Instance.AppConf.SystemData.DoNotNotify;
                     
 
@@ -463,7 +463,7 @@ namespace MonkeyJobTool.Forms
         {
             string errorMessage = "Неизвестная ошибка.";
             bool logError = true;
-            if (module.ModuleType == ComponentType.Handler)
+            if (module.ComponentType == ComponentType.Handler)
             {
                 errorMessage = "Увы, что-то пошло не так и модуль сломался, попробуйте как-нибудь по другому.";
 

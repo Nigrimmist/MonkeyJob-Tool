@@ -77,7 +77,7 @@ namespace HelloBotCore.Entities
 
         public void LogTrace(string message)
         {
-            _moduleClientHandler.LogModuleTraceRequest(_componentInfoBase, message);
+            _moduleClientHandler.LogComponentTraceRequest(_componentInfoBase, message);
         }
 
         
